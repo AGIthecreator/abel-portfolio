@@ -294,13 +294,23 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
     margin-right: auto !important;
   }
 
-  /* Put year on its own line (centered above) to avoid stealing lateral space */
-  html body footer .footer-bubble__year {
-    display: block !important;
-    width: 100% !important;
-    margin: 0 0 0.2rem 0 !important;
-    text-align: center !important;
+  /* 2 líneas exactas (móvil): línea 1 (© año nombre) + línea 2 (cargo) */
+  html body footer .footer-bubble__line1,
+  html body footer .footer-bubble__line2 {
+    display: block;
+    text-align: center;
   }
+
+  html body footer .footer-bubble__line1 {
+    margin: 0;
+  }
+
+  html body footer .footer-bubble__line2 {
+    margin: 0.1rem 0 0 0;
+    font-size: 0.78rem; /* ~text-[12.5px] para asegurar 1 línea en móviles estrechos */
+    line-height: 1.15;
+  }
+
 }
 
 
