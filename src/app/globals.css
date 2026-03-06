@@ -292,10 +292,17 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
     padding-bottom: 1rem !important; /* ~py-4 */
     border-radius: 9999px !important;
     text-align: center !important;
+    font-size: 0.9rem !important;
+    line-height: 1.2 !important;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
+  }
+
+  /* Neutraliza la clase Tailwind `rounded-full` SOLO en móvil para esta burbuja */
+  footer .footer-bubble__inner.rounded-full {
+    border-radius: 9999px !important;
   }
 
   /* Move the year away if it steals horizontal space */
