@@ -284,14 +284,18 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
 
   /* Width correction ONLY for this bubble */
   footer .footer-bubble__inner {
-    width: 95%;
+    width: 98%;
     max-width: none;
-    border-radius: 9999px;
+    height: auto;
+    min-height: 0;
+    aspect-ratio: auto;
+    border-radius: 9999px !important;
     text-align: center;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
   /* Move the year away if it steals horizontal space */
