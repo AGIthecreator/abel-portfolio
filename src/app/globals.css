@@ -264,7 +264,7 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
   /* Keep social icons above other elements and give them breathing space */
   .footer-social {
     position: relative;
-    z-index: 30;
+    z-index: 50;
   }
 
   .footer-row .footer-social {
@@ -277,8 +277,18 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
     transform: none;
     left: auto;
     margin-top: 0.75rem;
+    margin-bottom: 1.25rem;
     display: flex;
     justify-content: center;
+  }
+
+  /* Footer bubble text: allow it to breathe and avoid 4-line wrapping */
+  footer .absolute.left-1\/2 > div {
+    width: auto;
+    max-width: 90%;
+    text-align: center;
+    display: flex;
+    align-items: center;
   }
 }
 

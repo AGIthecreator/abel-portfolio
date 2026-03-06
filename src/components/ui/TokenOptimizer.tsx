@@ -29,7 +29,7 @@ export function TokenOptimizer({ value, onChange, accent = "#FFD700", className 
       <div
         role="tablist"
         aria-label="Selector de categoría IA"
-        className="grid grid-cols-3 rounded-full p-1"
+        className="token-opt__tabs grid grid-cols-3 rounded-full p-1"
         style={{
           border: `1px solid ${hexToRgba(accent, 0.45)}`,
           background:
@@ -46,7 +46,7 @@ export function TokenOptimizer({ value, onChange, accent = "#FFD700", className 
               role="tab"
               aria-selected={active}
               onClick={() => onChange(m.key)}
-              className="relative rounded-full px-2.5 py-2 text-left transition"
+              className="token-opt__tab relative rounded-full px-2.5 py-2 text-left transition"
               style={{
                 color: active ? "rgba(0,0,0,0.92)" : "rgba(255,255,255,0.86)",
               }}
@@ -63,8 +63,8 @@ export function TokenOptimizer({ value, onChange, accent = "#FFD700", className 
               ) : null}
 
               <span className="relative block leading-tight">
-                <span className="block text-[11px] font-semibold">{m.label}</span>
-                <span className="block text-[10px] opacity-80">({m.sub})</span>
+                <span className="token-opt__tab-label block text-[11px] font-semibold">{m.label}</span>
+                <span className="token-opt__tab-sub block text-[10px] opacity-80">({m.sub})</span>
               </span>
             </button>
           );
@@ -74,6 +74,32 @@ export function TokenOptimizer({ value, onChange, accent = "#FFD700", className 
       <div className="mt-2 text-[10px] tracking-wide" style={{ color: "rgba(255,255,255,0.72)" }}>
         Enrutamiento de API (OpenRouter): <span style={{ color: hexToRgba(accent, 0.95) }}>-40% de consumo</span> optimizado
       </div>
+
+      {/* Mobile-only: stack the 3 internal pills vertically and let them breathe */}
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .token-opt__tabs {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-radius: 16px;
+            padding: 8px;
+          }
+
+          .token-opt__tab {
+            width: 100%;
+            padding: 8px 10px;
+          }
+
+          .token-opt__tab-label {
+            font-size: 12px;
+          }
+
+          .token-opt__tab-sub {
+            font-size: 12px;
+          }
+        }
+      `}</style>
     </div>
   );
 }
