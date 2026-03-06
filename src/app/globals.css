@@ -1,26 +1,265 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  Tailwind v4 note:
+  Some bundlers may try to resolve the `tailwindcss` specifier from an unexpected
+  working directory during dev. Importing the explicit CSS entry makes resolution
+  unambiguous.
+*/
+@import "tailwindcss/index.css";
+
+@theme {
+--color-background: #020617;
+--color-accent: #8B5CF6;
+--color-accent-glow: rgba(139, 92, 246, 0.38);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer utilities {
+  .ring-accent-glow {
+    --tw-ring-color: rgba(139, 92, 246, 0.38);
   }
 }
 
+@layer base {
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+background-color: #020617;
+color: white;
+background-image: none;
+background-attachment: fixed;
+overflow-x: hidden;
+}
+}
+
+/* --- ECG connectors (section transitions) --- */
+.ecg-connector__path {
+  /*
+    Live draw:
+    - We draw the whole polyline progressively (left → right)
+    - Then quickly fade it out and restart.
+    Note: 1200 matches the SVG viewBox width used by EcgConnector.
+  */
+  /*
+    Normalize dash math to percentages using pathLength="1":
+    - dasharray: 1 (full length)
+    - dashoffset: 1 → 0 (draw left → right)
+  */
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: ecgLiveDraw 3.6s linear infinite;
+  will-change: stroke-dashoffset, opacity;
+}
+
+@keyframes ecgLiveDraw {
+  /* Draw left → right, then hard reset (no fade) for a clean monitoring loop */
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 1;
+  }
+  99.5% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .ecg-connector__path {
+    animation: none;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@utility glass-card {
+background: rgba(255, 255, 255, 0.03);
+backdrop-filter: blur(8px);
+border: 1px solid rgba(139, 92, 246, 0.22);
+border-radius: 24px;
+overflow: hidden;
+box-shadow: inset 0 0 16px rgba(255, 255, 255, 0.02);
+}
+
+@utility neon-border {
+border-color: rgba(139, 92, 246, 0.45);
+box-shadow: inset 0 0 12px rgba(139, 92, 246, 0.08);
+}
+
+@utility text-gradient {
+background-clip: text;
+color: transparent;
+background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
+}
+
+/* --- Premium Dark Cyberpunk layers --- */
+.cyber-glow {
+  position: absolute;
+  inset: auto;
+  width: 820px;
+  height: 820px;
+  border-radius: 999px;
+  filter: blur(70px);
+  opacity: 0.18;
+  mix-blend-mode: screen;
+}
+
+/* subtle static glows behind content */
+.cyber-glow--violet {
+  background: radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.55), transparent 60%);
+}
+.cyber-glow--magenta {
+  background: radial-gradient(circle at 30% 30%, rgba(255, 0, 199, 0.45), transparent 60%);
+}
+
+/* constant subtle violet pulse (for CTA) */
+.cyber-violet-pulse {
+  background:
+    radial-gradient(220px circle at 50% 40%, rgba(139, 92, 246, 0.26), transparent 62%),
+    radial-gradient(160px circle at 50% 60%, rgba(139, 92, 246, 0.16), transparent 65%);
+  opacity: 0.45;
+  animation: violetPulse 2.8s ease-in-out infinite;
+}
+
+@keyframes violetPulse {
+  0%,
+  100% {
+    opacity: 0.28;
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 0.55;
+    filter: blur(14px);
+  }
+}
+
+/* --- Footer micro-indicators --- */
+@keyframes statusLed {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.92);
+    filter: brightness(0.95);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1.35);
+  }
+  60% {
+    opacity: 0.55;
+    transform: scale(0.95);
+    filter: brightness(1.05);
+  }
+}
+
+@layer utilities {
+  .animate-status-led {
+    animation: statusLed 1.4s ease-in-out infinite;
+  }
+}
+
+/* --- Hero primary CTA pulse (subtle, 4–5s) --- */
+@keyframes ctaGlowPulse {
+  0%,
+  80%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(139, 92, 246, 0.22),
+      0 0 18px rgba(139, 92, 246, 0.12),
+      0 0 26px rgba(34, 211, 238, 0.06);
+  }
+  90% {
+    box-shadow:
+      0 0 0 1px rgba(34, 211, 238, 0.26),
+      0 0 26px rgba(139, 92, 246, 0.18),
+      0 0 44px rgba(34, 211, 238, 0.10);
+  }
+}
+
+@layer utilities {
+  .animate-cta-glow {
+    animation: ctaGlowPulse 4.6s ease-in-out infinite;
+    will-change: box-shadow;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-cta-glow {
+    animation: none;
+  }
+}
+
+/* --- Terminal cursor blink (Architecture Logs trigger) --- */
+@keyframes terminalCursorBlink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@layer utilities {
+  .animate-terminal-cursor-blink {
+    animation: terminalCursorBlink 1s steps(1, end) infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-terminal-cursor-blink {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* --- Footer ticker --- */
+@keyframes footerTicker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@layer utilities {
+  .ticker-mask {
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 10%,
+      black 90%,
+      transparent 100%
+    );
+  }
+
+  .animate-ticker {
+    animation: footerTicker 30s linear infinite;
+  }
+
+  .animate-ticker-slow {
+    animation: footerTicker 60s linear infinite;
+  }
+}
+
+/* Forzar la ocultación del indicador de desarrollo de Next.js */
+next-route-announcer,
+#next-live-resolved-error,
+[data-nextjs-toast],
+[data-nextjs-dev-overlay] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Selector específico para el botón circular de la N */
+#nextjs__container_build_error_label,
+#nextjs__container_errors_label {
+  display: none !important;
 }
