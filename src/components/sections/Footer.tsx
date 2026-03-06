@@ -27,7 +27,7 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="footer-row flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             {/* micro-indicadores de sistema */}
             <div className="order-2 flex flex-wrap items-center justify-center gap-2 text-[12px] tracking-wide text-white/80 sm:order-0 sm:flex-1 sm:flex-nowrap">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1">
@@ -46,7 +46,7 @@ export function Footer() {
             </div>
 
             {/* rótulo de datos (marquesina técnica) - ocupa el hueco central */}
-            <div className="order-3 hidden min-w-0 flex-1 sm:order-0 sm:block">
+            <div className="footer-ticker order-3 min-w-0 flex-1 sm:order-0">
               <div className="ticker-mask group relative w-full overflow-hidden">
                 <div className="flex w-max items-center whitespace-nowrap py-1.5 font-mono text-[11px] sm:text-[12px] tracking-[0.16em] text-cyan-200/70 drop-shadow-[0_0_10px_rgba(34,211,238,0.12)] animate-ticker group-hover:animate-ticker-slow">
                   {/*
@@ -66,7 +66,7 @@ export function Footer() {
               <div className="flex items-center justify-center gap-3 sm:justify-end">
               <a
                 aria-label="GitHub"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/45 transition-all hover:scale-[1.06] hover:border-white/20 hover:bg-white/10 hover:text-white/90 hover:shadow-[0_0_22px_rgba(255,255,255,0.06)]"
+                className="footer-social inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/45 transition-all hover:scale-[1.06] hover:border-white/20 hover:bg-white/10 hover:text-white/90 hover:shadow-[0_0_22px_rgba(255,255,255,0.06)]"
                 href="https://github.com/AGIthecreator"
                 target="_blank"
                 rel="noreferrer"
@@ -75,7 +75,7 @@ export function Footer() {
               </a>
               <a
                 aria-label="LinkedIn"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/45 transition-all hover:scale-[1.06] hover:border-white/20 hover:bg-white/10 hover:text-white/90 hover:shadow-[0_0_22px_rgba(255,255,255,0.06)]"
+                className="footer-social inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/45 transition-all hover:scale-[1.06] hover:border-white/20 hover:bg-white/10 hover:text-white/90 hover:shadow-[0_0_22px_rgba(255,255,255,0.06)]"
                 href="https://www.linkedin.com/in/abel-gonzalez-iglesias"
                 target="_blank"
                 rel="noreferrer"
@@ -84,7 +84,7 @@ export function Footer() {
               </a>
               <a
                 aria-label="Email"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/45 transition-all hover:scale-[1.06] hover:border-white/20 hover:bg-white/10 hover:text-white/90 hover:shadow-[0_0_22px_rgba(255,255,255,0.06)]"
+                className="footer-social inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/45 transition-all hover:scale-[1.06] hover:border-white/20 hover:bg-white/10 hover:text-white/90 hover:shadow-[0_0_22px_rgba(255,255,255,0.06)]"
                 href={`mailto:${email}`}
               >
                 <Mail className="h-5 w-5" />
@@ -102,7 +102,6 @@ export function Footer() {
             </div>
           </div>
         </div>
-
       </FadeIn>
     </footer>
   );

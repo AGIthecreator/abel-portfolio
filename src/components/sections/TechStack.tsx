@@ -2,7 +2,6 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FadeIn } from "@/components/motion/FadeIn";
-import { TechStackParticlesCanvas } from "@/components/ui/TechStackParticlesCanvas";
 import { ConnectionParticlesCanvas } from "@/components/ui/ConnectionParticlesCanvas";
 import { TokenOptimizer, type OrchestrationMode } from "@/components/ui/TokenOptimizer";
 import {
@@ -36,6 +35,12 @@ import {
 } from "react-icons/si";
 
 import { Lock } from "lucide-react";
+
+declare global {
+  interface Window {
+    __techStackHoverLabel?: (label: string | null) => void;
+  }
+}
 
 type PanelKey = "ai" | "frontend" | "backend" | "automation";
 
@@ -164,7 +169,6 @@ function TechPill({
   const baseBg =
     "linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.00) 60%), rgba(255,255,255,0.02)";
 
-  const glowBase = `inset 0 0 12px 2px ${hexToRgba(color, 0.30)}`;
   const glowHover = `inset 0 0 12px 2px ${hexToRgba(color, 0.60)}`;
   const isRelated = activeLabel ? relatedLabels.has(tech.label) : false;
   const isCore = activeLabel === tech.label && ORBITAL_RELATIONS[tech.label];
@@ -351,6 +355,30 @@ function TechPill({
             transition: none;
           }
         }
+
+        /* Mobile-only safety: avoid pill overflows for long labels like
+           "razonamiento" / "chat agente" etc. Keep desktop intact. */
+        @media (max-width: 768px) {
+          .tech-pill {
+            min-width: 0 !important;
+            max-width: 100%;
+            padding-left: 14px;
+            padding-right: 14px;
+          }
+
+          .tech-pill__content {
+            min-width: 0;
+          }
+
+          .tech-pill__content > .min-w-0 {
+            min-width: 0;
+          }
+
+          .tech-pill span {
+            white-space: normal;
+            word-break: break-word;
+          }
+        }
       `}</style>
 
       {isAiGlass ? <span aria-hidden="true" className="tech-pill__scan" /> : null}
@@ -363,7 +391,10 @@ function PanelCard({ panel }: { panel: Panel }) {
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
   const [orchestration, setOrchestration] = useState<OrchestrationMode>("haiku");
   // optional: bubble hover -> parent “data stream” effect
-  const onHoverLabel = useMemo(() => (typeof window !== "undefined" ? (window as any).__techStackHoverLabel : undefined), []);
+  const onHoverLabel = useMemo(
+    () => (typeof window !== "undefined" ? window.__techStackHoverLabel : undefined),
+    []
+  );
 
   const aiTab: AiTabKey = useMemo(() => {
     switch (orchestration) {
@@ -488,25 +519,25 @@ export function TechStack() {
     panelRefs.current[key] = el;
   };
 
-  const onGlobalHoverLabel = (label: string | null) => {
-    if (label === "Supabase") {
-      setStreamActive({ from: "supabase", t0: performance.now() });
-      return;
-    }
-    if (label === "Airtable") {
-      setStreamActive({ from: "airtable", t0: performance.now() });
-      return;
-    }
-    // let the current animation finish; no immediate cancel
-  };
-
   // bridge callback to PanelCard without prop drilling (keeps file changes minimal)
   useEffect(() => {
-    (window as any).__techStackHoverLabel = onGlobalHoverLabel;
-    return () => {
-      delete (window as any).__techStackHoverLabel;
+    const onGlobalHoverLabel = (label: string | null) => {
+      if (label === "Supabase") {
+        setStreamActive({ from: "supabase", t0: performance.now() });
+        return;
+      }
+      if (label === "Airtable") {
+        setStreamActive({ from: "airtable", t0: performance.now() });
+        return;
+      }
+      // let the current animation finish; no immediate cancel
     };
-  }, [onGlobalHoverLabel]);
+
+    window.__techStackHoverLabel = onGlobalHoverLabel;
+    return () => {
+      delete window.__techStackHoverLabel;
+    };
+  }, []);
 
   useEffect(() => {
     const grid = gridRef.current;

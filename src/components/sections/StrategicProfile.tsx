@@ -108,7 +108,7 @@ function RadarHud() {
 
   return (
     <div ref={wrapRef} className="relative w-full">
-      <div className="relative mx-auto aspect-square w-full max-w-105 overflow-visible">
+      <div className="radar-wrap relative mx-auto aspect-square w-full max-w-105 overflow-visible">
         <svg viewBox={`${-16} ${-16} ${size + 32} ${size + 32}`} className="h-full w-full overflow-visible">
           <defs>
             <radialGradient id="radarFill" cx="50%" cy="50%" r="65%">
@@ -195,6 +195,7 @@ function RadarHud() {
               textAnchor={anchor}
               dominantBaseline="middle"
               fill={active && active !== axis.key ? "rgba(255,255,255,0.40)" : "rgba(255,255,255,0.78)"}
+              className="radar-label"
               fontSize={10}
               fontFamily="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial"
               letterSpacing="0.12em"
@@ -264,6 +265,20 @@ function RadarHud() {
         @media (prefers-reduced-motion: reduce) {
           .radar-breath {
             animation: none;
+          }
+        }
+
+        /* Mobile-only: reduce radar footprint / avoid label clipping on edges */
+        @media (max-width: 768px) {
+          .radar-wrap {
+            max-width: 320px;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+          }
+
+          :global(.radar-label) {
+            font-size: 8px;
+            letter-spacing: 0.1em;
           }
         }
       `}</style>

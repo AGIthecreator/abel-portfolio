@@ -248,6 +248,40 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
   }
 }
 
+/* --- Footer: mobile-only layout fixes (avoid styled-jsx in Server Components) --- */
+@media (max-width: 768px) {
+  .footer-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Restore ticker visibility on mobile (it used to be hidden via `hidden sm:block`) */
+  .footer-ticker {
+    display: block;
+    order: 2;
+  }
+
+  /* Keep social icons above other elements and give them breathing space */
+  .footer-social {
+    position: relative;
+    z-index: 30;
+  }
+
+  .footer-row .footer-social {
+    margin-top: 1rem; /* mt-4 */
+  }
+
+  /* Copyright bubble (Arquitecto Digital): prevent overlap on mobile */
+  footer .absolute.left-1\/2 {
+    position: static;
+    transform: none;
+    left: auto;
+    margin-top: 0.75rem;
+    display: flex;
+    justify-content: center;
+  }
+}
+
 /* Forzar la ocultación del indicador de desarrollo de Next.js */
 next-route-announcer,
 #next-live-resolved-error,
