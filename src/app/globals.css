@@ -248,30 +248,9 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
   }
 }
 
-/* --- Footer: mobile-only layout fixes (avoid styled-jsx in Server Components) --- */
+/* --- Footer bubble: MOBILE ONLY fixes (do not affect desktop) --- */
 @media (max-width: 768px) {
-  .footer-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  /* Restore ticker visibility on mobile (it used to be hidden via `hidden sm:block`) */
-  .footer-ticker {
-    display: block;
-    order: 2;
-  }
-
-  /* Keep social icons above other elements and give them breathing space */
-  .footer-social {
-    position: relative;
-    z-index: 50;
-  }
-
-  .footer-row .footer-social {
-    margin-top: 2rem; /* requested spacing below the enlarged bubble */
-  }
-
-  /* Footer bubble (Arquitecto Digital...): MOBILE ONLY */
+  /* Keep bubble centered without absolute positioning on small screens */
   footer .footer-bubble {
     position: static;
     transform: none;
@@ -280,37 +259,40 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
     margin-bottom: 1.25rem;
     display: flex;
     justify-content: center;
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
   }
 
-  /*
-    REGLA "MAZO" (móvil): máxima especificidad para ganar a Tailwind/inline.
-    Objetivo: cápsula horizontal (no círculo), altura auto, contenido apilado.
-  */
+  /* Capsule shape and full-frame width */
   html body footer .footer-bubble__inner {
     width: 96% !important;
     max-width: none !important;
     aspect-ratio: auto !important;
     height: auto !important;
     border-radius: 9999px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
     text-align: center !important;
     padding-top: 1rem !important; /* ~py-4 */
     padding-bottom: 1rem !important; /* ~py-4 */
     font-size: 0.9rem !important;
     line-height: 1.2 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: normal !important;
   }
 
-  /* Año centrado encima para no robar espacio lateral */
+  /* Put year on its own line (centered above) to avoid stealing lateral space */
   html body footer .footer-bubble__year {
     display: block !important;
     width: 100% !important;
-    margin: 0 0 0.25rem 0 !important;
+    margin: 0 0 0.2rem 0 !important;
     text-align: center !important;
   }
 }
+
+
 
 /* Forzar la ocultación del indicador de desarrollo de Next.js */
 next-route-announcer,
