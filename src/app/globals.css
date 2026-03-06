@@ -268,11 +268,11 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
   }
 
   .footer-row .footer-social {
-    margin-top: 1rem; /* mt-4 */
+    margin-top: 2rem; /* requested spacing below the enlarged bubble */
   }
 
-  /* Copyright bubble (Arquitecto Digital): prevent overlap on mobile */
-  footer .absolute.left-1\/2 {
+  /* Footer bubble (Arquitecto Digital...): MOBILE ONLY */
+  footer .footer-bubble {
     position: static;
     transform: none;
     left: auto;
@@ -282,13 +282,22 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
     justify-content: center;
   }
 
-  /* Footer bubble text: allow it to breathe and avoid 4-line wrapping */
-  footer .absolute.left-1\/2 > div {
-    width: auto;
-    max-width: 90%;
+  /* Width correction ONLY for this bubble */
+  footer .footer-bubble__inner {
+    width: 95%;
+    max-width: none;
     text-align: center;
     display: flex;
     align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Move the year away if it steals horizontal space */
+  footer .footer-bubble__year {
+    display: block;
+    flex-basis: 100%;
+    margin-top: 0.15rem;
   }
 }
 
