@@ -286,6 +286,7 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
   footer .footer-bubble__inner {
     width: 95%;
     max-width: none;
+    border-radius: 9999px;
     text-align: center;
     display: flex;
     align-items: center;
@@ -297,7 +298,9 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
   footer .footer-bubble__year {
     display: block;
     flex-basis: 100%;
-    margin-top: 0.15rem;
+    margin-top: 0;
+    margin-bottom: 0.15rem;
+    text-align: center;
   }
 }
 
