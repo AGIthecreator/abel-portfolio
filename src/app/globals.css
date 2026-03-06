@@ -284,18 +284,18 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
 
   /* Width correction ONLY for this bubble */
   footer .footer-bubble__inner {
-    width: 98%;
-    max-width: none;
-    height: auto;
-    min-height: 0;
-    aspect-ratio: auto;
+    width: 92% !important;
+    max-width: none !important;
+    aspect-ratio: auto !important;
+    height: auto !important;
+    padding-top: 1rem !important; /* ~py-4 */
+    padding-bottom: 1rem !important; /* ~py-4 */
     border-radius: 9999px !important;
-    text-align: center;
+    text-align: center !important;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
   }
 
   /* Move the year away if it steals horizontal space */
@@ -303,7 +303,7 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
     display: block;
     flex-basis: 100%;
     margin-top: 0;
-    margin-bottom: 0.15rem;
+    margin-bottom: 0.25rem;
     text-align: center;
   }
 }
