@@ -264,8 +264,16 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
     padding-right: 0;
   }
 
+  /* Asegura que el wrapper NO quede absoluto en móvil (si el HTML lo trae) */
+  html body footer .footer-bubble.absolute {
+    position: static !important;
+    left: auto !important;
+    transform: none !important;
+  }
+
   /* Capsule shape and full-frame width */
-  html body footer .footer-bubble__inner {
+  html body footer .footer-bubble__inner,
+  html body footer .footer-bubble__inner.rounded-full {
     width: 96% !important;
     max-width: none !important;
     aspect-ratio: auto !important;
