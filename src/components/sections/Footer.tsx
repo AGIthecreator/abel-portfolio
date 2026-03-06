@@ -12,13 +12,13 @@ export function Footer() {
       <FadeIn className="glass-card neon-border rounded-3xl px-6 py-6 sm:px-10">
         <div className="flex flex-col gap-6 sm:gap-5">
           {/* línea superior muy fina con degradado sutil, interrumpida por el copyright */}
-          <div className="relative flex items-center">
+          <div className="footer-topline relative flex items-center">
             <div
               aria-hidden="true"
               className="h-px w-full bg-linear-to-r from-[rgba(139,92,246,0.0)] via-[rgba(139,92,246,0.55)] to-[rgba(34,211,238,0.55)] opacity-80"
             />
 
-            <div className="footer-bubble px-3 lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:px-3">
+            <div className="footer-bubble mx-auto px-3 lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:px-3">
               <div className="footer-bubble__inner rounded-full border border-white/10 bg-[rgba(2,6,23,0.72)] px-3 py-1.5 text-[13.5px] text-white/70 backdrop-blur">
                 <span className="font-mono text-white/80">©</span>{" "}
                 <span className="footer-bubble__year font-mono text-white/80">{year}</span>{" "}

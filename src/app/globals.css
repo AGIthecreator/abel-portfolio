@@ -250,6 +250,12 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
 
 /* --- Footer bubble: MOBILE ONLY fixes (do not affect desktop) --- */
 @media (max-width: 768px) {
+  /* El contenedor superior es flex en escritorio; en móvil lo pasamos a block para evitar desplazamientos */
+  footer .footer-topline {
+    display: block;
+    width: 100%;
+  }
+
   /* Keep bubble centered without absolute positioning on small screens */
   footer .footer-bubble {
     position: static;
@@ -262,6 +268,8 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
     width: 100%;
     padding-left: 0;
     padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   /* Capsule shape and full-frame width */
