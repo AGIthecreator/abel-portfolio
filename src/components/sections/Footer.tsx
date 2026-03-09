@@ -20,7 +20,7 @@ export function Footer() {
 
             <div className="footer-bubble mx-auto px-3 lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:px-3">
               <div className="footer-bubble__inner rounded-full border border-white/10 bg-[rgba(2,6,23,0.72)] px-3 py-1.5 text-[13.5px] text-white/70 backdrop-blur">
-                <span className="footer-bubble__line1 font-mono text-white/80">© {year} Abel</span>
+                <span className="footer-bubble__line1 font-mono text-white/80">© {year} Abel </span>
                 <span className="footer-bubble__line2">Arquitecto Digital y Especialista en Automatización</span>
               </div>
             </div>
