@@ -32,10 +32,10 @@ export const projects: Project[] = [
     description:
       "Ecosistema digital automatizado para gestión artística. Integración de flujos de trabajo que conectan la plataforma con bases de datos dinámicas, optimizando la gestión de contenido en tiempo real.",
     status: "live",
-    href: "https://www.agithecreator.com/",
+    href: "https://aguarr-s-estudio-the-artful-space.vercel.app/",
     imageSrc: "/projects/aguarras.jpg",
     ctaLabel: "Visitar Demo",
-    ctaHref: "https://www.agithecreator.com/",
+    ctaHref: "https://aguarr-s-estudio-the-artful-space.vercel.app/",
     highlightTag: "Automatización: Airtable API",
     tags: ["Vue.js", "Portfolio", "Web"],
   },
