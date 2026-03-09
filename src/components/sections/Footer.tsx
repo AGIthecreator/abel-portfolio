@@ -1,7 +1,7 @@
 import { FadeIn } from "@/components/motion/FadeIn";
 import { Download, Github, Linkedin, Mail } from "lucide-react";
 
-const email = "abelagiempleo@gmail.com";
+const email = "contacto@agithecreator.com";
 const tickerText =
   "SISTEMA LISTO PARA ESCALAR PROYECTOS ◆ DISPONIBILIDAD PARA NUEVAS AUTOMATIZACIONES ◆ OPTIMIZANDO PROCESOS CON IA ◆ CONTACTA AHORA ◆";
 
