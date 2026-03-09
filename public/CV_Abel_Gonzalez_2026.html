@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CV · Abel González (2026)</title>
+    <style>
+      /* ===== Reset + base ===== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+          Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        background: #030014;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.25;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      :root {
+        --fs-body: 12.5px;
+        --fs-small: 11.5px;
+        --fs-micro: 10.5px;
+        --fs-h1: 23px;
+        --fs-role: 14.5px;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      /* ===== Page (A4) ===== */
+      .page {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 0 auto;
+        padding: 10mm;
+        display: flex;
+        flex-direction: column;
+        gap: 8mm;
+      }
+
+      .page-scale {
+        transform-origin: top center;
+      }
+
+      .panel {
+        border-radius: 18px;
+        background: rgba(17, 25, 40, 0.75);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid transparent;
+        background-clip: padding-box;
+        box-shadow: 0 0 20px rgba(80, 50, 200, 0.3);
+      }
+
+      .panel-inner {
+        padding: 8mm;
+      }
+
+      /* ===== Header layout ===== */
+      .header-grid {
+        display: grid;
+        grid-template-columns: 1.35fr 0.65fr;
+        gap: 6mm;
+        align-items: stretch;
+      }
+
+      .header-panel .panel-inner {
+        padding: 6mm;
+      }
+      
+      .header-left,
+      .header-right {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Make both header blocks same height */
+      .header-left.panel,
+      .header-right.panel {
+        height: 100%;
+      }
+
+      .identity {
+        display: grid;
+        grid-template-columns: 84px 1fr;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .photo {
+        width: 84px;
+        height: 84px;
+        border-radius: 999px;
+        object-fit: cover;
+        border: 2px solid rgba(139, 92, 246, 0.70);
+        box-shadow:
+          0 0 0 4px rgba(139, 92, 246, 0.10),
+          0 0 18px rgba(139, 92, 246, 0.22);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: var(--fs-h1);
+        letter-spacing: 0.2px;
+        line-height: 1.12;
+      }
+
+      .role {
+        margin-top: 4px;
+        font-size: var(--fs-role);
+        color: rgba(255, 255, 255, 0.78);
+      }
+
+      .contact {
+        display: grid;
+        gap: 6px;
+        margin-top: 16px;
+        font-size: var(--fs-small);
+        color: rgba(255, 255, 255, 0.82);
+      }
+
+      .contact-line {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .contact-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .contact-item.web-link span.mono {
+        color: #80a6ff;
+        text-decoration: underline;
+      }
+      
+      .icon-bubble {
+        width: 28px;
+        height: 28px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.06);
+        box-shadow: 0 0 14px rgba(139, 92, 246, 0.14);
+        flex: 0 0 auto;
+      }
+
+      .chip, .skill-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
+        padding: 6px 8px;
+        border-radius: 999px;
+        line-height: 1;
+        box-shadow: 0 0 8px rgba(139, 92, 246, 0.2);
+      }
+
+      .chip span {
+        white-space: nowrap;
+      }
+
+      .icon {
+        width: 14px;
+        height: 14px;
+        display: inline-block;
+        flex: 0 0 auto;
+      }
+
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+      }
+
+      /* ===== QR block ===== */
+      .qr-wrap {
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        height: 100%;
+        gap: 8px;
+        align-content: start;
+      }
+
+      .qr {
+        width: 120px;
+        height: 120px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 8px;
+        display: grid;
+        place-items: center;
+      }
+
+      .qr img {
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+      }
+
+      .qr-fallback {
+        font-size: 9px;
+        color: rgba(0, 0, 0, 0.85);
+        line-height: 1.2;
+        text-align: center;
+        padding: 6px;
+      }
+
+      .qr-label {
+        font-size: var(--fs-micro);
+        color: rgba(255, 255, 255, 0.78);
+        margin-top: -2px;
+      }
+
+      .qr-label {
+        margin-top: 6px;
+      }
+
+      .bubbles {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: auto;
+      }
+
+      /* ===== Body ===== */
+      .body-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 5.7mm;
+      }
+
+      h2 {
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #fff;
+      }
+
+      .item {
+        padding: 8px 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(2, 6, 23, 0.30);
+      }
+
+      .item + .item {
+        margin-top: 8px;
+      }
+
+      .item-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: baseline;
+        flex-wrap: wrap;
+      }
+
+      .item-title {
+        font-size: 14.5px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.92);
+      }
+
+      .item-meta {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.70);
+      }
+
+      ul {
+        margin: 6px 0 0 16px;
+        padding: 0;
+        color: #cbd5e1;
+        font-size: var(--fs-body);
+      }
+
+      li {
+        margin: 2px 0;
+        color: #cbd5e1;
+      }
+
+      .skills {
+        display: grid;
+        gap: 8px;
+      }
+
+      .skill-pill {
+        font-size: var(--fs-small);
+        color: rgba(255, 255, 255, 0.86);
+      }
+
+      /* Mantener pequeñas las burbujas de estado */
+      .bubbles .chip {
+        font-size: 11.5px;
+      }
+
+      .footnote {
+        margin-top: 6px;
+        font-size: 10.5px;
+        color: rgba(255, 255, 255, 0.66);
+      }
+
+      /* ===== Print ===== */
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      @media print {
+        html,
+        body {
+          background: #030014 !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        .page {
+          margin: 0;
+          padding: 10mm;
+        }
+
+        /* Ajuste anti-corte: reduce al 95% sin tocar el resto del layout */
+        .page-scale {
+          transform: scale(0.95);
+        }
+
+        a {
+          text-decoration: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page page-scale">
+      <!-- ===== HEADER ===== -->
+      <section class="header-grid">
+        <div class="header-left panel header-panel">
+          <div class="panel-inner">
+            <div class="identity">
+              <img class="photo" src="/FOTO%20CV.png" alt="Foto de Abel González" />
+              <div>
+                <h1>Abel González Iglesias</h1>
+                <div class="role">Full Stack Developer | Especialista en React, Vue & Angular</div>
+                <div style="margin-top: 4px; font-size: 12px; color: rgba(255, 255, 255, 0.78)">
+                  Valladolid, España
+                </div>
+              </div>
+            </div>
+
+            <div class="contact" style="margin-top: 16px">
+              <!-- Línea 1: GitHub + Email en horizontal -->
+              <div class="contact-line">
+                <a class="contact-item" href="https://github.com/AGIthecreator" target="_blank" rel="noreferrer">
+                  <span class="icon-bubble">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M12 2C6.48 2 2 6.58 2 12.26c0 4.5 2.87 8.31 6.84 9.66.5.1.68-.22.68-.48 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.39-3.37-1.39-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.58 2.36 1.12 2.94.86.09-.67.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.09 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.32.1-2.75 0 0 .84-.27 2.75 1.05a9.1 9.1 0 0 1 2.5-.35c.85 0 1.7.12 2.5.35 1.9-1.32 2.74-1.05 2.74-1.05.56 1.43.21 2.49.1 2.75.64.72 1.03 1.63 1.03 2.75 0 3.96-2.34 4.83-4.58 5.08.36.32.68.96.68 1.93 0 1.39-.01 2.51-.01 2.85 0 .27.18.59.69.48A10.2 10.2 0 0 0 22 12.26C22 6.58 17.52 2 12 2z"
+                      />
+                    </svg>
+                  </span>
+                  <span class="mono">github.com/AGIthecreator</span>
+                </a>
+
+                <a class="contact-item" href="mailto:abelagiempleo@gmail.com">
+                  <span class="icon-bubble">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"
+                      />
+                    </svg>
+                  </span>
+                  <span class="mono">abelagiempleo@gmail.com</span>
+                </a>
+              </div>
+
+              <!-- Línea 2: LinkedIn -->
+              <div class="contact-line">
+                <a class="contact-item" href="https://www.linkedin.com/in/abel-gonzalez-iglesias" target="_blank" rel="noreferrer">
+                  <span class="icon-bubble">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.03-1.85-3.03-1.85 0-2.13 1.44-2.13 2.93v5.67H9.37V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.59 0 4.26 2.37 4.26 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"
+                      />
+                    </svg>
+                  </span>
+                  <span class="mono">linkedin.com/in/abel-gonzalez-iglesias</span>
+                </a>
+              </div>
+
+              <!-- Línea 3: Web & Teléfono -->
+              <div class="contact-line">
+                <a class="contact-item web-link" href="https://www.agithecreator.com" target="_blank" rel="noreferrer">
+                  <span class="icon-bubble">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm7.93 9h-3.18a15.7 15.7 0 0 0-1.37-6.02A8.03 8.03 0 0 1 19.93 11zM12 4c.92 0 2.49 2.12 3.18 7H8.82C9.51 6.12 11.08 4 12 4zM4.07 13h3.18c.22 2.18.74 4.28 1.55 6.02A8.03 8.03 0 0 1 4.07 13zm3.18-2H4.07a8.03 8.03 0 0 1 4.73-6.02A15.7 15.7 0 0 0 7.25 11zm1.57 2h6.36c-.69 4.88-2.26 7-3.18 7-.92 0-2.49-2.12-3.18-7zm7.93 0h3.18a8.03 8.03 0 0 1-4.73 6.02c.81-1.74 1.33-3.84 1.55-6.02z"
+                      />
+                    </svg>
+                  </span>
+                  <span class="mono">www.agithecreator.com</span>
+                </a>
+                <a class="contact-item" href="tel:654936634" style="margin-left: 16px;">
+                  <span class="icon-bubble">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.02.75-.25 1.02l-2.2 2.2z"/>
+                    </svg>
+                  </span>
+                  <span class="mono">654 93 66 34</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="header-right panel header-panel">
+          <div class="panel-inner qr-wrap">
+            <div>
+              <div class="qr" title="QR a https://www.agithecreator.com">
+                <img src="/qr-portfolio.png" alt="QR hacia el portfolio" />
+              </div>
+              <div class="qr-label">Escanear para abrir web</div>
+            </div>
+
+            <div class="bubbles">
+              <div class="chip"><span>Vehículo propio (Carné B)</span></div>
+              <div class="chip"><span>Disponibilidad inmediata</span></div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <!-- ===== BODY ===== -->
+      <section class="body-grid">
+        <section class="panel">
+          <div class="panel-inner">
+            <h2>Experiencia</h2>
+
+            <article class="item">
+              <div class="item-head">
+                <div class="item-title">Desarrollador Full Stack (Proyecto Personal) · SPA</div>
+                <div class="item-meta mono">Dic 2025 – Actualidad</div>
+              </div>
+              <ul>
+                <li>Desarrollo de Single Page Application (SPA) interactiva con Vue.js (reactividad con @ y v-model).</li>
+                <li>Implementación de Supabase para gestión de autenticación, seguridad y cifrado de datos.</li>
+                <li>Integración de API Airtable para gestión dinámica de eventos y automatización de QR dinámicos.</li>
+                <li>Generación automatizada de códigos QR dinámicos para control de accesos.</li>
+                <li>Gestión de código en repositorio privado de GitHub.</li>
+              </ul>
+            </article>
+
+            <article class="item">
+              <div class="item-head">
+                <div class="item-title">Desarrollador Mobile (React Native)</div>
+                <div class="item-meta mono">Dic 2025 – Actualidad</div>
+              </div>
+              <ul>
+                <li>Diseño e implementación de App móvil para gestión de llamadas y seguridad.</li>
+                <li>Uso avanzado de Hooks, State Management y navegación en entornos móviles.</li>
+                <li>Integración con APIs para procesamiento de datos en tiempo real.</li>
+              </ul>
+            </article>
+
+            <article class="item">
+              <div class="item-head">
+                <div class="item-title">Asesor Comercial Telefonía (San Isidro)</div>
+                <div class="item-meta mono">Sept 2023 – Sept 2024</div>
+              </div>
+              <ul>
+                <li><strong>Soporte y configuración técnica:</strong> diagnóstico de software iOS/Android, copias de seguridad y migración de datos.</li>
+                <li><strong>Gestión de sistemas de administración:</strong> manejo de paneles multi-operador y ERP para altas y portabilidades.</li>
+                <li>Optimización de procesos de venta y asesoramiento técnico especializado.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-inner">
+            <h2>Perfil Profesional (Propuesta de Valor)</h2>
+            <div class="item">
+              <ul>
+                <li>Desarrollador Full Stack con visión de negocio y base técnica certificada. Especializado en la creación de SPAs escalables y soluciones mobile que priorizan la seguridad y la automatización. Mi trayectoria previa en consultoría técnica me permite optimizar procesos end-to-end con un enfoque crítico en la entrega de valor.</li>
+              </ul>
+            </div>
+
+            <div style="height: 10px"></div>
+
+            <h2>Certificaciones</h2>
+            <div class="item">
+              <div class="item-head">
+                <div class="item-title">EFUNDAE (2026)</div>
+              </div>
+              <ul>
+                <li>Nivel 5 (Frontend Avanzado), Nivel 4 (Backend) y Nivel 3 (Frontend).</li>
+              </ul>
+              <div class="item-head" style="margin-top: 8px;">
+                <div class="item-title">Google (2026)</div>
+              </div>
+              <ul>
+                <li>Especialización Angular y Vue 3 (certificaciones en curso Google / Escuela Vue).</li>
+              </ul>
+            </div>
+
+            <div style="height: 10px"></div>
+
+            <h2>Aptitudes</h2>
+            <div class="skills">
+              <div class="skill-pill">Resolución de problemas técnicos</div>
+              <div class="skill-pill">Gestión bajo presión</div>
+              <div class="skill-pill">Autoaprendizaje continuo</div>
+              <div class="skill-pill">Mentalidad ágil (Scrum/Kanban) y calidad de código.</div>
+            </div>
+
+            <div style="height: 10px"></div>
+
+            <h2>Idiomas</h2>
+            <div class="skills">
+              <div class="skill-pill">Español (Nativo)</div>
+              <div class="skill-pill">Inglés (Nivel Medio)</div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

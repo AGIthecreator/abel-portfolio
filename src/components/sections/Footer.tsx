@@ -92,7 +92,7 @@ export function Footer() {
 
             <a
               className="group relative inline-flex items-center justify-center gap-2 rounded-full border border-[rgba(139,92,246,0.42)] bg-transparent px-5 py-2.5 text-sm font-medium text-white/80 shadow-[0_0_0_1px_rgba(139,92,246,0.16),0_0_26px_rgba(139,92,246,0.10)] transition-all hover:border-[rgba(34,211,238,0.45)] hover:bg-[rgba(34,211,238,0.08)] hover:text-white hover:shadow-[0_0_0_1px_rgba(34,211,238,0.16),0_0_30px_rgba(34,211,238,0.12)]"
-              href="/CV_Abel_Gonzalez_Frontend_Developer.pdf"
+              href="/CV_Abel_Gonzalez_2026.pdf"
               target="_blank"
               rel="noreferrer"
             >
