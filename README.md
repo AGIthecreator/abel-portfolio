@@ -1,36 +1,28 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Abel González | Digital Architect & Automation Portfolio
 
-## Getting Started
+Este es mi ecosistema digital profesional, construido como una Single Page Application (SPA) de alto rendimiento enfocada en la automatización de procesos y la experiencia de usuario (UX).
 
-First, run the development server:
+## 🛠️ Stack Tecnológico
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+* **Frontend:** Next.js 15 (App Router), TypeScript, Tailwind CSS.
+* **Backend & DB:** Supabase (PostgreSQL) para gestión de datos y cifrado.
+* **Automatización:** Integración con Airtable API para gestión dinámica de contenidos (Eventos/Cursos).
+* **Pagos:** Stripe API para futuras integraciones comerciales.
+* **Despliegue:** Vercel (CI/CD).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🌟 Características Destacadas
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Gestión Dinámica (Airtable):** Los cursos y eventos se cargan automáticamente desde una base de datos de Airtable. Añadir contenido nuevo es tan simple como rellenar una fila en una hoja de cálculo.
+- **Seguridad:** Implementación de cifrado mediante Supabase para proteger la integridad de los datos del proyecto.
+- **Diseño Futurista:** Interfaz de usuario con estética neón optimizada para legibilidad y conversión.
+- **Automatización de QR:** Generación dinámica de códigos QR para eventos cargados desde la API.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📁 Estructura del Proyecto
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```text
+├── src/
+│   ├── app/            # Rutas y Layouts (Next.js App Router)
+│   ├── components/     # Componentes modulares y UI (Neon style)
+│   ├── lib/            # Configuraciones de API (Supabase, Stripe, Airtable)
+│   └── assets/         # Recursos estáticos (incluyendo CV_2026)
+└── public/             # Archivos públicos de acceso directo
