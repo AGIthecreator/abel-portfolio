@@ -9,6 +9,7 @@ export type Project = {
   ctaHref?: string;
   securityTag?: string;
   highlightTag?: string;
+  architectureSlides?: { url: string; caption: string }[];
   tags: string[];
 };
 
@@ -37,6 +38,33 @@ export const projects: Project[] = [
     ctaLabel: "Visitar Demo",
     ctaHref: "https://aguarr-s-estudio-the-artful-space.vercel.app/",
     highlightTag: "Automatización: Airtable API",
+    architectureSlides: [
+      {
+        url: "/projects/aguarras/10.png",
+        caption:
+          "Gestión Centralizada: Panel de control y tracking de estados en Airtable.",
+      },
+      {
+        url: "/projects/aguarras/11.png",
+        caption:
+          "Automatización de Flujos: Escenarios de Make para formularios, login y registros.",
+      },
+      {
+        url: "/projects/aguarras/12.png",
+        caption:
+          "Orquestación de Procesos: Integración end-to-end de reservas y pagos.",
+      },
+      {
+        url: "/projects/aguarras/13.png",
+        caption:
+          "Capa de Seguridad: Hashing PBKDF2 y verificación con Cloudflare Workers.",
+      },
+      {
+        url: "/projects/aguarras/14.png",
+        caption:
+          "Impacto de Negocio: CRM centralizado, logs automáticos y estructura escalable.",
+      },
+    ],
     tags: ["Vue.js", "Portfolio", "Web"],
   },
   {

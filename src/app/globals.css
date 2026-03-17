@@ -9,9 +9,17 @@
 @import "tailwindcss/index.css";
 
 @theme {
---color-background: #020617;
---color-accent: #8B5CF6;
---color-accent-glow: rgba(139, 92, 246, 0.38);
+  --color-background: #020617;
+  --color-accent: #8b5cf6;
+  --color-accent-glow: rgba(139, 92, 246, 0.38);
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-cyan: #22d3ee;
+  --color-emerald: #34d399;
+  --color-violet: #8b5cf6;
+  --color-magenta: #ff00c7;
+  --color-yellow: #ffd700;
+  --color-orange: #f38020;
 }
 
 @layer utilities {
@@ -21,13 +29,13 @@
 }
 
 @layer base {
-body {
-background-color: #020617;
-color: white;
-background-image: none;
-background-attachment: fixed;
-overflow-x: hidden;
-}
+  body {
+    background-color: var(--color-background);
+    color: var(--color-white);
+    background-image: none;
+    background-attachment: fixed;
+    overflow-x: hidden;
+  }
 }
 
 /* --- ECG connectors (section transitions) --- */
@@ -109,10 +117,10 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
 
 /* subtle static glows behind content */
 .cyber-glow--violet {
-  background: radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.55), transparent 60%);
+  background: radial-gradient(circle at 30% 30%, var(--color-violet), transparent 60%);
 }
 .cyber-glow--magenta {
-  background: radial-gradient(circle at 30% 30%, rgba(255, 0, 199, 0.45), transparent 60%);
+  background: radial-gradient(circle at 30% 30%, var(--color-magenta), transparent 60%);
 }
 
 /* constant subtle violet pulse (for CTA) */
@@ -229,12 +237,19 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
 }
 
 @layer utilities {
-  .ticker-mask {
+.ticker-mask {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--color-black) 10%,
+      var(--color-black) 90%,
+      transparent 100%
+    );
     mask-image: linear-gradient(
       to right,
       transparent 0%,
-      black 10%,
-      black 90%,
+      var(--color-black) 10%,
+      var(--color-black) 90%,
       transparent 100%
     );
   }

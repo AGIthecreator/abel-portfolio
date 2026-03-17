@@ -6,7 +6,7 @@ const tickerText =
   "SISTEMA LISTO PARA ESCALAR PROYECTOS ◆ DISPONIBILIDAD PARA NUEVAS AUTOMATIZACIONES ◆ OPTIMIZANDO PROCESOS CON IA ◆ CONTACTA AHORA ◆";
 
 export function Footer() {
-  const year = new Date().getFullYear();
+  const year = 2026;
   return (
     <footer id="contacto" className="pt-14 pb-12 sm:pt-20">
       <FadeIn className="glass-card neon-border rounded-3xl px-6 py-6 sm:px-10">

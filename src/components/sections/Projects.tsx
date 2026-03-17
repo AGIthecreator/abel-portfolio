@@ -4,6 +4,8 @@ import { SpotlightCard } from "@/components/motion/SpotlightCard";
 import { projects } from "@/lib/data/portfolio";
 import Image from "next/image";
 import { Play } from "lucide-react";
+import dynamic from "next/dynamic";
+import { ProjectModal } from "@/components/ui/ProjectModal";
 
 function ProjectImage({ src, alt }: { src?: string; alt: string }) {
   return (
@@ -97,15 +99,19 @@ export function Projects() {
 
                   {p.ctaHref && p.ctaLabel && (
                     <div className="mt-auto pt-4">
-                      <a
-                        href={p.ctaHref}
-                        target={p.ctaHref.startsWith("http") ? "_blank" : undefined}
-                        rel={p.ctaHref.startsWith("http") ? "noreferrer" : undefined}
-                        className="inline-flex w-fit items-center gap-2 rounded-full border border-[rgba(139,92,246,0.35)] bg-[rgba(139,92,246,0.12)] px-4 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-[rgba(139,92,246,0.18)]"
-                      >
-                        {p.key === "callguard" && <Play className="h-4 w-4" />}
-                        {p.ctaLabel}
-                      </a>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {p.key === "aguarras" && <ProjectModal />}
+
+                        <a
+                          href={p.ctaHref}
+                          target={p.ctaHref.startsWith("http") ? "_blank" : undefined}
+                          rel={p.ctaHref.startsWith("http") ? "noreferrer" : undefined}
+                          className="inline-flex w-fit items-center gap-2 rounded-full border border-[rgba(139,92,246,0.35)] bg-[rgba(139,92,246,0.12)] px-4 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-[rgba(139,92,246,0.18)]"
+                        >
+                          {p.key === "callguard" && <Play className="h-4 w-4" />}
+                          {p.ctaLabel}
+                        </a>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -113,6 +119,7 @@ export function Projects() {
             </StaggerChild>
           ))}
         </Stagger>
+
       </FadeIn>
     </section>
   );
