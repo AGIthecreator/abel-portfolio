@@ -1,0 +1,17 @@
+# Target moderno (equivalente a `build.target` en Vite).
+# Esto ayuda a que la toolchain (p.ej. Autoprefixer) no genere compatibilidad
+# innecesaria para navegadores antiguos.
+#
+# Nota: Next.js decide gran parte del output JS por su cuenta, pero mantener
+# una lista moderna aquí alinea CSS/JS con el objetivo de eliminar polyfills.
+
+[production]
+chrome >= 87
+edge >= 88
+firefox >= 78
+safari >= 14
+
+[development]
+last 1 chrome version
+last 1 firefox version
+last 1 safari version

@@ -4,7 +4,16 @@ import { FadeIn } from "@/components/motion/FadeIn";
 import { NeonPulse } from "@/components/motion/NeonPulse";
 import { Typewriter } from "@/components/motion/Typewriter";
 import { ArchitectureLogs } from "@/components/ui/ArchitectureLogs";
-import { HeroReactiveCanvas } from "@/components/ui/HeroReactiveCanvas";
+import dynamic from "next/dynamic";
+
+// Canvas pesado: lo mandamos a chunk separado para aligerar el JS inicial del Hero.
+const HeroReactiveCanvas = dynamic(
+  () =>
+    import("@/components/ui/HeroReactiveCanvas").then(
+      (m) => m.HeroReactiveCanvas
+    ),
+  { ssr: false }
+);
 
 const ROLE_STRINGS = [
   "Full Stack Developer",

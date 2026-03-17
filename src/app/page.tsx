@@ -1,9 +1,11 @@
 import { Hero } from "@/components/sections/Hero";
-import { TechStack } from "@/components/sections/TechStack";
-import { Projects } from "@/components/sections/Projects";
 import { Footer } from "@/components/sections/Footer";
 import { EcgConnector } from "@/components/ui/EcgConnector";
-import { StrategicProfile } from "@/components/sections/StrategicProfile";
+import {
+  DeferredProjects,
+  DeferredStrategicProfile,
+  DeferredTechStack,
+} from "@/components/sections/DeferredSections";
 
 export default function Page() {
   return (
@@ -23,7 +25,7 @@ export default function Page() {
         <EcgConnector className="my-2 sm:my-4" />
 
         <section className="py-10 sm:py-14">
-          <TechStack />
+          <DeferredTechStack />
         </section>
 
         <EcgConnector className="my-2 sm:my-4" />
@@ -33,14 +35,14 @@ export default function Page() {
           para que la sección cierre limpio y no parezca que las cards se “asoman”.
         */}
         <section className="py-10 sm:pt-14 sm:pb-18">
-          <Projects />
+          <DeferredProjects />
         </section>
 
         <EcgConnector className="my-2 sm:my-4" />
 
         {/* VISIÓN TÉCNICA (Radar) */}
         <section className="py-10 sm:py-14">
-          <StrategicProfile />
+          <DeferredStrategicProfile />
         </section>
 
         <Footer />
