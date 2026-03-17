@@ -32,8 +32,8 @@ export function Hero() {
   }, []);
 
   return (
-    <section className="relative pt-6 sm:pt-10">
-      <div className="group/hero glass-card neon-border relative rounded-3xl px-6 py-9 sm:px-10 sm:py-12 bg-background bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.12),transparent_60%)] animate-in fade-in duration-1000 zoom-in-95">
+    <section className="relative pt-6 sm:pt-10 min-h-[90vh] sm:min-h-[95vh] flex flex-col justify-center">
+      <div className="group/hero glass-card neon-border relative rounded-3xl px-6 py-9 sm:px-10 sm:py-12 bg-background bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.12),transparent_60%)] animate-in fade-in duration-1000 zoom-in-95 w-full">
         {/* Reactive canvas background - Solo en Desktop para salvar el Main Thread en móviles */}
         <div className="absolute inset-0 z-0 overflow-hidden rounded-3xl pointer-events-none" aria-hidden="true" style={{ contain: "strict" }}>
           {isDesktop && <HeroReactiveCanvas intensity={0.9} />}

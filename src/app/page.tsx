@@ -1,11 +1,11 @@
 import { Hero } from "@/components/sections/Hero";
-import { Footer } from "@/components/sections/Footer";
-import { EcgConnector } from "@/components/ui/EcgConnector";
-import {
-  DeferredProjects,
-  DeferredStrategicProfile,
-  DeferredTechStack,
-} from "@/components/sections/DeferredSections";
+import dynamic from "next/dynamic";
+
+const Footer = dynamic(() => import("@/components/sections/Footer").then((m) => m.Footer));
+const EcgConnector = dynamic(() => import("@/components/ui/EcgConnector").then((m) => m.EcgConnector));
+const DeferredProjects = dynamic(() => import("@/components/sections/DeferredSections").then((m) => m.DeferredProjects));
+const DeferredStrategicProfile = dynamic(() => import("@/components/sections/DeferredSections").then((m) => m.DeferredStrategicProfile));
+const DeferredTechStack = dynamic(() => import("@/components/sections/DeferredSections").then((m) => m.DeferredTechStack));
 
 export default function Page() {
   return (
