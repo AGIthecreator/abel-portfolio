@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 type HeroReactiveCanvasProps = {
   /** 0..1 intensity multiplier for subtlety */
@@ -32,11 +32,17 @@ export function HeroReactiveCanvas({ intensity = 1, className }: HeroReactiveCan
   const blob = useRef<Vec2>({ x: 0.5, y: 0.5 });
 
   // Limit DPR heavily on mobile to save GPU cycles, and max out at 1.5 even on Retina Desktop
-  const DPR = useMemo(() => {
-    if (typeof window === "undefined") return 1;
-    const isMobile = window.innerWidth < 768;
-    const baseDPR = window.devicePixelRatio || 1;
-    return isMobile ? Math.min(baseDPR, 0.75) : Math.min(baseDPR, 1.25);
+  const [DPR, setDPR] = useState(0.25);
+
+  useEffect(() => {
+    // Escalar la resolución progresivamente tras 2 segundos para liberar carga en el render inicial (LCP)
+    const timer = setTimeout(() => {
+      const isMobile = window.innerWidth < 768;
+      const baseDPR = window.devicePixelRatio || 1;
+      setDPR(isMobile ? Math.min(baseDPR, 0.75) : Math.min(baseDPR, 1.25));
+    }, 2000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -174,12 +180,8 @@ export function HeroReactiveCanvas({ intensity = 1, className }: HeroReactiveCan
       rafRef.current = requestAnimationFrame(render);
     };
 
-    // requestIdleCallback delays execution until the browser's Main Thread is idle
-    if (typeof (window as any).requestIdleCallback === "function") {
-      (window as any).requestIdleCallback(startRender, { timeout: 2000 });
-    } else {
-      setTimeout(startRender, 500);
-    }
+    // Arranque inmediato para no inflar métricas visuales
+    startRender();
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);

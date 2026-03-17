@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { NeonPulse } from "@/components/motion/NeonPulse";
 import { Typewriter } from "@/components/motion/Typewriter";
@@ -26,20 +25,12 @@ const ROLE_STRINGS = [
 ] as const;
 
 export function Hero() {
-  const [loadCanvas, setLoadCanvas] = useState(false);
-
-  useEffect(() => {
-    // Retrasar el canvas pesado para priorizar el pintado inicial y no bloquear el TBT
-    const timer = setTimeout(() => setLoadCanvas(true), 800);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <section className="relative pt-6 sm:pt-10">
       <FadeIn className="group/hero glass-card neon-border relative rounded-3xl px-6 py-9 sm:px-10 sm:py-12">
         {/* Reactive canvas background - Islado para evitar CLS */}
         <div className="absolute inset-0 z-0 overflow-hidden rounded-3xl pointer-events-none" aria-hidden="true">
-          {loadCanvas && <HeroReactiveCanvas intensity={0.9} />}
+          <HeroReactiveCanvas intensity={0.9} />
         </div>
 
         {/* pointer-driven border glow */}
@@ -49,7 +40,7 @@ export function Hero() {
         />
 
         <div className="relative z-10 flex flex-col gap-7">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4" style={{ contain: "paint" }}>
             <p className="text-xs tracking-[0.25em] text-white/60 drop-shadow-md">
               CONSTRUYENDO EL FUTURO DIGITAL
             </p>
