@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { NeonPulse } from "@/components/motion/NeonPulse";
 import { Typewriter } from "@/components/motion/Typewriter";
@@ -12,7 +13,10 @@ const HeroReactiveCanvas = dynamic(
     import("@/components/ui/HeroReactiveCanvas").then(
       (m) => m.HeroReactiveCanvas
     ),
-  { ssr: false }
+  { 
+    ssr: false,
+    loading: () => <div className="absolute inset-0 pointer-events-none bg-transparent" aria-hidden="true" />
+  }
 );
 
 const ROLE_STRINGS = [
@@ -22,11 +26,21 @@ const ROLE_STRINGS = [
 ] as const;
 
 export function Hero() {
+  const [loadCanvas, setLoadCanvas] = useState(false);
+
+  useEffect(() => {
+    // Retrasar el canvas pesado para priorizar el pintado inicial y no bloquear el TBT
+    const timer = setTimeout(() => setLoadCanvas(true), 800);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <section className="relative pt-6 sm:pt-10">
       <FadeIn className="group/hero glass-card neon-border relative rounded-3xl px-6 py-9 sm:px-10 sm:py-12">
-        {/* Reactive canvas background */}
-        <HeroReactiveCanvas intensity={0.9} />
+        {/* Reactive canvas background - Islado para evitar CLS */}
+        <div className="absolute inset-0 z-0 overflow-hidden rounded-3xl pointer-events-none" aria-hidden="true">
+          {loadCanvas && <HeroReactiveCanvas intensity={0.9} />}
+        </div>
 
         {/* pointer-driven border glow */}
         <div
@@ -34,13 +48,13 @@ export function Hero() {
           className="hero-border pointer-events-none absolute inset-0 rounded-3xl"
         />
 
-        <div className="flex flex-col gap-7">
+        <div className="relative z-10 flex flex-col gap-7">
           <div className="flex flex-col gap-4">
-            <p className="text-xs tracking-[0.25em] text-white/60">
+            <p className="text-xs tracking-[0.25em] text-white/60 drop-shadow-md">
               CONSTRUYENDO EL FUTURO DIGITAL
             </p>
 
-            <h1 className="relative inline-flex flex-nowrap items-baseline gap-x-3 text-[2.05rem] font-bold tracking-tighter sm:text-6xl lg:text-7xl">
+            <h1 className="relative inline-flex flex-nowrap items-baseline gap-x-3 text-[2.05rem] font-bold tracking-tighter sm:text-6xl lg:text-7xl drop-shadow-lg">
               {/* minimal cyberpunk underline */}
               <span
                 aria-hidden="true"
@@ -65,7 +79,7 @@ export function Hero() {
               </span>
             </h1>
 
-            <p className="max-w-2xl text-pretty text-base leading-7 text-white/70 sm:text-lg">
+            <p className="max-w-2xl text-pretty text-base leading-7 text-white/70 sm:text-lg drop-shadow-md">
               Estratega técnico enfocado en crear soluciones escalables y seguras que fusionan código de vanguardia con visión de negocio.
             </p>
           </div>
@@ -83,7 +97,7 @@ export function Hero() {
               </a>
             </NeonPulse>
 
-            <p className="text-sm font-medium text-white/75">
+            <p className="text-sm font-medium text-white/75 drop-shadow-md">
               Ingeniería técnica rigurosa | Visionario de producto digital
             </p>
 

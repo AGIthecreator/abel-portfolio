@@ -330,18 +330,5 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
 
 
 
-/* Forzar la ocultación del indicador de desarrollo de Next.js */
-next-route-announcer,
-#next-live-resolved-error,
-[data-nextjs-toast],
-[data-nextjs-dev-overlay] {
-  display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
 
-/* Selector específico para el botón circular de la N */
-#nextjs__container_build_error_label,
-#nextjs__container_errors_label {
-  display: none !important;
-}
+

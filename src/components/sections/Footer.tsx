@@ -1,5 +1,9 @@
+"use client";
+
 import { FadeIn } from "@/components/motion/FadeIn";
 import { Download, Github, Linkedin, Mail } from "lucide-react";
+import { useRef } from "react";
+import { useInView } from "framer-motion";
 
 const email = "contacto@agithecreator.com";
 const tickerText =
@@ -7,8 +11,11 @@ const tickerText =
 
 export function Footer() {
   const year = 2026;
+  const ref = useRef<HTMLElement>(null);
+  const isInView = useInView(ref, { once: false, margin: "200px" });
+
   return (
-    <footer id="contacto" className="pt-14 pb-12 sm:pt-20">
+    <footer ref={ref} id="contacto" className="pt-14 pb-12 sm:pt-20">
       <FadeIn className="glass-card neon-border rounded-3xl px-6 py-6 sm:px-10">
         <div className="flex flex-col gap-6 sm:gap-5">
           {/* línea superior muy fina con degradado sutil, interrumpida por el copyright */}
@@ -30,7 +37,7 @@ export function Footer() {
             {/* micro-indicadores de sistema */}
             <div className="order-2 flex flex-wrap items-center justify-center gap-2 text-[12px] tracking-wide text-white/80 sm:order-0 sm:flex-1 sm:flex-nowrap">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.45)] animate-status-led" />
+                <span className={`h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.45)] ${isInView ? "animate-status-led" : ""}`} />
                 <span className="font-mono text-white/80">ESTADO:</span>
                 <span className="text-white/80">ESTABLE</span>
               </div>
@@ -47,7 +54,7 @@ export function Footer() {
             {/* rótulo de datos (marquesina técnica) - ocupa el hueco central */}
             <div className="footer-ticker order-3 min-w-0 flex-1 sm:order-0">
               <div className="ticker-mask group relative w-full overflow-hidden">
-                <div className="flex w-max items-center whitespace-nowrap py-1.5 font-mono text-[11px] sm:text-[12px] tracking-[0.16em] text-cyan-200/70 drop-shadow-[0_0_10px_rgba(34,211,238,0.12)] animate-ticker group-hover:animate-ticker-slow">
+                <div className={`flex w-max items-center whitespace-nowrap py-1.5 font-mono text-[11px] sm:text-[12px] tracking-[0.16em] text-cyan-200/70 drop-shadow-[0_0_10px_rgba(34,211,238,0.12)] ${isInView ? "animate-ticker group-hover:animate-ticker-slow" : ""}`}>
                   {/*
                     Seamless loop:
                     - Renderizamos el texto 2 veces dentro del mismo track animado
