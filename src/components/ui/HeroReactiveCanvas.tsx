@@ -31,7 +31,13 @@ export function HeroReactiveCanvas({ intensity = 1, className }: HeroReactiveCan
   // Smoothed blob center (lag)
   const blob = useRef<Vec2>({ x: 0.5, y: 0.5 });
 
-  const DPR = useMemo(() => (typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1), []);
+  // Limit DPR heavily on mobile to save GPU cycles, and max out at 1.5 even on Retina Desktop
+  const DPR = useMemo(() => {
+    if (typeof window === "undefined") return 1;
+    const isMobile = window.innerWidth < 768;
+    const baseDPR = window.devicePixelRatio || 1;
+    return isMobile ? Math.min(baseDPR, 0.75) : Math.min(baseDPR, 1.25);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -62,7 +68,6 @@ export function HeroReactiveCanvas({ intensity = 1, className }: HeroReactiveCan
       // Expose pointer to CSS (for border glow + title side-light)
       parent.style.setProperty("--mx", `${nx * 100}%`);
       parent.style.setProperty("--my", `${ny * 100}%`);
-      // name side-light: shift highlight left/right
       parent.style.setProperty("--lx", `${clamp(45 + (nx - 0.5) * 22, 20, 70)}%`);
     };
 
@@ -82,14 +87,41 @@ export function HeroReactiveCanvas({ intensity = 1, className }: HeroReactiveCan
     parent.addEventListener("pointerenter", onEnter, { passive: true });
     parent.addEventListener("pointerleave", onLeave, { passive: true });
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true, desynchronized: true });
     if (!ctx) return;
 
+    // PRE-RENDER GRADIENTS: Generate the radial gradient just once to offload the GPU
+    const offscreen = document.createElement("canvas");
+    offscreen.width = 512;
+    offscreen.height = 512;
+    const octx = offscreen.getContext("2d");
+    if (octx) {
+      const center = 256;
+      const radius = 256;
+
+      const g1 = octx.createRadialGradient(center, center, radius * 0.05, center, center, radius);
+      g1.addColorStop(0, `rgba(139,92,246,${0.22 * intensity})`);
+      g1.addColorStop(0.45, `rgba(139,92,246,${0.10 * intensity})`);
+      g1.addColorStop(1, "rgba(139,92,246,0)");
+      octx.fillStyle = g1;
+      octx.beginPath();
+      octx.arc(center, center, radius, 0, Math.PI * 2);
+      octx.fill();
+
+      const g2 = octx.createRadialGradient(center, center, radius * 0.05, center, center, radius * 0.75);
+      g2.addColorStop(0, `rgba(255,255,255,${0.06 * intensity})`);
+      g2.addColorStop(1, "rgba(255,255,255,0)");
+      octx.fillStyle = g2;
+      octx.beginPath();
+      octx.arc(center, center, radius * 0.75, 0, Math.PI * 2);
+      octx.fill();
+    }
+
     const render = (t: number) => {
+      // Throttle extreme frame rates slightly (simulate max 60fps for calculations)
       const dt = Math.min(0.05, (t - lastT.current) / 1000);
       lastT.current = t;
 
-      // Smooth pointer with mild lag
       const lag = hovering.current ? 8.5 : 4.5;
       const smooth = 1 - Math.exp(-lag * dt);
       pointer.current = {
@@ -97,7 +129,6 @@ export function HeroReactiveCanvas({ intensity = 1, className }: HeroReactiveCan
         y: lerp(pointer.current.y, target.current.y, smooth),
       };
 
-      // Blob center follows pointer with extra lag
       const blobLag = hovering.current ? 4.2 : 2.4;
       const blobSmooth = 1 - Math.exp(-blobLag * dt);
       blob.current = {
@@ -109,7 +140,6 @@ export function HeroReactiveCanvas({ intensity = 1, className }: HeroReactiveCan
       const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
 
-      // Pulse + deformation
       const time = t / 1000;
       const pulse = 0.65 + 0.35 * Math.sin(time * 1.8);
       const hoverBoost = hovering.current ? 1 : 0;
@@ -122,7 +152,6 @@ export function HeroReactiveCanvas({ intensity = 1, className }: HeroReactiveCan
       const dy = (pointer.current.y - 0.5) * h;
       const stretch = clamp(Math.hypot(dx, dy) / (Math.min(w, h) * 0.55), 0, 1);
 
-      // Elliptical distortion depending on pointer direction
       const ex = baseR * (1 + 0.22 * stretch * intensity);
       const ey = baseR * (1 - 0.12 * stretch * intensity);
       const angle = Math.atan2(dy, dx);
@@ -132,30 +161,25 @@ export function HeroReactiveCanvas({ intensity = 1, className }: HeroReactiveCan
       ctx.rotate(angle);
       ctx.scale(ex / baseR, ey / baseR);
 
-      // Soft energy sphere: layered gradients (cheap)
-      const g1 = ctx.createRadialGradient(0, 0, baseR * 0.05, 0, 0, baseR);
-      g1.addColorStop(0, `rgba(139,92,246,${0.22 * intensity})`);
-      g1.addColorStop(0.45, `rgba(139,92,246,${0.10 * intensity})`);
-      g1.addColorStop(1, "rgba(139,92,246,0)");
-      ctx.fillStyle = g1;
-      ctx.beginPath();
-      ctx.arc(0, 0, baseR, 0, Math.PI * 2);
-      ctx.fill();
-
-      const g2 = ctx.createRadialGradient(0, 0, baseR * 0.05, 0, 0, baseR * 0.75);
-      g2.addColorStop(0, `rgba(255,255,255,${0.06 * intensity})`);
-      g2.addColorStop(1, "rgba(255,255,255,0)");
-      ctx.fillStyle = g2;
-      ctx.beginPath();
-      ctx.arc(0, 0, baseR * 0.75, 0, Math.PI * 2);
-      ctx.fill();
+      // DRAW pre-rendered canvas instead of recalculating gradients!
+      ctx.drawImage(offscreen, -baseR, -baseR, baseR * 2, baseR * 2);
 
       ctx.restore();
 
       rafRef.current = requestAnimationFrame(render);
     };
 
-    rafRef.current = requestAnimationFrame(render);
+    const startRender = () => {
+      lastT.current = performance.now();
+      rafRef.current = requestAnimationFrame(render);
+    };
+
+    // requestIdleCallback delays execution until the browser's Main Thread is idle
+    if (typeof (window as any).requestIdleCallback === "function") {
+      (window as any).requestIdleCallback(startRender, { timeout: 2000 });
+    } else {
+      setTimeout(startRender, 500);
+    }
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
