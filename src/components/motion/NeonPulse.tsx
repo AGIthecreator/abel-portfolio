@@ -15,14 +15,13 @@ export function NeonPulse({ children, className }: NeonPulseProps) {
   return (
     <motion.div
       className={className}
-      whileInView={{
+      animate={{
         filter: [
           "drop-shadow(0 0 0px rgba(139,92,246,0))",
           "drop-shadow(0 0 14px rgba(139,92,246,0.32))",
           "drop-shadow(0 0 0px rgba(139,92,246,0))",
         ],
       }}
-      viewport={{ once: true, margin: "100px" }}
       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
     >
       {children}

@@ -1,8 +1,7 @@
 "use client";
 
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState } from "react";
 import { Modal } from "@/components/ui/Modal";
-import { useInView } from "framer-motion";
 
 type ArchitectureLogsProps = {
   className?: string;
@@ -10,8 +9,6 @@ type ArchitectureLogsProps = {
 
 export function ArchitectureLogs({ className }: ArchitectureLogsProps) {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLAnchorElement>(null);
-  const isInView = useInView(ref, { once: false, margin: "50px" });
 
   const specsText = useMemo(
     () => `# SYSTEM_SPECIFICATIONS v1.0
@@ -41,7 +38,6 @@ Se contempla un **sistema de cifrado apoyado en Supabase** para proteger datos s
   return (
     <>
       <a
-        ref={ref}
         href="#"
         onClick={(e) => {
           e.preventDefault();
@@ -49,15 +45,15 @@ Se contempla un **sistema de cifrado apoyado en Supabase** para proteger datos s
         }}
         className={
           className ??
-          "inline-flex items-center justify-center min-h-11 min-w-11 p-2 gap-2 font-mono text-[12px] tracking-[0.12em] text-cyan-200/75 drop-shadow-[0_0_14px_rgba(34,211,238,0.14)] transition hover:text-violet-300/85 hover:drop-shadow-[0_0_18px_rgba(139,92,246,0.22)]"
+          "inline-flex items-center gap-2 font-mono text-[12px] tracking-[0.12em] text-cyan-200/75 drop-shadow-[0_0_14px_rgba(34,211,238,0.14)] transition hover:text-violet-300/85 hover:drop-shadow-[0_0_18px_rgba(139,92,246,0.22)]"
         }
         aria-label="Abrir Architecture Logs"
       >
-        <span className="text-white/70">{">"}</span>
+        <span className="text-white/70">&gt;</span>
         <span>ARCHITECTURE_LOGS</span>
         <span
           aria-hidden="true"
-          className={`text-cyan-200/80 ${isInView ? "animate-terminal-cursor-blink" : ""}`}
+          className="animate-terminal-cursor-blink text-cyan-200/80"
         >
           _
         </span>
@@ -73,7 +69,7 @@ Se contempla un **sistema de cifrado apoyado en Supabase** para proteger datos s
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="rounded-md border border-white/10 bg-white/5 px-4 py-2 min-h-11 min-w-11 font-mono text-[12px] text-white/70 transition hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-300/40"
+              className="rounded-md border border-white/10 bg-white/5 px-3 py-2 font-mono text-[12px] text-white/70 transition hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-300/40"
             >
               Close
             </button>

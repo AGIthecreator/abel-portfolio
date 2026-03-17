@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 
 type HeroReactiveCanvasProps = {
   /** 0..1 intensity multiplier for subtlety */
@@ -21,14 +21,17 @@ function lerp(a: number, b: number, t: number) {
 export function HeroReactiveCanvas({ intensity = 1, className }: HeroReactiveCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const rafRef = useRef<number | null>(null);
-  
-  // Control de frames para ~30 FPS
-  const lastFrameTime = useRef<number>(0);
+  const lastT = useRef<number>(0);
 
+  // Pointer tracking (normalized 0..1)
   const pointer = useRef<Vec2>({ x: 0.5, y: 0.5 });
   const target = useRef<Vec2>({ x: 0.5, y: 0.5 });
   const hovering = useRef(false);
+
+  // Smoothed blob center (lag)
   const blob = useRef<Vec2>({ x: 0.5, y: 0.5 });
+
+  const DPR = useMemo(() => (typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1), []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -37,14 +40,11 @@ export function HeroReactiveCanvas({ intensity = 1, className }: HeroReactiveCan
     const parent = canvas.parentElement;
     if (!parent) return;
 
-    // Resolución baja y fija (0.5x en móvil, 1x en desktop). Ligerísimo para la GPU.
-    const isMobile = window.innerWidth < 768;
-    const DPR = isMobile ? 0.5 : 1;
-
     const resize = () => {
       const r = parent.getBoundingClientRect();
-      canvas.width = Math.max(1, Math.floor(r.width * DPR));
-      canvas.height = Math.max(1, Math.floor(r.height * DPR));
+      const dpr = DPR;
+      canvas.width = Math.max(1, Math.floor(r.width * dpr));
+      canvas.height = Math.max(1, Math.floor(r.height * dpr));
       canvas.style.width = `${r.width}px`;
       canvas.style.height = `${r.height}px`;
     };
@@ -59,84 +59,102 @@ export function HeroReactiveCanvas({ intensity = 1, className }: HeroReactiveCan
       const ny = clamp((e.clientY - r.top) / r.height, 0, 1);
       target.current = { x: nx, y: ny };
 
-      // Exponer variables CSS al contenedor padre
+      // Expose pointer to CSS (for border glow + title side-light)
       parent.style.setProperty("--mx", `${nx * 100}%`);
       parent.style.setProperty("--my", `${ny * 100}%`);
+      // name side-light: shift highlight left/right
+      parent.style.setProperty("--lx", `${clamp(45 + (nx - 0.5) * 22, 20, 70)}%`);
     };
 
-    const onEnter = () => { hovering.current = true; };
+    const onEnter = () => {
+      hovering.current = true;
+    };
     const onLeave = () => {
       hovering.current = false;
       target.current = { x: 0.5, y: 0.5 };
+
       parent.style.setProperty("--mx", "50%");
       parent.style.setProperty("--my", "50%");
+      parent.style.setProperty("--lx", "45%");
     };
 
     parent.addEventListener("pointermove", onMove, { passive: true });
     parent.addEventListener("pointerenter", onEnter, { passive: true });
     parent.addEventListener("pointerleave", onLeave, { passive: true });
 
-    // Contexto desincronizado (más rápido) sin alfa innecesario si no se requiere, pero dejamos alpha: true
-    const ctx = canvas.getContext("2d", { alpha: true, desynchronized: true });
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // PRE-RENDER OFFSCREEN: Dibujamos el gradiente SOLO UNA VEZ en textura pequeña de 256x256
-    const offscreen = document.createElement("canvas");
-    offscreen.width = 256;
-    offscreen.height = 256;
-    const octx = offscreen.getContext("2d");
-    if (octx) {
-      const center = 128;
-      const radius = 128;
-      
-      const g1 = octx.createRadialGradient(center, center, radius * 0.05, center, center, radius);
-      g1.addColorStop(0, `rgba(139,92,246,${0.25 * intensity})`);
-      g1.addColorStop(0.5, `rgba(139,92,246,${0.10 * intensity})`);
-      g1.addColorStop(1, "rgba(139,92,246,0)");
-      
-      octx.fillStyle = g1;
-      octx.beginPath();
-      octx.arc(center, center, radius, 0, Math.PI * 2);
-      octx.fill();
-    }
-
     const render = (t: number) => {
-      rafRef.current = requestAnimationFrame(render);
-      
-      // Throttle a 30 FPS (~33ms)
-      if (t - lastFrameTime.current < 33) return;
-      
-      const dt = Math.min(0.05, (t - lastFrameTime.current) / 1000);
-      lastFrameTime.current = t;
+      const dt = Math.min(0.05, (t - lastT.current) / 1000);
+      lastT.current = t;
 
-      // Suavizado simplificado
-      const smooth = 1 - Math.exp(-4.5 * dt);
-      pointer.current.x = lerp(pointer.current.x, target.current.x, smooth);
-      pointer.current.y = lerp(pointer.current.y, target.current.y, smooth);
+      // Smooth pointer with mild lag
+      const lag = hovering.current ? 8.5 : 4.5;
+      const smooth = 1 - Math.exp(-lag * dt);
+      pointer.current = {
+        x: lerp(pointer.current.x, target.current.x, smooth),
+        y: lerp(pointer.current.y, target.current.y, smooth),
+      };
 
-      const blobSmooth = 1 - Math.exp(-2.4 * dt);
-      blob.current.x = lerp(blob.current.x, pointer.current.x, blobSmooth);
-      blob.current.y = lerp(blob.current.y, pointer.current.y, blobSmooth);
+      // Blob center follows pointer with extra lag
+      const blobLag = hovering.current ? 4.2 : 2.4;
+      const blobSmooth = 1 - Math.exp(-blobLag * dt);
+      blob.current = {
+        x: lerp(blob.current.x, pointer.current.x, blobSmooth),
+        y: lerp(blob.current.y, pointer.current.y, blobSmooth),
+      };
 
       const w = canvas.width;
       const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
 
+      // Pulse + deformation
+      const time = t / 1000;
+      const pulse = 0.65 + 0.35 * Math.sin(time * 1.8);
+      const hoverBoost = hovering.current ? 1 : 0;
+
       const cx = blob.current.x * w;
       const cy = blob.current.y * h;
 
-      // Animación de pulso básica, sin operaciones vectoriales pesadas
-      const pulse = 0.65 + 0.35 * Math.sin((t / 1000) * 1.8);
-      const baseR = Math.min(w, h) * (0.35 + 0.05 * pulse);
+      const baseR = Math.min(w, h) * (0.32 + 0.03 * pulse) * (0.95 + 0.07 * hoverBoost);
+      const dx = (pointer.current.x - 0.5) * w;
+      const dy = (pointer.current.y - 0.5) * h;
+      const stretch = clamp(Math.hypot(dx, dy) / (Math.min(w, h) * 0.55), 0, 1);
+
+      // Elliptical distortion depending on pointer direction
+      const ex = baseR * (1 + 0.22 * stretch * intensity);
+      const ey = baseR * (1 - 0.12 * stretch * intensity);
+      const angle = Math.atan2(dy, dx);
 
       ctx.save();
       ctx.translate(cx, cy);
-      // Solo dibujamos la textura pre-renderizada
-      ctx.drawImage(offscreen, -baseR, -baseR, baseR * 2, baseR * 2);
+      ctx.rotate(angle);
+      ctx.scale(ex / baseR, ey / baseR);
+
+      // Soft energy sphere: layered gradients (cheap)
+      const g1 = ctx.createRadialGradient(0, 0, baseR * 0.05, 0, 0, baseR);
+      g1.addColorStop(0, `rgba(139,92,246,${0.22 * intensity})`);
+      g1.addColorStop(0.45, `rgba(139,92,246,${0.10 * intensity})`);
+      g1.addColorStop(1, "rgba(139,92,246,0)");
+      ctx.fillStyle = g1;
+      ctx.beginPath();
+      ctx.arc(0, 0, baseR, 0, Math.PI * 2);
+      ctx.fill();
+
+      const g2 = ctx.createRadialGradient(0, 0, baseR * 0.05, 0, 0, baseR * 0.75);
+      g2.addColorStop(0, `rgba(255,255,255,${0.06 * intensity})`);
+      g2.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = g2;
+      ctx.beginPath();
+      ctx.arc(0, 0, baseR * 0.75, 0, Math.PI * 2);
+      ctx.fill();
+
       ctx.restore();
+
+      rafRef.current = requestAnimationFrame(render);
     };
 
-    // Arranque inmediato
     rafRef.current = requestAnimationFrame(render);
 
     return () => {
@@ -146,16 +164,15 @@ export function HeroReactiveCanvas({ intensity = 1, className }: HeroReactiveCan
       parent.removeEventListener("pointerenter", onEnter);
       parent.removeEventListener("pointerleave", onLeave);
     };
-  }, [intensity]);
+  }, [DPR, intensity]);
 
   return (
     <canvas
       ref={canvasRef}
       className={
-        "pointer-events-none absolute inset-0 h-full w-full opacity-100 " +
+        "pointer-events-none absolute inset-0 h-full w-full opacity-100 filter-[blur(0.2px)] " +
         (className ?? "")
       }
-      style={{ contain: "strict" }}
       aria-hidden="true"
     />
   );
