@@ -49,7 +49,7 @@ Se contempla un **sistema de cifrado apoyado en Supabase** para proteger datos s
         }}
         className={
           className ??
-          "inline-flex items-center justify-center min-h-[44px] min-w-[44px] p-2 gap-2 font-mono text-[12px] tracking-[0.12em] text-cyan-200/75 drop-shadow-[0_0_14px_rgba(34,211,238,0.14)] transition hover:text-violet-300/85 hover:drop-shadow-[0_0_18px_rgba(139,92,246,0.22)]"
+          "inline-flex items-center justify-center min-h-11 min-w-11 p-2 gap-2 font-mono text-[12px] tracking-[0.12em] text-cyan-200/75 drop-shadow-[0_0_14px_rgba(34,211,238,0.14)] transition hover:text-violet-300/85 hover:drop-shadow-[0_0_18px_rgba(139,92,246,0.22)]"
         }
         aria-label="Abrir Architecture Logs"
       >
@@ -73,7 +73,7 @@ Se contempla un **sistema de cifrado apoyado en Supabase** para proteger datos s
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="rounded-md border border-white/10 bg-white/5 px-4 py-2 min-h-[44px] min-w-[44px] font-mono text-[12px] text-white/70 transition hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-300/40"
+              className="rounded-md border border-white/10 bg-white/5 px-4 py-2 min-h-11 min-w-11 font-mono text-[12px] text-white/70 transition hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-300/40"
             >
               Close
             </button>
