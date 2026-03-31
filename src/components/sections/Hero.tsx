@@ -94,6 +94,23 @@ export function Hero() {
           </div>
         </div>
 
+        <div className="hero-demo-video" aria-label="Video de demostración 16:9" role="presentation">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster="/Frame-video-portfolio.PNG"
+            controls={false}
+            preload="metadata"
+          >
+            <source
+              src="https://res.cloudinary.com/dzsyoknqy/video/upload/f_auto,q_auto,vc_h265/v1774948305/bfwu00oiswhhmobfvehb.mp4"
+              type="video/mp4"
+            />
+          </video>
+        </div>
+
         <style jsx>{`
           .hero-border {
             opacity: 0;
@@ -120,6 +137,24 @@ export function Hero() {
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+          }
+
+          .hero-demo-video {
+            width: 100%;
+            max-width: min(960px, 100%);
+            margin: 0.75rem auto 0;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px -10px rgba(168, 85, 247, 0.25);
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+          }
+
+          .hero-demo-video video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
           }
         `}</style>
       </FadeIn>
