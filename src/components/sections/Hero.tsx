@@ -105,6 +105,11 @@ export function Hero() {
             preload="metadata"
           >
             <source
+              media="(max-width: 768px)"
+              src="https://res.cloudinary.com/dzsyoknqy/video/upload/f_auto,q_auto,w_800,vc_h265,br_1m/v1774948305/bfwu00oiswhhmobfvehb.mp4"
+              type="video/mp4"
+            />
+            <source
               src="https://res.cloudinary.com/dzsyoknqy/video/upload/f_auto,q_auto,vc_h265/v1774948305/bfwu00oiswhhmobfvehb.mp4"
               type="video/mp4"
             />
@@ -155,6 +160,7 @@ export function Hero() {
             height: 100%;
             object-fit: cover;
             display: block;
+            will-change: transform;
           }
         `}</style>
       </FadeIn>
