@@ -17,7 +17,13 @@ export const metadata: Metadata = {
   description:
     "Portfolio de Abel: Especialista en crear ecosistemas digitales escalables y seguros mediante automatizaciones con Make, Airtable y Supabase.",
   icons: {
-    icon: "/favicon.svg",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/favicon.png", // Usa el PNG para el icono de inicio en iPhone
   },
 };
 
