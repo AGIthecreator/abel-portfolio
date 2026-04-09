@@ -7,77 +7,72 @@
     <style>
       *,*::before,*::after{box-sizing:border-box}
       html,body{height:100%}
-      body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:#030014;color:rgba(255,255,255,.9);line-height:1.25;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+      body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:#030014;color:rgba(255,255,255,.9);line-height:1.14;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
       :root{--fs-body:12.5px;--fs-small:11.5px;--fs-micro:10.5px;--fs-h1:23px;--fs-role:14.5px}
       a{color:inherit;text-decoration:none}
-      .page{width:210mm;min-height:297mm;margin:0 auto;padding:9mm;display:flex;flex-direction:column;gap:5mm}
-      .page-scale{transform-origin:top center}
+      
+      .page{width:210mm;min-height:297mm;margin:0 auto;padding:6mm 9mm;display:flex;flex-direction:column;gap:2.5mm}
+      
       .panel{border-radius:18px;background:rgba(17,25,40,.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid transparent;background-clip:padding-box;box-shadow:0 0 20px rgba(80,50,200,.3)}
-      .panel-inner{padding:6mm}
+      .panel-inner{padding:2mm 6mm}
 
-      .header-grid{display:grid;grid-template-columns:1fr;gap:4mm}
-      .header-top{display:grid;grid-template-columns:minmax(0,auto) 1fr minmax(0,auto);align-items:center;gap:8px}
-      .photo-frame{width:104px;height:104px;border-radius:999px;overflow:hidden;border:2px solid rgba(139,92,246,.7);box-shadow:0 0 0 4px rgba(139,92,246,.1),0 0 18px rgba(139,92,246,.22)}
+      .header-grid{display:grid;grid-template-columns:1fr;gap:3mm}
+      .header-top{display:grid;grid-template-columns:minmax(0,auto) 1fr minmax(0,auto);align-items:center;gap:12px}
+      .photo-frame{width:100px;height:100px;border-radius:999px;overflow:hidden;border:2px solid rgba(139,92,246,.7);box-shadow:0 0 0 4px rgba(139,92,246,.1),0 0 18px rgba(139,92,246,.22)}
       .photo-img{width:100%;height:100%;object-fit:cover;transform:scale(1.28);transform-origin:center}
-      h1{margin:0;font-size:var(--fs-h1);letter-spacing:.2px;line-height:1.12}
-      .role{margin-top:4px;font-size:var(--fs-role);color:rgba(255,255,255,.78);line-height:1.2}
-      .location{margin-top:4px;font-size:12px;color:rgba(255,255,255,.78)}
-      .contact-grid{margin-top:8px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;font-size:var(--fs-small);color:rgba(255,255,255,.82)}
-      .contact-item{display:inline-flex;align-items:center;gap:10px;min-width:0}
-      .icon-bubble{width:28px;height:28px;border-radius:999px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);box-shadow:0 0 14px rgba(139,92,246,.14);flex:0 0 auto}
+      h1{margin:0;font-size:var(--fs-h1);letter-spacing:.2px;line-height:1.1}
+      .role{margin-top:2px;font-size:var(--fs-role);color:rgba(255,255,255,.78);line-height:1.2}
+      .location-tel{margin-top:2px;font-size:12px;color:rgba(255,255,255,.78)}
+      
+      .contact-grid{margin-top:10px;display:grid;grid-template-columns:repeat(3, auto);justify-content: space-between; gap:10px;font-size:var(--fs-small);color:rgba(255,255,255,.82)}
+      .contact-item{display:inline-flex;align-items:center;gap:8px;min-width:0}
+      
+      .icon-bubble{width:26px;height:26px;border-radius:999px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);box-shadow:0 0 14px rgba(139,92,246,.14);flex:0 0 auto}
       .icon{width:14px;height:14px;display:inline-block;flex:0 0 auto}
-      .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+      .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
       
-      /* Ajuste QR: Movido 15px a la izquierda */
-      .qr-block{display:flex;flex-direction:column;align-items:center;gap:6px;margin-left:-150px}
-      
-      .qr{width:104px;height:104px;border-radius:14px;background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.28);padding:6px;display:grid;place-items:center}
+      .qr-block{display:flex;flex-direction:column;align-items:center;gap:4px}
+      .qr{width:90px;height:90px;border-radius:14px;background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.28);padding:6px;display:grid;place-items:center}
       .qr img{width:100%;height:100%;border-radius:10px}
-      .qr-link{font-size:var(--fs-small);color:#80a6ff;text-decoration:underline}
+      .qr-link{font-size:10px;color:#80a6ff;text-decoration:underline}
 
-      .body-grid{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
+      .body-grid{display:grid;grid-template-columns:1fr 1fr;gap:3mm}
       .span-2{grid-column:1 / -1}
-      h2{margin:0 0 8px 0;font-size:14px;letter-spacing:.18em;text-transform:uppercase;color:#fff}
-      .item{padding:8px 10px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(2,6,23,.32)}
-      .item + .item{margin-top:8px}
+      h2{margin:0 0 6px 0;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:#fff}
+      .item{padding:6px 10px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(2,6,23,.32)}
+      .item + .item{margin-top:6px}
       .item-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
-      .item-title{font-size:14.5px;font-weight:700;color:rgba(255,255,255,.92)}
-      .item-meta{font-size:13px;color:rgba(255,255,255,.70)}
-      ul{margin:4px 0 0 14px;padding:0;color:#cbd5e1;font-size:var(--fs-body)}
+      .item-title{font-size:14px;font-weight:700;color:rgba(255,255,255,.92)}
+      .item-meta{font-size:12px;color:rgba(255,255,255,.70)}
+      ul{margin:2px 0 0 14px;padding:0;color:#cbd5e1;font-size:var(--fs-body)}
       .item p{font-size:var(--fs-body);color:#cbd5e1;margin:0;padding:0}
-      li{margin:2px 0;color:#cbd5e1}
-      .project{border-radius:12px;padding:8px 10px;border:1px solid rgba(255,255,255,.15);background:rgba(2,6,23,.28)}
-      .project + .project{margin-top:6px}
-      .project-title{font-size:14px;font-weight:700;margin:0}
-      .project-stack,.status-line{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
-      .project ul{margin:6px 0 0 12px}
-      .project ul li{margin:1px 0;font-size:12px}
-      .project ul li strong{font-weight:600}
-      .stack-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:6px}
-      .stack-grid .skill-pill{padding:5px 6px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05)}
-      .skill-pill{font-size:var(--fs-small);color:rgba(255,255,255,.86)}
+      li{margin:1px 0;color:#cbd5e1}
       
-      /* Ajuste Otros: Columnas de igual altura */
-      .otros-grid{
-        display:grid;
-        grid-template-columns: 1fr 1fr;
-        gap:10px;
-        align-items:stretch; /* Asegura que los items hijos estiren a la misma altura */
-      }
-      .otros-grid .item {
-        margin-top: 0;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center; /* Centra el contenido verticalmente para que se vea equilibrado */
-      }
+      .project{border-radius:12px;padding:6px 10px;border:1px solid rgba(255,255,255,.15);background:rgba(2,6,23,.28)}
+      .project + .project{margin-top:6px}
+      .project-title{font-size:13px;font-weight:700;margin:0}
+      .project-stack,.status-line{font-size:10.5px;color:rgba(255,255,255,.6);margin-top:2px}
+      .project ul{margin:4px 0 0 12px}
+      .project ul li{margin:1px 0;font-size:11.5px}
+
+      .stack-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:6px;margin-top:6px}
+      .stack-grid .skill-pill{padding:5px 8px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);height:100%}
+      .skill-pill{font-size:11px;color:rgba(255,255,255,.86)}
+      
+      /* Ajuste layout final para que queden cuadrados y alineados */
+      .otros-grid{display:grid;grid-template-columns: 1fr 1fr;gap:10px;align-items: stretch}
+      .otros-grid .item {margin-top: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-start;}
       
       @page{size:A4;margin:0}
-      @media print{html,body{background:#030014!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.page{margin:0;padding:10mm}.page-scale{transform:scale(.95)}a{text-decoration:none}}
+      @media print{
+        html,body{background:#030014!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        .page{margin:0;padding:8mm 9mm}
+        a{text-decoration:none}
+      }
     </style>
   </head>
   <body>
-    <main class="page page-scale">
+    <main class="page">
       <section class="header-grid">
         <div class="header-left panel header-panel">
           <div class="panel-inner">
@@ -86,7 +81,7 @@
               <div class="name-role">
                 <h1>Abel González Iglesias</h1>
                 <div class="role">Full Stack Developer (React, Next.js, Node)<br />SaaS & Automation Builder</div>
-                <div class="location">Valladolid, España</div>
+                <div class="location-tel">Valladolid, España — <span class="mono">654936634</span></div>
               </div>
               <div class="qr-block">
                 <div class="qr" title="QR a https://www.agithecreator.com">
@@ -105,21 +100,13 @@
                 </span>
                 <span class="mono">github.com/AGIthecreator</span>
               </a>
-              <a class="contact-item" href="tel:654936634">
-                <span class="icon-bubble">
-                  <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.02.75-.25 1.02l-2.2 2.2z"/>
-                  </svg>
-                </span>
-                <span class="mono">654 93 66 34</span>
-              </a>
               <a class="contact-item" href="https://www.linkedin.com/in/abel-gonzalez-iglesias" target="_blank" rel="noreferrer">
                 <span class="icon-bubble">
                   <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.03-1.85-3.03-1.85 0-2.13 1.44-2.13 2.93v5.67H9.37V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.59 0 4.26 2.37 4.26 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/>
                   </svg>
                 </span>
-                <span class="mono">linkedin.com/in/abel-gonzalez-iglesias</span>
+                <span class="mono">/in/abel-gonzalez-iglesias</span>
               </a>
               <a class="contact-item" href="mailto:contacto@agithecreator.com">
                 <span class="icon-bubble">
@@ -135,58 +122,57 @@
       </section>
 
       <section class="body-grid">
-        <section class="panel">
+        <section class="panel span-2">
           <div class="panel-inner">
-            <h2>Perfil Profesional</h2>
-            <div class="item">
-              <p>Construyo productos SaaS y experiencias web con React/Next y Node.js, llevando ideas a producción en Vercel y Cloudflare.</p><br>
-              <p>Resuelvo pagos/autenticación con Stripe, Supabase y APIs; sincronizo datos con Airtable, Make y Webhooks.</p><br>
-              <p>Automatizo operaciones y procesos críticos para que los equipos se centren en el producto.</p>
-            </div>
-          </div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-inner">
-            <h2>Stack tecnológico</h2>
-            <div class="stack-grid">
-              <div class="skill-pill"><strong>Frontend:</strong> React · Next.js · React Native · TypeScript · Tailwind CSS.</div>
-              <div class="skill-pill"><strong>Backend:</strong> Node.js · Express · APIs REST · Webhooks · Supabase Functions · Stripe.</div>
-              <div class="skill-pill"><strong>Database:</strong> PostgreSQL · Supabase (Auth/Vault) · Airtable.</div>
-              <div class="skill-pill"><strong>Automatización:</strong> Make · Airtable API · Webhooks.</div>
-              <div class="skill-pill"><strong>Infra:</strong> Vercel · Cloudflare · GitHub · CI/CD · secrets/env.</div>
-            </div>
+            <section>
+              <h2>Perfil Profesional</h2>
+              <div class="item">
+                <p>Construyo productos SaaS y experiencias web con React/Next y Node.js, producción en Vercel y Cloudflare.</p>
+                <p>Resuelvo pagos/autenticación con Stripe, Supabase y APIs; sincronizo datos con Airtable, Make y Webhooks.</p>
+                <p>Automatizo operaciones y procesos críticos para que los equipos se centren en el producto.</p>
+              </div>
+            </section>
+            
+            <section style="margin-top: 10px;">
+              <h2>Stack tecnológico</h2>
+              <div class="stack-grid">
+                <div class="skill-pill"><strong>Frontend:</strong> React · Next.js · TypeScript · Tailwind CSS.</div>
+                <div class="skill-pill"><strong>Backend:</strong> Node.js · APIs REST · Webhooks · Supabase.</div>
+                <div class="skill-pill"><strong>Database:</strong> PostgreSQL · Supabase (Auth/Vault) · Airtable.</div>
+                <div class="skill-pill"><strong>Automatización:</strong> Make · Airtable API · Webhooks.</div>
+                <div class="skill-pill"><strong>Infra:</strong> Vercel · Cloudflare · GitHub · CI/CD · secrets/env.</div>
+              </div>
+            </section>
           </div>
         </section>
 
         <section class="panel">
           <div class="panel-inner">
             <h2>Proyectos destacados</h2>
-
             <article class="project">
-              <p class="project-title">PucelaTicketing — Plataforma de gestión de eventos con pagos integrados.</p>
-              <p class="project-stack">Stack: Next.js · Node.js · Supabase/PostgreSQL · Stripe · Supabase Auth · Cloudflare.</p>
+              <p class="project-title">PucelaTicketing — Gestión de eventos y pagos.</p>
+              <p class="project-stack">Stack: Next.js · Node.js · Supabase/PostgreSQL · Stripe · Cloudflare.</p>
               <ul>
                 <li><strong>Pagos:</strong> Stripe Checkout y validaciones con QR dinámicos para accesos rápidos.</li>
                 <li><strong>Acceso:</strong> Panel organizador con reporting que reduce controles manuales de entradas.</li>
                 <li><strong>Deploy:</strong> Despliegue continuo en Vercel con dashboards de métricas y seguridad.</li>
               </ul>
-              <p class="status-line"><strong>Estado:</strong> Sistema funcional en Vercel · Repo privado disponible bajo solicitud.</p>
+              <p class="status-line"><strong>Estado:</strong> Sistema funcional en Vercel · Repo privado disponible.</p>
             </article>
 
             <article class="project">
-              <p class="project-title">AGI the creator + Aguarrás — Portfolio + web comercial en Next.js.</p>
+              <p class="project-title">AGI the creator + Aguarrás — Portfolio comercial.</p>
               <p class="project-stack">Stack: Next.js · Airtable · Make · Cloudflare · Vercel.</p>
               <ul>
                 <li><strong>Contenidos:</strong> Airtable alimenta páginas, clientes y productos en tiempo real.</li>
                 <li><strong>Automatización:</strong> Make sincroniza datos y publicaciones sin tocar código.</li>
                 <li><strong>Producción:</strong> Sitio online y funcional, con autenticación y usuarios reales.</li>
               </ul>
-              <p class="status-line"><strong>Demo:</strong> <a href="https://aguarr-s-estudio-the-artful-space.vercel.app/">aguarr-s-estudio-the-artful-space.vercel.app</a></p>
+              <p class="status-line"><strong>Demo:</strong> <a href="https://aguarr-s-estudio-the-artful-space.vercel.app/" target="_blank" style="color:#80a6ff">aguarr-s-estudio-the-artful-space.vercel.app</a></p>
             </article>
 
             <article class="project">
-              <p class="project-title">Automatizaciones Make/Airtable — Flujos de operaciones y contenidos.</p>
+              <p class="project-title">Automatizaciones Make/Airtable — Flujos Ops.</p>
               <p class="project-stack">Stack: Make · Airtable API · Webhooks · APIs REST.</p>
               <ul>
                 <li><strong>Problema:</strong> tareas de datos manuales y duplicados por cada registro.</li>
@@ -201,24 +187,23 @@
         <section class="panel">
           <div class="panel-inner">
             <h2>Experiencia</h2>
-
             <article class="item">
               <div class="item-head">
-                <div class="item-title">Proyectos propios / Freelance · Full Stack Developer</div>
+                <div class="item-title">Freelance · Full Stack Developer</div>
                 <div class="item-meta mono">Dic 2025 – Actualidad</div>
               </div>
               <ul>
-                <li><strong>PucelaTicketing:</strong> Desarrollé la plataforma con Stripe, QR dinámicos y Auth para gestionar cobros y accesos en un panel único.</li>
-                <li><strong>Aguarrás/Portfolio:</strong> Arquitecté Next.js + Airtable + Make para publicar contenido y clientes reales con deploy automático.</li>
+                <li><strong>PucelaTicketing:</strong> Desarrollé la plataforma con Stripe, QR dinámicos y Auth para gestionar cobros y accesos.</li>
+                <li><strong>Aguarrás/Portfolio:</strong> Arquitecté Next.js + Airtable + Make para publicar contenido real con deploy automático.</li>
                 <li><strong>Automatizaciones:</strong> Implementé Make + Webhooks que disparan APIs y alertas, reduciendo tareas repetitivas.</li>
-                <li><strong>Infraestructura:</strong> Mantengo despliegues en Vercel y seguridad en Cloudflare (DNS, secrets, CI/CD).</li>
+                <li><strong>Infraestructura:</strong> Mantengo despliegues en Vercel y seguridad en Cloudflare.</li>
               </ul>
             </article>
 
             <article class="item">
               <div class="item-head">
-                <div class="item-title">CallGuard · Mobile Developer (React Native)</div>
-                <div class="item-meta mono">Dic 2025 – Actualidad · Closed testing</div>
+                <div class="item-title">CallGuard · Mobile Developer</div>
+                <div class="item-meta mono">Dic 2025 – Actualidad</div>
               </div>
               <ul>
                 <li>Diseño de app para control de llamadas y seguridad con React Native, hooks y navegación optimizada.</li>
@@ -232,8 +217,8 @@
                 <div class="item-meta mono">Sept 2023 – Sept 2024</div>
               </div>
               <ul>
-                <li>Soporte técnico con diagnósticos iOS/Android, migraciones y copias de seguridad.</li>
-                <li>Gestión de paneles multi-operador y ERPs para altas, portabilidades y configuraciones.</li>
+                <li>Soporte técnico con diagnósticos iOS/Android, migraciones y copias de seguridad de datos.</li>
+                <li>Gestión de paneles multi-operador y ERPs para altas, portabilidades y configuraciones técnicas.</li>
               </ul>
             </article>
           </div>
@@ -241,21 +226,18 @@
 
         <section class="panel span-2">
           <div class="panel-inner">
-            <h2>Otros</h2>
             <div class="otros-grid">
               <div class="item">
-                <div class="item-head">
-                  <div class="item-title">Certificaciones</div>
-                </div>
+                <h2 style="margin-bottom:4px">Certificaciones</h2>
                 <ul>
-                  <li>EFUNDAE 2026: Niveles 5 (Frontend Avanzado), 4 (Backend) y 3 (Frontend).</li>
-                  <li>Google 2026: Especialización Angular / Escuela Vue (en curso).</li>
+                  <li>EFUNDAE 2026: Niveles 5 (Frontend), 4 (Backend) y 3 (Frontend).</li>
+                  <li>Google 2026: Especialización Angular / Escuela Vue.</li>
                 </ul>
               </div>
-
               <div class="item">
-                <p><strong>Idiomas:</strong> Español nativo · Inglés intermedio.</p><br>
-                <p><strong>Disponibilidad:</strong> Inmediata <br> Remoto España · Presencial/Híbrido Valladolid<br/>Vehículo propio (Carné B).</p>
+                <h2 style="margin-bottom:4px">Otros datos</h2>
+                <p><strong>Idiomas:</strong> Español nativo · Inglés intermedio.</p>
+                <p style="margin-top:2px;"><strong>Disponibilidad:</strong> Inmediata · Remoto España / Valladolid  Vehículo propio.</p>
               </div>
             </div>
           </div>
