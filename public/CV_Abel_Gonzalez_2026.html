@@ -5,547 +5,258 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CV · Abel González (2026)</title>
     <style>
-      /* ===== Reset + base ===== */
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
+      *,*::before,*::after{box-sizing:border-box}
+      html,body{height:100%}
+      body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:#030014;color:rgba(255,255,255,.9);line-height:1.25;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+      :root{--fs-body:12.5px;--fs-small:11.5px;--fs-micro:10.5px;--fs-h1:23px;--fs-role:14.5px}
+      a{color:inherit;text-decoration:none}
+      .page{width:210mm;min-height:297mm;margin:0 auto;padding:9mm;display:flex;flex-direction:column;gap:5mm}
+      .page-scale{transform-origin:top center}
+      .panel{border-radius:18px;background:rgba(17,25,40,.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid transparent;background-clip:padding-box;box-shadow:0 0 20px rgba(80,50,200,.3)}
+      .panel-inner{padding:6mm}
 
-      html,
-      body {
+      .header-grid{display:grid;grid-template-columns:1fr;gap:4mm}
+      .header-top{display:grid;grid-template-columns:minmax(0,auto) 1fr minmax(0,auto);align-items:center;gap:8px}
+      .photo-frame{width:104px;height:104px;border-radius:999px;overflow:hidden;border:2px solid rgba(139,92,246,.7);box-shadow:0 0 0 4px rgba(139,92,246,.1),0 0 18px rgba(139,92,246,.22)}
+      .photo-img{width:100%;height:100%;object-fit:cover;transform:scale(1.28);transform-origin:center}
+      h1{margin:0;font-size:var(--fs-h1);letter-spacing:.2px;line-height:1.12}
+      .role{margin-top:4px;font-size:var(--fs-role);color:rgba(255,255,255,.78);line-height:1.2}
+      .location{margin-top:4px;font-size:12px;color:rgba(255,255,255,.78)}
+      .contact-grid{margin-top:8px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;font-size:var(--fs-small);color:rgba(255,255,255,.82)}
+      .contact-item{display:inline-flex;align-items:center;gap:10px;min-width:0}
+      .icon-bubble{width:28px;height:28px;border-radius:999px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);box-shadow:0 0 14px rgba(139,92,246,.14);flex:0 0 auto}
+      .icon{width:14px;height:14px;display:inline-block;flex:0 0 auto}
+      .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+      
+      /* Ajuste QR: Movido 15px a la izquierda */
+      .qr-block{display:flex;flex-direction:column;align-items:center;gap:6px;margin-left:-150px}
+      
+      .qr{width:104px;height:104px;border-radius:14px;background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.28);padding:6px;display:grid;place-items:center}
+      .qr img{width:100%;height:100%;border-radius:10px}
+      .qr-link{font-size:var(--fs-small);color:#80a6ff;text-decoration:underline}
+
+      .body-grid{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
+      .span-2{grid-column:1 / -1}
+      h2{margin:0 0 8px 0;font-size:14px;letter-spacing:.18em;text-transform:uppercase;color:#fff}
+      .item{padding:8px 10px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(2,6,23,.32)}
+      .item + .item{margin-top:8px}
+      .item-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+      .item-title{font-size:14.5px;font-weight:700;color:rgba(255,255,255,.92)}
+      .item-meta{font-size:13px;color:rgba(255,255,255,.70)}
+      ul{margin:4px 0 0 14px;padding:0;color:#cbd5e1;font-size:var(--fs-body)}
+      .item p{font-size:var(--fs-body);color:#cbd5e1;margin:0;padding:0}
+      li{margin:2px 0;color:#cbd5e1}
+      .project{border-radius:12px;padding:8px 10px;border:1px solid rgba(255,255,255,.15);background:rgba(2,6,23,.28)}
+      .project + .project{margin-top:6px}
+      .project-title{font-size:14px;font-weight:700;margin:0}
+      .project-stack,.status-line{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+      .project ul{margin:6px 0 0 12px}
+      .project ul li{margin:1px 0;font-size:12px}
+      .project ul li strong{font-weight:600}
+      .stack-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:6px}
+      .stack-grid .skill-pill{padding:5px 6px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05)}
+      .skill-pill{font-size:var(--fs-small);color:rgba(255,255,255,.86)}
+      
+      /* Ajuste Otros: Columnas de igual altura */
+      .otros-grid{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap:10px;
+        align-items:stretch; /* Asegura que los items hijos estiren a la misma altura */
+      }
+      .otros-grid .item {
+        margin-top: 0;
         height: 100%;
-      }
-
-      body {
-        margin: 0;
-        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
-          Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-        background: #030014;
-        color: rgba(255, 255, 255, 0.9);
-        line-height: 1.25;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      :root {
-        --fs-body: 12.5px;
-        --fs-small: 11.5px;
-        --fs-micro: 10.5px;
-        --fs-h1: 23px;
-        --fs-role: 14.5px;
-      }
-
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-
-      /* ===== Page (A4) ===== */
-      .page {
-        width: 210mm;
-        min-height: 297mm;
-        margin: 0 auto;
-        padding: 10mm;
         display: flex;
         flex-direction: column;
-        gap: 8mm;
-      }
-
-      .page-scale {
-        transform-origin: top center;
-      }
-
-      .panel {
-        border-radius: 18px;
-        background: rgba(17, 25, 40, 0.75);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid transparent;
-        background-clip: padding-box;
-        box-shadow: 0 0 20px rgba(80, 50, 200, 0.3);
-      }
-
-      .panel-inner {
-        padding: 8mm;
-      }
-
-      /* ===== Header layout ===== */
-      .header-grid {
-        display: grid;
-        grid-template-columns: 1.35fr 0.65fr;
-        gap: 6mm;
-        align-items: stretch;
-      }
-
-      .header-panel .panel-inner {
-        padding: 6mm;
+        justify-content: center; /* Centra el contenido verticalmente para que se vea equilibrado */
       }
       
-      .header-left,
-      .header-right {
-        display: flex;
-        flex-direction: column;
-      }
-
-      /* Make both header blocks same height */
-      .header-left.panel,
-      .header-right.panel {
-        height: 100%;
-      }
-
-      .identity {
-        display: grid;
-        grid-template-columns: 84px 1fr;
-        gap: 12px;
-        align-items: center;
-        margin-bottom: 8px;
-      }
-
-      .photo {
-        width: 84px;
-        height: 84px;
-        border-radius: 999px;
-        object-fit: cover;
-        border: 2px solid rgba(139, 92, 246, 0.70);
-        box-shadow:
-          0 0 0 4px rgba(139, 92, 246, 0.10),
-          0 0 18px rgba(139, 92, 246, 0.22);
-      }
-
-      h1 {
-        margin: 0;
-        font-size: var(--fs-h1);
-        letter-spacing: 0.2px;
-        line-height: 1.12;
-      }
-
-      .role {
-        margin-top: 4px;
-        font-size: var(--fs-role);
-        color: rgba(255, 255, 255, 0.78);
-      }
-
-      .contact {
-        display: grid;
-        gap: 6px;
-        margin-top: 16px;
-        font-size: var(--fs-small);
-        color: rgba(255, 255, 255, 0.82);
-      }
-
-      .contact-line {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-
-      .contact-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        min-width: 0;
-      }
-
-      .contact-item.web-link span.mono {
-        color: #80a6ff;
-        text-decoration: underline;
-      }
-      
-      .icon-bubble {
-        width: 28px;
-        height: 28px;
-        border-radius: 999px;
-        display: grid;
-        place-items: center;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        background: rgba(255, 255, 255, 0.06);
-        box-shadow: 0 0 14px rgba(139, 92, 246, 0.14);
-        flex: 0 0 auto;
-      }
-
-      .chip, .skill-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background: rgba(255, 255, 255, 0.1);
-        padding: 6px 8px;
-        border-radius: 999px;
-        line-height: 1;
-        box-shadow: 0 0 8px rgba(139, 92, 246, 0.2);
-      }
-
-      .chip span {
-        white-space: nowrap;
-      }
-
-      .icon {
-        width: 14px;
-        height: 14px;
-        display: inline-block;
-        flex: 0 0 auto;
-      }
-
-      .mono {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-          "Liberation Mono", "Courier New", monospace;
-      }
-
-      /* ===== QR block ===== */
-      .qr-wrap {
-        display: grid;
-        grid-template-rows: auto auto 1fr;
-        height: 100%;
-        gap: 8px;
-        align-content: start;
-      }
-
-      .qr {
-        width: 120px;
-        height: 120px;
-        border-radius: 14px;
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        padding: 8px;
-        display: grid;
-        place-items: center;
-      }
-
-      .qr img {
-        width: 100%;
-        height: 100%;
-        border-radius: 8px;
-      }
-
-      .qr-fallback {
-        font-size: 9px;
-        color: rgba(0, 0, 0, 0.85);
-        line-height: 1.2;
-        text-align: center;
-        padding: 6px;
-      }
-
-      .qr-label {
-        font-size: var(--fs-micro);
-        color: rgba(255, 255, 255, 0.78);
-        margin-top: -2px;
-      }
-
-      .qr-label {
-        margin-top: 6px;
-      }
-
-      .bubbles {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        margin-top: auto;
-      }
-
-      /* ===== Body ===== */
-      .body-grid {
-        display: grid;
-        grid-template-columns: 1.05fr 0.95fr;
-        gap: 5.7mm;
-      }
-
-      h2 {
-        margin: 0 0 8px 0;
-        font-size: 14px;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: #fff;
-      }
-
-      .item {
-        padding: 8px 10px;
-        border-radius: 14px;
-        border: 1px solid rgba(255, 255, 255, 0.10);
-        background: rgba(2, 6, 23, 0.30);
-      }
-
-      .item + .item {
-        margin-top: 8px;
-      }
-
-      .item-head {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        align-items: baseline;
-        flex-wrap: wrap;
-      }
-
-      .item-title {
-        font-size: 14.5px;
-        font-weight: 700;
-        color: rgba(255, 255, 255, 0.92);
-      }
-
-      .item-meta {
-        font-size: 13px;
-        color: rgba(255, 255, 255, 0.70);
-      }
-
-      ul {
-        margin: 6px 0 0 16px;
-        padding: 0;
-        color: #cbd5e1;
-        font-size: var(--fs-body);
-      }
-
-      .item p {
-        font-size: var(--fs-body);
-        color: #cbd5e1;
-        margin: 0;
-        padding: 0;
-      }
-
-      li {
-        margin: 2px 0;
-        color: #cbd5e1;
-      }
-
-      .skills {
-        display: grid;
-        gap: 8px;
-      }
-
-      .skill-pill {
-        font-size: var(--fs-small);
-        color: rgba(255, 255, 255, 0.86);
-      }
-
-      /* Mantener pequeñas las burbujas de estado */
-      .bubbles .chip {
-        font-size: 11.5px;
-      }
-
-      .footnote {
-        margin-top: 6px;
-        font-size: 10.5px;
-        color: rgba(255, 255, 255, 0.66);
-      }
-
-      /* ===== Print ===== */
-      @page {
-        size: A4;
-        margin: 0;
-      }
-
-      @media print {
-        html,
-        body {
-          background: #030014 !important;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
-        }
-
-        .page {
-          margin: 0;
-          padding: 10mm;
-        }
-
-        /* Ajuste anti-corte: reduce al 95% sin tocar el resto del layout */
-        .page-scale {
-          transform: scale(0.95);
-        }
-
-        a {
-          text-decoration: none;
-        }
-      }
+      @page{size:A4;margin:0}
+      @media print{html,body{background:#030014!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.page{margin:0;padding:10mm}.page-scale{transform:scale(.95)}a{text-decoration:none}}
     </style>
   </head>
   <body>
     <main class="page page-scale">
-      <!-- ===== HEADER ===== -->
       <section class="header-grid">
         <div class="header-left panel header-panel">
           <div class="panel-inner">
-            <div class="identity">
-              <img class="photo" src="/FOTO%20CV.png" alt="Foto de Abel González" />
-              <div>
+            <div class="header-top">
+              <div class="photo-frame"><img class="photo-img" src="/FOTO%20CV.png" alt="Foto de Abel González" /></div>
+              <div class="name-role">
                 <h1>Abel González Iglesias</h1>
-                <div class="role">Full Stack Developer | Especialista en React, Vue & Angular</div>
-                <div style="margin-top: 4px; font-size: 12px; color: rgba(255, 255, 255, 0.78)">
-                  Valladolid, España
+                <div class="role">Full Stack Developer (React, Next.js, Node)<br />SaaS & Automation Builder</div>
+                <div class="location">Valladolid, España</div>
+              </div>
+              <div class="qr-block">
+                <div class="qr" title="QR a https://www.agithecreator.com">
+                  <img src="/QRPaginaweb.png" alt="QR hacia el portfolio" />
                 </div>
+                <a class="qr-link" href="https://www.agithecreator.com" target="_blank" rel="noreferrer">www.agithecreator.com</a>
               </div>
             </div>
 
-            <div class="contact" style="margin-top: 16px">
-              <!-- Línea 1: GitHub + Email en horizontal -->
-              <div class="contact-line">
-                <a class="contact-item" href="https://github.com/AGIthecreator" target="_blank" rel="noreferrer">
-                  <span class="icon-bubble">
-                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                      <path
-                        d="M12 2C6.48 2 2 6.58 2 12.26c0 4.5 2.87 8.31 6.84 9.66.5.1.68-.22.68-.48 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.39-3.37-1.39-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.58 2.36 1.12 2.94.86.09-.67.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.09 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.32.1-2.75 0 0 .84-.27 2.75 1.05a9.1 9.1 0 0 1 2.5-.35c.85 0 1.7.12 2.5.35 1.9-1.32 2.74-1.05 2.74-1.05.56 1.43.21 2.49.1 2.75.64.72 1.03 1.63 1.03 2.75 0 3.96-2.34 4.83-4.58 5.08.36.32.68.96.68 1.93 0 1.39-.01 2.51-.01 2.85 0 .27.18.59.69.48A10.2 10.2 0 0 0 22 12.26C22 6.58 17.52 2 12 2z"
-                      />
-                    </svg>
-                  </span>
-                  <span class="mono">github.com/AGIthecreator</span>
-                </a>
-
-                <a class="contact-item" href="mailto:contacto@agithecreator.com">
-                  <span class="icon-bubble">
-                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                      <path
-                        d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"
-                      />
-                    </svg>
-                  </span>
-                  <span class="mono">contacto@agithecreator.com</span>
-                </a>
-              </div>
-
-              <!-- Línea 2: LinkedIn -->
-              <div class="contact-line">
-                <a class="contact-item" href="https://www.linkedin.com/in/abel-gonzalez-iglesias" target="_blank" rel="noreferrer">
-                  <span class="icon-bubble">
-                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                      <path
-                        d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.03-1.85-3.03-1.85 0-2.13 1.44-2.13 2.93v5.67H9.37V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.59 0 4.26 2.37 4.26 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"
-                      />
-                    </svg>
-                  </span>
-                  <span class="mono">linkedin.com/in/abel-gonzalez-iglesias</span>
-                </a>
-              </div>
-
-              <!-- Línea 3: Web & Teléfono -->
-              <div class="contact-line">
-                <a class="contact-item web-link" href="https://www.agithecreator.com" target="_blank" rel="noreferrer">
-                  <span class="icon-bubble">
-                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                      <path
-                        d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm7.93 9h-3.18a15.7 15.7 0 0 0-1.37-6.02A8.03 8.03 0 0 1 19.93 11zM12 4c.92 0 2.49 2.12 3.18 7H8.82C9.51 6.12 11.08 4 12 4zM4.07 13h3.18c.22 2.18.74 4.28 1.55 6.02A8.03 8.03 0 0 1 4.07 13zm3.18-2H4.07a8.03 8.03 0 0 1 4.73-6.02A15.7 15.7 0 0 0 7.25 11zm1.57 2h6.36c-.69 4.88-2.26 7-3.18 7-.92 0-2.49-2.12-3.18-7zm7.93 0h3.18a8.03 8.03 0 0 1-4.73 6.02c.81-1.74 1.33-3.84 1.55-6.02z"
-                      />
-                    </svg>
-                  </span>
-                  <span class="mono">www.agithecreator.com</span>
-                </a>
-                <a class="contact-item" href="tel:654936634" style="margin-left: 16px;">
-                  <span class="icon-bubble">
-                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.02.75-.25 1.02l-2.2 2.2z"/>
-                    </svg>
-                  </span>
-                  <span class="mono">654 93 66 34</span>
-                </a>
-              </div>
+            <div class="contact-grid">
+              <a class="contact-item" href="https://github.com/AGIthecreator" target="_blank" rel="noreferrer">
+                <span class="icon-bubble">
+                  <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.5 2.87 8.31 6.84 9.66.5.1.68-.22.68-.48 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.39-3.37-1.39-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.58 2.36 1.12 2.94.86.09-.67.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.09 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.32.1-2.75 0 0 .84-.27 2.75 1.05a9.1 9.1 0 0 1 2.5-.35c.85 0 1.7.12 2.5.35 1.9-1.32 2.74-1.05 2.74-1.05.56 1.43.21 2.49.1 2.75.64.72 1.03 1.63 1.03 2.75 0 3.96-2.34 4.83-4.58 5.08.36.32.68.96.68 1.93 0 1.39-.01 2.51-.01 2.85 0 .27.18.59.69.48A10.2 10.2 0 0 0 22 12.26C22 6.58 17.52 2 12 2z"/>
+                  </svg>
+                </span>
+                <span class="mono">github.com/AGIthecreator</span>
+              </a>
+              <a class="contact-item" href="tel:654936634">
+                <span class="icon-bubble">
+                  <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.02.75-.25 1.02l-2.2 2.2z"/>
+                  </svg>
+                </span>
+                <span class="mono">654 93 66 34</span>
+              </a>
+              <a class="contact-item" href="https://www.linkedin.com/in/abel-gonzalez-iglesias" target="_blank" rel="noreferrer">
+                <span class="icon-bubble">
+                  <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.03-1.85-3.03-1.85 0-2.13 1.44-2.13 2.93v5.67H9.37V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.59 0 4.26 2.37 4.26 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/>
+                  </svg>
+                </span>
+                <span class="mono">linkedin.com/in/abel-gonzalez-iglesias</span>
+              </a>
+              <a class="contact-item" href="mailto:contacto@agithecreator.com">
+                <span class="icon-bubble">
+                  <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/>
+                  </svg>
+                </span>
+                <span class="mono">contacto@agithecreator.com</span>
+              </a>
             </div>
           </div>
         </div>
-
-        <aside class="header-right panel header-panel">
-          <div class="panel-inner qr-wrap">
-            <div>
-              <div class="qr" title="QR a https://www.agithecreator.com">
-                <img src="/QRPaginaweb.png" alt="QR hacia el portfolio" />
-              </div>
-              <div class="qr-label">Escanear para abrir web</div>
-            </div>
-
-            <div class="bubbles">
-              <div class="chip"><span>Vehículo propio (Carné B)</span></div>
-              <div class="chip"><span>Disponibilidad inmediata</span></div>
-            </div>
-          </div>
-        </aside>
       </section>
 
-      <!-- ===== BODY ===== -->
       <section class="body-grid">
         <section class="panel">
           <div class="panel-inner">
-            <h2>Experiencia</h2>
+            <h2>Perfil Profesional</h2>
+            <div class="item">
+              <p>Construyo productos SaaS y experiencias web con React/Next y Node.js, llevando ideas a producción en Vercel y Cloudflare.</p><br>
+              <p>Resuelvo pagos/autenticación con Stripe, Supabase y APIs; sincronizo datos con Airtable, Make y Webhooks.</p><br>
+              <p>Automatizo operaciones y procesos críticos para que los equipos se centren en el producto.</p>
+            </div>
+          </div>
+        </section>
 
-            <article class="item">
-  <div class="item-head">
-    <div class="item-title">Desarrollador Full Stack</div>
-    <div class="item-meta mono">Dic 2025 – Actualidad</div>
-  </div>
-  <ul>
-    <li><strong>PucelaTicketing:</strong> Sistema de gestión de eventos con <strong>Stripe</strong>, generación de <strong>QR dinámicos</strong> y base de datos <strong>PostgreSQL (Supabase)</strong> con cifrado avanzado.</li>
-    <li><strong>Arquitectura Híbrida (Portfolio/Aguarrás):</strong> Integración de <strong>Airtable API</strong> y <strong>Make (Integromat)</strong> para actualización de contenidos en tiempo real sin intervención en código.</li>
-    <li><strong>Despliegue y Seguridad:</strong> Configuración de <strong>CI/CD</strong> en Vercel y gestión de infraestructura en <strong>Cloudflare</strong> (DNS/Variables de entorno/Secretos).</li>
-    <li><strong>Entorno de Desarrollo:</strong> Gestión de versiones en repositorios de <strong>GitHub</strong> y optimización de flujos de trabajo con <strong>IA (Prompt Engineering)</strong>.</li>
-  </ul>
-</article>
+        <section class="panel">
+          <div class="panel-inner">
+            <h2>Stack tecnológico</h2>
+            <div class="stack-grid">
+              <div class="skill-pill"><strong>Frontend:</strong> React · Next.js · React Native · TypeScript · Tailwind CSS.</div>
+              <div class="skill-pill"><strong>Backend:</strong> Node.js · Express · APIs REST · Webhooks · Supabase Functions · Stripe.</div>
+              <div class="skill-pill"><strong>Database:</strong> PostgreSQL · Supabase (Auth/Vault) · Airtable.</div>
+              <div class="skill-pill"><strong>Automatización:</strong> Make · Airtable API · Webhooks.</div>
+              <div class="skill-pill"><strong>Infra:</strong> Vercel · Cloudflare · GitHub · CI/CD · secrets/env.</div>
+            </div>
+          </div>
+        </section>
 
-            <article class="item">
-              <div class="item-head">
-                <div class="item-title">Desarrollador Mobile (React Native)</div>
-                <div class="item-meta mono">Dic 2025 – Actualidad</div>
-              </div>
+        <section class="panel">
+          <div class="panel-inner">
+            <h2>Proyectos destacados</h2>
+
+            <article class="project">
+              <p class="project-title">PucelaTicketing — Plataforma de gestión de eventos con pagos integrados.</p>
+              <p class="project-stack">Stack: Next.js · Node.js · Supabase/PostgreSQL · Stripe · Supabase Auth · Cloudflare.</p>
               <ul>
-                <li>Diseño e implementación de App móvil para gestión de llamadas y seguridad.</li>
-                <li>Uso avanzado de Hooks, State Management y navegación en entornos móviles.</li>
-                <li>Integración con APIs para procesamiento de datos en tiempo real.</li>
+                <li><strong>Pagos:</strong> Stripe Checkout y validaciones con QR dinámicos para accesos rápidos.</li>
+                <li><strong>Acceso:</strong> Panel organizador con reporting que reduce controles manuales de entradas.</li>
+                <li><strong>Deploy:</strong> Despliegue continuo en Vercel con dashboards de métricas y seguridad.</li>
               </ul>
+              <p class="status-line"><strong>Estado:</strong> Sistema funcional en Vercel · Repo privado disponible bajo solicitud.</p>
             </article>
 
-            <article class="item">
-              <div class="item-head">
-                <div class="item-title">Asesor Comercial Telefonía (San Isidro)</div>
-                <div class="item-meta mono">Sept 2023 – Sept 2024</div>
-              </div>
+            <article class="project">
+              <p class="project-title">AGI the creator + Aguarrás — Portfolio + web comercial en Next.js.</p>
+              <p class="project-stack">Stack: Next.js · Airtable · Make · Cloudflare · Vercel.</p>
               <ul>
-                <li><strong>Soporte y configuración técnica:</strong> diagnóstico de software iOS/Android, copias de seguridad y migración de datos.</li>
-                <li><strong>Gestión de sistemas de administración:</strong> manejo de paneles multi-operador y ERP para altas y portabilidades.</li>
-                <li>Optimización de procesos de venta y asesoramiento técnico especializado.</li>
+                <li><strong>Contenidos:</strong> Airtable alimenta páginas, clientes y productos en tiempo real.</li>
+                <li><strong>Automatización:</strong> Make sincroniza datos y publicaciones sin tocar código.</li>
+                <li><strong>Producción:</strong> Sitio online y funcional, con autenticación y usuarios reales.</li>
               </ul>
+              <p class="status-line"><strong>Demo:</strong> <a href="https://aguarr-s-estudio-the-artful-space.vercel.app/">aguarr-s-estudio-the-artful-space.vercel.app</a></p>
+            </article>
+
+            <article class="project">
+              <p class="project-title">Automatizaciones Make/Airtable — Flujos de operaciones y contenidos.</p>
+              <p class="project-stack">Stack: Make · Airtable API · Webhooks · APIs REST.</p>
+              <ul>
+                <li><strong>Problema:</strong> tareas de datos manuales y duplicados por cada registro.</li>
+                <li><strong>Solución:</strong> workflows que sincronizan y notifican en producción, reduciendo intervención.</li>
+                <li><strong>Resultado:</strong> ~3–4 minutos ahorrados por registro, hasta 5–7 horas/día en operaciones.</li>
+              </ul>
+              <p class="status-line"><strong>Estado:</strong> Automatizaciones en producción · Ejemplos bajo solicitud.</p>
             </article>
           </div>
         </section>
 
         <section class="panel">
-  <div class="panel-inner">
-    <h2>Perfil Profesional (Propuesta de Valor)</h2>
-    <div class="item">
-      <p>
-        Desarrollador Full Stack con visión de negocio y base técnica certificada. Especializado en la creación de SPAs escalables y soluciones mobile que priorizan la seguridad y la automatización. Mi trayectoria previa en consultoría técnica me permite optimizar procesos end-to-end con un enfoque crítico en la entrega de valor.
-      </p>
-    </div>
+          <div class="panel-inner">
+            <h2>Experiencia</h2>
 
-            <div style="height: 10px"></div>
-
-            <h2>Certificaciones</h2>
-            <div class="item">
+            <article class="item">
               <div class="item-head">
-                <div class="item-title">EFUNDAE (2026)</div>
+                <div class="item-title">Proyectos propios / Freelance · Full Stack Developer</div>
+                <div class="item-meta mono">Dic 2025 – Actualidad</div>
               </div>
               <ul>
-                <li>Nivel 5 (Frontend Avanzado), Nivel 4 (Backend) y Nivel 3 (Frontend).</li>
+                <li><strong>PucelaTicketing:</strong> Desarrollé la plataforma con Stripe, QR dinámicos y Auth para gestionar cobros y accesos en un panel único.</li>
+                <li><strong>Aguarrás/Portfolio:</strong> Arquitecté Next.js + Airtable + Make para publicar contenido y clientes reales con deploy automático.</li>
+                <li><strong>Automatizaciones:</strong> Implementé Make + Webhooks que disparan APIs y alertas, reduciendo tareas repetitivas.</li>
+                <li><strong>Infraestructura:</strong> Mantengo despliegues en Vercel y seguridad en Cloudflare (DNS, secrets, CI/CD).</li>
               </ul>
-              <div class="item-head" style="margin-top: 8px;">
-                <div class="item-title">Google (2026)</div>
+            </article>
+
+            <article class="item">
+              <div class="item-head">
+                <div class="item-title">CallGuard · Mobile Developer (React Native)</div>
+                <div class="item-meta mono">Dic 2025 – Actualidad · Closed testing</div>
               </div>
               <ul>
-                <li>Especialización Angular y Vue 3 (certificaciones en curso Google / Escuela Vue).</li>
+                <li>Diseño de app para control de llamadas y seguridad con React Native, hooks y navegación optimizada.</li>
+                <li>Integración de APIs de telefonía para procesar datos en tiempo real y disparar notificaciones.</li>
               </ul>
-            </div>
+            </article>
 
-            <div style="height: 10px"></div>
+            <article class="item">
+              <div class="item-head">
+                <div class="item-title">Asesor Comercial Telefonía · San Isidro</div>
+                <div class="item-meta mono">Sept 2023 – Sept 2024</div>
+              </div>
+              <ul>
+                <li>Soporte técnico con diagnósticos iOS/Android, migraciones y copias de seguridad.</li>
+                <li>Gestión de paneles multi-operador y ERPs para altas, portabilidades y configuraciones.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
 
-            <h2>Habilidades Técnicas</h2>
-            <div class="skills">
-              <div class="skill-pill"><strong>Frontend & UX:</strong> React, Next.js, TypeScript, Tailwind CSS, Estado y Consumo de APIs.</div>
-              <div class="skill-pill"><strong>Backend & DB:</strong> Node.js, PostgreSQL, Supabase (Auth/Vault), Firebase, Modelado de datos.</div>
-              <div class="skill-pill"><strong>Automatización & Integración:</strong> Make (Integromat), Airtable API, Stripe, n8n, Webhooks, Scraping.</div>
-              <div class="skill-pill"><strong>Infraestructura & Seguridad:</strong> Cloudflare (DNS/Zero Trust), Vercel, Git/GitHub, CI/CD, Variables de entorno y Gestión de secretos.</div>
-            </div>
+        <section class="panel span-2">
+          <div class="panel-inner">
+            <h2>Otros</h2>
+            <div class="otros-grid">
+              <div class="item">
+                <div class="item-head">
+                  <div class="item-title">Certificaciones</div>
+                </div>
+                <ul>
+                  <li>EFUNDAE 2026: Niveles 5 (Frontend Avanzado), 4 (Backend) y 3 (Frontend).</li>
+                  <li>Google 2026: Especialización Angular / Escuela Vue (en curso).</li>
+                </ul>
+              </div>
 
-            <div style="height: 10px"></div>
-
-            <h2>Idiomas</h2>
-            <div class="skills">
-              <div class="skill-pill">Español (Nativo)</div>
-              <div class="skill-pill">Inglés (Nivel Medio)</div>
+              <div class="item">
+                <p><strong>Idiomas:</strong> Español nativo · Inglés intermedio.</p><br>
+                <p><strong>Disponibilidad:</strong> Inmediata <br> Remoto España · Presencial/Híbrido Valladolid<br/>Vehículo propio (Carné B).</p>
+              </div>
             </div>
           </div>
         </section>
