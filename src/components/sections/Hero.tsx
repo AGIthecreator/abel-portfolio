@@ -57,8 +57,6 @@ export function Hero() {
   typeSpeedMs={32}
   deleteSpeedMs={20}
 />
-
-
                 </span>
               </h1>
 
@@ -97,43 +95,47 @@ export function Hero() {
           </div>
 
           {/* BLOQUE INFERIOR */}
-          <div className="relative z-20 flex flex-col gap-4 sm:flex-row sm:items-center w-full -mt-10 sm:-mt-14 px-2">
-            
-            {/* BOTÓN PROYECTOS: Neón AZUL rápido */}
-            <NeonPulse>
-              <a
-                href="#proyectos"
-                className="btn-proyectos-active-blue group relative inline-flex w-fit shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-950/80 backdrop-blur-md px-6 py-3 text-sm font-bold text-white transition-all duration-300 ease-out hover:scale-105 hover:bg-slate-900/90 focus:outline-none"
-              >
-                {/* Reflejo interno violeta a velocidad media (2s) */}
-                <span className="absolute inset-0 cyber-reflejo-violet opacity-40" aria-hidden="true" />
-                <span className="absolute inset-0 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100 neon-glow" />
-                <span className="relative">Ver Proyectos</span>
-              </a>
-            </NeonPulse>
+          <div className="relative z-20 flex flex-col items-center gap-6 w-full -mt-6 sm:-mt-14 px-4 sm:flex-row sm:justify-between sm:gap-4">
+  
+  {/* Botón Proyectos */}
+  <div className="w-full sm:w-auto flex justify-center">
+    <NeonPulse>
+      <a
+        href="#proyectos"
+        className="btn-proyectos-active-blue group relative inline-flex w-full sm:w-fit shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-950/80 backdrop-blur-md px-8 py-4 sm:px-6 sm:py-3 text-sm font-bold text-white transition-all duration-300 ease-out hover:scale-105 hover:bg-slate-900/90 focus:outline-none"
+      >
+        <span className="absolute inset-0 cyber-reflejo-violet opacity-40" aria-hidden="true" />
+        <span className="absolute inset-0 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100 neon-glow" />
+        <span className="relative">Ver Proyectos</span>
+      </a>
+    </NeonPulse>
+  </div>
 
-            <p className="flex-none text-sm font-bold text-white/95 text-center sm:text-left drop-shadow-[0_2px_10px_rgba(0,0,0,1)]">
-              Ingeniería técnica rigurosa | Visionario de producto digital
-            </p>
+  {/* Texto central descriptivo */}
+  <p className="max-w-70 sm:max-w-none text-xs sm:text-sm font-bold text-white/95 text-center sm:text-left drop-shadow-[0_2px_10px_rgba(0,0,0,1)] leading-relaxed">
+    Sistemas en producción <span className="hidden sm:inline">|</span> <br className="sm:hidden" /> Automatización real
+  </p>
 
-            {/* BOTÓN DISPONIBLE: Mismo efecto pero LENTO y tenue */}
-            <NeonPulse>
-              <a
-                href="#contacto"
-                className="btn-disponible-slow group relative inline-flex w-fit shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-950/60 backdrop-blur-md px-6 py-3 text-sm font-semibold text-white/80 transition-all duration-300 ease-out hover:scale-105 hover:bg-slate-900/80 hover:text-white focus:outline-none"
-              >
-                {/* Reflejo interno violeta LENTO (5s) */}
-                <span className="absolute inset-0 cyber-reflejo-violet-slow opacity-20" aria-hidden="true" />
-                <span className="absolute inset-0 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100 neon-glow" />
-                <span className="relative">Disponible para trabajar</span>
-              </a>
-            </NeonPulse>
+  {/* Botón Disponible */}
+  <div className="w-full sm:w-auto flex justify-center">
+    <NeonPulse>
+      <a
+        href="#contacto"
+        className="btn-disponible-slow group relative inline-flex w-full sm:w-fit shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-950/60 backdrop-blur-md px-8 py-4 sm:px-6 sm:py-3 text-sm font-semibold text-white/80 transition-all duration-300 ease-out hover:scale-105 hover:bg-slate-900/80 hover:text-white focus:outline-none"
+      >
+        <span className="absolute inset-0 cyber-reflejo-violet-slow opacity-20" aria-hidden="true" />
+        <span className="absolute inset-0 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100 neon-glow" />
+        <span className="relative">Disponible para trabajar</span>
+      </a>
+    </NeonPulse>
+  </div>
 
-            <div className="sm:ml-auto flex shrink-0 justify-center">
-              <ArchitectureLogs />
-            </div>
-          </div>
-        </div>
+  {/* Architecture Logs */}
+  <div className="hidden sm:flex sm:ml-auto shrink-0 justify-center">
+    <ArchitectureLogs />
+  </div>
+</div>
+</div>
 
         <style jsx>{`
           /* NEÓN RÁPIDO AZUL/CIAN para Proyectos (0.8s) */
