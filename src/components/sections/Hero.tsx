@@ -108,7 +108,7 @@ export function Hero() {
                 {/* Reflejo interno violeta a velocidad media (2s) */}
                 <span className="absolute inset-0 cyber-reflejo-violet opacity-40" aria-hidden="true" />
                 <span className="absolute inset-0 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100 neon-glow" />
-                <span className="relative">Proyectos</span>
+                <span className="relative">Ver Proyectos</span>
               </a>
             </NeonPulse>
 
