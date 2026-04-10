@@ -6,7 +6,6 @@ import { Typewriter } from "@/components/motion/Typewriter";
 import { ArchitectureLogs } from "@/components/ui/ArchitectureLogs";
 import dynamic from "next/dynamic";
 
-// Canvas pesado: lo mandamos a chunk separado para aligerar el JS inicial del Hero.
 const HeroReactiveCanvas = dynamic(
   () =>
     import("@/components/ui/HeroReactiveCanvas").then(
@@ -24,121 +23,187 @@ const ROLE_STRINGS = [
 export function Hero() {
   return (
     <section className="relative pt-6 sm:pt-10">
-      <FadeIn className="group/hero glass-card neon-border relative rounded-3xl px-6 py-9 sm:px-10 sm:py-12">
-        {/* Reactive canvas background */}
+      <FadeIn className="group/hero glass-card neon-border relative rounded-3xl px-6 py-9 sm:px-10 sm:py-12 overflow-hidden">
         <HeroReactiveCanvas intensity={0.9} />
 
-        {/* pointer-driven border glow */}
         <div
           aria-hidden="true"
           className="hero-border pointer-events-none absolute inset-0 rounded-3xl"
         />
 
-        <div className="flex flex-col gap-7">
-          <div className="flex flex-col gap-4">
-            <p className="text-xs tracking-[0.25em] text-white/60">
-              CONSTRUYENDO EL FUTURO DIGITAL
-            </p>
+        <div className="relative flex flex-col items-center">
+          {/* BLOQUE SUPERIOR */}
+          <div className="relative z-20 flex flex-col gap-7 w-full -mb-10 sm:-mb-14">
+            <div className="flex flex-col gap-4">
+              <p className="text-xs tracking-[0.25em] text-white/80 font-semibold">
+                CONSTRUYENDO EL FUTURO DIGITAL
+              </p>
 
-            <h1 className="relative inline-flex flex-nowrap items-baseline gap-x-3 text-[2.05rem] font-bold tracking-tighter sm:text-6xl lg:text-7xl">
-              {/* minimal cyberpunk underline */}
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute -bottom-3 left-0 h-px w-[min(560px,92%)] bg-linear-to-r from-accent via-white/30 to-transparent"
-              />
-
-              <span
-                className="hero-name text-white whitespace-nowrap"
-              >
-                Abel
-              </span>
-              <span className="text-white/60 whitespace-nowrap">-</span>
-              <span className="hero-name whitespace-nowrap">
-                <Typewriter
-                  text={ROLE_STRINGS[0]}
-                  phrases={[...ROLE_STRINGS]}
-                  pauseAfterTypedMs={1350}
-                  pauseAfterDeletedMs={250}
-                  typeSpeedMs={32}
-                  deleteSpeedMs={20}
+              <h1 className="relative inline-flex flex-nowrap items-baseline gap-x-3 text-[2.05rem] font-bold tracking-tighter sm:text-6xl lg:text-7xl">
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -bottom-3 left-0 h-px w-[min(560px,92%)] bg-linear-to-r from-accent via-white/50 to-transparent"
                 />
-              </span>
-            </h1>
+                <span className="hero-name text-white whitespace-nowrap">
+                  Abel G.I.
+                </span>
+                <span className="text-white/80 whitespace-nowrap">-</span>
+                <span className="hero-name whitespace-nowrap">
+                  <Typewriter
+  text={ROLE_STRINGS[0]} // El primer string de la lista para el valor inicial
+  phrases={ROLE_STRINGS as unknown as string[]} // Forzamos el array a ser un array de strings estándar
+  pauseAfterTypedMs={1350}
+  pauseAfterDeletedMs={250}
+  typeSpeedMs={32}
+  deleteSpeedMs={20}
+/>
 
-            <p className="max-w-2xl text-pretty text-base leading-7 text-white/70 sm:text-lg">
-              Estratega técnico enfocado en crear soluciones escalables y seguras que fusionan código de vanguardia con visión de negocio.
-            </p>
+
+                </span>
+              </h1>
+
+              <p className="w-full max-w-none text-pretty text-base leading-none text-white/95 sm:text-lg drop-shadow-sm">
+                · Full Stack Developer enfocado en SaaS y automatización<br />
+                · Desarrollo sistemas reales con pagos y automatización<br />
+                · Desplegados y funcionando en producción
+              </p>
+              <p className="-mt-1 w-full max-w-none text-sm leading-none text-white/70 font-medium">
+                React · Next.js · Node · Supabase · Stripe
+              </p>
+            </div>
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          {/* BLOQUE MEDIO: Video */}
+          <div className="hero-demo-video relative z-10 opacity-50 transition-opacity duration-700 group-hover/hero:opacity-75" aria-label="Video de demostración 16:9" role="presentation">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              poster="/Frame-video-portfolio.PNG"
+              controls={false}
+              preload="metadata"
+            >
+              <source
+                media="(max-width: 768px)"
+                src="https://res.cloudinary.com/dzsyoknqy/video/upload/f_auto,q_auto,w_800,vc_h265,br_1m/v1774948305/bfwu00oiswhhmobfvehb.mp4"
+                type="video/mp4"
+              />
+              <source
+                src="https://res.cloudinary.com/dzsyoknqy/video/upload/f_auto,q_auto,vc_h265/v1774948305/bfwu00oiswhhmobfvehb.mp4"
+                type="video/mp4"
+              />
+            </video>
+          </div>
+
+          {/* BLOQUE INFERIOR */}
+          <div className="relative z-20 flex flex-col gap-4 sm:flex-row sm:items-center w-full -mt-10 sm:-mt-14 px-2">
+            
+            {/* BOTÓN PROYECTOS: Neón AZUL rápido */}
             <NeonPulse>
               <a
-                href="#contacto"
-                className="neon-glow group relative inline-flex w-fit items-center justify-center overflow-hidden rounded-full bg-linear-to-r from-[rgba(139,92,246,0.18)] via-[rgba(139,92,246,0.08)] to-[rgba(139,92,246,0.18)] px-6 py-3 text-sm font-medium text-white ring-1 ring-accent-glow transition-all duration-300 ease-out animate-cta-glow hover:scale-105 hover:from-[rgba(139,92,246,0.22)] hover:via-[rgba(139,92,246,0.10)] hover:to-[rgba(139,92,246,0.22)] hover:ring-[rgba(34,211,238,0.60)] hover:shadow-[0_0_0_1px_rgba(34,211,238,0.18),0_0_34px_rgba(34,211,238,0.16)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(34,211,238,0.70)]"
+                href="#proyectos"
+                className="btn-proyectos-active-blue group relative inline-flex w-fit shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-950/80 backdrop-blur-md px-6 py-3 text-sm font-bold text-white transition-all duration-300 ease-out hover:scale-105 hover:bg-slate-900/90 focus:outline-none"
               >
-                {/* pulso violeta sutil y constante */}
-                <span className="absolute inset-0 cyber-violet-pulse" aria-hidden="true" />
+                {/* Reflejo interno violeta a velocidad media (2s) */}
+                <span className="absolute inset-0 cyber-reflejo-violet opacity-40" aria-hidden="true" />
                 <span className="absolute inset-0 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100 neon-glow" />
-                <span className="relative">Contacto</span>
+                <span className="relative">Proyectos</span>
               </a>
             </NeonPulse>
 
-            <p className="text-sm font-medium text-white/75">
+            <p className="flex-none text-sm font-bold text-white/95 text-center sm:text-left drop-shadow-[0_2px_10px_rgba(0,0,0,1)]">
               Ingeniería técnica rigurosa | Visionario de producto digital
             </p>
 
-            {/* Architecture Logs: empujado al extremo derecho en desktop; wrap/centrado en mobile */}
-            <div className="sm:ml-auto flex justify-center sm:justify-end">
+            {/* BOTÓN DISPONIBLE: Mismo efecto pero LENTO y tenue */}
+            <NeonPulse>
+              <a
+                href="#contacto"
+                className="btn-disponible-slow group relative inline-flex w-fit shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-950/60 backdrop-blur-md px-6 py-3 text-sm font-semibold text-white/80 transition-all duration-300 ease-out hover:scale-105 hover:bg-slate-900/80 hover:text-white focus:outline-none"
+              >
+                {/* Reflejo interno violeta LENTO (5s) */}
+                <span className="absolute inset-0 cyber-reflejo-violet-slow opacity-20" aria-hidden="true" />
+                <span className="absolute inset-0 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100 neon-glow" />
+                <span className="relative">Disponible para trabajar</span>
+              </a>
+            </NeonPulse>
+
+            <div className="sm:ml-auto flex shrink-0 justify-center">
               <ArchitectureLogs />
             </div>
           </div>
         </div>
 
-        <div className="hero-demo-video" aria-label="Video de demostración 16:9" role="presentation">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            poster="/Frame-video-portfolio.PNG"
-            controls={false}
-            preload="metadata"
-          >
-            <source
-              media="(max-width: 768px)"
-              src="https://res.cloudinary.com/dzsyoknqy/video/upload/f_auto,q_auto,w_800,vc_h265,br_1m/v1774948305/bfwu00oiswhhmobfvehb.mp4"
-              type="video/mp4"
-            />
-            <source
-              src="https://res.cloudinary.com/dzsyoknqy/video/upload/f_auto,q_auto,vc_h265/v1774948305/bfwu00oiswhhmobfvehb.mp4"
-              type="video/mp4"
-            />
-          </video>
-        </div>
-
         <style jsx>{`
-          .hero-border {
-            opacity: 0;
-            transition: opacity 220ms ease;
-            background: radial-gradient(
-              420px circle at var(--mx, 50%) var(--my, 50%),
-              rgba(139, 92, 246, 0.22),
-              transparent 55%
-            );
-            box-shadow: inset 0 0 0 1px rgba(139, 92, 246, 0.24);
+          /* NEÓN RÁPIDO AZUL/CIAN para Proyectos (0.8s) */
+          .btn-proyectos-active-blue {
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            animation: neon-blue-pulse 0.8s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
           }
 
-          :global(.group\/hero:hover) .hero-border {
-            opacity: 1;
+          @keyframes neon-blue-pulse {
+            0% { 
+              border-color: rgba(255, 255, 255, 0.4); 
+              box-shadow: 0 0 2px rgba(34, 211, 238, 0.2); /* Cian suave */
+            }
+            50% {
+              border-color: rgba(139, 92, 246, 0.6); /* Pasando por morado */
+            }
+            100% { 
+              border-color: rgba(34, 211, 238, 1); /* Azul eléctrico/Cian intenso */
+              box-shadow: 0 0 12px rgba(34, 211, 238, 0.9), inset 0 0 4px rgba(34, 211, 238, 0.5); 
+            }
+          }
+
+          /* NEÓN LENTO AZUL para Disponible (3s) */
+          .btn-disponible-slow {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: neon-blue-slow-pulse 3s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
+          }
+
+          @keyframes neon-blue-slow-pulse {
+            0% { 
+              border-color: rgba(255, 255, 255, 0.2); 
+              box-shadow: 0 0 1px rgba(34, 211, 238, 0.1); 
+            }
+            100% { 
+              border-color: rgba(34, 211, 238, 0.6); /* Azul eléctrico sutil */
+              box-shadow: 0 0 6px rgba(34, 211, 238, 0.4); 
+            }
+          }
+
+          /* Reflejo violeta Proyectos (2s) */
+          .cyber-reflejo-violet {
+            background: linear-gradient(
+              135deg,
+              transparent 25%,
+              rgba(139, 92, 246, 0.5) 50%,
+              transparent 75%
+            );
+            background-size: 200% 200%;
+            animation: reflejo-speed 2s linear infinite;
+          }
+
+          /* Reflejo violeta Disponible (5s) */
+          .cyber-reflejo-violet-slow {
+            background: linear-gradient(
+              135deg,
+              transparent 25%,
+              rgba(139, 92, 246, 0.3) 50%,
+              transparent 75%
+            );
+            background-size: 200% 200%;
+            animation: reflejo-speed 5s linear infinite;
+          }
+
+          @keyframes reflejo-speed {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
           }
 
           .hero-name {
-            background: linear-gradient(
-              90deg,
-              rgba(255, 255, 255, 0.85),
-              rgba(255, 255, 255, 1) 45%,
-              rgba(139, 92, 246, 0.85)
-            );
+            background: linear-gradient(90deg, #fff, #fff 45%, #8b5cf6);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -147,12 +212,13 @@ export function Hero() {
           .hero-demo-video {
             width: 100%;
             max-width: min(960px, 100%);
-            margin: 0.75rem auto 0;
+            margin: 0 auto;
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 40px -10px rgba(168, 85, 247, 0.25);
+            box-shadow: 0 10px 40px -10px rgba(168, 85, 247, 0.3);
             overflow: hidden;
             aspect-ratio: 16 / 9;
+            background: #000;
           }
 
           .hero-demo-video video {
@@ -160,7 +226,6 @@ export function Hero() {
             height: 100%;
             object-fit: cover;
             display: block;
-            will-change: transform;
           }
         `}</style>
       </FadeIn>
