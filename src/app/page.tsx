@@ -1,8 +1,7 @@
 import { Hero } from "@/components/sections/Hero";
-import { Manifesto } from "@/components/sections/Manifesto";
 import { Footer } from "@/components/sections/Footer";
-import { EcgConnector } from "@/components/ui/EcgConnector";
 import {
+  DeferredManifesto,
   DeferredProjects,
   DeferredStrategicProfile,
   DeferredTechStack,
@@ -18,27 +17,27 @@ export default function Page() {
 
       <main className="relative z-10 mx-auto max-w-300 px-4 sm:px-6 lg:px-8">
         
+        {/* Bloque Superior: Hero + Manifesto + StrategicProfile */}
         <section className="pt-12 sm:pt-16 pb-6">
           <Hero />
-          <Manifesto /> 
+          
+          <div className="mt-8 sm:mt-12">
+            <DeferredManifesto />
+          </div>
+
+          <div className="mt-10 sm:mt-14">
+            <DeferredStrategicProfile />
+          </div>
         </section>
 
-        <EcgConnector className="my-2 sm:my-4" />
-
+        {/* Bloque Tecnologías */}
         <section className="py-10 sm:py-14">
           <DeferredTechStack />
         </section>
 
-        <EcgConnector className="my-2 sm:my-4" />
-
+        {/* Bloque Proyectos */}
         <section className="py-10 sm:pt-14 sm:pb-18">
           <DeferredProjects />
-        </section>
-
-        <EcgConnector className="my-2 sm:my-4" />
-
-        <section className="py-10 sm:py-14">
-          <DeferredStrategicProfile />
         </section>
 
         <Footer />
