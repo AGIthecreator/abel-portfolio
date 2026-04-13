@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 
 export function Manifesto() {
-  // 1. Keyframes: Aparece (0.1), Se queda (0.9), Desaparece (1)
+  // ... (tus variantes y timer se mantienen igual)
   const loopVariants = {
     initial: { opacity: 0, y: 10 },
     animate: { 
@@ -12,7 +12,6 @@ export function Manifesto() {
     }
   };
 
-  // 2. Configuración del Timer con los valores solicitados
   const timer = (delay: number) => ({
     duration: 6,
     repeat: Infinity,
@@ -23,10 +22,11 @@ export function Manifesto() {
   });
 
   return (
-    <section className="relative py-12 sm:py-16 px-6 overflow-hidden bg-background">
+    /* He eliminado 'bg-background' para que sea transparente */
+    <section className="relative py-12 sm:py-16 px-6 overflow-hidden">
       <div className="max-w-4xl mx-auto">
         
-        {/* BLOQUE 1: INTRO (Delay 0.4s) */}
+        {/* BLOQUE 1: INTRO */}
         <div className="mb-12 sm:mb-16 text-center">
           <motion.div 
             variants={loopVariants as any} 
@@ -43,7 +43,8 @@ export function Manifesto() {
           </motion.div>
         </div>
 
-        {/* BLOQUE 2 Y 3: CUERPO (Delays 0.8s y 1.2s) */}
+        {/* ... Resto del contenido (Bloques 2, 3 y 4) se mantienen igual ... */}
+        {/* BLOQUE 2 Y 3: CUERPO */}
         <div className="space-y-12 sm:space-y-16 mb-16 sm:mb-20">
           <motion.div 
             variants={loopVariants as any} 
@@ -72,7 +73,7 @@ export function Manifesto() {
           </motion.div>
         </div>
 
-        {/* BLOQUE 4: CIERRE (Delays 1.6s y 1.8s) */}
+        {/* BLOQUE 4: CIERRE */}
         <div className="relative pt-8">
           <motion.div 
             variants={loopVariants as any} 
@@ -97,7 +98,6 @@ export function Manifesto() {
             </div>
           </motion.div>
         </div>
-
       </div>
     </section>
   );
