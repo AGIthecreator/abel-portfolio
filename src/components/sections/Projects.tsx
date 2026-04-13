@@ -102,7 +102,7 @@ export function Projects() {
             </ul>
           </div>
           <div className="pt-4">
-            <a href="mailto:ejemplo@contacto@agithecreator.com" target="_blank" rel="noreferrer" className="flex items-center gap-2 w-fit px-6 py-3 rounded-full bg-accent/10 border border-accent/20 text-white font-medium hover:bg-accent/20 transition-all">
+            <a href="mailto:contacto@agithecreator.com" target="_blank" rel="noreferrer" className="flex items-center gap-2 w-fit px-6 py-3 rounded-full bg-accent/10 border border-accent/20 text-white font-medium hover:bg-accent/20 transition-all">
               <ExternalLink className="h-4 w-4" /> Ver proyecto (bajo solicitud)
             </a>
           </div>
