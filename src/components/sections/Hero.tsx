@@ -76,9 +76,9 @@ export function Hero() {
             {/* ENLACES Y LOG TÉCNICO */}
             <div className="flex flex-col items-center gap-4">
               <div className="flex items-center gap-8 text-white/30 text-sm font-medium tracking-widest uppercase">
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">GitHub</a>
+                <a href="https://github.com/AGIthecreator" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">GitHub</a>
                 <span className="w-1 h-1 bg-white/10 rounded-full" />
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">LinkedIn</a>
+                <a href="https://www.linkedin.com/in/abel-gonzalez-iglesias" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">LinkedIn</a>
                 <span className="w-1 h-1 bg-white/10 rounded-full" />
                 <a href="mailto:contacto@agithecreator.com" className="hover:text-violet-400 transition-colors">Email</a>
               </div>
