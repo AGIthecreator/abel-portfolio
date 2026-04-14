@@ -10,7 +10,7 @@ const HeroReactiveCanvas = dynamic(
   { ssr: false }
 );
 
-const ROLE_STRINGS = ["Full Stack Developer", "Automation Expert", "Security Focused"] as const;
+const ROLE_STRINGS = ["Sistemas en producción", "Automatización real", "Ecosistemas SaaS"] as const;
 
 export function Hero() {
   return (
@@ -19,81 +19,83 @@ export function Hero() {
       <div className="absolute inset-0 z-[-1] pointer-events-none">
         <video
           autoPlay loop muted playsInline
-          className="h-full w-full object-cover opacity-50 brightness-75"
+          className="h-full w-full object-cover opacity-30 grayscale-[0.5] brightness-50"
           poster="/Frame-video-portfolio.PNG"
         >
           <source src="/videos/VideoHero.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-linear-to-b from-black/50 via-transparent to-black" />
-        <div className="absolute inset-0 z-10 opacity-30">
-          <HeroReactiveCanvas intensity={0.7} />
+        <div className="absolute inset-0 bg-linear-to-b from-black/80 via-black/40 to-black" />
+        <div className="absolute inset-0 z-10 opacity-20">
+          <HeroReactiveCanvas intensity={0.5} />
         </div>
       </div>
 
-      {/* CONTENIDO */}
-      <FadeIn className="relative z-20 h-full w-full flex items-center justify-center px-6 sm:px-10">
-        <div className="w-full max-w-7xl mx-auto flex flex-col items-center">
+      <FadeIn className="relative z-20 h-full w-full flex items-center justify-center px-6">
+        <div className="w-full max-w-5xl mx-auto flex flex-col items-center text-center">
           
-          <div className="w-full flex flex-col gap-7">
-            <div className="flex flex-col gap-4">
-              <p className="text-xs tracking-[0.25em] text-white/90 font-bold uppercase drop-shadow-2xl">
-                CONSTRUYENDO EL FUTURO DIGITAL
-              </p>
-              
-              <h1 className="relative inline-flex flex-nowrap items-baseline gap-x-3 text-[2.05rem] font-bold tracking-tighter sm:text-6xl lg:text-7xl">
-                <span className="hero-name text-white whitespace-nowrap drop-shadow-2xl">Abel G.I.</span>
-                <span className="text-white/80 whitespace-nowrap">-</span>
-                <span className="hero-name whitespace-nowrap drop-shadow-2xl">
-                  <Typewriter 
-                    /* ✅ SOLUCIÓN ERROR TS: Pasamos el primer string del array */
-                    text={ROLE_STRINGS[0]} 
-                    phrases={ROLE_STRINGS as unknown as string[]} 
-                    pauseAfterTypedMs={1350} 
-                    pauseAfterDeletedMs={250} 
-                    typeSpeedMs={32} 
-                    deleteSpeedMs={20} 
-                  />
-                </span>
-                <span className="pointer-events-none absolute -bottom-3 left-0 h-px w-full max-w-140 bg-linear-to-r from-cyan-400 via-white/50 to-transparent" />
-              </h1>
-
-              <p className="text-pretty text-base leading-none text-white font-medium sm:text-lg drop-shadow-lg max-w-3xl">
-                · Full Stack Developer enfocado en SaaS y automatización<br />
-                · Desarrollo sistemas reales con pagos y automatización<br />
-                · Desplegados y funcionando en producción
-              </p>
-              <p className="-mt-1 text-sm text-cyan-400 font-semibold drop-shadow-md">
-                React · Next.js · Node · Supabase · Stripe
-              </p>
+          {/* TEXTO PRINCIPAL */}
+          <div className="flex flex-col gap-6 mb-10">
+            <h1 className="text-4xl sm:text-6xl lg:text-8xl font-bold tracking-tighter text-white">
+              <span className="hero-name">Abel González Iglesias</span>
+            </h1>
+            
+            <div className="h-8 sm:h-12">
+              <span className="text-xl sm:text-3xl font-light text-white/60 tracking-tight flex items-center justify-center">
+                <Typewriter 
+                  text={ROLE_STRINGS as any} 
+                  phrases={ROLE_STRINGS as unknown as string[]} 
+                  pauseAfterTypedMs={1500} 
+                  typeSpeedMs={40}
+                  className="text-violet-400 font-mono" 
+                />
+              </span>
             </div>
+
+            <p className="text-lg sm:text-xl text-white/40 max-w-2xl mx-auto font-light leading-relaxed">
+              Full Stack Developer enfocado en <span className="text-white/80">SaaS y automatización</span>. 
+              Desarrollo sistemas reales con pagos y workflows en producción.
+            </p>
           </div>
 
-          {/* BOTONES CON AISLAMIENTO REFORZADO */}
-          <div className="relative z-50 w-full flex flex-col sm:flex-row items-center justify-between gap-8 mt-20 isolate">
-            <div className="w-full sm:w-auto flex justify-center">
+          {/* ACCIÓN PRINCIPAL CON GLOW Y REFLEJO */}
+          <div className="flex flex-col items-center gap-12 w-full">
+            <div className="relative group">
+              {/* Glow exterior de colores */}
+              <div className="absolute -inset-1 bg-linear-to-r from-violet-600/20 to-cyan-600/20 rounded-sm blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              
               <NeonPulse>
-                <a href="#proyectos" className="btn-cyber-final group">
-                  <span className="absolute inset-0 cyber-reflejo-violet opacity-40" />
+                <a href="#proyectos" className="btn-cyber-minimal relative group">
+                  {/* ✅ REFLEJO DE BARRIDO REANIMADO */}
+                  <span className="absolute inset-0 cyber-scanner-effect opacity-20" />
+                  
                   <span className="relative z-10">Ver Proyectos</span>
+                  <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </a>
               </NeonPulse>
             </div>
 
-            <p className="text-xs sm:text-sm font-bold text-white text-center sm:text-left drop-shadow-2xl max-w-50 sm:max-w-none">
-              Sistemas en producción <span className="hidden sm:inline">|</span> <br className="sm:hidden" /> Automatización real
-            </p>
-
-            <div className="w-full sm:w-auto flex justify-center">
-              <NeonPulse>
-                <a href="#contacto" className="btn-cyber-final-slow border-white/20!">
-                  <span className="absolute inset-0 cyber-reflejo-violet-slow opacity-20" />
-                  <span className="relative z-10">Disponible para trabajar</span>
-                </a>
-              </NeonPulse>
-            </div>
-
-            <div className="hidden lg:flex">
-              <ArchitectureLogs />
+            {/* ENLACES Y LOG TÉCNICO */}
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex items-center gap-8 text-white/30 text-sm font-medium tracking-widest uppercase">
+                <a href="https://github.com/AGIthecreator/" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">GitHub</a>
+                <span className="w-1 h-1 bg-white/10 rounded-full" />
+                <a href="https://www.linkedin.com/in/abel-gonzalez-iglesias/" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">LinkedIn</a>
+                <span className="w-1 h-1 bg-white/10 rounded-full" />
+                <a href="mailto:contacto@agithecreator.com" className="hover:text-violet-400 transition-colors">Email</a>
+              </div>
+              
+              {/* LOG QUE DISPARA LA ARQUITECTURA */}
+              <div className="relative mt-2 group/log cursor-pointer">
+                <div className="absolute inset-0 z-20 opacity-0 overflow-hidden">
+                  <ArchitectureLogs />
+                </div>
+                
+                <div className="relative z-10 py-1 px-3 border border-white/5 bg-white/2 rounded-md group-hover/log:border-cyan-500/30 transition-colors">
+                  <span className="text-[9px] font-mono text-cyan-500/50 group-hover/log:text-cyan-400 animate-pulse">
+                    &gt; systems_online.log
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -101,59 +103,58 @@ export function Hero() {
 
       <style jsx>{`
         .hero-name {
-          background: linear-gradient(90deg, #fff, #fff 45%, #8b5cf6);
+          background: linear-gradient(to bottom, #fff 30%, rgba(255,255,255,0.5));
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
         }
 
-        .btn-cyber-final, .btn-cyber-final-slow {
+        .btn-cyber-minimal {
           position: relative;
-          display: inline-flex;
-          width: 100%;
-          justify-content: center;
-          padding: 0.8rem 2.2rem;
-          border-radius: 9999px;
-          font-size: 0.875rem;
-          font-weight: 700;
-          color: white;
-          background: #020617; /* Fondo sólido muy oscuro para evitar fallos con blur */
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          display: inline-block;
+          padding: 1rem 3.5rem;
+          background: #050505;
+          color: #FFFFFF;
+          font-size: 0.75rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.2em;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
           overflow: hidden;
-          /* BLINDAJE TOTAL: Forzamos capa de hardware para que no desaparezcan */
-          transform: translateZ(0);
-          backface-visibility: hidden;
-          will-change: transform, box-shadow;
-        }
-        @media (min-width: 640px) { .btn-cyber-final, .btn-cyber-final-slow { width: auto; } }
-
-        .btn-cyber-final {
-          border: 1px solid rgba(34, 211, 238, 0.5);
-          animation: neon-pulse 1.2s infinite alternate ease-in-out;
-        }
-        .btn-cyber-final-slow {
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          animation: neon-slow 3s infinite alternate ease-in-out;
         }
 
-        @keyframes neon-pulse {
-          0% { border-color: rgba(34, 211, 238, 0.4); box-shadow: 0 0 5px rgba(34, 211, 238, 0.2); }
-          100% { border-color: rgba(34, 211, 238, 1); box-shadow: 0 0 15px rgba(34, 211, 238, 0.6); }
-        }
-        @keyframes neon-slow {
-          0% { border-color: rgba(255, 255, 255, 0.2); }
-          100% { border-color: rgba(34, 211, 238, 0.5); box-shadow: 0 0 8px rgba(34, 211, 238, 0.3); }
+        .btn-cyber-minimal:hover {
+          border-color: rgba(255, 255, 255, 0.4);
+          transform: scale(1.03) translateY(-2px);
+          box-shadow: 0 10px 30px -10px rgba(0,0,0,0.7);
         }
 
-        .cyber-reflejo-violet, .cyber-reflejo-violet-slow {
-          background: linear-gradient(135deg, transparent 25%, rgba(139, 92, 246, 0.4) 50%, transparent 75%);
-          background-size: 200% 200%;
-          animation: reflejo-speed 3s linear infinite;
+        /* EFECTO DE ESCANEO / REFLEJO ANIMADO */
+        .cyber-scanner-effect {
+          background: linear-gradient(
+            90deg, 
+            transparent 0%, 
+            rgba(139, 92, 246, 0.5) 50%, 
+            transparent 100%
+          );
+          background-size: 200% 100%;
+          animation: scan-move 4s linear infinite;
         }
-        .cyber-reflejo-violet-slow { animation-duration: 6s; }
-        @keyframes reflejo-speed {
+
+        @keyframes scan-move {
           0% { background-position: 200% 0; }
           100% { background-position: -200% 0; }
+        }
+
+        .btn-cyber-minimal:hover .cyber-scanner-effect {
+          opacity: 0.4;
+          animation-duration: 2s;
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.8; }
         }
       `}</style>
     </section>
