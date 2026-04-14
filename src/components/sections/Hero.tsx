@@ -35,12 +35,11 @@ export function Hero() {
           
           {/* TEXTO PRINCIPAL */}
           <div className="flex flex-col gap-6 mb-10 w-full items-center overflow-visible">
-            {/* ✅ Eliminado tracking-tighter y añadido pr-10 para asegurar el final */}
             <h1 className="text-4xl sm:text-6xl lg:text-8xl font-bold text-white pr-10 leading-tight overflow-visible">
               <span className="hero-name">Abel González Iglesias</span>
             </h1>
             
-            {/* ✅ Espaciado extra pr-20 para que el Typewriter no se corte */}
+            {/* ✅ CENTRADO COMPENSADO: ml-3 para equilibrar el espacio del cursor */}
             <div className="h-8 sm:h-12 w-full flex items-center justify-center overflow-visible">
               <span className="text-xl sm:text-3xl font-light text-white/60 flex items-center justify-center whitespace-nowrap pr-20">
                 <Typewriter 
@@ -48,7 +47,7 @@ export function Hero() {
                   phrases={ROLE_STRINGS as unknown as string[]} 
                   pauseAfterTypedMs={1500} 
                   typeSpeedMs={40}
-                  className="text-violet-400 font-mono" 
+                  className="text-violet-400 font-mono ml-3" 
                 />
               </span>
             </div>
