@@ -6,109 +6,114 @@ import {
   SiCloudflare, SiMake, SiAirtable, SiOpenai, SiTypescript, 
   SiStripe, SiDocker
 } from "react-icons/si";
-import { Terminal, ShieldCheck, Zap, Laptop, Globe, Layers, ArrowRight } from "lucide-react";
+import { Terminal, ShieldCheck, Zap, Laptop, Globe, Layers, ArrowRight, Eye, Target, TrendingUp, Cpu } from "lucide-react";
 
-// --- CONFIGURACIÓN DE DATOS (Fiel a los textos originales) ---
 const SYSTEMS = {
   saas: {
+    label: "Arquitectura",
     title: "Arquitectura SaaS Escalable",
     subtitle: "SaaS_Production_Core",
     color: "#22D3EE",
     desc: "Infraestructura preparada para producción real: alta concurrencia, pagos recurrentes y seguridad distribuida en edge.",
-    impact: ["Escalabilidad automática bajo demanda", "Monetización integrada (Stripe)", "Latencia optimizada a nivel global"],
-    categories: {
-      "Frontend": ["Next.js", "TypeScript", "Tailwind"],
-      "Backend": ["Node.js", "Supabase", "PostgreSQL"],
-      "Infraestructura": ["Vercel", "Cloudflare WAF"],
-      "Pagos": ["Stripe API"]
+    impact: ["Escalabilidad automática", "Monetización Stripe", "Latencia optimizada"],
+    categories: { "Frontend": ["Next.js", "TS"], "Backend": ["Node", "Postgres"], "Pagos": ["Stripe"] },
+    executive: {
+      kpi: "Disponibilidad 99.9%",
+      p1: "Infraestructura distribuida que soporta picos de +5k usuarios simultáneos sin degradación.",
+      p2: "Sistemas de cobro recurrente con gestión automática de impuestos y facturación global.",
+      extra: "Implementación de una arquitectura 'Serverless First' para minimizar costes operativos y maximizar la resiliencia ante fallos geográficos."
     },
     nodes: [
-      { id: "v", label: "Vercel", icon: SiVercel, x: 50, y: 10, function: "Global Edge Hosting" },
-      { id: "f", label: "Next.js", icon: SiReact, x: 50, y: 35, function: "Fullstack Framework" },
-      { id: "a", label: "Node API", icon: SiNodedotjs, x: 25, y: 60, function: "Lógica de Negocio" },
-      { id: "s", label: "Stripe", icon: SiStripe, x: 75, y: 60, function: "Pasarela de Pagos" },
-      { id: "db", label: "Postgres", icon: SiPostgresql, x: 25, y: 85, function: "Base de Datos Relacional" },
-      { id: "au", label: "Auth", icon: SiSupabase, x: 75, y: 85, function: "Auth & Realtime" },
+      { id: "n1", label: "Vercel", icon: SiVercel, x: 50, y: 10, function: "Global Edge Hosting" },
+      { id: "n2", label: "Next.js", icon: SiReact, x: 50, y: 35, function: "Framework Fullstack" },
+      { id: "n3", label: "Node API", icon: SiNodedotjs, x: 25, y: 60, function: "Lógica de Negocio" },
+      { id: "n4", label: "Stripe", icon: SiStripe, x: 75, y: 60, function: "Pasarela de Pagos" },
+      { id: "n5", label: "Postgres", icon: SiPostgresql, x: 25, y: 85, function: "DB Relacional" },
+      { id: "n6", label: "Auth", icon: SiSupabase, x: 75, y: 85, function: "Auth & Realtime" },
     ],
-    links: [["v", "f"], ["f", "a"], ["f", "s"], ["a", "db"], ["a", "au"]]
+    links: [["n1", "n2"], ["n2", "n3"], ["n2", "n4"], ["n3", "n5"], ["n3", "n6"]]
   },
   automation: {
-    title: "Automatización de Procesos ",
+    label: "Automatización",
+    title: "Neural Workflow Engine",
     subtitle: "Automation_Logic_Unit",
     color: "#8B5CF6",
-    desc: "Automatización de procesos críticos conectando APIs, datos e inteligencia artificial sin intervención manual.",
-    impact: ["Reducción drástica de tareas manuales", "Ejecución continua 24/7", "Integración de IA en workflows reales"],
-    categories: {
-      "Engine": ["Make", "n8n"],
-      "Datos": ["Airtable", "PostgreSQL"],
-      "IA": ["OpenAI GPT-4o", "Claude"],
-      "Comunicación": ["Twilio", "SendGrid"]
+    desc: "Automatización de procesos críticos conectando APIs e IA sin intervención manual.",
+    impact: ["Ahorro 95% tiempo", "Ejecución 24/7", "IA Integrada"],
+    categories: { "Motor": ["Make", "n8n"], "IA": ["OpenAI", "Claude"], "Datos": ["Airtable"] },
+    executive: {
+      kpi: "+150h ahorradas/mes",
+      p1: "Eliminación de errores humanos en la sincronización de datos entre +10 herramientas distintas.",
+      p2: "Procesamiento de lenguaje natural para categorizar y actuar sobre leads en tiempo real.",
+      extra: "Desarrollo de conectores personalizados que unifican el flujo de datos entre sistemas legados y herramientas modernas de IA."
     },
     nodes: [
-      { id: "w", label: "Webhooks", icon: Globe, x: 50, y: 10, function: "Event Trigger" },
-      { id: "m", label: "Make", icon: SiMake, x: 50, y: 35, function: "Workflow Core" },
-      { id: "ai", label: "OpenAI", icon: SiOpenai, x: 20, y: 60, function: "Procesamiento IA" },
-      { id: "api", label: "Ext. APIs", icon: Layers, x: 80, y: 60, function: "Integraciones" },
-      { id: "db", label: "Airtable", icon: SiAirtable, x: 50, y: 85, function: "Base de Datos Ops" },
+      { id: "n1", label: "Webhooks", icon: Globe, x: 50, y: 10, function: "Event Trigger" },
+      { id: "n2", label: "Make", icon: SiMake, x: 50, y: 35, function: "Workflow Core" },
+      { id: "n3", label: "OpenAI", icon: SiOpenai, x: 20, y: 60, function: "AI Processing" },
+      { id: "n4", label: "Ext. APIs", icon: Layers, x: 80, y: 60, function: "Integration" },
+      { id: "n5", label: "Airtable", icon: SiAirtable, x: 50, y: 85, function: "Ops Database" },
+      { id: "n6", label: "Logs", icon: Terminal, x: 80, y: 85, function: "Audit Trail" },
     ],
-    links: [["w", "m"], ["m", "ai"], ["m", "api"], ["ai", "db"], ["api", "db"]]
+    links: [["n1", "n2"], ["n2", "n3"], ["n2", "n4"], ["n3", "n5"], ["n4", "n6"]]
   },
   antifraud: {
-    title: "Seguridad y Control Antifraude",
-    subtitle: "Antifraud_Validation_v2",
+    label: "Seguridad",
+    title: "Protocolo Antifraude",
+    subtitle: "Secure_Validation_v2",
     color: "#19C37D",
-    desc: "Sistema antifraude en producción que elimina la reventa no autorizada mediante validación por DNI y QR único transferible.",
-    impact: ["Reventa ilegal eliminada (0%)", "Validación por identidad (DNI)", "Transferencia controlada y trazable"],
-    categories: {
-      "Identity": ["Supabase Auth", "JWT"],
-      "Backend": ["Node.js Cluster", "Redis"],
-      "Security": ["Docker", "Cifrado QR"],
-      "Base de Datos": ["PostgreSQL"]
+    desc: "Sistema en producción que elimina la reventa mediante validación criptográfica y DNI.",
+    impact: ["0% Reventa Ilegal", "Validación DNI", "Trazabilidad"],
+    categories: { "Identidad": ["Auth", "JWT"], "Seguridad": ["Docker", "QR"], "Base": ["Postgres"] },
+    executive: {
+      kpi: "Reventa erradicada",
+      p1: "Asignación de identidad única por ticket vinculada a documento oficial (DNI/NIE).",
+      p2: "Algoritmos de rotación de claves para evitar la duplicación de códigos QR en accesos.",
+      extra: "Protocolo de 'Zero Trust' aplicado a cada transacción, garantizando que el origen y destino del ticket sean siempre verificables."
     },
     nodes: [
-      { id: "dni", label: "Auth DNI", icon: ShieldCheck, x: 50, y: 10, function: "Verificación de Identidad" },
-      { id: "sup", label: "Supabase", icon: SiSupabase, x: 50, y: 35, function: "Controlador Lógico" },
-      { id: "qr", label: "Gen QR", icon: SiTypescript, x: 20, y: 60, function: "Lógica de QR Seguro" },
-      { id: "sec", label: "Seguridad", icon: SiDocker, x: 80, y: 60, function: "App Contenerizada" },
-      { id: "log", label: "Auditoría", icon: SiPostgresql, x: 50, y: 85, function: "Registros Inmutables" },
+      { id: "n1", label: "Identidad", icon: ShieldCheck, x: 50, y: 10, function: "Validación DNI" },
+      { id: "n2", label: "Control", icon: SiSupabase, x: 50, y: 40, function: "Lógica" },
+      { id: "n3", label: "QR Gen", icon: SiTypescript, x: 20, y: 60, function: "Cripto" },
+      { id: "n4", label: "Docker", icon: SiDocker, x: 80, y: 60, function: "Seguridad" },
+      { id: "n5", label: "Audit", icon: SiPostgresql, x: 35, y: 85, function: "Inmutable" },
+      { id: "n6", label: "WAF", icon: SiCloudflare, x: 65, y: 85, function: "Protección" },
     ],
-    links: [["dni", "sup"], ["sup", "qr"], ["sup", "sec"], ["qr", "log"], ["sec", "log"]]
+    links: [["n1", "n2"], ["n2", "n3"], ["n2", "n4"], ["n3", "n5"], ["n4", "n6"]]
   },
   retail: {
-    title: "Retail Optimización",
+    label: "Retail",
+    title: "Optimización Retail",
     subtitle: "Operational_Logic_Edge",
     color: "#FFD700",
-    desc: "Automatización de configuración y migración de dispositivos, reduciendo tiempos en entornos físicos con usuarios no técnicos.",
-    impact: ["Reducción de hasta 40 min por dispositivo", "Configuración simplificada para cualquier usuario", "Migración segura entre dispositivos"],
-    categories: {
-      "Scripts": ["JS", "Bash", "Python"],
-      "Sistema": ["ADB Tools", "Android API"],
-      "Interfaz": ["Electron", "React"],
-      "Despliegue": ["Red Local"]
+    desc: "Automatización masiva de dispositivos en puntos de venta físicos reduciendo tiempos operativos.",
+    impact: ["-40 min/setup", "UI Simplificada", "Migración Segura"],
+    categories: { "Sistemas": ["ADB", "Android"], "Interfaz": ["Electron"], "Scripts": ["Bash"] },
+    executive: {
+      kpi: "-85% tiempo técnico",
+      p1: "Despliegue masivo de aplicaciones y configuraciones sobre dispositivos Android en red local.",
+      p2: "Interfaz simplificada para operarios no técnicos, permitiendo migraciones de sistema en 1 clic.",
+      extra: "Uso de herramientas CLI personalizadas que eliminan la necesidad de conexión a internet para la puesta en marcha de equipos críticos."
     },
     nodes: [
-      { id: "in", label: "Operator", icon: Laptop, x: 50, y: 10, function: "Interfaz de Operador" },
-      { id: "cli", label: "Custom CLI", icon: Terminal, x: 50, y: 35, function: "Motor de Automatización" },
-      { id: "sh", label: "Scripts", icon: SiOpenai, x: 20, y: 60, function: "Automatización de Sistema" },
-      { id: "adb", label: "ADB Logic", icon: SiTypescript, x: 80, y: 60, function: "Puente con Android" },
-      { id: "out", label: "Device Set", icon: Zap, x: 50, y: 85, function: "Configuración Final" },
+      { id: "n1", label: "Operador", icon: Laptop, x: 20, y: 20, function: "Interfaz" },
+      { id: "n2", label: "Motor", icon: Terminal, x: 50, y: 35, function: "CLI" },
+      { id: "n3", label: "Lógica", icon: SiTypescript, x: 80, y: 20, function: "Puente" },
+      { id: "n4", label: "Automatización", icon: SiOpenai, x: 30, y: 70, function: "Scripts" },
+      { id: "n5", label: "Dispositivos", icon: Zap, x: 70, y: 70, function: "Config" },
+      { id: "n6", label: "Sincro", icon: Globe, x: 50, y: 90, function: "Red Local" },
     ],
-    links: [["in", "cli"], ["cli", "sh"], ["cli", "adb"], ["sh", "out"], ["adb", "out"]]
+    links: [["n1", "n2"], ["n2", "n3"], ["n2", "n4"], ["n3", "n5"], ["n4", "n6"]]
   }
 };
 
 export default function TechStack() {
   const [active, setActive] = useState<keyof typeof SYSTEMS>("saas");
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const [recruiterMode, setRecruiterMode] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
 
-  useEffect(() => { 
-    setMounted(true); 
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  useEffect(() => { setMounted(true); }, []);
 
   const sys = SYSTEMS[active];
   const rgba = (hex: string, alpha: number) => {
@@ -119,182 +124,175 @@ export default function TechStack() {
   if (!mounted) return null;
 
   return (
-    <section className="relative min-h-screen w-full flex flex-col justify-center text-white overflow-hidden py-20 lg:py-0 isolate">
+    <section className="relative w-full text-white bg-transparent isolate overflow-hidden">
       
-      {/* 🌌 FONDO DINÁMICO */}
-      <div 
-        className="absolute inset-0 pointer-events-none transition-all duration-1000 -z-10"
-        style={{ transform: `translateY(${scrollY * 0.05}px)` }}
-      >
-        <div 
-          className="absolute inset-0 opacity-25" 
-          style={{ 
-            background: `radial-gradient(circle at 50% 50%, ${rgba(sys.color, 0.15)} 0%, transparent 70%)`,
-            animation: "pulseBg 6s ease-in-out infinite"
-          }} 
+      <div className="absolute inset-0 pointer-events-none -z-10 transition-all duration-1000">
+        <div className="absolute inset-0 opacity-20" 
+             style={{ 
+               background: `radial-gradient(circle at 50% 50%, ${rgba(sys.color, 0.15)} 0%, transparent 70%)`,
+               animation: "pulseBg 6s ease-in-out infinite"
+             }} 
         />
-        <div className="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[60px_60px]" />
       </div>
 
       <style jsx global>{`
-        @keyframes nodeIn {
-          from { opacity: 0; transform: translate(-50%, -40%) scale(0.8); }
-          to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        }
-        @keyframes pulseBg {
-          0%, 100% { opacity: 0.15; transform: scale(1); }
-          50% { opacity: 0.25; transform: scale(1.1); }
-        }
+        @keyframes pulseBg { 0%, 100% { opacity: 0.15; transform: scale(1); } 50% { opacity: 0.25; transform: scale(1.1); } }
       `}</style>
 
-      <div className="mx-auto w-full max-w-7xl px-6 lg:px-12">
+      <div className="mx-auto w-full max-w-7xl px-6 py-4">
         
-        <div className="h-32 mb-10 flex flex-col justify-end">
-          <div className="flex items-center gap-3 text-white/30 font-mono text-[10px] uppercase tracking-[0.3em] mb-3">
-            <Terminal className="h-3.5 w-3.5" />
-            <span>{`> system_status: ACTIVE // id: ${sys.subtitle}`}</span>
+        {/* HEADER */}
+        <div className="flex justify-between items-end mb-6 h-24">
+          <div className="space-y-1">
+            <div className="flex items-center gap-3 text-white/30 font-mono text-[10px] uppercase tracking-[0.3em]">
+              <Terminal className="h-3 w-3" />
+              <span>{`> estado_sistema: ACTIVO // morph_v2`}</span>
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight transition-all duration-500">{sys.title}</h2>
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold tracking-tight" key={sys.title}>
-            {sys.title}
-          </h2>
+          
+          <button 
+            onClick={() => setRecruiterMode(!recruiterMode)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 ${recruiterMode ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.4)]' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}`}
+          >
+            <Eye className="h-3 w-3" />
+            {recruiterMode ? "Modo Técnico" : "Vista Reclutador"}
+          </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
           
-          {/* 🎛️ SELECTOR (Fiel a los títulos de SYSTEMS) */}
-          <div className="lg:col-span-3 space-y-2.5">
-            {Object.entries(SYSTEMS).map(([key, item]) => {
-              const isSelected = active === key;
-              return (
-                <button
-                  key={key}
-                  onClick={() => { setActive(key as keyof typeof SYSTEMS); setHoveredNode(null); }}
-                  className="w-full flex items-center justify-between p-4 rounded-xl border transition-all duration-500 group"
-                  style={{
-                    borderColor: isSelected ? rgba(item.color, 0.3) : "rgba(255,255,255,0.05)",
-                    backgroundColor: isSelected ? rgba(item.color, 0.08) : "rgba(255,255,255,0.01)",
-                    boxShadow: isSelected ? `0 0 20px ${rgba(item.color, 0.15)}` : "none"
-                  }}
-                >
-                  <span className={`text-sm font-bold tracking-wide transition-all ${isSelected ? "text-white" : "text-white/20 group-hover:text-white/50"}`}>
-                    {item.title.split(' ')[0]}
-                  </span>
-                  <div className={`h-1.5 w-1.5 rounded-full transition-all duration-500 ${isSelected ? "scale-125" : "scale-100"}`} 
-                       style={{ background: item.color, boxShadow: isSelected ? `0 0 10px ${item.color}` : "none", opacity: isSelected ? 1 : 0.2 }} 
-                  />
-                </button>
-              );
-            })}
+          {/* SELECTOR */}
+          <div className="lg:col-span-3 space-y-2">
+            {Object.entries(SYSTEMS).map(([key, item]) => (
+              <button
+                key={key}
+                onClick={() => setActive(key as keyof typeof SYSTEMS)}
+                className="w-full flex items-center justify-between p-4 rounded-xl border transition-all duration-500 group"
+                style={{
+                  borderColor: active === key ? rgba(item.color, 0.4) : "rgba(255,255,255,0.05)",
+                  backgroundColor: active === key ? rgba(item.color, 0.1) : "rgba(255,255,255,0.01)",
+                }}
+              >
+                <span className={`text-xs font-bold uppercase tracking-wider ${active === key ? "text-white" : "text-white/20"}`}>{item.label}</span>
+                <div className="h-1.5 w-1.5 rounded-full" style={{ background: item.color, boxShadow: active === key ? `0 0 10px ${item.color}` : "none", opacity: active === key ? 1 : 0.2 }} />
+              </button>
+            ))}
           </div>
 
-          <div className="lg:col-span-5 h-130 relative lg:w-[110%] lg:-ml-[5%] rounded-3xl border border-white/5 bg-black/40 backdrop-blur-xl overflow-hidden shadow-2xl cursor-crosshair">
+          {/* DIAGRAMA */}
+          <div className="lg:col-span-5 h-125 relative rounded-3xl border border-white/5 bg-black/20 backdrop-blur-sm overflow-hidden shadow-2xl">
             <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40">
               {sys.links.map(([fromId, toId]: any, i: number) => {
                 const from = sys.nodes.find((n: any) => n.id === fromId);
                 const to = sys.nodes.find((n: any) => n.id === toId);
                 if (!from || !to) return null;
+                
+                // CORRECCIÓN: Comprobamos si el enlace contiene el nodo hovered
                 const isHighlight = hoveredNode === fromId || hoveredNode === toId;
+                
                 return (
                   <g key={`${active}-link-${i}`}>
                     <line 
                       x1={`${from.x}%`} y1={`${from.y}%`} x2={`${to.x}%`} y2={`${to.y}%`}
-                      stroke={sys.color} strokeWidth={isHighlight ? "2" : "1"}
-                      strokeOpacity={isHighlight ? 0.8 : 0.2}
+                      stroke={sys.color} strokeWidth={isHighlight ? "2.5" : "1"}
+                      strokeOpacity={isHighlight ? 1 : 0.2}
                       className="transition-all duration-500"
                     />
-                    <circle 
-                      r="2.5" 
-                      fill={sys.color} 
-                      opacity="0.8"
-                      style={{ filter: `drop-shadow(0 0 6px ${sys.color})` }}
-                    >
-                      <animateMotion dur={`${2.5 + i*0.3}s`} repeatCount="indefinite" path={`M ${from.x * 5.5},${from.y * 5.2} L ${to.x * 5.5},${to.y * 5.2}`} />
+                    <circle r="2.5" fill={sys.color} opacity={isHighlight ? 1 : 0.6} style={{ filter: `drop-shadow(0 0 6px ${sys.color})` }}>
+                      <animateMotion dur={`${2.5 + i*0.3}s`} repeatCount="indefinite" path={`M ${from.x * 5},${from.y * 5} L ${to.x * 5},${to.y * 5}`} />
                     </circle>
                   </g>
                 );
               })}
             </svg>
 
-            {sys.nodes.map((node: any, i: number) => {
+            {sys.nodes.map((node) => {
               const isActive = hoveredNode === node.id;
-              const isRelated = hoveredNode && (sys.links.some((l: any) => (l[0] === node.id && l[1] === hoveredNode) || (l[1] === node.id && l[0] === hoveredNode)));
-              
+              // CORRECCIÓN: Usamos .includes() para saber si el nodo es vecino del hovered
+              const isRelated = hoveredNode && sys.links.some(l => l.includes(node.id) && l.includes(hoveredNode));
+
               return (
-                <div 
-                  key={`${active}-${node.id}`}
-                  onMouseEnter={() => setHoveredNode(node.id)}
-                  onMouseLeave={() => setHoveredNode(null)}
-                  className="absolute flex flex-col items-center gap-2 z-20 group transition-opacity duration-300"
-                  style={{ 
-                    left: `${node.x}%`, 
-                    top: `${node.y}%`,
-                    animation: `nodeIn 0.6s ease forwards`,
-                    animationDelay: `${i * 0.08}s`,
-                    opacity: hoveredNode && !isActive && !isRelated ? 0.2 : 1
-                  }}
+                <div key={node.id} onMouseEnter={() => setHoveredNode(node.id)} onMouseLeave={() => setHoveredNode(null)}
+                  className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 z-20 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+                  style={{ left: `${node.x}%`, top: `${node.y}%`, opacity: hoveredNode && !isActive && !isRelated ? 0.2 : 1 }}
                 >
-                  <div 
-                    className="p-3.5 rounded-2xl border transition-all duration-500"
-                    style={{ 
-                      borderColor: isActive || isRelated ? sys.color : "rgba(255,255,255,0.08)", 
-                      backgroundColor: isActive || isRelated ? rgba(sys.color, 0.2) : "rgba(5,5,5,0.9)",
-                      transform: isActive ? "scale(1.2)" : "scale(1)"
-                    }}
-                  >
-                    <node.icon className="h-5 w-5" style={{ color: isActive || isRelated ? "white" : rgba(sys.color, 0.5) }} />
+                  <div className="p-3.5 rounded-2xl border transition-all duration-500"
+                       style={{ 
+                         borderColor: isActive || isRelated ? sys.color : "rgba(255,255,255,0.1)", 
+                         backgroundColor: isActive || isRelated ? rgba(sys.color, 0.2) : "rgba(10,10,10,0.5)", 
+                         transform: isActive ? "scale(1.2)" : isRelated ? "scale(1.1)" : "scale(1)" 
+                       }}>
+                    <node.icon className="h-5 w-5" style={{ color: isActive || isRelated ? "white" : rgba(sys.color, 0.6) }} />
                   </div>
-                  
-                  {isActive && (
-                    <div className="absolute -top-14 bg-black/90 border border-white/10 px-3 py-1 rounded-lg whitespace-nowrap animate-in fade-in zoom-in-95 duration-200">
-                      <p className="text-[10px] font-bold" style={{ color: sys.color }}>{node.function}</p>
-                    </div>
-                  )}
-                  <span className="text-[9px] font-mono text-white/20 uppercase tracking-widest pointer-events-none">{node.label}</span>
+                  <span className="text-[9px] font-mono text-white/30 uppercase tracking-tighter">{node.label}</span>
                 </div>
               );
             })}
-          </div>
 
-          <div className="lg:col-span-4 flex flex-col gap-8 lg:pl-6 min-h-125">
-            <div className="h-20 flex items-center">
-              <p className="text-sm text-white/50 leading-relaxed italic border-l border-white/10 pl-5">
-                {sys.desc}
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <h4 className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase">Impacto en Negocio</h4>
-              <div className="grid gap-2.5">
-                {sys.impact.map((text: string, i: number) => (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/2 border border-white/5">
-                    <ArrowRight className="h-3 w-3" style={{ color: sys.color }} />
-                    <p className="text-[12px] text-white/70 font-medium">{text}</p>
+            {/* VISTA RECLUTADOR */}
+            {recruiterMode && (
+              <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-8 animate-in fade-in zoom-in duration-300">
+                <div className="max-w-md w-full space-y-6 text-left">
+                  <div className="flex items-center gap-2 text-white/40 text-[10px] font-mono uppercase tracking-[0.4em]">
+                    <Target className="h-4 w-4" />
+                    <span>Enfoque_Negocio</span>
                   </div>
-                ))}
-              </div>
-            </div>
+                  <h3 className="text-2xl font-bold leading-tight">
+                    Optimización de <span style={{ color: sys.color }}>{sys.label}</span> con impacto medible.
+                  </h3>
+                  
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="h-4 w-4" style={{ color: sys.color }} />
+                      <span className="text-lg font-black" style={{ color: sys.color }}>{sys.executive.kpi}</span>
+                    </div>
+                    <p className="text-sm text-white/80 leading-relaxed font-medium">{sys.executive.p1}</p>
+                  </div>
 
-            <div className="space-y-5 pt-5 border-t border-white/5">
-              <h4 className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase">Ecosistema</h4>
-              <div className="grid grid-cols-2 gap-y-5 gap-x-4">
-                {Object.entries(sys.categories).map(([cat, techs]) => (
-                  <div key={cat} className="space-y-1">
-                    <p className="text-[10px] font-bold text-white/40">{cat}</p>
-                    <div className="text-[11px] text-white/70 flex flex-wrap gap-1.5">
-                      {(techs as string[]).map((t, idx) => (
-                        <span key={t}>
-                          {t}{idx < (techs as string[]).length - 1 ? " ·" : ""}
-                        </span>
-                      ))}
+                  <div className="space-y-4 pt-2">
+                    <div className="flex gap-4 items-start">
+                      <div className="mt-1 p-1 rounded bg-white/10 text-white/80"><ShieldCheck className="h-3 w-3" /></div>
+                      <p className="text-xs text-white/60">{sys.executive.p2}</p>
+                    </div>
+                    <div className="flex gap-4 items-start pt-2 border-t border-white/5">
+                      <div className="mt-1 p-1 rounded bg-white/10 text-white/80"><Cpu className="h-3 w-3" /></div>
+                      <div>
+                        <p className="text-[9px] font-bold text-white/40 uppercase mb-1">Estrategia de Implementación</p>
+                        <p className="text-[11px] text-white/50 italic leading-relaxed">{sys.executive.extra}</p>
+                      </div>
                     </div>
                   </div>
-                ))}
+                </div>
               </div>
+            )}
+          </div>
+
+          {/* PANEL DERECHO */}
+          <div className="lg:col-span-4 flex flex-col gap-6 lg:pl-6">
+            <p className="text-sm text-white/50 leading-relaxed italic border-l border-white/10 pl-5">{sys.desc}</p>
+            <div className="space-y-3">
+              <h4 className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Impacto Real</h4>
+              {sys.impact.map((text, i) => (
+                <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 transition-all">
+                  <ArrowRight className="h-3 w-3" style={{ color: sys.color }} />
+                  <p className="text-[12px] text-white/70 font-medium">{text}</p>
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
+              {Object.entries(sys.categories).map(([cat, techs]) => (
+                <div key={cat} className="space-y-1">
+                  <p className="text-[9px] font-bold text-white/40 uppercase">{cat}</p>
+                  <p className="text-[11px] text-white/70">{(techs as string[]).join(" · ")}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="mt-20 pt-8 border-t border-white/5 text-center">
+        {/* FOOTER */}
+        <div className="mt-8 pt-6 border-t border-white/5 text-center">
           <p className="text-[10px] font-medium text-white/20 uppercase tracking-[0.4em]">
             no trabajo con herramientas aisladas · diseño sistemas que funcionan en producción
           </p>
