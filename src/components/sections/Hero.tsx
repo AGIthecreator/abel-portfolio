@@ -54,7 +54,7 @@ export function Hero() {
             </div>
 
             <p className="text-lg sm:text-xl text-white/40 max-w-2xl mx-auto font-light leading-relaxed">
-              Full Stack Developer enfocado en <span className="text-white/80">SaaS y automatización</span>. 
+              Full Stack Developer enfocado en <span className="text-white/80">SaaS y automatización</span>.<br></br> 
               Desarrollo sistemas reales con pagos y workflows en producción.
             </p>
           </div>
