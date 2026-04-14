@@ -22,20 +22,18 @@ export default function Page() {
         <div className="cyber-keyword-rain opacity-30" aria-hidden="true" />
       </div>
 
-      {/* HERO: Full width inmersivo */}
+      {/* HERO: Inmersivo */}
       <Hero />
 
       <main className="relative z-10 mx-auto max-w-300 px-4 sm:px-6 lg:px-8">
-        {/* MANIFIESTO Y PERFIL ESTRATÉGICO */}
         <section className="relative pt-6 pb-6">
           <div className="mt-8 sm:mt-12"><DeferredManifesto /></div>
           <div className="mt-10 sm:mt-14"><DeferredStrategicProfile /></div>
         </section>
 
-        {/* ➡️ PROYECTOS: Ahora antes del Tech Stack */}
         <section className="relative py-10 sm:pt-14 sm:pb-18">
           <div 
-            className="absolute right-0 top-1/2 -z-10 h-112.5 w-112.5 -translate-y-1/2 rounded-full"
+            className="absolute right-0 top-1/2 -z-10 h-112.5 w-112.5 -translate-y-1/2 rounded-full opacity-20"
             style={{
               background: `radial-gradient(circle, rgba(0, 200, 255, 0.1) 0%, rgba(0, 200, 255, 0.05) 30%, transparent 100%)`,
               filter: 'blur(80px)'
@@ -44,7 +42,7 @@ export default function Page() {
           <DeferredProjects />
         </section>
 
-        {/* ➡️ TECH STACK: Ahora después de Proyectos */}
+        {/* Sección de Arquitectura */}
         <section className="py-10 sm:py-14">
           <DeferredTechStack />
         </section>

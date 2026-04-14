@@ -14,28 +14,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Abel | Arquitecto Digital y Experto en Automatización",
-  description:
-    "Portfolio de Abel: Especialista en crear ecosistemas digitales escalables y seguros mediante automatizaciones con Make, Airtable y Supabase.",
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/favicon.png", type: "image/png" },
-    ],
-    shortcut: "/favicon.ico",
-    apple: "/favicon.png", // Usa el PNG para el icono de inicio en iPhone
-  },
+title: "Abel | Arquitecto Digital y Experto en Automatización",
+description: "Portfolio de Abel: Especialista en crear ecosistemas digitales escalables y seguros mediante automatizaciones con Make, Airtable y Supabase.",
+icons: {
+icon: "/favicon.ico",
+shortcut: "/favicon.ico",
+apple: "/favicon.png",
+},
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="es">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#030014]`}>
         {children}
       </body>
     </html>

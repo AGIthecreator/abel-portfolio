@@ -1,682 +1,305 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { FadeIn } from "@/components/motion/FadeIn";
-import { ConnectionParticlesCanvas } from "@/components/ui/ConnectionParticlesCanvas";
-import { TokenOptimizer, type OrchestrationMode } from "@/components/ui/TokenOptimizer";
-import {
-  SiAirtable,
-  SiAndroid,
-  SiAngular,
-  SiAnthropic,
-  SiChatbot,
-  SiCloudflare,
-  SiCss,
-  SiCanva,
-  SiGit,
-  SiGooglecloud,
-  SiGooglegemini,
-  SiGithubcopilot,
-  SiHtml5,
-  SiJavascript,
-  SiMeta,
-  SiMake,
-  SiNodedotjs,
-  SiOctopusdeploy,
-  SiOpenai,
-  SiPostgresql,
-  SiReact,
-  SiRobotframework,
-  SiSupabase,
-  SiTypescript,
-  SiVercel,
-  SiVuedotjs,
-  SiZapier,
+import React, { useState, useEffect } from "react";
+import { 
+  SiReact, SiNodedotjs, SiSupabase, SiPostgresql, SiVercel, 
+  SiCloudflare, SiMake, SiAirtable, SiOpenai, SiTypescript, 
+  SiStripe, SiDocker
 } from "react-icons/si";
+import { Terminal, ShieldCheck, Zap, Laptop, Globe, Layers, ArrowRight } from "lucide-react";
 
-import { Lock } from "lucide-react";
-
-declare global {
-  interface Window {
-    __techStackHoverLabel?: (label: string | null) => void;
+// --- CONFIGURACIÓN DE DATOS (Fiel a los textos originales) ---
+const SYSTEMS = {
+  saas: {
+    title: "Arquitectura SaaS Escalable",
+    subtitle: "SaaS_Production_Core",
+    color: "#22D3EE",
+    desc: "Infraestructura preparada para producción real: alta concurrencia, pagos recurrentes y seguridad distribuida en edge.",
+    impact: ["Escalabilidad automática bajo demanda", "Monetización integrada (Stripe)", "Latencia optimizada a nivel global"],
+    categories: {
+      "Frontend": ["Next.js", "TypeScript", "Tailwind"],
+      "Backend": ["Node.js", "Supabase", "PostgreSQL"],
+      "Infraestructura": ["Vercel", "Cloudflare WAF"],
+      "Pagos": ["Stripe API"]
+    },
+    nodes: [
+      { id: "v", label: "Vercel", icon: SiVercel, x: 50, y: 10, function: "Global Edge Hosting" },
+      { id: "f", label: "Next.js", icon: SiReact, x: 50, y: 35, function: "Fullstack Framework" },
+      { id: "a", label: "Node API", icon: SiNodedotjs, x: 25, y: 60, function: "Lógica de Negocio" },
+      { id: "s", label: "Stripe", icon: SiStripe, x: 75, y: 60, function: "Pasarela de Pagos" },
+      { id: "db", label: "Postgres", icon: SiPostgresql, x: 25, y: 85, function: "Base de Datos Relacional" },
+      { id: "au", label: "Auth", icon: SiSupabase, x: 75, y: 85, function: "Auth & Realtime" },
+    ],
+    links: [["v", "f"], ["f", "a"], ["f", "s"], ["a", "db"], ["a", "au"]]
+  },
+  automation: {
+    title: "Automatización de Procesos ",
+    subtitle: "Automation_Logic_Unit",
+    color: "#8B5CF6",
+    desc: "Automatización de procesos críticos conectando APIs, datos e inteligencia artificial sin intervención manual.",
+    impact: ["Reducción drástica de tareas manuales", "Ejecución continua 24/7", "Integración de IA en workflows reales"],
+    categories: {
+      "Engine": ["Make", "n8n"],
+      "Datos": ["Airtable", "PostgreSQL"],
+      "IA": ["OpenAI GPT-4o", "Claude"],
+      "Comunicación": ["Twilio", "SendGrid"]
+    },
+    nodes: [
+      { id: "w", label: "Webhooks", icon: Globe, x: 50, y: 10, function: "Event Trigger" },
+      { id: "m", label: "Make", icon: SiMake, x: 50, y: 35, function: "Workflow Core" },
+      { id: "ai", label: "OpenAI", icon: SiOpenai, x: 20, y: 60, function: "Procesamiento IA" },
+      { id: "api", label: "Ext. APIs", icon: Layers, x: 80, y: 60, function: "Integraciones" },
+      { id: "db", label: "Airtable", icon: SiAirtable, x: 50, y: 85, function: "Base de Datos Ops" },
+    ],
+    links: [["w", "m"], ["m", "ai"], ["m", "api"], ["ai", "db"], ["api", "db"]]
+  },
+  antifraud: {
+    title: "Seguridad y Control Antifraude",
+    subtitle: "Antifraud_Validation_v2",
+    color: "#19C37D",
+    desc: "Sistema antifraude en producción que elimina la reventa no autorizada mediante validación por DNI y QR único transferible.",
+    impact: ["Reventa ilegal eliminada (0%)", "Validación por identidad (DNI)", "Transferencia controlada y trazable"],
+    categories: {
+      "Identity": ["Supabase Auth", "JWT"],
+      "Backend": ["Node.js Cluster", "Redis"],
+      "Security": ["Docker", "Cifrado QR"],
+      "Base de Datos": ["PostgreSQL"]
+    },
+    nodes: [
+      { id: "dni", label: "Auth DNI", icon: ShieldCheck, x: 50, y: 10, function: "Verificación de Identidad" },
+      { id: "sup", label: "Supabase", icon: SiSupabase, x: 50, y: 35, function: "Controlador Lógico" },
+      { id: "qr", label: "Gen QR", icon: SiTypescript, x: 20, y: 60, function: "Lógica de QR Seguro" },
+      { id: "sec", label: "Seguridad", icon: SiDocker, x: 80, y: 60, function: "App Contenerizada" },
+      { id: "log", label: "Auditoría", icon: SiPostgresql, x: 50, y: 85, function: "Registros Inmutables" },
+    ],
+    links: [["dni", "sup"], ["sup", "qr"], ["sup", "sec"], ["qr", "log"], ["sec", "log"]]
+  },
+  retail: {
+    title: "Retail Optimización",
+    subtitle: "Operational_Logic_Edge",
+    color: "#FFD700",
+    desc: "Automatización de configuración y migración de dispositivos, reduciendo tiempos en entornos físicos con usuarios no técnicos.",
+    impact: ["Reducción de hasta 40 min por dispositivo", "Configuración simplificada para cualquier usuario", "Migración segura entre dispositivos"],
+    categories: {
+      "Scripts": ["JS", "Bash", "Python"],
+      "Sistema": ["ADB Tools", "Android API"],
+      "Interfaz": ["Electron", "React"],
+      "Despliegue": ["Red Local"]
+    },
+    nodes: [
+      { id: "in", label: "Operator", icon: Laptop, x: 50, y: 10, function: "Interfaz de Operador" },
+      { id: "cli", label: "Custom CLI", icon: Terminal, x: 50, y: 35, function: "Motor de Automatización" },
+      { id: "sh", label: "Scripts", icon: SiOpenai, x: 20, y: 60, function: "Automatización de Sistema" },
+      { id: "adb", label: "ADB Logic", icon: SiTypescript, x: 80, y: 60, function: "Puente con Android" },
+      { id: "out", label: "Device Set", icon: Zap, x: 50, y: 85, function: "Configuración Final" },
+    ],
+    links: [["in", "cli"], ["cli", "sh"], ["cli", "adb"], ["sh", "out"], ["adb", "out"]]
   }
-}
-
-type PanelKey = "ai" | "frontend" | "backend" | "automation";
-
-type Tech = {
-  label: string;
-  Icon: React.ComponentType<{ className?: string }>;
-  premium?: boolean;
-  context?: string;
 };
 
-type Panel = {
-  key: PanelKey;
-  title: string;
-  color: string;
-  items: Tech[];
-};
+export default function TechStack() {
+  const [active, setActive] = useState<keyof typeof SYSTEMS>("saas");
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
 
+  useEffect(() => { 
+    setMounted(true); 
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-type AiTabKey = "razonamiento" | "codigo" | "agentes";
+  const sys = SYSTEMS[active];
+  const rgba = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
 
-const PANELS: Panel[] = [
-  {
-    key: "ai",
-    title: "AI-Driven Development (Next-Gen)",
-    color: "#FFD700", // electric yellow (radar Seguridad)
-    items: [
-      { label: "OpenAI GPT-4o", Icon: SiOpenai, premium: true, context: "Model routing & quality" },
-      { label: "ChatGPT", Icon: SiChatbot, premium: true, context: "Product UX & workflows" },
-      { label: "Claude Sonnet", Icon: SiAnthropic, premium: true, context: "Long-context reasoning" },
-      { label: "Gemini Nano", Icon: SiGooglegemini, premium: true, context: "Fast on-device style" },
-      { label: "Groq", Icon: SiRobotframework, premium: true, context: "Ultra-low latency inference" },
-      { label: "Qwen", Icon: SiMeta, premium: true, context: "Open models & tooling" },
-      { label: "Antigravity", Icon: SiCloudflare, premium: true, context: "Experimental agent stack" },
-      { label: "Cursor", Icon: SiOpenai, premium: true, context: "AI-assisted refactors" },
-      { label: "Copilot", Icon: SiGithubcopilot, premium: true, context: "Pair-programming assistant" },
-    ],
-  },
-  {
-    key: "frontend",
-    title: "Desarrollo Frontend & Mobile",
-    color: "#22D3EE", // cyan/sky clean
-    items: [
-      { label: "React Native", Icon: SiReact, context: "Mobile UI systems" },
-      { label: "Android", Icon: SiAndroid, context: "Native constraints & delivery" },
-      { label: "TypeScript", Icon: SiTypescript, context: "Typed DX & scalable apps" },
-      { label: "Vue.js", Icon: SiVuedotjs, context: "Component architecture" },
-      { label: "Angular", Icon: SiAngular, context: "Enterprise frontends" },
-      { label: "JavaScript", Icon: SiJavascript, context: "Core language mastery" },
-      { label: "HTML5", Icon: SiHtml5, context: "Semantic layout" },
-      { label: "CSS3", Icon: SiCss, context: "Premium UI styling" },
-    ],
-  },
-  {
-    key: "backend",
-    title: "Backend, Cloud & Infraestructura",
-    color: "#19C37D", // neon green (radar IA/AUTO)
-    items: [
-      { label: "Node.js", Icon: SiNodedotjs, context: "APIs & backend services" },
-      { label: "Supabase", Icon: SiSupabase, context: "Backend & Realtime Auth" },
-      { label: "PostgreSQL", Icon: SiPostgresql, context: "Schema design & integrity" },
-      { label: "Google Cloud", Icon: SiGooglecloud, context: "Cloud deployments" },
-      { label: "Cloudflare", Icon: SiCloudflare, context: "Edge & security" },
-      { label: "Vercel", Icon: SiVercel, context: "Production shipping" },
-    ],
-  },
-  {
-    key: "automation",
-    title: "Automatización & Ecosistema",
-    color: "#8B5CF6", // vibrant violet
-    items: [
-      { label: "Make", Icon: SiMake, context: "Automation workflows" },
-      { label: "n8n", Icon: SiOctopusdeploy, context: "Advanced Automation" },
-      { label: "Zapier", Icon: SiZapier, context: "API workflows" },
-      { label: "Landbot", Icon: SiChatbot, context: "Personalized Chatbot" },
-      { label: "Airtable", Icon: SiAirtable, context: "Ops databases" },
-      {
-        label: "Canva",
-        Icon: SiCanva,
-        context: "UI/UX & Assets",
-      },
-      { label: "Encryption", Icon: Lock, context: "Data protection" },
-      { label: "Git", Icon: SiGit, context: "Clean versioning" },
-    ],
-  },
-];
-
-const AI_GLASS = new Set(["OpenAI GPT-4o", "ChatGPT", "Claude Sonnet", "Gemini Nano", "Groq", "Qwen", "Antigravity", "Cursor"]);
-
-const ORBITAL_RELATIONS: Record<string, string[]> = {
-  Supabase: ["PostgreSQL", "Node.js", "Vercel", "Google Cloud"],
-  TypeScript: ["React Native", "JavaScript", "Angular", "Vue.js"],
-  Make: ["Airtable", "Encryption", "Git"],
-  "OpenAI GPT-4o": ["ChatGPT", "Claude Sonnet", "Gemini Nano", "Groq", "Qwen"],
-};
-
-const AI_TAB_ITEMS: Record<AiTabKey, string[]> = {
-  razonamiento: ["Claude Sonnet", "OpenAI GPT-4o", "Qwen"],
-  codigo: ["Cursor", "Antigravity", "Groq"],
-  agentes: ["ChatGPT", "Gemini Nano", "Copilot"],
-};
-
-function TechPill({
-  tech,
-  color,
-  premium,
-  activeLabel,
-  relatedLabels,
-  setActiveLabel,
-  onHoverLabel,
-  neonBoost = 1,
-}: {
-  tech: Tech;
-  color: string;
-  premium: boolean;
-  activeLabel: string | null;
-  relatedLabels: Set<string>;
-  setActiveLabel: (label: string | null) => void;
-  onHoverLabel?: (label: string | null) => void;
-  /** Subtle glow intensity multiplier (used for AI panel orchestration selector) */
-  neonBoost?: number;
-}) {
-  const border = `1px solid ${hexToRgba(color, 0.55 * neonBoost)}`;
-  const text = hexToRgba(color, 0.92);
-  const isAiGlass = premium && AI_GLASS.has(tech.label);
-
-  const baseBg =
-    "linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.00) 60%), rgba(255,255,255,0.02)";
-
-  const glowHover = `inset 0 0 12px 2px ${hexToRgba(color, 0.60)}`;
-  const isRelated = activeLabel ? relatedLabels.has(tech.label) : false;
-  const isCore = activeLabel === tech.label && ORBITAL_RELATIONS[tech.label];
-
-  // UX: mantenemos una anchura mínima para badges “de sistema” (p.ej. Canva)
-  // y evitar que queden demasiado estrechos respecto a Airtable/Supabase.
-  const minWidth = tech.label === "Canva" ? 148 : undefined;
-
-  const glowBoost = premium ? neonBoost : 1;
+  if (!mounted) return null;
 
   return (
-    <div
-      className={
-        "tech-pill relative inline-flex items-center gap-2.5 rounded-full px-3.5 py-2 backdrop-blur-sm bg-transparent overflow-hidden"
-      }
-      style={{
-        border,
-        color: text,
-        background: baseBg,
-        minWidth,
-        boxShadow: isRelated
-          ? `inset 0 0 12px 2px ${hexToRgba(color, 0.45 * glowBoost)}, 0 0 22px ${hexToRgba(color, 0.18 * glowBoost)}`
-          : isCore
-            ? `inset 0 0 14px 3px ${hexToRgba(color, 0.55 * glowBoost)}, 0 0 28px ${hexToRgba(color, 0.22 * glowBoost)}`
-            : `inset 0 0 12px 2px ${hexToRgba(color, 0.30 * glowBoost)}`,
-      }}
-      onMouseEnter={() => {
-        setActiveLabel(tech.label);
-        onHoverLabel?.(tech.label);
-      }}
-      onMouseLeave={() => {
-        setActiveLabel(null);
-        onHoverLabel?.(null);
-      }}
-      data-tech-label={tech.label}
-    >
-      {/* Orbital highlight ring for related pills */}
-      {isRelated && (
-        <span
-          aria-hidden="true"
-          className="tech-pill__orbital"
-          style={{ borderColor: color }}
+    <section className="relative min-h-screen w-full flex flex-col justify-center text-white overflow-hidden py-20 lg:py-0 isolate">
+      
+      {/* 🌌 FONDO DINÁMICO */}
+      <div 
+        className="absolute inset-0 pointer-events-none transition-all duration-1000 -z-10"
+        style={{ transform: `translateY(${scrollY * 0.05}px)` }}
+      >
+        <div 
+          className="absolute inset-0 opacity-25" 
+          style={{ 
+            background: `radial-gradient(circle at 50% 50%, ${rgba(sys.color, 0.15)} 0%, transparent 70%)`,
+            animation: "pulseBg 6s ease-in-out infinite"
+          }} 
         />
-      )}
-      {/* liquid glass / fracture pattern for AI bubbles */}
-      {isAiGlass ? (
-        <span
-          aria-hidden="true"
-          className="tech-pill__fracture"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(135deg, rgba(255,255,255,0.15) 0 1px, transparent 1px 14px), repeating-linear-gradient(25deg, rgba(255,255,255,0.12) 0 1px, transparent 1px 18px)",
-          }}
-        />
-      ) : null}
-
-      {/* hover touch pressure */}
-      <span
-        aria-hidden="true"
-        className="tech-pill__press"
-        style={{
-          boxShadow: `inset 0 0 12px 2px ${hexToRgba(color, 0.18)}`,
-        }}
-      />
-
-      <div className="tech-pill__content relative flex items-center gap-3">
-        <tech.Icon className="h-4 w-4" />
-        <div className="min-w-0">
-          <div className="flex items-baseline gap-2">
-            <span className="text-[13px] font-medium tracking-wide">{tech.label}</span>
-          </div>
-          {tech.context ? (
-            <div className="tech-pill__context text-[10px] leading-tight opacity-0 transition-opacity duration-200">
-              {tech.context}
-            </div>
-          ) : null}
-        </div>
+        <div className="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[60px_60px]" />
       </div>
 
-      <style jsx>{`
-        .tech-pill:hover {
-          box-shadow: ${glowHover};
+      <style jsx global>{`
+        @keyframes nodeIn {
+          from { opacity: 0; transform: translate(-50%, -40%) scale(0.8); }
+          to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
-
-        .tech-pill:hover {
-          transform: translateZ(0);
-        }
-
-        .tech-pill__content {
-          transition: transform 200ms ease-out;
-        }
-
-        .tech-pill:hover .tech-pill__content {
-          transform: scale(1.03);
-        }
-
-        .tech-pill:hover .tech-pill__context {
-          opacity: 0.9;
-        }
-
-        .tech-pill__press {
-          position: absolute;
-          inset: 0;
-          border-radius: 999px;
-          opacity: 0;
-          transition: opacity 80ms linear;
-          pointer-events: none;
-        }
-
-        .tech-pill:hover .tech-pill__press {
-          opacity: 1;
-        }
-
-        .tech-pill__fracture {
-          position: absolute;
-          width: 200%;
-          height: 200%;
-          left: -50%;
-          top: -50%;
-          opacity: 0.15;
-          pointer-events: none;
-          transform: translate3d(0, 0, 0);
-          animation: fractureDrift 20s linear infinite;
-          mask-image: radial-gradient(circle at 35% 30%, black 35%, transparent 70%);
-          -webkit-mask-image: radial-gradient(circle at 35% 30%, black 35%, transparent 70%);
-        }
-
-        .tech-pill:hover .tech-pill__fracture {
-          animation-duration: 13.3s; /* ~50% faster */
-        }
-
-        /* AI scan line: runs occasionally for Next-Gen feel */
-        .tech-pill__scan {
-          position: absolute;
-          inset: 0;
-          border-radius: 999px;
-          pointer-events: none;
-          opacity: 0.0;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 255, 255, 0.14),
-            transparent
-          );
-          transform: translateX(-120%);
-          animation: scanSweep 5s linear infinite;
-        }
-
-        @keyframes scanSweep {
-          0% {
-            opacity: 0;
-            transform: translateX(-120%);
-          }
-          12% {
-            opacity: 0;
-          }
-          18% {
-            opacity: 0.75;
-          }
-          30% {
-            opacity: 0;
-            transform: translateX(120%);
-          }
-          100% {
-            opacity: 0;
-            transform: translateX(120%);
-          }
-        }
-
-        @keyframes fractureDrift {
-          from {
-            transform: translate3d(-6%, -6%, 0);
-          }
-          to {
-            transform: translate3d(6%, 6%, 0);
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .tech-pill__fracture {
-            animation: none;
-          }
-          .tech-pill__content {
-            transition: none;
-          }
-        }
-
-        /* Mobile-only safety: avoid pill overflows for long labels like
-           "razonamiento" / "chat agente" etc. Keep desktop intact. */
-        @media (max-width: 768px) {
-          .tech-pill {
-            min-width: 0 !important;
-            max-width: 100%;
-            padding-left: 14px;
-            padding-right: 14px;
-          }
-
-          .tech-pill__content {
-            min-width: 0;
-          }
-
-          .tech-pill__content > .min-w-0 {
-            min-width: 0;
-          }
-
-          .tech-pill span {
-            white-space: normal;
-            word-break: break-word;
-          }
+        @keyframes pulseBg {
+          0%, 100% { opacity: 0.15; transform: scale(1); }
+          50% { opacity: 0.25; transform: scale(1.1); }
         }
       `}</style>
 
-      {isAiGlass ? <span aria-hidden="true" className="tech-pill__scan" /> : null}
-    </div>
-  );
-}
-
-function PanelCard({ panel }: { panel: Panel }) {
-  const premium = panel.key === "ai";
-  const [activeLabel, setActiveLabel] = useState<string | null>(null);
-  const [orchestration, setOrchestration] = useState<OrchestrationMode>("haiku");
-  // optional: bubble hover -> parent “data stream” effect
-  const onHoverLabel = useMemo(
-    () => (typeof window !== "undefined" ? window.__techStackHoverLabel : undefined),
-    []
-  );
-
-  const aiTab: AiTabKey = useMemo(() => {
-    switch (orchestration) {
-      case "haiku":
-        return "razonamiento";
-      case "sonnet":
-        return "codigo";
-      case "gpt":
-        return "agentes";
-      default:
-        return "razonamiento";
-    }
-  }, [orchestration]);
-
-  const neonBoost = useMemo(() => {
-    switch (orchestration) {
-      case "haiku":
-        return 0.88;
-      case "sonnet":
-        return 1.0;
-      case "gpt":
-        return 1.15;
-      default:
-        return 1.0;
-    }
-  }, [orchestration]);
-
-  const relatedLabels = useMemo(() => {
-    if (!activeLabel) return new Set<string>();
-    const rel = ORBITAL_RELATIONS[activeLabel] ?? [];
-    return new Set<string>(rel);
-  }, [activeLabel]);
-
-  return (
-    <div
-      className="glass-card relative overflow-hidden p-4"
-      style={{
-        borderColor: hexToRgba(panel.color, 0.38),
-        boxShadow: `0 0 0 1px ${hexToRgba(panel.color, 0.14)}, 0 0 42px ${hexToRgba(panel.color, 0.08)}, inset 0 0 18px rgba(255,255,255,0.02)`,
-      }}
-    >
-      {/* connection particles background (subtle) */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.28]">
-        <ConnectionParticlesCanvas intensity={0.45} color={panel.color} />
-      </div>
-
-      <div className="mb-5 flex items-center gap-4">
-        <h3
-          className="text-[11px] font-semibold uppercase tracking-[0.22em]"
-          style={{ color: hexToRgba(panel.color, 0.95) }}
-        >
-          {panel.title}
-        </h3>
-        <div
-          className="h-px flex-1"
-          style={{ background: `linear-gradient(to right, ${hexToRgba(panel.color, 0.45)}, transparent)` }}
-        />
-      </div>
-
-      {premium ? (
-        <div className="mb-4">
-          <TokenOptimizer value={orchestration} onChange={setOrchestration} accent={panel.color} />
-        </div>
-      ) : null}
-
-      {/*
-        Nota UX: al añadir un badge extra (Canva), aumentamos ligeramente el gap
-        y permitimos wrap natural para evitar sensación de "amontonamiento".
-      */}
-      <div className="flex flex-wrap gap-3.5">
-        {(premium
-          ? panel.items.filter((t) => AI_TAB_ITEMS[aiTab].includes(t.label))
-          : panel.items
-        ).map((t) => (
-          <TechPill
-            key={t.label}
-            tech={t}
-            color={panel.color}
-            premium={premium}
-            activeLabel={activeLabel}
-            relatedLabels={relatedLabels}
-            setActiveLabel={setActiveLabel}
-            onHoverLabel={onHoverLabel}
-            neonBoost={neonBoost}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function hexToRgba(hex: string, a: number) {
-  const h = hex.replace("#", "");
-  const r = parseInt(h.slice(0, 2), 16);
-  const g = parseInt(h.slice(2, 4), 16);
-  const b = parseInt(h.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${a})`;
-}
-
-export function TechStack() {
-  // stable memo for render perf
-  const panels = useMemo(() => PANELS, []);
-
-  const gridRef = useRef<HTMLDivElement | null>(null);
-  const panelRefs = useRef<Record<PanelKey, HTMLDivElement | null>>({
-    ai: null,
-    frontend: null,
-    backend: null,
-    automation: null,
-  });
-
-  const streamCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const streamRafRef = useRef<number | null>(null);
-
-  // Hover state for triggering data stream
-  const [streamActive, setStreamActive] = useState<{
-    from: "supabase" | "airtable";
-    t0: number;
-  } | null>(null);
-
-  const setPanelRef = (key: PanelKey) => (el: HTMLDivElement | null) => {
-    panelRefs.current[key] = el;
-  };
-
-  // bridge callback to PanelCard without prop drilling (keeps file changes minimal)
-  useEffect(() => {
-    const onGlobalHoverLabel = (label: string | null) => {
-      if (label === "Supabase") {
-        setStreamActive({ from: "supabase", t0: performance.now() });
-        return;
-      }
-      if (label === "Airtable") {
-        setStreamActive({ from: "airtable", t0: performance.now() });
-        return;
-      }
-      // let the current animation finish; no immediate cancel
-    };
-
-    window.__techStackHoverLabel = onGlobalHoverLabel;
-    return () => {
-      delete window.__techStackHoverLabel;
-    };
-  }, []);
-
-  useEffect(() => {
-    const grid = gridRef.current;
-    const canvas = streamCanvasRef.current;
-    if (!grid || !canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const resize = () => {
-      const rect = grid.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-      canvas.height = Math.max(1, Math.floor(rect.height * dpr));
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${rect.height}px`;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-
-    resize();
-    const ro = new ResizeObserver(resize);
-    ro.observe(grid);
-
-    return () => {
-      ro.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    const grid = gridRef.current;
-    const canvas = streamCanvasRef.current;
-    if (!grid || !canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    if (!streamActive) return;
-
-    // Resolve origin/destination points (in grid-local coords)
-    const automationEl = panelRefs.current.automation;
-    if (!automationEl) return;
-
-    const originLabel = streamActive.from === "supabase" ? "Supabase" : "Airtable";
-    const originEl = grid.querySelector<HTMLElement>(`[data-tech-label="${originLabel}"]`);
-    if (!originEl) return;
-
-    const gridRect = grid.getBoundingClientRect();
-    const aRect = originEl.getBoundingClientRect();
-    const bRect = automationEl.getBoundingClientRect();
-
-    const ax = aRect.left - gridRect.left + aRect.width * 0.9;
-    const ay = aRect.top - gridRect.top + aRect.height * 0.5;
-    const bx = bRect.left - gridRect.left + bRect.width * 0.15;
-    const by = bRect.top - gridRect.top + bRect.height * 0.3;
-
-    const color = streamActive.from === "supabase" ? "#19C37D" : "#8B5CF6";
-
-    const duration = 650; // ms
-    const particles = Array.from({ length: 18 }).map((_, i) => ({
-      o: i / 18,
-      r: 1 + (i % 3) * 0.35,
-    }));
-
-    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-
-    const render = (now: number) => {
-      const t = Math.min(1, (now - streamActive.t0) / duration);
-      const k = easeOutCubic(t);
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Base beam
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = hexToRgba(color, 0.22 * (1 - t));
-      ctx.beginPath();
-      ctx.moveTo(ax, ay);
-      ctx.lineTo(bx, by);
-      ctx.stroke();
-
-      // Moving bright head
-      const hx = ax + (bx - ax) * k;
-      const hy = ay + (by - ay) * k;
-      ctx.fillStyle = hexToRgba(color, 0.55 * (1 - t * 0.35));
-      ctx.beginPath();
-      ctx.arc(hx, hy, 2.2, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Trail particles
-      for (const p of particles) {
-        const tt = Math.max(0, Math.min(1, k - p.o));
-        const px = ax + (bx - ax) * tt;
-        const py = ay + (by - ay) * tt;
-        const alpha = (1 - p.o) * (1 - t) * 0.35;
-        ctx.fillStyle = hexToRgba(color, alpha);
-        ctx.beginPath();
-        ctx.arc(px, py, p.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      if (t < 1) {
-        streamRafRef.current = requestAnimationFrame(render);
-      } else {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-    };
-
-    if (streamRafRef.current) cancelAnimationFrame(streamRafRef.current);
-    streamRafRef.current = requestAnimationFrame(render);
-
-    return () => {
-      if (streamRafRef.current) cancelAnimationFrame(streamRafRef.current);
-    };
-  }, [streamActive]);
-
-  return (
-    <section id="stack" className="text-white">
-      <FadeIn className="glass-card neon-border p-4 sm:p-6">
-        <div className="mb-8 flex items-center justify-between">
-          <h2 className="text-[10px] font-bold tracking-[0.3em] text-accent uppercase">
-            TECH STACK
+      <div className="mx-auto w-full max-w-7xl px-6 lg:px-12">
+        
+        <div className="h-32 mb-10 flex flex-col justify-end">
+          <div className="flex items-center gap-3 text-white/30 font-mono text-[10px] uppercase tracking-[0.3em] mb-3">
+            <Terminal className="h-3.5 w-3.5" />
+            <span>{`> system_status: ACTIVE // id: ${sys.subtitle}`}</span>
+          </div>
+          <h2 className="text-4xl lg:text-5xl font-bold tracking-tight" key={sys.title}>
+            {sys.title}
           </h2>
-          <div className="h-px flex-1 bg-linear-to-r from-accent/40 to-transparent ml-4" />
         </div>
 
-        <div ref={gridRef} className="relative">
-          <canvas
-            ref={streamCanvasRef}
-            className="pointer-events-none absolute inset-0 z-10"
-            aria-hidden="true"
-          />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* 🎛️ SELECTOR (Fiel a los títulos de SYSTEMS) */}
+          <div className="lg:col-span-3 space-y-2.5">
+            {Object.entries(SYSTEMS).map(([key, item]) => {
+              const isSelected = active === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => { setActive(key as keyof typeof SYSTEMS); setHoveredNode(null); }}
+                  className="w-full flex items-center justify-between p-4 rounded-xl border transition-all duration-500 group"
+                  style={{
+                    borderColor: isSelected ? rgba(item.color, 0.3) : "rgba(255,255,255,0.05)",
+                    backgroundColor: isSelected ? rgba(item.color, 0.08) : "rgba(255,255,255,0.01)",
+                    boxShadow: isSelected ? `0 0 20px ${rgba(item.color, 0.15)}` : "none"
+                  }}
+                >
+                  <span className={`text-sm font-bold tracking-wide transition-all ${isSelected ? "text-white" : "text-white/20 group-hover:text-white/50"}`}>
+                    {item.title.split(' ')[0]}
+                  </span>
+                  <div className={`h-1.5 w-1.5 rounded-full transition-all duration-500 ${isSelected ? "scale-125" : "scale-100"}`} 
+                       style={{ background: item.color, boxShadow: isSelected ? `0 0 10px ${item.color}` : "none", opacity: isSelected ? 1 : 0.2 }} 
+                  />
+                </button>
+              );
+            })}
+          </div>
 
-          <div className="grid grid-cols-2 grid-rows-2 gap-4">
-            {panels.map((p) => (
-              <div key={p.key} ref={setPanelRef(p.key)}>
-                <PanelCard panel={p} />
+          <div className="lg:col-span-5 h-130 relative lg:w-[110%] lg:-ml-[5%] rounded-3xl border border-white/5 bg-black/40 backdrop-blur-xl overflow-hidden shadow-2xl cursor-crosshair">
+            <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40">
+              {sys.links.map(([fromId, toId]: any, i: number) => {
+                const from = sys.nodes.find((n: any) => n.id === fromId);
+                const to = sys.nodes.find((n: any) => n.id === toId);
+                if (!from || !to) return null;
+                const isHighlight = hoveredNode === fromId || hoveredNode === toId;
+                return (
+                  <g key={`${active}-link-${i}`}>
+                    <line 
+                      x1={`${from.x}%`} y1={`${from.y}%`} x2={`${to.x}%`} y2={`${to.y}%`}
+                      stroke={sys.color} strokeWidth={isHighlight ? "2" : "1"}
+                      strokeOpacity={isHighlight ? 0.8 : 0.2}
+                      className="transition-all duration-500"
+                    />
+                    <circle 
+                      r="2.5" 
+                      fill={sys.color} 
+                      opacity="0.8"
+                      style={{ filter: `drop-shadow(0 0 6px ${sys.color})` }}
+                    >
+                      <animateMotion dur={`${2.5 + i*0.3}s`} repeatCount="indefinite" path={`M ${from.x * 5.5},${from.y * 5.2} L ${to.x * 5.5},${to.y * 5.2}`} />
+                    </circle>
+                  </g>
+                );
+              })}
+            </svg>
+
+            {sys.nodes.map((node: any, i: number) => {
+              const isActive = hoveredNode === node.id;
+              const isRelated = hoveredNode && (sys.links.some((l: any) => (l[0] === node.id && l[1] === hoveredNode) || (l[1] === node.id && l[0] === hoveredNode)));
+              
+              return (
+                <div 
+                  key={`${active}-${node.id}`}
+                  onMouseEnter={() => setHoveredNode(node.id)}
+                  onMouseLeave={() => setHoveredNode(null)}
+                  className="absolute flex flex-col items-center gap-2 z-20 group transition-opacity duration-300"
+                  style={{ 
+                    left: `${node.x}%`, 
+                    top: `${node.y}%`,
+                    animation: `nodeIn 0.6s ease forwards`,
+                    animationDelay: `${i * 0.08}s`,
+                    opacity: hoveredNode && !isActive && !isRelated ? 0.2 : 1
+                  }}
+                >
+                  <div 
+                    className="p-3.5 rounded-2xl border transition-all duration-500"
+                    style={{ 
+                      borderColor: isActive || isRelated ? sys.color : "rgba(255,255,255,0.08)", 
+                      backgroundColor: isActive || isRelated ? rgba(sys.color, 0.2) : "rgba(5,5,5,0.9)",
+                      transform: isActive ? "scale(1.2)" : "scale(1)"
+                    }}
+                  >
+                    <node.icon className="h-5 w-5" style={{ color: isActive || isRelated ? "white" : rgba(sys.color, 0.5) }} />
+                  </div>
+                  
+                  {isActive && (
+                    <div className="absolute -top-14 bg-black/90 border border-white/10 px-3 py-1 rounded-lg whitespace-nowrap animate-in fade-in zoom-in-95 duration-200">
+                      <p className="text-[10px] font-bold" style={{ color: sys.color }}>{node.function}</p>
+                    </div>
+                  )}
+                  <span className="text-[9px] font-mono text-white/20 uppercase tracking-widest pointer-events-none">{node.label}</span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="lg:col-span-4 flex flex-col gap-8 lg:pl-6 min-h-125">
+            <div className="h-20 flex items-center">
+              <p className="text-sm text-white/50 leading-relaxed italic border-l border-white/10 pl-5">
+                {sys.desc}
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase">Impacto en Negocio</h4>
+              <div className="grid gap-2.5">
+                {sys.impact.map((text: string, i: number) => (
+                  <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/2 border border-white/5">
+                    <ArrowRight className="h-3 w-3" style={{ color: sys.color }} />
+                    <p className="text-[12px] text-white/70 font-medium">{text}</p>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            <div className="space-y-5 pt-5 border-t border-white/5">
+              <h4 className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase">Ecosistema</h4>
+              <div className="grid grid-cols-2 gap-y-5 gap-x-4">
+                {Object.entries(sys.categories).map(([cat, techs]) => (
+                  <div key={cat} className="space-y-1">
+                    <p className="text-[10px] font-bold text-white/40">{cat}</p>
+                    <div className="text-[11px] text-white/70 flex flex-wrap gap-1.5">
+                      {(techs as string[]).map((t, idx) => (
+                        <span key={t}>
+                          {t}{idx < (techs as string[]).length - 1 ? " ·" : ""}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      </FadeIn>
+
+        <div className="mt-20 pt-8 border-t border-white/5 text-center">
+          <p className="text-[10px] font-medium text-white/20 uppercase tracking-[0.4em]">
+            no trabajo con herramientas aisladas · diseño sistemas que funcionan en producción
+          </p>
+        </div>
+      </div>
     </section>
   );
 }

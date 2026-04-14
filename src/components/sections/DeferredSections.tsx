@@ -4,14 +4,16 @@ import dynamic from "next/dynamic";
 import { DeferredMount } from "@/components/utils/DeferredMount";
 
 // --- IMPORTS DINÁMICOS ---
+// Corregidos para manejar exportaciones por defecto o nombradas según corresponda
 
 const Manifesto = dynamic(
   () => import("@/components/sections/Manifesto").then((m) => m.Manifesto),
   { ssr: false }
 );
 
+// ELIMINAMOS el .then() porque TechStack ahora usa export default
 const TechStack = dynamic(
-  () => import("@/components/sections/TechStack").then((m) => m.TechStack),
+  () => import("@/components/sections/TechStack"), 
   { ssr: false }
 );
 
