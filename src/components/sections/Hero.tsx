@@ -31,16 +31,18 @@ export function Hero() {
       </div>
 
       <FadeIn className="relative z-20 h-full w-full flex items-center justify-center px-6">
-        <div className="w-full max-w-5xl mx-auto flex flex-col items-center text-center">
+        <div className="w-full flex flex-col items-center text-center overflow-visible">
           
           {/* TEXTO PRINCIPAL */}
-          <div className="flex flex-col gap-6 mb-10">
-            <h1 className="text-4xl sm:text-6xl lg:text-8xl font-bold tracking-tighter text-white">
+          <div className="flex flex-col gap-6 mb-10 w-full items-center overflow-visible">
+            {/* ✅ Eliminado tracking-tighter y añadido pr-10 para asegurar el final */}
+            <h1 className="text-4xl sm:text-6xl lg:text-8xl font-bold text-white pr-10 leading-tight overflow-visible">
               <span className="hero-name">Abel González Iglesias</span>
             </h1>
             
-            <div className="h-8 sm:h-12">
-              <span className="text-xl sm:text-3xl font-light text-white/60 tracking-tight flex items-center justify-center">
+            {/* ✅ Espaciado extra pr-20 para que el Typewriter no se corte */}
+            <div className="h-8 sm:h-12 w-full flex items-center justify-center overflow-visible">
+              <span className="text-xl sm:text-3xl font-light text-white/60 flex items-center justify-center whitespace-nowrap pr-20">
                 <Typewriter 
                   text={ROLE_STRINGS as any} 
                   phrases={ROLE_STRINGS as unknown as string[]} 
@@ -57,17 +59,14 @@ export function Hero() {
             </p>
           </div>
 
-          {/* ACCIÓN PRINCIPAL CON GLOW Y REFLEJO */}
+          {/* ACCIÓN PRINCIPAL */}
           <div className="flex flex-col items-center gap-12 w-full">
             <div className="relative group">
-              {/* Glow exterior de colores */}
               <div className="absolute -inset-1 bg-linear-to-r from-violet-600/20 to-cyan-600/20 rounded-sm blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
               <NeonPulse>
                 <a href="#proyectos" className="btn-cyber-minimal relative group">
-                  {/* ✅ REFLEJO DE BARRIDO REANIMADO */}
                   <span className="absolute inset-0 cyber-scanner-effect opacity-20" />
-                  
                   <span className="relative z-10">Ver Proyectos</span>
                   <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </a>
@@ -77,14 +76,13 @@ export function Hero() {
             {/* ENLACES Y LOG TÉCNICO */}
             <div className="flex flex-col items-center gap-4">
               <div className="flex items-center gap-8 text-white/30 text-sm font-medium tracking-widest uppercase">
-                <a href="https://github.com/AGIthecreator/" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">GitHub</a>
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">GitHub</a>
                 <span className="w-1 h-1 bg-white/10 rounded-full" />
-                <a href="https://www.linkedin.com/in/abel-gonzalez-iglesias/" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">LinkedIn</a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">LinkedIn</a>
                 <span className="w-1 h-1 bg-white/10 rounded-full" />
                 <a href="mailto:contacto@agithecreator.com" className="hover:text-violet-400 transition-colors">Email</a>
               </div>
               
-              {/* LOG QUE DISPARA LA ARQUITECTURA */}
               <div className="relative mt-2 group/log cursor-pointer">
                 <div className="absolute inset-0 z-20 opacity-0 overflow-hidden">
                   <ArchitectureLogs />
@@ -130,14 +128,8 @@ export function Hero() {
           box-shadow: 0 10px 30px -10px rgba(0,0,0,0.7);
         }
 
-        /* EFECTO DE ESCANEO / REFLEJO ANIMADO */
         .cyber-scanner-effect {
-          background: linear-gradient(
-            90deg, 
-            transparent 0%, 
-            rgba(139, 92, 246, 0.5) 50%, 
-            transparent 100%
-          );
+          background: linear-gradient(90deg, transparent 0%, rgba(139, 92, 246, 0.5) 50%, transparent 100%);
           background-size: 200% 100%;
           animation: scan-move 4s linear infinite;
         }
@@ -145,16 +137,6 @@ export function Hero() {
         @keyframes scan-move {
           0% { background-position: 200% 0; }
           100% { background-position: -200% 0; }
-        }
-
-        .btn-cyber-minimal:hover .cyber-scanner-effect {
-          opacity: 0.4;
-          animation-duration: 2s;
-        }
-
-        @keyframes pulse {
-          0%, 100% { opacity: 0.3; }
-          50% { opacity: 0.8; }
         }
       `}</style>
     </section>
