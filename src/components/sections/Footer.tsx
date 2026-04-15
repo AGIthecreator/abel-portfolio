@@ -5,7 +5,7 @@ import { Github, Linkedin, Download, ArrowUpRight } from "lucide-react";
 
 const email = "contacto@agithecreator.com";
 const githubUrl = "https://github.com/AGIthecreator";
-const linkedinUrl = "https://www.linkedin.com/in/abel-gonzalez-iglesias/";
+const linkedinUrl = "https://www.linkedin.com/in/abel-gonzalez-iglesias";
 const cvUrl = "/CV_Abel_Gonzalez_2026.pdf";
 
 export function Footer({ activeColor = "#8B5CF6" }: { activeColor?: string }) {
@@ -14,14 +14,14 @@ export function Footer({ activeColor = "#8B5CF6" }: { activeColor?: string }) {
   return (
     <footer id="contacto" className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] bg-[#050505] border-t border-white/5 mt-32 overflow-hidden">
       
-      {/* 🛠 LÍNEAS LATERALES (Divididas para no tocar el botón) */}
-      <div className="hidden lg:block absolute left-[10%] top-1/2 -translate-y-1/2 w-[25%] h-px bg-linear-to-r from-transparent via-white/5 to-transparent pointer-events-none" />
-      <div className="hidden lg:block absolute right-[10%] top-1/2 -translate-y-1/2 w-[25%] h-px bg-linear-to-l from-transparent via-white/5 to-transparent pointer-events-none" />
+      {/* 🛠 LÍNEAS LATERALES TÉCNICAS */}
+      <div className="hidden lg:block absolute left-[8%] top-1/2 -translate-y-1/2 w-[22%] h-px bg-linear-to-r from-transparent via-white/5 to-transparent pointer-events-none" />
+      <div className="hidden lg:block absolute right-[8%] top-1/2 -translate-y-1/2 w-[22%] h-px bg-linear-to-l from-transparent via-white/5 to-transparent pointer-events-none" />
 
       <div className="w-full px-12 py-10 relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
           
-          {/* BLOQUE IZQUIERDO: Branding (Tamaño aumentado) */}
+          {/* BLOQUE IZQUIERDO: Branding Reforzado */}
           <div className="flex flex-col gap-1.5 text-center lg:text-left">
             <h3 className="text-xl md:text-2xl font-bold tracking-tighter text-white">
               Sistemas en <span style={{ color: activeColor }} className="transition-colors duration-1000">producción.</span>
@@ -31,7 +31,7 @@ export function Footer({ activeColor = "#8B5CF6" }: { activeColor?: string }) {
             </p>
           </div>
 
-          {/* BLOQUE CENTRAL: Botón Expandible Elástico */}
+          {/* BLOQUE CENTRAL: El Botón Elástico */}
           <div className="flex flex-col items-center gap-3">
              <div className="flex items-center gap-2 text-[9px] font-mono text-white/20 uppercase tracking-[0.3em]">
                <div className="h-1 w-1 rounded-full animate-pulse" style={{ backgroundColor: activeColor }} />
@@ -40,24 +40,27 @@ export function Footer({ activeColor = "#8B5CF6" }: { activeColor?: string }) {
              
              <a 
               href={`mailto:${email}`}
-              className="group flex items-center justify-center gap-0 hover:gap-4 px-6 py-3 rounded-full border border-white/10 bg-white/2 hover:bg-white/5 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] min-w-50 hover:min-w-70"
+              /* Transición elástica con cubic-bezier */
+              className="group flex items-center justify-center gap-0 hover:gap-4 px-6 py-3 rounded-full border border-white/10 bg-white/2 hover:bg-white/5 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] min-w-52.5 hover:min-w-77.5"
             >
-              <span className="text-sm font-bold text-white/90 group-hover:text-white transition-colors">
+              <span className="text-sm font-bold text-white/90 group-hover:text-white/60 transition-colors duration-500">
                 {email}
               </span>
               
-              {/* Texto que aparece al expandirse */}
-              <span className="max-w-0 overflow-hidden group-hover:max-w-25 transition-all duration-500 ease-out text-xs font-black uppercase tracking-widest text-accent opacity-0 group-hover:opacity-100 whitespace-nowrap" style={{ color: activeColor }}>
-                ¡Hablemos!
-              </span>
+              {/* Revelado elástico del texto */}
+              <div className="max-w-0 overflow-hidden group-hover:max-w-30 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex items-center">
+                <span className="text-xs font-black uppercase tracking-[0.2em] whitespace-nowrap pl-2 translate-x-4 group-hover:translate-x-0 transition-transform duration-700" style={{ color: activeColor }}>
+                  ¡Hablemos!
+                </span>
+              </div>
 
-              <div className="p-1.5 rounded-full ml-2" style={{ backgroundColor: `${activeColor}15` }}>
-                <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:rotate-45" style={{ color: activeColor }} />
+              <div className="p-1.5 rounded-full ml-2 shrink-0" style={{ backgroundColor: `${activeColor}15` }}>
+                <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-500 group-hover:rotate-45" style={{ color: activeColor }} />
               </div>
             </a>
           </div>
 
-          {/* BLOQUE DERECHO: Infraestructura */}
+          {/* BLOQUE DERECHO: Infraestructura Ensanchada */}
           <div className="flex items-center gap-10">
             <div className="flex flex-col items-end gap-2.5">
                <p className="text-[9px] font-black uppercase tracking-[0.4em] text-white/20">Infraestructura</p>
@@ -73,8 +76,8 @@ export function Footer({ activeColor = "#8B5CF6" }: { activeColor?: string }) {
             <div className="h-10 w-px bg-white/5 hidden md:block" />
             
             <div className="text-right flex flex-col gap-0.5">
-              <p className="text-[11px] font-bold text-white/60 tracking-tight">© {year} ABEL GONZÁLEZ</p>
-              <p className="text-[9px] text-white/20 uppercase tracking-widest">España / Remoto</p>
+              <p className="text-[11px] font-bold text-white/60 tracking-tight font-sans">© {year} ABEL GONZÁLEZ</p>
+              <p className="text-[9px] text-white/20 uppercase tracking-widest font-mono">España / Remoto</p>
             </div>
           </div>
 
