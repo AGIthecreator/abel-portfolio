@@ -1,107 +1,85 @@
-import { FadeIn } from "@/components/motion/FadeIn";
-import { Download, Github, Linkedin, Mail } from "lucide-react";
+"use client";
+
+import React from "react";
+import { Github, Linkedin, Download, ArrowUpRight } from "lucide-react";
 
 const email = "contacto@agithecreator.com";
-const tickerText =
-  "SISTEMA LISTO PARA ESCALAR PROYECTOS ◆ DISPONIBILIDAD PARA NUEVAS AUTOMATIZACIONES ◆ OPTIMIZANDO PROCESOS CON IA ◆ CONTACTA AHORA ◆";
+const githubUrl = "https://github.com/AGIthecreator";
+const linkedinUrl = "https://www.linkedin.com/in/abel-gonzalez-iglesias/";
+const cvUrl = "/CV_Abel_Gonzalez_2026.pdf";
 
-export function Footer() {
+export function Footer({ activeColor = "#8B5CF6" }: { activeColor?: string }) {
   const year = 2026;
+
   return (
-    <footer id="contacto" className="pt-14 pb-12 sm:pt-20">
-      <FadeIn className="glass-card neon-border rounded-3xl px-6 py-6 sm:px-10">
-        <div className="flex flex-col gap-6 sm:gap-5">
-          {/* línea superior muy fina con degradado sutil, interrumpida por el copyright */}
-          <div className="footer-topline relative flex items-center">
-            <div
-              aria-hidden="true"
-              className="h-px w-full bg-linear-to-r from-[rgba(139,92,246,0.0)] via-[rgba(139,92,246,0.55)] to-[rgba(34,211,238,0.55)] opacity-80"
-            />
+    <footer id="contacto" className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] bg-[#050505] border-t border-white/5 mt-32 overflow-hidden">
+      
+      {/* 🛠 LÍNEAS LATERALES (Divididas para no tocar el botón) */}
+      <div className="hidden lg:block absolute left-[10%] top-1/2 -translate-y-1/2 w-[25%] h-px bg-linear-to-r from-transparent via-white/5 to-transparent pointer-events-none" />
+      <div className="hidden lg:block absolute right-[10%] top-1/2 -translate-y-1/2 w-[25%] h-px bg-linear-to-l from-transparent via-white/5 to-transparent pointer-events-none" />
 
-            <div className="footer-bubble mx-auto px-3 lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:px-3">
-              <div className="footer-bubble__inner rounded-full border border-white/10 bg-[rgba(2,6,23,0.72)] px-3 py-1.5 text-[13.5px] text-white/70 backdrop-blur">
-                <span className="footer-bubble__line1 font-mono text-white/80">© {year} Abel </span>
-                <span className="footer-bubble__line2">Arquitecto Digital y Especialista en Automatización</span>
-              </div>
-            </div>
+      <div className="w-full px-12 py-10 relative z-10">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
+          
+          {/* BLOQUE IZQUIERDO: Branding (Tamaño aumentado) */}
+          <div className="flex flex-col gap-1.5 text-center lg:text-left">
+            <h3 className="text-xl md:text-2xl font-bold tracking-tighter text-white">
+              Sistemas en <span style={{ color: activeColor }} className="transition-colors duration-1000">producción.</span>
+            </h3>
+            <p className="text-[12px] font-mono text-white/30 uppercase tracking-[0.3em] font-bold">
+              production_mode // v2.0
+            </p>
           </div>
 
-          <div className="footer-row flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-            {/* micro-indicadores de sistema */}
-            <div className="order-2 flex flex-wrap items-center justify-center gap-2 text-[12px] tracking-wide text-white/80 sm:order-0 sm:flex-1 sm:flex-nowrap">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.45)] animate-status-led" />
-                <span className="font-mono text-white/80">ESTADO:</span>
-                <span className="text-white/80">ESTABLE</span>
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1">
-                <span className="font-mono text-white/80">LATENCIA:</span>
-                <span className="text-white/80">22ms</span>
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1">
-                <span className="font-mono text-white/80">UPTIME:</span>
-                <span className="text-white/80">99.9%</span>
-              </div>
-            </div>
-
-            {/* rótulo de datos (marquesina técnica) - ocupa el hueco central */}
-            <div className="footer-ticker order-3 min-w-0 flex-1 sm:order-0">
-              <div className="ticker-mask group relative w-full overflow-hidden">
-                <div className="flex w-max items-center whitespace-nowrap py-1.5 font-mono text-[11px] sm:text-[12px] tracking-[0.16em] text-cyan-200/70 drop-shadow-[0_0_10px_rgba(34,211,238,0.12)] animate-ticker group-hover:animate-ticker-slow">
-                  {/*
-                    Seamless loop:
-                    - Renderizamos el texto 2 veces dentro del mismo track animado
-                    - Cada copia tiene padding derecho generoso para que no se amontonen
-                  */}
-                  <span className="ticker-item pr-16">{tickerText}</span>
-                  <span aria-hidden="true" className="ticker-item pr-16">
-                    {tickerText}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="order-1 flex flex-col gap-4 sm:order-0 sm:flex-row sm:items-center">
-              <div className="flex items-center justify-center gap-3 sm:justify-end">
-              <a
-                aria-label="GitHub"
-                className="footer-social inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/45 transition-all hover:scale-[1.06] hover:border-white/20 hover:bg-white/10 hover:text-white/90 hover:shadow-[0_0_22px_rgba(255,255,255,0.06)]"
-                href="https://github.com/AGIthecreator"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <Github className="h-5 w-5" />
-              </a>
-              <a
-                aria-label="LinkedIn"
-                className="footer-social inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/45 transition-all hover:scale-[1.06] hover:border-white/20 hover:bg-white/10 hover:text-white/90 hover:shadow-[0_0_22px_rgba(255,255,255,0.06)]"
-                href="https://www.linkedin.com/in/abel-gonzalez-iglesias"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <Linkedin className="h-5 w-5" />
-              </a>
-              <a
-                aria-label="Email"
-                className="footer-social inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/45 transition-all hover:scale-[1.06] hover:border-white/20 hover:bg-white/10 hover:text-white/90 hover:shadow-[0_0_22px_rgba(255,255,255,0.06)]"
-                href={`mailto:${email}`}
-              >
-                <Mail className="h-5 w-5" />
-              </a>
-            </div>
-
-            <a
-              className="group relative inline-flex items-center justify-center gap-2 rounded-full border border-[rgba(139,92,246,0.42)] bg-transparent px-5 py-2.5 text-sm font-medium text-white/80 shadow-[0_0_0_1px_rgba(139,92,246,0.16),0_0_26px_rgba(139,92,246,0.10)] transition-all hover:border-[rgba(34,211,238,0.45)] hover:bg-[rgba(34,211,238,0.08)] hover:text-white hover:shadow-[0_0_0_1px_rgba(34,211,238,0.16),0_0_30px_rgba(34,211,238,0.12)]"
-              href="/CV_Abel_Gonzalez_2026.pdf"
-              target="_blank"
-              rel="noreferrer"
+          {/* BLOQUE CENTRAL: Botón Expandible Elástico */}
+          <div className="flex flex-col items-center gap-3">
+             <div className="flex items-center gap-2 text-[9px] font-mono text-white/20 uppercase tracking-[0.3em]">
+               <div className="h-1 w-1 rounded-full animate-pulse" style={{ backgroundColor: activeColor }} />
+               Disponible para proyectos
+             </div>
+             
+             <a 
+              href={`mailto:${email}`}
+              className="group flex items-center justify-center gap-0 hover:gap-4 px-6 py-3 rounded-full border border-white/10 bg-white/2 hover:bg-white/5 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] min-w-50 hover:min-w-70"
             >
-              <Download className="h-4 w-4" /> Descargar CV
+              <span className="text-sm font-bold text-white/90 group-hover:text-white transition-colors">
+                {email}
+              </span>
+              
+              {/* Texto que aparece al expandirse */}
+              <span className="max-w-0 overflow-hidden group-hover:max-w-25 transition-all duration-500 ease-out text-xs font-black uppercase tracking-widest text-accent opacity-0 group-hover:opacity-100 whitespace-nowrap" style={{ color: activeColor }}>
+                ¡Hablemos!
+              </span>
+
+              <div className="p-1.5 rounded-full ml-2" style={{ backgroundColor: `${activeColor}15` }}>
+                <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:rotate-45" style={{ color: activeColor }} />
+              </div>
             </a>
+          </div>
+
+          {/* BLOQUE DERECHO: Infraestructura */}
+          <div className="flex items-center gap-10">
+            <div className="flex flex-col items-end gap-2.5">
+               <p className="text-[9px] font-black uppercase tracking-[0.4em] text-white/20">Infraestructura</p>
+               <div className="flex items-center gap-8">
+                  <a href={linkedinUrl} target="_blank" rel="noreferrer" className="text-[11px] font-bold text-white/40 hover:text-white transition-colors tracking-widest">LINKEDIN</a>
+                  <a href={githubUrl} target="_blank" rel="noreferrer" className="text-[11px] font-bold text-white/40 hover:text-white transition-colors tracking-widest">GITHUB</a>
+                  <a href={cvUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-[11px] font-bold text-white/40 hover:text-white transition-colors tracking-widest">
+                    CV <Download className="h-3 w-3" />
+                  </a>
+               </div>
+            </div>
+            
+            <div className="h-10 w-px bg-white/5 hidden md:block" />
+            
+            <div className="text-right flex flex-col gap-0.5">
+              <p className="text-[11px] font-bold text-white/60 tracking-tight">© {year} ABEL GONZÁLEZ</p>
+              <p className="text-[9px] text-white/20 uppercase tracking-widest">España / Remoto</p>
             </div>
           </div>
+
         </div>
-      </FadeIn>
+      </div>
     </footer>
   );
 }
