@@ -7,6 +7,10 @@ import {
   DeferredTechStack,
 } from "@/components/sections/DeferredSections";
 
+// Importaciones de las franjas (Solo las dos definitivas)
+import StripSystemStatus from "@/components/sections/Strips/StripSystemStatus";
+import StripExecution from "@/components/sections/Strips/StripExecution";
+
 export default function Page() {
   return (
     <div className="relative min-h-screen bg-[#030014]">
@@ -22,15 +26,27 @@ export default function Page() {
         <div className="cyber-keyword-rain opacity-30" aria-hidden="true" />
       </div>
 
-      {/* HERO: Inmersivo */}
+      {/* 1. HERO */}
       <Hero />
 
+      {/* FRANJA 1: El interruptor Hero → Manifesto */}
+      <StripSystemStatus />
+
+      {/* BLOQUE 1: Narrativa Estratégica */}
       <main className="relative z-10 mx-auto max-w-300 px-4 sm:px-6 lg:px-8">
         <section className="relative pt-6 pb-6">
           <div className="mt-8 sm:mt-12"><DeferredManifesto /></div>
           <div className="mt-10 sm:mt-14"><DeferredStrategicProfile /></div>
         </section>
+      </main>
 
+      {/* FRANJA 2: El interruptor Perfil → Proyectos */}
+      <div className="my-10 sm:my-16">
+        <StripExecution />
+      </div>
+
+      {/* BLOQUE 2: Ejecución y Stack */}
+      <main className="relative z-10 mx-auto max-w-300 px-4 sm:px-6 lg:px-8">
         <section className="relative py-10 sm:pt-14 sm:pb-18">
           <div 
             className="absolute right-0 top-1/2 -z-10 h-112.5 w-112.5 -translate-y-1/2 rounded-full opacity-20"
@@ -42,13 +58,13 @@ export default function Page() {
           <DeferredProjects />
         </section>
 
-        {/* Sección de Arquitectura */}
         <section className="py-10 sm:py-14">
           <DeferredTechStack />
         </section>
-
-        <Footer />
       </main>
+
+      {/* FOOTER DIRECTO: Al haber quitado la franja 3, el TechStack respira hacia el contacto */}
+      <Footer />
     </div>
   );
 }

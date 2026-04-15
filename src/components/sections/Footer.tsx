@@ -4,21 +4,22 @@ import React from "react";
 import { Github, Linkedin, Download, ArrowUpRight } from "lucide-react";
 
 const email = "contacto@agithecreator.com";
-const githubUrl = "https://github.com/AGIthecreator";
-const linkedinUrl = "https://www.linkedin.com/in/abel-gonzalez-iglesias";
+const githubUrl = "https://github.com";
+const linkedinUrl = "https://linkedin.com";
 const cvUrl = "/CV_Abel_Gonzalez_2026.pdf";
 
 export function Footer({ activeColor = "#8B5CF6" }: { activeColor?: string }) {
   const year = 2026;
 
   return (
-    <footer id="contacto" className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] bg-[#050505] border-t border-white/5 mt-32 overflow-hidden">
+    /* CORRECCIÓN: Eliminado mt-32 y márgenes de pantalla negativos */
+    <footer id="contacto" className="relative w-full bg-[#050505] border-t border-white/5 overflow-hidden">
       
       {/* 🛠 LÍNEAS LATERALES TÉCNICAS */}
       <div className="hidden lg:block absolute left-[8%] top-1/2 -translate-y-1/2 w-[22%] h-px bg-linear-to-r from-transparent via-white/5 to-transparent pointer-events-none" />
       <div className="hidden lg:block absolute right-[8%] top-1/2 -translate-y-1/2 w-[22%] h-px bg-linear-to-l from-transparent via-white/5 to-transparent pointer-events-none" />
 
-      <div className="w-full px-12 py-10 relative z-10">
+      <div className="w-full px-6 md:px-12 py-10 relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
           
           {/* BLOQUE IZQUIERDO: Branding Reforzado */}
@@ -40,14 +41,12 @@ export function Footer({ activeColor = "#8B5CF6" }: { activeColor?: string }) {
              
              <a 
               href={`mailto:${email}`}
-              /* Transición elástica con cubic-bezier */
               className="group flex items-center justify-center gap-0 hover:gap-4 px-6 py-3 rounded-full border border-white/10 bg-white/2 hover:bg-white/5 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] min-w-52.5 hover:min-w-77.5"
             >
               <span className="text-sm font-bold text-white/90 group-hover:text-white/60 transition-colors duration-500">
                 {email}
               </span>
               
-              {/* Revelado elástico del texto */}
               <div className="max-w-0 overflow-hidden group-hover:max-w-30 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex items-center">
                 <span className="text-xs font-black uppercase tracking-[0.2em] whitespace-nowrap pl-2 translate-x-4 group-hover:translate-x-0 transition-transform duration-700" style={{ color: activeColor }}>
                   ¡Hablemos!
