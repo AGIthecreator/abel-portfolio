@@ -171,7 +171,7 @@ export function Projects() {
           </div>
           <div className="flex flex-wrap items-center gap-4 pt-4">
             <ProjectModal />
-            <a href="https://vercel.app" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 bg-white/5 text-white/80 font-medium hover:bg-white/10 transition-all">
+            <a href="https://aguarr-s-estudio-the-artful-space.vercel.app/" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 bg-white/5 text-white/80 font-medium hover:bg-white/10 transition-all">
               <ExternalLink className="h-4 w-4" /> Ver proyecto
             </a>
           </div>
@@ -216,7 +216,7 @@ export function Projects() {
                 <p>Configuración personalizada de dispositivos automatizada, reduciendo entre 15 y 20 minutos por cliente.</p>
                 <p>Migración de datos entre dispositivos optimizada, ahorrando hasta 40 minutos en casos complejos.</p>
                 <a 
-                  href="https://github.com" 
+                  href="https://github.com/AGIthecreator/transfer-upgrade-para-tienda" 
                   target="_blank" 
                   rel="noreferrer"
                   className="flex items-center gap-2 w-fit px-3 py-1.5 mt-2 rounded-full border border-white/10 bg-white/5 text-[11px] hover:bg-white/10 transition-all"
@@ -233,7 +233,7 @@ export function Projects() {
               <div className="pl-6 border-l border-blue-500/30 space-y-2 text-white/70 text-sm">
                 <p>Sistema que detecta patrones de centralitas y agrupa números sospechosos, permitiendo su bloqueo automático sin depender de APIs externas.</p>
                 <a 
-                  href="https://google.com" 
+                  href="https://play.google.com/store/apps/details?id=com.agithecreator.callguard" 
                   target="_blank" 
                   rel="noreferrer"
                   className="flex items-center gap-2 w-fit px-3 py-1.5 mt-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-[11px] text-white hover:bg-blue-500/20 transition-all"
