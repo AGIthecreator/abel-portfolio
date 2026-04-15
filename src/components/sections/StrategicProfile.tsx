@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { KeywordParticles } from "@/components/ui/KeywordParticles";
 
@@ -15,13 +15,15 @@ const TECH_RAIN_WORDS = ["APIs", "Webhooks", "Automation", "Stripe", "PostgreSQL
 
 export function StrategicProfile() {
   const [index, setIndex] = useState(0);
+  const [isInteracting, setIsInteracting] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const startTimer = useCallback(() => {
+  const startTimer = useCallback((duration = 6000) => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
       setIndex((prev) => (prev + 1) % STRATEGIC_DATA.length);
-    }, 6000);
+      setIsInteracting(false);
+    }, duration);
   }, []);
 
   useEffect(() => {
@@ -30,33 +32,37 @@ export function StrategicProfile() {
   }, [startTimer]);
 
   const handleManualClick = (newIndex: number) => {
+    if (newIndex === index) return;
     setIndex(newIndex);
-    startTimer();
+    setIsInteracting(true);
+    // Pausa inteligente: 12 segundos tras interacción manual
+    startTimer(12000); 
   };
 
   const getLayout = (cardIdx: number) => {
     const total = STRATEGIC_DATA.length;
     const diff = (cardIdx - index + total) % total;
-    if (diff === 0) return { x: 0, scale: 1, z: 30, opacity: 1, blur: 0 };
-    if (diff === 1) return { x: "72%", scale: 0.8, z: 10, opacity: 0.6, blur: 2.5 };
-    return { x: "-72%", scale: 0.8, z: 10, opacity: 0.6, blur: 2.5 };
+    if (diff === 0) return { x: 0, scale: 1, z: 30, opacity: 1, blur: 0, shadowOpacity: 1 };
+    if (diff === 1) return { x: "72%", scale: 0.8, z: 10, opacity: 0.6, blur: 2.5, shadowOpacity: 0 };
+    return { x: "-72%", scale: 0.8, z: 10, opacity: 0.6, blur: 2.5, shadowOpacity: 0 };
   };
 
   return (
     <section id="perfil" className="w-full">
-      {/* Eliminado glass-card, neon-border y ajustado el padding superior */}
-      <FadeIn className="relative overflow-hidden min-h-100 flex flex-col p-4 sm:p-6 pt-0 sm:pt-0">
+      <FadeIn className="relative overflow-hidden min-h-120 flex flex-col p-4 sm:p-6 pt-0">
         
-        {/* Capa de lluvia (Z-0) */}
-        <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
+        {/* 1. MICRO HEADLINE (Contexto discreto) */}
+        <div className="relative z-30 flex justify-center mb-4 opacity-20 transition-opacity hover:opacity-40 duration-700">
+           <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-white">
+             Enfoque estratégico // Core Logic
+           </span>
+        </div>
+
+        {/* 4. PARTÍCULAS (Ajuste fino de opacidad) */}
+        <div className="absolute inset-0 z-0 opacity-15 pointer-events-none">
           <KeywordParticles words={TECH_RAIN_WORDS} />
         </div>
 
-        {/* 
-           CABECERA ELIMINADA (Título y línea horizontal)
-        */}
-
-        {/* Contenedor de las cards - Mantiene su posición central */}
         <div className="relative z-20 flex-1 flex items-center justify-center min-h-80">
           {STRATEGIC_DATA.map((item, i) => {
             const { x, scale, z, opacity, blur } = getLayout(i);
@@ -65,25 +71,47 @@ export function StrategicProfile() {
             return (
               <motion.div
                 key={item.title}
-                animate={{ x, scale, zIndex: z, opacity, filter: `blur(${blur}px)` }}
-                transition={{ duration: 1.5, ease: [0.4, 0, 0.2, 1] }}
+                animate={{ 
+                  x, 
+                  scale: isCenter ? 1 : scale, 
+                  zIndex: z, 
+                  opacity: isCenter ? 1 : opacity, 
+                  filter: `blur(${blur}px)` 
+                }}
+                whileHover={!isCenter ? { scale: 0.85, opacity: 0.8 } : {}}
+                transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
                 className="absolute w-full max-w-70 sm:max-w-105 select-none cursor-pointer"
                 onClick={() => handleManualClick(i)}
               >
-                <div 
+                {/* 2. EFECTO FLASH + GLOW */}
+                <motion.div 
+                  animate={{ 
+                    boxShadow: isCenter 
+                      ? [ `0 0 20px ${item.glow}`, `0 0 60px ${item.glow}`, `0 0 40px ${item.glow}` ] 
+                      : '0 0 0px rgba(0,0,0,0)' 
+                  }}
+                  transition={{ duration: isCenter ? 0.8 : 0.2 }}
                   className={`p-6 sm:p-10 rounded-3xl border transition-all duration-700 ${
-                    isCenter ? 'bg-[#0a0a0c] border-white/20' : 'bg-[#0a0a0c] border-white/10'
+                    isCenter ? 'bg-[#0a0a0c]/90 border-white/20' : 'bg-[#0a0a0c]/40 border-white/5'
                   }`}
-                  style={{ boxShadow: isCenter ? `0 0 50px ${item.glow}` : 'none' }}
                 >
-                  <h3 className="font-bold tracking-tighter mb-4 text-xl sm:text-3xl text-center" 
-                      style={{ color: isCenter ? item.color : 'rgba(255,255,255,0.4)' }}>
+                  {/* 6. DETALLE PRO: Letter spacing dinámico en foco */}
+                  <motion.h3 
+                    animate={{ 
+                      letterSpacing: isCenter ? "-0.02em" : "0.05em",
+                      color: isCenter ? item.color : 'rgba(255,255,255,0.4)'
+                    }}
+                    className="font-bold mb-4 text-xl sm:text-3xl text-center transition-colors duration-700"
+                  >
                     {item.title}
-                  </h3>
-                  <p className={`text-xs sm:text-base text-center leading-relaxed transition-opacity ${isCenter ? 'text-white/80' : 'text-white/15'}`}>
+                  </motion.h3>
+                  
+                  <p className={`text-xs sm:text-base text-center leading-relaxed transition-all duration-700 ${
+                    isCenter ? 'text-white/80 opacity-100' : 'text-white/10 opacity-40'
+                  }`}>
                     {item.description}
                   </p>
-                </div>
+                </motion.div>
               </motion.div>
             );
           })}
