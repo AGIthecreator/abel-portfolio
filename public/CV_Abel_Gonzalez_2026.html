@@ -1,311 +1,235 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV - Abel González Iglesias</title>
+    <title>Abel González  Ingeniero de Producto Senior</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-       @media print {
-    /* Forzamos que el header sea siempre horizontal */
-    header {
-        display: flex !important;
-        flex-direction: row !important; /* Evita que se apilen */
-        justify-content: space-between !important;
-        align-items: center !important;
-        gap: 0 !important;
-    }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-    /* Aseguramos que el bloque de nombre/foto no se encoja */
-    header > div:first-child {
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        flex: 1 !important;
-    }
+        body { font-family: 'Inter', sans-serif; background: #fafafa; color: #111827; }
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+            color: #4f46e5;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .skill-track { background: #e5e7eb; height: 7px; border-radius: 999px; overflow: hidden; }
+        .skill-fill { background: #6366f1; height: 100%; border-radius: 999px; }
+        .project-link { color: inherit; text-decoration: none; }
+        .project-link:hover { color: #4f46e5; }
 
-    /* Alineamos los datos de contacto a la derecha */
-    header > div:last-child {
-        text-align: right !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-end !important;
-        flex: 1 !important;
-    }
-
-    /* Forzamos que los iconos y links de contacto se vean en línea */
-    .flex-wrap {
-        display: flex !important;
-        flex-direction: row !important;
-        justify-content: flex-end !important;
-    }
-}
-
-
+        @media print {
+            @page { size: A4; margin: 8mm; }
+            body { margin: 0; padding: 0; background: #fff; }
+            .cv-wrapper {
+                max-width: 100%;
+                width: 100%;
+                margin: 0;
+                border: none;
+                box-shadow: none;
+                border-radius: 0;
+            }
+            .section-title { margin-bottom: 0.5rem; padding-bottom: 0.25rem; }
+            .cv-wrapper, .cv-wrapper * { line-height: 1.25; }
+            .print-tight { gap: 0.5rem !important; }
+            header { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+            address { font-size: 11px !important; }
+            a { color: inherit; text-decoration: none; }
+        }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-200 font-sans min-h-screen p-4 md:p-8 lg:p-12 mb-8 selection:bg-cyan-500/30">
-
-    <div class="cv-container max-w-5xl mx-auto border border-slate-800 bg-slate-950 shadow-2xl p-6 md:p-10 rounded-sm transition-all duration-300">
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-8 mb-8 gap-8">
-            <div class="flex items-center gap-6">
-                <div class="hidden sm:block w-24 h-24 rounded-full overflow-hidden border-2 border-slate-800 bg-slate-900 shrink-0 relative">
-                    <img src="/FOTO%20CV.png" alt="Abel González Iglesias" class="w-full h-full object-cover grayscale transition-all duration-500 hover:grayscale-0 scale-150" onerror="this.src='https://picsum.photos/seed/profile/200/200?grayscale'">
+<body class="py-2 px-4 md:py-4">
+    <article class="cv-wrapper max-w-[980px] mx-auto bg-white border border-slate-200 shadow-xl rounded-xl overflow-hidden">
+        <header class="bg-[#0f172a] text-white p-6 md:p-7">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5 print-tight">
+                <div class="flex items-center gap-4">
+                    <div class="w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-indigo-300/70 overflow-hidden bg-slate-700 shrink-0">
+                        <img src="/FOTO%20CV.png" alt="Foto de perfil de Abel González" class="w-full h-full object-cover object-[50%_18%] scale-[1.35]" onerror="this.style.display='none'">
+                    </div>
+                    <div>
+                        <h1 class="text-[2rem] leading-[1.05] md:text-4xl font-extrabold tracking-tight">Abel González</h1>
+                        <p class="text-indigo-300 text-lg md:text-xl font-medium mt-1 leading-tight">Ingeniero de Producto</p>
+                        <p class="text-indigo-300 text-sm md:text-base font-medium mt-1 leading-tight whitespace-nowrap">Full Stack & Automatización</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 class="text-4xl md:text-5xl font-semibold text-white tracking-tight">Abel González <span class="text-cyan-400 font-bold">Iglesias</span></h1>
-                    <p class="text-lg md:text-xl font-medium text-slate-400 mt-1 tracking-tight border-l-2 border-cyan-500/50 pl-4">Full Stack Developer | SaaS & Product Engineer</p>
-                </div>
-            </div>
-            <div class="text-left md:text-right space-y-2">
-                <div class="flex items-center md:justify-end gap-2 text-xs font-mono text-slate-400">
-                    <i data-lucide="map-pin" class="w-3 h-3 text-cyan-500"></i> Valladolid, España
-                    <span class="hidden md:inline text-slate-700">•</span>
-                    <i data-lucide="phone" class="w-3 h-3 text-cyan-500"></i> 654 936 634
-                </div>
-                <div class="flex items-center md:justify-end gap-2 text-xs font-mono text-cyan-400">
-                    <i data-lucide="mail" class="w-3 h-3"></i> <a href="mailto:contacto@agithecreator.com" class="hover:text-cyan-300 transition-colors">contacto@agithecreator.com</a>
-                </div>
-                <div class="flex flex-wrap items-center md:justify-end gap-3 text-[10px] font-mono text-slate-500">
-                    <a href="https://github.com/AGIthecreator" target="_blank" class="flex items-center gap-1 hover:text-cyan-400 transition-colors">
-                        <i data-lucide="github" class="w-3 h-3"></i> github.com/AGIthecreator
+                <address class="not-italic grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-slate-300 content-center items-center md:pt-3 md:ml-4">
+                    <a href="mailto:contacto@agithecreator.com" class="flex items-center gap-1.5 hover:text-indigo-300 transition">
+                        <i data-lucide="mail" class="w-4 h-4 text-indigo-400"></i> contacto@agithecreator.com
                     </a>
-                    <a href="https://linkedin.com/in/abel-gonzalez-iglesias" target="_blank" class="flex items-center gap-1 hover:text-cyan-400 transition-colors">
-                        <i data-lucide="linkedin" class="w-3 h-3"></i> /abel-gonzalez-iglesias
+                    <a href="https://linkedin.com/in/abel-gonzalez-iglesias" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 hover:text-indigo-300 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-indigo-400 shrink-0" aria-hidden="true">
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                            <rect x="2" y="9" width="4" height="12"></rect>
+                            <circle cx="4" cy="4" r="2"></circle>
+                        </svg>
+                        <span>linkedin.com/in/abel-gonzalez-iglesias</span>
                     </a>
-                    <a href="https://agithecreator.com" target="_blank" class="flex items-center gap-2 text-sm font-mono text-slate-400 hover:text-cyan-400 transition-colors">
-    <i data-lucide="globe" class="w-5 h-5"></i> agithecreator.com
-</a>
-
-                </div>
+                    <a href="https://github.com/agithecreator" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 hover:text-indigo-300 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-indigo-400 shrink-0" aria-hidden="true">
+                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77 5.44 5.44 0 0 0 3.5 8.5c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                        </svg>
+                        <span>github.com/agithecreator</span>
+                    </a>
+                    <a href="https://agithecreator.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 hover:text-indigo-300 transition">
+                        <i data-lucide="globe" class="w-4 h-4 text-indigo-400"></i> agithecreator.com
+                    </a>
+                    <p class="flex items-center gap-1.5 mt-3">
+                        <i data-lucide="map-pin" class="w-4 h-4 text-indigo-400"></i> España / Remoto
+                    </p>
+                    <p class="flex items-center gap-1.5 mt-3">
+                        <i data-lucide="building-2" class="w-4 h-4 text-indigo-400"></i> Valladolid / Híbrido
+                    </p>
+                </address>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-10">
-            <div class="md:col-span-4 space-y-8">
+        <div class="grid grid-cols-12">
+            <aside class="col-span-4 bg-slate-50/60 border-r border-slate-200 p-6 space-y-6">
                 <section>
-                    <h2 class="text-xs font-bold text-slate-400 tracking-tight uppercase mb-4">Perfil Profesional</h2>
-                    <p class="text-sm leading-relaxed text-slate-400">
-                        Full Stack Developer especializado en construcción de productos <span class="text-white">SaaS</span>, automatización de procesos y desarrollo de sistemas escalables en producción. Experto en arquitecturas modernas con <span class="text-white">React, Next.js</span> y <span class="text-white">Node.js</span>, enfocado en generar impacto real en negocio mediante la optimización técnica y la digitalización operativa.
+                    <h2 class="section-title">Stack Técnico</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1"><span>TypeScript / Node.js</span><span class="font-semibold text-slate-600">95%</span></div>
+                            <div class="skill-track"><div class="skill-fill" style="width:95%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1"><span>React / Next.js / Tailwind</span><span class="font-semibold text-slate-600">90%</span></div>
+                            <div class="skill-track"><div class="skill-fill" style="width:90%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1"><span>Automatización (n8n / Make)</span><span class="font-semibold text-slate-600">85%</span></div>
+                            <div class="skill-track"><div class="skill-fill" style="width:85%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1"><span>Bases de Datos (PostgreSQL / Supabase)</span><span class="font-semibold text-slate-600">85%</span></div>
+                            <div class="skill-track"><div class="skill-fill" style="width:85%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1"><span>Python / Scripts</span><span class="font-semibold text-slate-600">70%</span></div>
+                            <div class="skill-track"><div class="skill-fill" style="width:70%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1"><span>Kotlin / Mobile</span><span class="font-semibold text-slate-600">60%</span></div>
+                            <div class="skill-track"><div class="skill-fill" style="width:60%"></div></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2 class="section-title">Lenguajes Base</h2>
+                    <p class="text-sm text-slate-700">HTML5, CSS3, JavaScript (ES6+).</p>
+                </section>
+
+                <section>
+                    <h2 class="section-title">Infraestructura & Cloud</h2>
+                    <p class="text-sm text-slate-700">Vercel, Cloudflare, Render, Resend.</p>
+                </section>
+
+                <section>
+                    <h2 class="section-title">Herramientas de IA (Productividad)</h2>
+                    <p class="text-sm text-slate-700">Cursor, Claude, ChatGPT.</p>
+                </section>
+
+                <section>
+                    <h2 class="section-title">Formación y Certificaciones</h2>
+                    <ul class="text-sm text-slate-700 space-y-2">
+                        <li>Lenguajes de Programación Web, <span class="font-semibold">Fundae (150h)</span>.</li>
+                        <li>SGBD y Gestión de Bases de Datos, <span class="font-semibold">Fundae (150h)</span>.</li>
+                        <li>Diseño Web y Multimedia, <span class="font-semibold">IET Valladolid (350h)</span>.</li>
+                        <li>Reconocimiento profesional: equivalencia <span class="font-semibold">FP1 + FP2</span>.</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2 class="section-title">Idiomas</h2>
+                    <p class="text-sm text-slate-700">Español (Nativo)</p>
+                    <p class="text-sm text-slate-700">Inglés (Técnico B2)</p>
+                </section>
+            </aside>
+
+            <main class="col-span-8 p-5 md:p-6">
+                <section class="mb-6">
+                    <h2 class="section-title">Perfil</h2>
+                    <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+                        Me dedico a montar sistemas que ahorran tiempo de verdad. Me da igual la tecnología si no resuelve un problema real; prefiero una automatización sencilla que quite horas de trabajo manual a una arquitectura compleja que no aporte nada. Programo para que los números salgan.
                     </p>
                 </section>
 
                 <section>
-                    <h2 class="text-xs font-bold text-slate-400 tracking-tight uppercase mb-4 flex items-center gap-2">Stack Tecnológico</h2>
-                    <div class="space-y-4">
-                        <div>
-                            <p class="text-[10px] font-bold text-cyan-500 uppercase mb-1 tracking-tighter">Frontend</p>
-                            <p class="text-xs text-slate-200 font-medium tracking-tight">React, Next.js, TypeScript, Tailwind CSS</p>
+                    <h2 class="section-title">Experiencia Profesional</h2>
+                    <article>
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-1">
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900">Desarrollo de Productos y Automatización Freelance</h3>
+                                <p class="text-xs text-slate-500 mt-0.5">(Desde finales de 2024)</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-[10px] font-bold text-cyan-500 uppercase mb-1 tracking-tighter">Backend & DB</p>
-                            <p class="text-xs text-slate-200 font-medium tracking-tight">Node.js, Python, PostgreSQL, MySQL</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-bold text-cyan-500 uppercase mb-1 tracking-tighter">Automation</p>
-                            <p class="text-xs text-slate-200 font-medium tracking-tight">Make, Airtable API, Webhooks</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-bold text-cyan-500 uppercase mb-1 tracking-tighter">Infra & Payments</p>
-                            <p class="text-xs text-slate-200 font-medium tracking-tight">Vercel, Cloudflare, GitHub CI/CD, Stripe</p>
-                        </div>
-                    </div>
-                </section>
+                        <p class="text-sm text-slate-500 mb-4">Desarrollo integral de productos SaaS, Arquitectura Escalable, automatización de flujos y mejoras continuas para que salga más barato el coste total.</p>
 
-                <section class="bg-slate-900/20 border border-slate-800 p-5 rounded-sm">
-                    <h2 class="text-xs font-bold text-slate-300 uppercase tracking-tight mb-3 flex items-center gap-2">
-                        <i data-lucide="rocket" class="w-3 h-3 text-cyan-400"></i> Impacto de Negocio
-                    </h2>
-                    <ul class="text-[11px] space-y-2 text-slate-400">
-                        <li class="flex gap-2">
-                            <span class="text-slate-600 pr-1">•</span> 
-                            <span>Optimización retail: Reducción de tiempos críticos de 40m a 2m.</span>
-                        </li>
-                        <li class="flex gap-2">
-                            <span class="text-slate-600 pr-1">•</span> 
-                            <span>Integración Stripe: Despliegue de pagos recurrentes y ticketing.</span>
-                        </li>
-                        <li class="flex gap-2">
-                            <span class="text-slate-600 pr-1">•</span> 
-                            <span>Headless CMS: Gestión dinámica sin intervención técnica.</span>
-                        </li>
-                    </ul>
-                </section>
-
-                <div class="pt-4 space-y-6 border-t border-slate-800/50">
-                    <section>
-                        <h2 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 font-mono">Idiomas</h2>
-                        <div class="space-y-1.5 text-xs text-slate-300 tracking-tight">
-                            <p class="flex justify-between items-center">Español <span class="text-cyan-400 font-bold uppercase text-[9px] bg-cyan-500/10 px-1 rounded-sm">Nativo</span></p>
-                            <p class="flex justify-between items-center text-slate-400">Inglés <span class="text-[10px] border border-slate-800 px-1 rounded-sm font-mono">Intermedio</span></p>
-                        </div>
-                    </section>
-
-                    <section>
-                        <h2 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 font-mono">Disponibilidad & Info</h2>
-                        <div class="space-y-1.5 text-[10px] text-white uppercase font-mono tracking-tighter leading-tight">
-                            <p>Remoto / España</p>
-                            <p>Presencial / Híbrido Valladolid</p>
-                            <p>Permiso de Conducir B</p>
-                            <p>Vehículo Propio</p>
-                        </div>
-                    </section>
-
-                    <section>
-                        <h2 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 font-mono">Certificaciones</h2>
                         <div class="space-y-4">
-                            <div class="border-l border-slate-800 pl-3">
-                                <p class="text-[10px] font-bold text-slate-300 leading-tight">Lenguajes de Programación Web (Fundae – 150h)</p>
-                                <p class="text-[9px] text-slate-500 italic mt-1">Niveles: Frontend 3–5 / Backend 4–6 avanzado</p>
-                            </div>
-                            <div class="border-l border-slate-800 pl-3">
-                                <p class="text-[10px] font-bold text-slate-300 leading-tight">SGBD (Fundae – 150h)</p>
-                                <p class="text-[9px] text-slate-500 italic mt-1">SQL Server, MySQL, Oracle, MariaDB, MongoDB</p>
-                            </div>
-                            <div class="border-l border-slate-800 pl-3">
-                                <p class="text-[10px] font-bold text-slate-300 leading-tight">Diseño Web y Multimedia (IET Valladolid – 350h)</p>
-                            </div>
-                            <div class="bg-slate-900/20 p-2.5 rounded-sm border border-slate-800">
-                                <h4 class="text-[9px] font-bold text-cyan-400 uppercase tracking-tight mb-1 font-mono italic leading-none">Reconocimiento Profesional</h4>
-                                <p class="text-[10px] text-white font-bold leading-tight tracking-tight uppercase">Equivalencia FP1 + FP2 <span class="text-slate-500 font-normal lowercase"></span></p>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-            </div>
+                            <section>
+                                <h4 class="font-semibold text-slate-900 mb-2">
+                                    <a href="https://pucelaticketing.vercel.app/" target="_blank" rel="noopener noreferrer" class="project-link inline-flex items-center gap-1">
+                                        PucelaTicketing (SaaS) <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                                    </a>
+                                </h4>
+                                <ul class="text-sm text-slate-700 space-y-2 list-disc pl-5">
+                                    <li>Me encargué de montar toda la estructura con <strong>Node.js</strong>, <strong>Supabase</strong>, <strong>TypeScript</strong>, <strong>Stripe</strong> y <strong>Cloudinary</strong>, incluyendo Auth por roles y <strong>API Rest</strong>.</li>
+                                    <li>He conseguido reducir el peso de imágenes en <strong>-70%</strong>, con mejor respuesta en el flujo de compra.</li>
+                                    <li>Hecho con <strong>Vercel</strong>, <strong>Cloudflare</strong>, <strong>Render</strong> y <strong>Resend</strong> (notificaciones por transacción), más pipeline de <strong>CI/CD</strong>.</li>
+                                </ul>
+                            </section>
 
-            <div class="md:col-span-8 space-y-8">
-                <section>
-                    <h2 class="text-xs font-bold text-slate-300 tracking-tight mb-5 border-l-2 border-cyan-500 pl-4 font-mono uppercase">Experiencia Profesional</h2>
-                    <div class="space-y-8">
-                        <div>
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-baseline mb-2 bg-slate-900/10 p-1 rounded-sm">
-                                <h3 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                                    <i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i> Full Stack Developer & SaaS Builder
-                                </h3>
-                                <span class="text-[10px] font-mono text-slate-500 uppercase tracking-tight">Dic 2025 – Actualidad</span>
-                            </div>
-                            <ul class="text-xs text-slate-400 space-y-2 list-none">
-                                <li class="relative pl-5 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:bg-slate-600/40 before:rounded-full">
-                                    Diseño e implementación de <span class="text-slate-200 font-medium">PucelaTicketing</span>, plataforma SaaS de ticketing con arquitectura full-stack en Next.js y backend en Node.js orientado a escalabilidad y rendimiento en producción.
-                                </li>
-                                <li class="relative pl-5 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:bg-slate-600/40 before:rounded-full">
-                                    Integración de sistema de pagos completo mediante <span class="text-slate-200 font-medium">Stripe Checkout + webhooks</span>, gestionando estados de pago, validación de transacciones y control de acceso en tiempo real.
-                                </li>
-                                <li class="relative pl-5 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:bg-slate-600/40 before:rounded-full">
-                                    Desarrollo de sistema de validación de entradas mediante QR dinámico, con lógica de seguridad para evitar duplicidad y fraude en accesos.
-                                </li>
-                                <li class="relative pl-5 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:bg-slate-600/40 before:rounded-full">
-                                    Arquitectura headless CMS con Next.js + Airtable, permitiendo gestión de contenido sin redeploy mediante consumo dinámico de API y caching controlado.
-                                </li>
-                                <li class="relative pl-5 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:bg-slate-600/40 before:rounded-full">
-                                    Implementación de sistema de automatización de flujos con <span class="text-cyan-400 font-medium">Make + Webhooks + APIs REST</span>, conectando leads, ventas y base de datos en tiempo real.
-                                </li>
-                                <li class="relative pl-5 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:bg-slate-600/40 before:rounded-full">
-                                    Optimización de procesos operativos reduciendo intervención manual en gestión de eventos y contenido.
-                                </li>
-                            </ul>
-                        </div>
+                            <section>
+                                <h4 class="font-semibold text-slate-900 mb-2">
+                                    <a href="https://play.google.com/store/apps/details?id=com.agithecreator.callguard&pli=1" target="_blank" rel="noopener noreferrer" class="project-link inline-flex items-center gap-1">
+                                        CallGuard (Mobile) <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                                    </a>
+                                </h4>
+                                <ul class="text-sm text-slate-700 space-y-2 list-disc pl-5">
+                                    <li>Desarrollo de integración nativa con <strong>React Native</strong> + <strong>Kotlin</strong> para gestión avanzada de permisos.</li>
+                                    <li>La integración nativa permite acceso directo a permisos y hardware del dispositivo Android, con procesamiento local para privacidad.</li>
+                                </ul>
+                            </section>
 
+                            <section>
+                                <h4 class="font-semibold text-slate-900 mb-2">
+                                    <a href="https://aguarr-s-estudio-the-artful-space.vercel.app/" target="_blank" rel="noopener noreferrer" class="project-link inline-flex items-center gap-1">
+                                        Aguarrás Estudio (E-commerce & Ops) <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                                    </a>
+                                </h4>
+                                <ul class="text-sm text-slate-700 space-y-2 list-disc pl-5">
+                                    <li>Me encargué de migrar flujos críticos de <strong>Make</strong> a <strong>n8n</strong>, cambiando costes de herramientas de pago por un sistema propio, ahorro del <strong>97,8% anual</strong>.</li>
+                                    <li>Hice un backend operativo con Airtable y Notion; además, desarrollo del carrito y del sistema de Auth por roles con <strong>TypeScript</strong> + <strong>Tailwind</strong>.</li>
+                                </ul>
+                            </section>
 
-                        <div>
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-baseline mb-2 bg-slate-900/10 p-1 rounded-sm">
-                                <h3 class="text-lg font-bold text-white tracking-tight">CallGuard · Mobile Developer</h3>
-                                <span class="text-[10px] font-mono text-slate-500 uppercase tracking-tight">Dic 2025 – Actualidad</span>
-                            </div>
-                            <ul class="text-xs text-slate-400 space-y-2 list-none">
-                                <li class="relative pl-5 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:bg-slate-600/40 before:rounded-full">
-                                    Desarrollo de aplicación móvil de detección de spam mediante análisis <span class="text-slate-200 font-medium">on-device</span>, sin dependencia de APIs externas.
-                                </li>
-                                <li class="relative pl-5 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:bg-slate-600/40 before:rounded-full">
-                                    Implementación de lógica de clasificación local de llamadas basada en heurísticas y patrones de comportamiento.
-                                </li>
-                                <li class="relative pl-5 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:bg-slate-600/40 before:rounded-full">
-                                    Enfoque en privacidad, procesamiento local y reducción de exposición de datos sensibles.
-                                </li>
-                            </ul>
+                            <section>
+                                <h4 class="font-semibold text-slate-900 mb-2">Retail Automation (Retail y Legal)</h4>
+                                <ul class="text-sm text-slate-700 space-y-2 list-disc pl-5">
+                                    <li>
+                                        <a href="https://github.com/AGIthecreator/transfer-upgrade-para-tienda" target="_blank" rel="noopener noreferrer" class="project-link inline-flex items-center gap-1">
+                                            Script para tienda <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                                        </a>:
+                                        He reducido tiempos de migración de datos de 40 minutos a 2 minutos (<strong>95% de tiempo ahorrado</strong>) en entornos retail.
+                                    </li>
+                                    <li>Diseño de lógica para configuración de terminales mediante perfiles, dejando el setup manual en pocos clics.</li>
+                                    <li>Implementé saneamiento de datos y eliminación de duplicados para bufetes y tiendas, con ahorro de <strong>+20 horas mensuales</strong>.</li>
+                                </ul>
+                            </section>
                         </div>
-
-                        <div>
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-baseline mb-2 bg-slate-900/10 p-1 rounded-sm">
-                                <h3 class="text-lg font-bold text-white tracking-tight">Asesor Técnico Comercial</h3>
-                                <span class="text-[10px] font-mono text-slate-500 uppercase tracking-tight">Sep 2023 – Sep 2024</span>
-                            </div>
-                            <ul class="text-xs text-slate-400 space-y-2 list-none">
-                                <li class="relative pl-5 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:bg-slate-600/40 before:rounded-full">
-                                    Soporte técnico avanzado en dispositivos iOS/Android, diagnóstico de incidencias y recuperación de datos.
-                                </li>
-                                <li class="relative pl-5 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:bg-slate-600/40 before:rounded-full">
-                                    Gestión de migraciones de líneas, configuraciones técnicas y altas en sistemas ERP multi-operador.
-                                </li>
-                                <li class="relative pl-5 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:bg-slate-600/40 before:rounded-full">
-                                    Resolución de incidencias críticas en entorno retail con impacto directo en experiencia de cliente.
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                    </article>
                 </section>
-
-                <div>
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-baseline mb-2 bg-slate-900/10 p-1 rounded-sm">
-                                <h3 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                                    <i data-lucide="code-2" class="w-4 h-4 text-cyan-400"></i> Python Developer & Automation Engineer
-                                </h3>
-                                <span class="text-[10px] font-mono text-slate-500 uppercase tracking-tight">Freelance · Retail Tech</span>
-                            </div>
-                            <ul class="text-xs text-slate-400 space-y-2 list-none">
-                                <li class="relative pl-5 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:bg-slate-600/40 before:rounded-full">
-                                    Desarrollo de sistema en <span class="text-slate-200 font-medium">Python</span> para migración de datos entre dispositivos móviles, optimizando procesos de transferencia de información de 30–40 minutos a 1–2 minutos.
-                                </li>
-                                <li class="relative pl-5 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:bg-slate-600/40 before:rounded-full">
-                                    Diseño de lógica de automatización para configuración de terminales en entorno retail, permitiendo setup completo en pocos clics según perfil de cliente.
-                                </li>
-                                <li class="relative pl-5 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:bg-slate-600/40 before:rounded-full">
-                                    Integración de scripts en flujo operativo de tienda, reduciendo carga manual del personal técnico y mejorando eficiencia operativa.
-                                </li>
-                                <li class="relative pl-5 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:bg-slate-600/40 before:rounded-full">
-                                    Optimización de procesos críticos de soporte técnico con impacto directo en productividad del punto de venta.
-                                </li>
-                            </ul>
-                        </div>
-
-                <section>
-                    <h2 class="text-xs font-bold text-slate-300 tracking-tight mb-5 border-l-2 border-cyan-500 pl-4 font-mono uppercase">Proyectos Seleccionados</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <a href="https://agithecreator.com" target="_blank" class="group bg-slate-900/20 border border-slate-800 p-4 rounded-sm hover:border-cyan-500/40 transition-all duration-300">
-                            <div class="flex justify-between items-start mb-2 text-slate-200">
-                                <h4 class="font-bold uppercase text-xs tracking-tight">PucelaTicketing</h4>
-                                <i data-lucide="external-link" class="w-3 h-3 text-slate-600 group-hover:text-cyan-400 transition-colors"></i>
-                            </div>
-                            <p class="text-[11px] leading-relaxed text-slate-500 font-mono italic mb-2">Next.js · Stripe · PostgreSQL</p>
-                            <p class="text-[10px] leading-relaxed text-slate-400 border-t border-slate-800/50 pt-2 mt-2">Validación QR dinámica y gestión de pagos. Reducción de tiempos de acceso en un 60%.</p>
-                        </a>
-
-                        <a href="https://aguarr-s-estudio-the-artful-space.vercel.app/" target="_blank" class="group bg-slate-900/20 border border-slate-800 p-4 rounded-sm hover:border-cyan-500/40 transition-all duration-300">
-                            <div class="flex justify-between items-start mb-2 text-slate-200">
-                                <h4 class="font-bold uppercase text-xs tracking-tight">Aguarrás Estudio</h4>
-                                <i data-lucide="external-link" class="w-3 h-3 text-slate-600 group-hover:text-cyan-400 transition-colors"></i>
-                            </div>
-                            <p class="text-[11px] leading-relaxed text-slate-500 font-mono italic mb-2">Next.js · Airtable CMS · Make</p>
-                            <p class="text-[10px] leading-relaxed text-slate-400 border-t border-slate-800/50 pt-2 mt-2">Arquitectura Headless para gestión dinámica sin necesidad de intervención técnica.</p>
-                        </a>
-
-                        <a href="https://github.com/AGIthecreator/transfer-upgrade-para-tienda" target="_blank" class="group bg-slate-900/20 border border-slate-800 p-4 rounded-sm sm:col-span-2 hover:border-cyan-500/40 transition-all duration-300">
-                            <div class="flex justify-between items-start mb-2 text-slate-200">
-                                <h4 class="font-bold uppercase text-xs tracking-tight">Transfer Scripts (Retail Automation)</h4>
-                                <span class="text-[9px] font-mono text-cyan-400 font-bold px-1.5 bg-cyan-400/10 rounded-sm">Eficiencia: +2000%</span>
-                            </div>
-                            <div class="flex items-center gap-4 border-t border-slate-800/50 pt-2 mt-2">
-                                <p class="text-[10px] leading-relaxed text-slate-400 flex-1">Scripting Python para migración y optimización masiva de dispositivos retail.</p>
-                                <i data-lucide="github" class="w-4 h-4 text-slate-600 group-hover:text-white transition-colors"></i>
-                            </div>
-                        </a>
-                    </div>
-                </section>
-            </div>
+            </main>
         </div>
-    </div>
+    </article>
 
     <script>
         lucide.createIcons();
