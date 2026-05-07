@@ -68,46 +68,7 @@ export function Projects() {
   return (
     <section id="proyectos" className="space-y-48 py-20 overflow-hidden">
       
-      {/* PROYECTO 1: AUTOMATIZACIONES */}
-      <motion.div 
-        variants={projectVariant}
-        initial="hiddenLeft"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"
-      >
-        <motion.div variants={childVariant} className="order-2 lg:order-1 space-y-6">
-          <div className="space-y-3">
-            <h2 className="text-4xl sm:text-5xl font-bold tracking-tighter text-white leading-none">
-              Automatización de procesos operativos
-            </h2>
-            <p className="text-xl text-accent font-medium leading-tight">
-              Sistemas que eliminan tareas manuales y reducen horas de trabajo diario
-            </p>
-          </div>
-          
-          <div className="space-y-4 text-white/70">
-            <p><span className="text-white font-bold">Impacto:</span> Automatizaciones reales en producción que optimizan flujos de trabajo y reducen tiempos operativos de forma constante.</p>
-            <p><span className="text-white font-bold">Problema:</span> Procesos manuales repetitivos en gestión de datos, clientes y operaciones internas que consumen tiempo y generan errores.</p>
-            <p><span className="text-white font-bold">Solución:</span> Desarrollo de workflows con APIs, Webhooks, Airtable y Make que automatizan registros, sincronización y notificaciones.</p>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-accent/5 border border-accent/20">
-            <p className="text-white font-bold mb-2 italic">Resultado:</p>
-            <ul className="text-white/90 space-y-1 list-disc list-inside">
-              <li>Ahorro de varias horas diarias en operaciones repetitivas.</li>
-              <li>Reducción de entre 15 y 40 minutos por tarea en casos reales.</li>
-            </ul>
-          </div>
-        </motion.div>
-
-        {/* CONTENEDOR DEL VIDEO */}
-        <div className="order-1 lg:order-2 w-full overflow-hidden rounded-2xl border border-white/10 bg-black/20">
-          <ProjectVisual type="video" src="/videos/escenarios.mp4" alt="Automatización de procesos" />
-        </div>
-      </motion.div>
-
-      {/* PROYECTO 2: PUCELATICKETING */}
+      {/* PROYECTO 1: PUCELATICKETING */}
       <motion.div 
         variants={projectVariant}
         initial="hiddenRight"
@@ -137,14 +98,14 @@ export function Projects() {
             </ul>
           </div>
           <div className="pt-4">
-            <a href="mailto:contacto@agithecreator.com" target="_blank" rel="noreferrer" className="flex items-center gap-2 w-fit px-6 py-3 rounded-full bg-accent/10 border border-accent/20 text-white font-medium hover:bg-accent/20 transition-all">
-              <ExternalLink className="h-4 w-4" /> Ver proyecto (bajo solicitud)
+            <a href="https://pucelaticketing.vercel.app/" target="_blank" rel="noreferrer" className="flex items-center gap-2 w-fit px-6 py-3 rounded-full bg-accent/10 border border-accent/20 text-white font-medium hover:bg-accent/20 transition-all">
+              <ExternalLink className="h-4 w-4" /> Ver proyecto
             </a>
           </div>
         </motion.div>
       </motion.div>
 
-      {/* PROYECTO 3: AGUARRÁS */}
+      {/* PROYECTO 2: AGUARRÁS */}
       <motion.div 
         variants={projectVariant}
         initial="hiddenLeft"
@@ -181,7 +142,7 @@ export function Projects() {
         </div>
       </motion.div>
 
-      {/* PROYECTO 4: TOOLS / OPTIMIZACIÓN */}
+      {/* PROYECTO 3: TOOLS / OPTIMIZACIÓN */}
       <motion.div 
         variants={projectVariant}
         initial="hiddenRight"
@@ -248,6 +209,45 @@ export function Projects() {
             Resultado: Reducción significativa de tiempo técnico por cliente y mejora en la eficiencia operativa.
           </div>
         </motion.div>
+      </motion.div>
+
+      {/* PROYECTO 4: AUTOMATIZACIONES */}
+      <motion.div 
+        variants={projectVariant}
+        initial="hiddenLeft"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"
+      >
+        <motion.div variants={childVariant} className="order-2 lg:order-1 space-y-6">
+          <div className="space-y-3">
+            <h2 className="text-4xl sm:text-5xl font-bold tracking-tighter text-white leading-none">
+              Automatización de procesos operativos
+            </h2>
+            <p className="text-xl text-accent font-medium leading-tight">
+              Sistemas que eliminan tareas manuales y reducen horas de trabajo diario
+            </p>
+          </div>
+          
+          <div className="space-y-4 text-white/70">
+            <p><span className="text-white font-bold">Impacto:</span> Automatizaciones reales en producción que optimizan flujos de trabajo y reducen tiempos operativos de forma constante.</p>
+            <p><span className="text-white font-bold">Problema:</span> Procesos manuales repetitivos en gestión de datos, clientes y operaciones internas que consumen tiempo y generan errores.</p>
+            <p><span className="text-white font-bold">Solución:</span> Desarrollo de workflows con APIs, Webhooks, Airtable y Make que automatizan registros, sincronización y notificaciones.</p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-accent/5 border border-accent/20">
+            <p className="text-white font-bold mb-2 italic">Resultado:</p>
+            <ul className="text-white/90 space-y-1 list-disc list-inside">
+              <li>Ahorro de varias horas diarias en operaciones repetitivas.</li>
+              <li>Reducción de entre 15 y 40 minutos por tarea en casos reales.</li>
+            </ul>
+          </div>
+        </motion.div>
+
+        {/* CONTENEDOR DEL VIDEO */}
+        <div className="order-1 lg:order-2 w-full overflow-hidden rounded-2xl border border-white/10 bg-black/20">
+          <ProjectVisual type="video" src="/videos/escenarios.mp4" alt="Automatización de procesos" />
+        </div>
       </motion.div>
     </section>
   );
