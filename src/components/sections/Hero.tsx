@@ -112,175 +112,43 @@ export const HERO_DESK_CMD_PARTS = {
  */
 export const HERO_DESK_STAGE_PARTS = {
   base: "relative overflow-visible max-lg:flex max-lg:flex-col max-lg:items-center max-lg:gap-5 sm:max-lg:gap-6 lg:block",
-  spacing: "max-lg:min-h-0 max-lg:pb-8 sm:max-lg:pb-10 max-lg:pt-0 lg:min-h-[560px] lg:pb-52 lg:pt-0",
+  spacing: "max-lg:min-h-0 max-lg:pb-0 max-lg:pt-0 lg:min-h-[560px] lg:pb-52 lg:pt-0",
 } as const;
 
 function joinDeskClasses(parts: readonly string[]) {
   return parts.join(" ");
 }
 
-type HeroMicroChartProps = { className?: string };
+type HeroStatsMatplotlibPanelProps = {
+  variant: "efficiency" | "inefficiency";
+  className?: string;
+};
 
-/** Serie pérdida: solo trazos (sin área rellena = sin “resplandor”), rejilla tipo hoja. */
-function HeroMicroChartLoss({ className }: HeroMicroChartProps) {
-  const p = { l: 38, r: 214, t: 12, b: 62 };
-  const hoursPts = "42,48 88,42 124,38 162,32 206,26";
-  const moneyPts = "42,38 88,44 124,50 162,54 206,56";
-  const ticksX = [54, 102, 150, 198];
+/**
+ * Recorte de `public/hero_stats.png` (dos paneles en un solo PNG: izq. eficiencia, der. ineficiencia).
+ * Fila 1 (pierde horas): ineficiencia · Fila 2 (recupere): eficiencia.
+ */
+function HeroStatsMatplotlibPanel({ variant, className }: HeroStatsMatplotlibPanelProps) {
+  const isGain = variant === "efficiency";
   return (
     <div
       className={`relative z-30 flex min-h-0 min-w-0 flex-1 flex-col border border-white/9 bg-[#070910] px-1.5 pb-1 pt-1.5 sm:min-h-22 ${className ?? ""}`}
       aria-hidden
     >
-      <svg
-        viewBox="0 0 240 78"
-        className="min-h-18 w-full flex-1 sm:min-h-21"
-        preserveAspectRatio="xMidYMid meet"
-        fill="none"
-        role="presentation"
-      >
-        <rect x={p.l - 2} y={p.t - 2} width={p.r - p.l + 4} height={p.b - p.t + 4} rx="1" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-        {[24, 38, 52].map((y) => (
-          <line
-            key={y}
-            x1={p.l}
-            y1={y}
-            x2={p.r}
-            y2={y}
-            stroke="rgba(255,255,255,0.04)"
-            strokeWidth="1"
-            strokeDasharray="4 4"
-          />
-        ))}
-        <line x1={p.l} y1={p.t} x2={p.l} y2={p.b} stroke="rgba(255,255,255,0.14)" strokeWidth="1" />
-        <line x1={p.l} y1={p.b} x2={p.r} y2={p.b} stroke="rgba(255,255,255,0.14)" strokeWidth="1" />
-        <line x1={p.r} y1={p.t} x2={p.r} y2={p.b} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-        {ticksX.map((x, i) => (
-          <g key={x}>
-            <line x1={x} y1={p.b} x2={x} y2={p.b + 3} stroke="rgba(255,255,255,0.14)" strokeWidth="1" />
-            <text x={x - 3} y={p.b + 11} fill="rgba(148,163,184,0.85)" fontSize="7.5" fontFamily="ui-sans-serif,system-ui,sans-serif">
-              {i + 1}
-            </text>
-          </g>
-        ))}
-        <text x={6} y={p.t + 8} fill="rgba(251,113,133,0.78)" fontSize="7.5" fontFamily="ui-sans-serif,system-ui,sans-serif">
-          horas
-        </text>
-        <text x={6} y={p.b - 2} fill="rgba(253,186,116,0.72)" fontSize="7.5" fontFamily="ui-sans-serif,system-ui,sans-serif">
-          €
-        </text>
-        <text x={p.l} y={76} fill="rgba(100,116,139,0.8)" fontSize="7.5" fontFamily="ui-sans-serif,system-ui,sans-serif">
-          periodo →
-        </text>
-        <polyline
-          points={hoursPts}
-          fill="none"
-          stroke="rgb(251, 113, 133)"
-          strokeOpacity={0.88}
-          strokeWidth={1.1}
-          strokeLinecap="square"
-          strokeLinejoin="miter"
-        />
-        <polyline
-          points={moneyPts}
-          fill="none"
-          stroke="rgb(253, 186, 116)"
-          strokeOpacity={0.78}
-          strokeWidth={1}
-          strokeDasharray="3 2"
-          strokeLinecap="square"
-          strokeLinejoin="miter"
-        />
-      </svg>
-      <div className="mt-0.5 flex flex-nowrap items-baseline gap-x-1.5 font-mono text-[10px] tabular-nums leading-none tracking-tight text-neutral-300 sm:text-[11px]">
-        <span className="text-rose-200/95">47 h</span>
-        <span className="text-neutral-600">·</span>
-        <span className="text-amber-200/90">−2,4k €</span>
-      </div>
-      <p className="mt-0.5 text-[9px] leading-none text-neutral-500 sm:text-[10px]">más horas → menos dinero</p>
+      <div
+        className="pointer-events-none min-h-20 w-full flex-1 rounded-sm bg-[#04060d] bg-no-repeat sm:min-h-23 lg:min-h-25"
+        style={{
+          backgroundImage: "url(/hero_stats.png)",
+          backgroundSize: "200% auto",
+          backgroundPosition: isGain ? "left center" : "right center",
+        }}
+      />
+      <p className="mt-1 text-[9px] leading-tight text-neutral-500 sm:text-[10px]">
+        {isGain ? "Menos horas, más margen." : "Más horas manuales, menos resultado."}
+      </p>
     </div>
   );
 }
-
-function HeroMicroChartGain({ className }: HeroMicroChartProps) {
-  const p = { l: 38, r: 214, t: 12, b: 62 };
-  const hoursPts = "42,28 88,34 124,40 162,46 206,52";
-  const moneyPts = "42,50 88,44 124,36 162,28 206,22";
-  const ticksX = [54, 102, 150, 198];
-  return (
-    <div
-      className={`relative z-30 flex min-h-0 min-w-0 flex-1 flex-col border border-white/9 bg-[#070910] px-1.5 pb-1 pt-1.5 sm:min-h-22 ${className ?? ""}`}
-      aria-hidden
-    >
-      <svg
-        viewBox="0 0 240 78"
-        className="min-h-18 w-full flex-1 sm:min-h-21"
-        preserveAspectRatio="xMidYMid meet"
-        fill="none"
-        role="presentation"
-      >
-        <rect x={p.l - 2} y={p.t - 2} width={p.r - p.l + 4} height={p.b - p.t + 4} rx="1" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-        {[24, 38, 52].map((y) => (
-          <line
-            key={`g-${y}`}
-            x1={p.l}
-            y1={y}
-            x2={p.r}
-            y2={y}
-            stroke="rgba(255,255,255,0.04)"
-            strokeWidth="1"
-            strokeDasharray="4 4"
-          />
-        ))}
-        <line x1={p.l} y1={p.t} x2={p.l} y2={p.b} stroke="rgba(255,255,255,0.14)" strokeWidth="1" />
-        <line x1={p.l} y1={p.b} x2={p.r} y2={p.b} stroke="rgba(255,255,255,0.14)" strokeWidth="1" />
-        <line x1={p.r} y1={p.t} x2={p.r} y2={p.b} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-        {ticksX.map((x, i) => (
-          <g key={`gx-${x}`}>
-            <line x1={x} y1={p.b} x2={x} y2={p.b + 3} stroke="rgba(255,255,255,0.14)" strokeWidth="1" />
-            <text x={x - 3} y={p.b + 11} fill="rgba(148,163,184,0.85)" fontSize="7.5" fontFamily="ui-sans-serif,system-ui,sans-serif">
-              {i + 1}
-            </text>
-          </g>
-        ))}
-        <text x={6} y={p.t + 8} fill="rgba(103,232,249,0.8)" fontSize="7.5" fontFamily="ui-sans-serif,system-ui,sans-serif">
-          horas
-        </text>
-        <text x={6} y={p.b - 2} fill="rgba(52,211,153,0.72)" fontSize="7.5" fontFamily="ui-sans-serif,system-ui,sans-serif">
-          €
-        </text>
-        <text x={p.l} y={76} fill="rgba(100,116,139,0.8)" fontSize="7.5" fontFamily="ui-sans-serif,system-ui,sans-serif">
-          periodo →
-        </text>
-        <polyline
-          points={hoursPts}
-          fill="none"
-          stroke="rgb(103, 232, 249)"
-          strokeOpacity={0.85}
-          strokeWidth={1.1}
-          strokeLinecap="square"
-          strokeLinejoin="miter"
-        />
-        <polyline
-          points={moneyPts}
-          fill="none"
-          stroke="rgb(52, 211, 153)"
-          strokeOpacity={0.82}
-          strokeWidth={1}
-          strokeLinecap="square"
-          strokeLinejoin="miter"
-        />
-      </svg>
-      <div className="mt-0.5 flex flex-nowrap items-baseline gap-x-1.5 font-mono text-[10px] tabular-nums leading-none tracking-tight text-neutral-300 sm:text-[11px]">
-        <span className="text-cyan-200/95">12 h</span>
-        <span className="text-neutral-600">·</span>
-        <span className="text-emerald-200/90">+1,8k €</span>
-      </div>
-      <p className="mt-0.5 text-[9px] leading-none text-neutral-500 sm:text-[10px]">menos horas → más dinero</p>
-    </div>
-  );
-}
-
 /** API estable: `HERO_DESK_PRESETS.google.shell` (igual que antes). */
 export const HERO_DESK_PRESETS = {
   google: {
@@ -987,7 +855,7 @@ export function Hero() {
   return (
     <CursorCtx.Provider value={cursorApi}>
       <section
-        className={`hero-engineer relative isolate min-h-[56vh] w-full overflow-visible bg-[#04060d] pb-10 pt-5 sm:min-h-[60vh] sm:pb-12 sm:pt-6 lg:min-h-[62vh] lg:pb-14 lg:pt-8 ${useCustomPointer ? "cursor-none" : ""}`}
+        className={`hero-engineer relative isolate z-10 w-full overflow-visible bg-[#04060d] py-5 sm:py-6 lg:py-8 ${useCustomPointer ? "cursor-none" : ""}`}
       >
         <CursorHandLayer active={useCustomPointer} handScale={handScale} />
 
@@ -998,8 +866,8 @@ export function Hero() {
           <div className="hero-tech-fade absolute inset-0" />
         </div>
 
-        <div className="relative z-10 mx-auto flex w-full max-w-[1580px] min-h-0 flex-1 items-center overflow-visible px-5 pt-8 sm:px-8 sm:pt-10 lg:px-12 lg:pt-12">
-          <div className="grid w-full items-center gap-10 overflow-visible lg:min-h-[560px] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 xl:min-h-[560px] xl:gap-16">
+        <div className="relative z-10 mx-auto flex w-full max-w-[1580px] min-h-0 flex-1 items-center overflow-visible px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+          <div className="grid w-full items-center gap-10 overflow-visible lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 xl:gap-16">
             <motion.div
               initial={{ opacity: 0, x: -28 }}
               animate={{ opacity: 1, x: 0 }}
@@ -1012,17 +880,17 @@ export function Hero() {
 
               <h1 className="pointer-events-auto m-0 p-0">
                 <span className="sr-only">Tu negocio pierde horas. Yo hago que las recupere.</span>
-                <div aria-hidden className="relative isolate z-20 space-y-2 overflow-visible border-l border-white/8 pl-2.5 sm:space-y-2.5 sm:pl-3.5">
+                <div aria-hidden className="relative isolate z-20 space-y-2 overflow-visible sm:space-y-2.5">
                   <div className="relative z-10 grid grid-cols-1 items-stretch gap-2 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-3">
                     <div className="relative z-10 flex min-w-0 flex-col justify-center font-semibold leading-[0.93] tracking-[-0.042em] text-[clamp(1.85rem,3.5vw,3.35rem)] sm:text-[clamp(2.05rem,3.9vw,3.75rem)]">
                       <span className="block text-neutral-200/88 sm:whitespace-nowrap">Tu negocio</span>
                       <span className="block text-[#f2f0ec] sm:whitespace-nowrap">pierde horas.</span>
                     </div>
-                    <HeroMicroChartLoss />
+                    <HeroStatsMatplotlibPanel variant="inefficiency" />
                   </div>
 
                   <div className="relative z-10 grid grid-cols-1 items-stretch gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-3">
-                    <HeroMicroChartGain className="max-sm:order-2" />
+                    <HeroStatsMatplotlibPanel variant="efficiency" className="max-sm:order-2" />
                     <div className="relative z-10 flex min-w-0 max-w-full flex-col justify-center font-semibold leading-[0.93] tracking-[-0.042em] text-[clamp(1.85rem,3.5vw,3.35rem)] max-sm:order-1 sm:items-end sm:text-right sm:text-[clamp(2.05rem,3.9vw,3.75rem)]">
                       <span className="block text-neutral-200/88 sm:whitespace-nowrap">Yo hago que</span>
                       <span className="block text-[#f2f0ec] sm:whitespace-nowrap">las recupere.</span>
@@ -1095,7 +963,7 @@ export function Hero() {
               </p>
             </motion.div>
 
-            <div className="relative z-0 -mb-32 overflow-visible sm:-mb-36 lg:-mb-44 xl:-mb-46">
+            <div className="relative z-20 -mb-40 overflow-visible sm:-mb-44 lg:-mb-52 xl:-mb-56">
               <div className="relative z-1">
                 <EngineerDeskStack
                   reduceMotion={reduceMotion}
