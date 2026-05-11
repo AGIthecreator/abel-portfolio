@@ -83,38 +83,36 @@ const SERVICES_ROWS = [
 // ¿No ves cambios al guardar? Reinicia `npm run dev` o fuerza hard refresh (caché del navegador).
 // -----------------------------------------------------------------------------
 
-/** Ventana Google (z-10, base). */
+/** Ventana Google (z-10, base). Móvil: relativo y apilado; escritorio: absolute. */
 export const HERO_DESK_GOOGLE_PARTS = {
-  base: "hero-desk-window absolute overflow-visible",
+  base: "hero-desk-window relative left-auto right-auto top-auto bottom-auto translate-x-0 overflow-visible lg:absolute",
   z: "z-10",
-  mobile: "left-1/2 -translate-x-1/2 w-[95%]",
+  mobile: "mx-auto w-[min(100%,22rem)] sm:w-[min(100%,24rem)]",
   desktop: "lg:left-[15%] lg:-translate-x-[45%] lg:top-[-140px] lg:w-[720px]",
 } as const;
 
-/** Ventana Servicios (comentario z-30; z real según tu preset: z-20). */
+/** Ventana Servicios (z-20). */
 export const HERO_DESK_SERVICES_PARTS = {
-  base: "hero-desk-window absolute overflow-visible",
+  base: "hero-desk-window relative left-auto right-auto top-auto bottom-auto translate-x-0 overflow-visible lg:absolute",
   z: "z-20",
-  mobile: "left-[5%] top-[100px] w-[85%]",
+  mobile: "mx-auto w-[min(100%,21rem)] sm:w-[min(100%,23rem)]",
   desktop: "lg:left-[35%] lg:top-[-20px] lg:w-[520px]",
 } as const;
 
-/** Ventana CMD (comentario z-20; z real según tu preset: z-30). */
+/** Ventana CMD (z-30). */
 export const HERO_DESK_CMD_PARTS = {
-  base: "hero-desk-window absolute overflow-visible",
+  base: "hero-desk-window relative left-auto right-auto top-auto bottom-auto translate-x-0 overflow-visible lg:absolute",
   z: "z-30",
-  mobile: "right-[-2%] bottom-[-60px] w-[90%]",
+  mobile: "mx-auto w-[min(100%,21rem)] sm:w-[min(100%,23rem)]",
   desktop: "lg:right-[-20px] lg:bottom-[-45px] lg:w-[650px]",
 } as const;
 
 /**
- * Misma lógica que `origin/main` en GitHub: altura + padding inferior del stage
- * para que el bloque de contención de los `absolute` sea real y `top`/`bottom` calculen bien.
+ * Móvil: columna centrada (sin solapes). Escritorio: altura mínima para `absolute` + padding inferior.
  */
 export const HERO_DESK_STAGE_PARTS = {
-  base: "relative overflow-visible",
-  spacing:
-    "min-h-[460px] pb-44 pt-0 sm:min-h-[520px] sm:pb-48 lg:min-h-[560px] lg:pb-52",
+  base: "relative overflow-visible max-lg:flex max-lg:flex-col max-lg:items-center max-lg:gap-5 sm:max-lg:gap-6 lg:block",
+  spacing: "max-lg:min-h-0 max-lg:pb-8 sm:max-lg:pb-10 max-lg:pt-0 lg:min-h-[560px] lg:pb-52 lg:pt-0",
 } as const;
 
 function joinDeskClasses(parts: readonly string[]) {
@@ -739,7 +737,7 @@ function GoogleHomeWindow({
 function ServicesMscWindow() {
   return (
     <div className={HERO_DESK_PRESETS.services.shell}>
-      <div className={`flex h-full min-h-[300px] flex-col overflow-hidden rounded-md border border-[#aab9cc]/90 bg-[#d7e2ee] sm:min-h-[320px] ${SHADOW_SERVICES}`}>
+      <div className={`flex h-full min-h-[230px] flex-col overflow-hidden rounded-md border border-[#aab9cc]/90 bg-[#d7e2ee] sm:min-h-[270px] lg:min-h-[300px] xl:min-h-[320px] ${SHADOW_SERVICES}`}>
         <div className="flex h-7 shrink-0 items-center gap-4 border-b border-[#9eaebf] bg-[#c9d6e8] px-2 text-[10px] font-medium text-neutral-800 sm:h-8 sm:text-[11px]">
           <span className="px-1 py-0.5 hover:bg-black/5">Archivo</span>
           <span className="px-1 py-0.5 hover:bg-black/5">Acción</span>
@@ -899,7 +897,7 @@ function CmdTypingWindow({
 
         <div
           ref={scrollRef}
-          className="hero-cmd-body h-[260px] overflow-y-auto border-t border-white/10 bg-black p-3.5 font-mono text-[10px] leading-relaxed sm:h-[300px] sm:p-4 sm:text-[11px]"
+          className="hero-cmd-body h-[260px] max-sm:h-[220px] overflow-y-auto border-t border-white/10 bg-black p-3.5 font-mono text-[10px] leading-relaxed sm:h-[300px] sm:p-4 sm:text-[11px]"
         >
           <MagneticLineWrap>
             <p className="mb-1 text-neutral-500">Microsoft Windows [Versión 10.0.19045]</p>
