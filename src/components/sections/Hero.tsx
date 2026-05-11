@@ -6,7 +6,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Home,
-  MessageSquareText,
   RotateCw,
 } from "lucide-react";
 import { createPortal } from "react-dom";
@@ -56,6 +55,7 @@ const CMD_FEED_LINES = [
   "> [OK] Formularios procesados solos.",
   "> [OK] Costes externos reducidos.",
   "> [OK] Sistema funcionando estable.",
+  "> [INFO] Sistema estable desde hace 14 días."
 ] as const;
 
 const CMD_DIAGNOSTIC_BURST = [
@@ -761,7 +761,7 @@ function CmdTypingWindow({
               </MagneticLineWrap>
             )}
             <p>
-              <span className="text-neutral-500">C:\Users\ABEL&gt;</span>{" "}
+              <span className="text-neutral-500">C:\Users\AGITHECREATOR&gt;</span>{" "}
               <span className="inline-block h-3 w-1.5 animate-pulse align-middle bg-cyan-400/90" aria-hidden />
             </p>
           </div>
@@ -844,39 +844,80 @@ export function Hero() {
               initial={{ opacity: 0, x: -28 }}
               animate={{ opacity: 1, x: 0 }}
               transition={MECHANICAL_TRANSITION}
-              className="space-y-5 lg:max-w-xl lg:pr-4 xl:max-w-2xl xl:pr-10"
+              className="space-y-4 max-w-[620px]"
             >
               <p className="inline-flex w-fit border border-white/15 bg-white/4.5 px-2.5 py-1 text-[8px] font-medium uppercase tracking-[0.13em] text-neutral-400 sm:text-[9px] sm:tracking-[0.14em]">
-                AGI // DISEÑO DE PRODUCTO Y DESARROLLO FULL STACK
+                Sistemas que trabajan solos
               </p>
 
-              <h1 className="max-w-4xl text-balance text-3xl font-semibold leading-[1.08] tracking-tight text-[#f2f0ec] sm:text-4xl sm:leading-[1.06] md:text-5xl lg:text-6xl lg:leading-[1.04] xl:text-7xl">
-                Desarrollo el software que te quita el trabajo aburrido y te ahorra las cuotas mensuales.
+              <h1
+                className="text-balance font-semibold text-[clamp(3.2rem,7vw,6.4rem)] leading-[0.92] tracking-[-0.05em] text-[#f2f0ec]"
+              >
+                Tu negocio pierde horas. Yo hago que las recupere.
               </h1>
 
-              <p className="max-w-xl text-sm leading-relaxed text-neutral-400 sm:text-base">
-                Mientras otros te venden suscripciones, yo te construyo tecnología propia. Sistemas que cobran, mueven datos y
-                funcionan solos. Sin parches y sin depender de nadie.
+              <ul className="space-y-2 pt-1">
+                <li className="flex items-start gap-3 text-[14px] leading-tight text-neutral-200">
+                  <span className="mt-[2px] shrink-0 text-emerald-300" aria-hidden>
+                    ✓
+                  </span>
+                  Reservas automáticas
+                </li>
+                <li className="flex items-start gap-3 text-[14px] leading-tight text-neutral-200">
+                  <span className="mt-[2px] shrink-0 text-emerald-300" aria-hidden>
+                    ✓
+                  </span>
+                  Facturas que se envían solas
+                </li>
+                <li className="flex items-start gap-3 text-[14px] leading-tight text-neutral-200">
+                  <span className="mt-[2px] shrink-0 text-emerald-300" aria-hidden>
+                    ✓
+                  </span>
+                  Clientes sincronizados
+                </li>
+                <li className="flex items-start gap-3 text-[14px] leading-tight text-neutral-200">
+                  <span className="mt-[2px] shrink-0 text-emerald-300" aria-hidden>
+                    ✓
+                  </span>
+                  Webs hechas para vender
+                </li>
+              </ul>
+
+              <p
+                className="max-w-[520px] text-[clamp(0.95rem,1.6vw,1.05rem)] leading-[1.35] text-neutral-400"
+                style={{
+                  display: "-webkit-box",
+                  WebkitBoxOrient: "vertical",
+                  WebkitLineClamp: 2,
+                  overflow: "hidden",
+                }}
+              >
+                Webs, automatizaciones y herramientas que trabajan solas para que no tengas que perder tiempo en tareas
+                repetitivas.
               </p>
 
-              <div className="flex flex-wrap items-center gap-2.5 pt-1">
+              <div className="flex flex-wrap items-center gap-3 pt-1">
                 <a
-                  href="mailto:contacto@agithecreator.com?subject=Diagnosticar%20mi%20caso"
+                  href="mailto:contacto@agithecreator.com?subject=Quiero%20ahorrar%20tiempo"
                   onMouseEnter={() => setDiagnosticHover(true)}
                   onMouseLeave={() => setDiagnosticHover(false)}
-                  className="inline-flex items-center gap-2 border border-white/25 bg-white px-4 py-2.5 text-sm font-semibold text-[#05070f] transition-colors hover:bg-neutral-100"
+                  className="inline-flex items-center gap-2 rounded-md bg-white px-5 py-3 text-sm font-semibold text-[#05070f] shadow-sm transition-colors hover:bg-neutral-100"
                 >
-                  <MessageSquareText className="h-4 w-4 shrink-0" aria-hidden />
-                  Diagnosticar mi caso
+                  <RotateCw className="h-4 w-4 shrink-0" aria-hidden />
+                  Quiero ahorrar tiempo
                 </a>
                 <a
                   href="#proyectos"
-                  className="inline-flex items-center gap-2 border border-white/18 px-4 py-2.5 text-sm font-medium text-neutral-200 transition-colors hover:bg-white/10"
+                  className="inline-flex items-center gap-2 rounded-md border border-white/18 bg-transparent px-5 py-3 text-sm font-medium text-neutral-200 transition-colors hover:bg-white/10"
                 >
-                  Ver lo que he montado
+                  Ver sistemas funcionando
                   <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
                 </a>
               </div>
+
+              <p className="max-w-[520px] text-[12px] leading-relaxed text-neutral-400">
+                Menos trabajo manual. Menos errores. Más tiempo para el negocio.
+              </p>
             </motion.div>
 
             <div className="relative z-6 -mb-32 overflow-visible sm:-mb-36 lg:-mb-44 xl:-mb-46">
