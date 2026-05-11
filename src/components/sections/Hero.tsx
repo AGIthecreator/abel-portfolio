@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useTransform } from "framer-motion";
 import {
   ArrowRight,
   ChevronLeft,
@@ -9,16 +9,17 @@ import {
   MessageSquareText,
   RotateCw,
 } from "lucide-react";
+import { createPortal } from "react-dom";
 import {
   createContext,
   useContext,
   useEffect,
   useId,
+  useCallback,
   useMemo,
   useRef,
   useState,
   type ReactNode,
-  type RefObject,
   type MouseEvent as ReactMouseEvent,
 } from "react";
 
@@ -34,22 +35,46 @@ const SHADOW_CMD =
 
 const CMD_PANEL = "rounded-sm border border-white/15 bg-neutral-950";
 
-const CMD_SCRIPT = [
-  "> agi --limpiar-operativa",
-  "> [OK] 40h de admin eliminadas.",
-  "> [OK] Costes de terceros: 0€.",
-  "> [INFO] Migración: 40min -> 2min.",
+/** Secuencia CMD en bucle: mezcla [OK] / [ERROR] / [INFO] / comandos para ritmo variado. */
+const CMD_FEED_LINES = [
+  "> [OK] 18 correos enviados automáticamente.",
+  "> [INFO] Revisando tareas repetitivas...",
+  "> agi --reducir-tiempo-operativo",
+  "> [OK] 4h de gestión evitadas hoy.",
+  "> [ERROR] Datos duplicados detectados.",
+  "> [OK] Reserva confirmada sin intervención.",
+  "> [INFO] Analizando puntos donde se pierde tiempo...",
+  "> agi --eliminar-tareas-manuales",
+  "> [OK] Datos duplicados eliminados.",
+  "> [ERROR] Proceso manual innecesario encontrado.",
+  "> [OK] Cliente añadido al CRM.",
+  "> agi --conectar-sistemas",
+  "> [OK] Factura enviada automáticamente.",
+  "> [OK] Tiempo por pedido: 12min -> 40s.",
+  "> [OK] 37 tareas manuales evitadas.",
+  "> [OK] Sincronización completada.",
+  "> [OK] Formularios procesados solos.",
+  "> [OK] Costes externos reducidos.",
+  "> [OK] Sistema funcionando estable.",
+] as const;
+
+const CMD_DIAGNOSTIC_BURST = [
+  "> agi --analizar-operativa",
+  "> [INFO] Detectando tareas repetidas...",
+  "> [OK] Posible ahorro detectado.",
+  "> [OK] Formularios automatizables.",
+  "> [OK] Correos automáticos disponibles.",
+  "> sistema listo",
 ] as const;
 
 const SERVICES_ROWS = [
-  { name: "PucelaTicketing_Auth", mode: "Automático", state: "En ejecución", running: true },
-  { name: "Shop_Migration_Engine", mode: "Manual", state: "En ejecución", running: true },
-  { name: "CallGuard_Privacy", mode: "Deshabilitado", state: "Detenido", running: false },
-  { name: "Aguarras_Core", mode: "Automático", state: "En ejecución", running: true },
-  { name: "Cloudflare_Proxy", mode: "Manual", state: "En ejecución", running: true },
+  { name: "Ahorro_47h_Mes.exe", mode: "Automático", state: "En ejecución", running: true },
+  { name: "Facturas_A_Mano.exe", mode: "Manual", state: "Deshabilitado", running: false },
+  { name: "Clientes_AutoSync.exe", mode: "Automático", state: "En ejecución", running: true },
+  { name: "Archivos_Duplicados.exe", mode: "Manual", state: "Detenido", running: false },
+  { name: "Emails_Que_Salen_Solos.exe", mode: "Automático", state: "En ejecución", running: true },
+  { name: "Reservas_Automaticas.exe", mode: "Automático", state: "En ejecución", running: true },
 ] as const;
-
-const PROFILE_GITHUB_URL = "https://github.com/AGIthecreator";
 
 // -----------------------------------------------------------------------------
 // PRESETS ESCRITORIO — edita HERO_DESK_*_PARTS; el `shell` se arma solo.
@@ -66,7 +91,7 @@ export const HERO_DESK_GOOGLE_PARTS = {
   desktop: "lg:left-[15%] lg:-translate-x-[45%] lg:top-[-120px] lg:w-[720px]",
 } as const;
 
-/** Ventana Servicios (z-30, encima). */
+/** Ventana Servicios (comentario z-30; z real según tu preset: z-20). */
 export const HERO_DESK_SERVICES_PARTS = {
   base: "hero-desk-window absolute overflow-visible",
   z: "z-20",
@@ -74,15 +99,18 @@ export const HERO_DESK_SERVICES_PARTS = {
   desktop: "lg:left-[35%] lg:top-[0px] lg:w-[520px]",
 } as const;
 
-/** Ventana CMD (z-20). */
+/** Ventana CMD (comentario z-20; z real según tu preset: z-30). */
 export const HERO_DESK_CMD_PARTS = {
   base: "hero-desk-window absolute overflow-visible",
   z: "z-30",
   mobile: "right-[-2%] bottom-[-60px] w-[90%]",
-  desktop: "lg:right-[-20px] lg:bottom-[-60px] lg:w-[650px]",
+  desktop: "lg:right-[-20px] lg:bottom-[-65px] lg:w-[650px]",
 } as const;
 
-/** Contenedor interior del escritorio (espacio antes del desborde del CMD por abajo). */
+/**
+ * Misma lógica que `origin/main` en GitHub: altura + padding inferior del stage
+ * para que el bloque de contención de los `absolute` sea real y `top`/`bottom` calculen bien.
+ */
 export const HERO_DESK_STAGE_PARTS = {
   base: "relative overflow-visible",
   spacing:
@@ -131,50 +159,8 @@ const CursorCtx =
     null,
   );
 
-function useProximityNudge(ref: RefObject<HTMLElement | null>, radiusPx = 86, gain = 4.5) {
-  const cx = useContext(CursorCtx);
-  const shiftX = useSpring(0, { stiffness: 300, damping: 26 });
-  const shiftY = useSpring(0, { stiffness: 300, damping: 26 });
-
-  useEffect(() => {
-    if (!cx) return;
-    const compute = () => {
-      const el = ref.current;
-      if (!el) return;
-      const rx = cx.rawX.get();
-      const ry = cx.rawY.get();
-      const r = el.getBoundingClientRect();
-      const mx = rx - (r.left + r.width / 2);
-      const my = ry - (r.top + r.height / 2);
-      const d = Math.hypot(mx, my);
-      if (d > 1.5 && d < radiusPx) {
-        const pull = ((radiusPx - d) / radiusPx) * gain;
-        shiftX.set((mx / d) * pull);
-        shiftY.set((my / d) * pull);
-      } else if (d >= radiusPx || d <= 1.5) {
-        shiftX.set(0);
-        shiftY.set(0);
-      }
-    };
-    const ua = cx.rawX.on("change", compute);
-    const ub = cx.rawY.on("change", compute);
-    return () => {
-      ua();
-      ub();
-    };
-  }, [cx, ref, radiusPx, gain, shiftX, shiftY]);
-
-  return { shiftX, shiftY };
-}
-
 function MagneticCloseWrap({ children }: { children: ReactNode }) {
-  const shell = useRef<HTMLDivElement>(null);
-  const { shiftX, shiftY } = useProximityNudge(shell, 70, 3.6);
-  return (
-    <motion.div ref={shell} style={{ x: shiftX, y: shiftY }} className="inline-flex">
-      {children}
-    </motion.div>
-  );
+  return <span className="inline-flex">{children}</span>;
 }
 
 function MagneticLineWrap({ children }: { children: ReactNode }) {
@@ -316,6 +302,16 @@ function CmdSyntaxLine({ text }: { text: string }) {
       </span>
     );
   }
+  if (t.startsWith("> [ERROR]")) {
+    const tail = t.slice("> [ERROR]".length);
+    return (
+      <span>
+        <span className="text-neutral-500">&gt; </span>
+        <span className="text-rose-400">[ERROR]</span>
+        <span className="text-rose-200/88">{tail}</span>
+      </span>
+    );
+  }
   if (t.startsWith("> ")) {
     return (
       <span>
@@ -362,6 +358,78 @@ function AgiTabFavicon({ className }: { className?: string }) {
   );
 }
 
+function LuckyEasterEggModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open, onClose]);
+
+  if (!mounted || !open) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-200 flex items-center justify-center p-5" role="presentation">
+      <button
+        type="button"
+        className="absolute inset-0 bg-black/55 backdrop-blur-md"
+        aria-label="Cerrar"
+        onClick={onClose}
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="lucky-modal-title"
+        className="relative z-10 w-full max-w-88 border border-neutral-600/90 bg-[#1c1c1f] text-neutral-200 shadow-[0_24px_64px_rgba(0,0,0,0.65)]"
+      >
+        <div className="flex items-center justify-between border-b border-neutral-700/90 bg-[#252528] px-3 py-2">
+          <span id="lucky-modal-title" className="text-[11px] font-medium tracking-wide text-neutral-400">
+            Mensaje del sistema
+          </span>
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-2 py-1 text-[12px] text-neutral-500 transition-colors hover:bg-white/10 hover:text-neutral-200"
+            aria-label="Cerrar ventana"
+          >
+            Cerrar
+          </button>
+        </div>
+        <div className="space-y-4 px-4 py-5">
+          <p className="text-[15px] font-semibold leading-snug tracking-tight text-neutral-100">
+            No todo el mundo pulsa ese botón.
+          </p>
+          <div className="space-y-3 text-[13px] leading-relaxed text-neutral-400">
+            <p>
+              Te llevas un 20% de descuento si acabas trabajando conmigo.
+              <br />
+              <br />
+              Haz una captura antes de cerrar esto.
+            </p>
+            <p className="rounded border border-neutral-700/80 bg-black/40 px-3 py-2.5 font-mono text-[12px] text-neutral-300">
+              Coupon unlocked: AGI-LUCKY20
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
 function GoogleHomeWindow({
   onFormTextFieldHover,
   onSubmitCtaHover,
@@ -371,6 +439,7 @@ function GoogleHomeWindow({
 }) {
   const [task, setTask] = useState("");
   const [email, setEmail] = useState("");
+  const [luckyOpen, setLuckyOpen] = useState(false);
   const taskId = useId();
   const emailId = useId();
 
@@ -388,6 +457,7 @@ function GoogleHomeWindow({
 
   return (
     <div className={HERO_DESK_PRESETS.google.shell}>
+      <LuckyEasterEggModal open={luckyOpen} onClose={() => setLuckyOpen(false)} />
       <div className={`flex flex-col overflow-hidden rounded-md border border-neutral-300/95 bg-white ${SHADOW_GOOGLE}`}>
         <div className="flex h-9 items-end gap-0.5 border-b border-[#c5c9d0] bg-[#dee1e6] px-1.5 pt-1">
           <div className="flex min-w-0 max-w-[46%] flex-1 items-center gap-2 rounded-t border border-b-0 border-[#b5bac1] bg-white px-2.5 py-2 shadow-[0_-1px_0_0_white]">
@@ -478,26 +548,25 @@ function GoogleHomeWindow({
             </div>
           </div>
 
-          <div className="mt-6 flex max-w-xs flex-wrap items-center gap-2">
+          <div className="mt-6 flex max-w-xs flex-col gap-3">
             <button
               type="submit"
               onPointerEnter={() => onSubmitCtaHover(true)}
               onPointerLeave={() => onSubmitCtaHover(false)}
-              className="inline-flex shrink-0 items-center justify-center gap-1 rounded-md bg-[#1a73e8] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1558b0]"
+              className="inline-flex w-full min-h-[42px] items-center justify-center gap-1 rounded-md bg-[#1a73e8] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1558b0]"
             >
               <span>Enviar diagnóstico</span>
               <span className="text-base leading-none" aria-hidden>
                 &gt;
               </span>
             </button>
-            <a
-              href={PROFILE_GITHUB_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center rounded-md border border-neutral-300 bg-neutral-50 px-4 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-400 hover:bg-neutral-100"
+            <button
+              type="button"
+              onClick={() => setLuckyOpen(true)}
+              className="self-center text-center text-[12px] font-normal leading-tight text-[#70757a] underline decoration-neutral-300/70 decoration-1 underline-offset-[3px] transition-colors hover:text-[#3c4043] hover:decoration-neutral-400"
             >
               Voy a tener suerte
-            </a>
+            </button>
           </div>
         </form>
       </div>
@@ -559,61 +628,81 @@ function ServicesMscWindow() {
   );
 }
 
-const CMD_MAX_LINES = 12;
-const CMD_TYPE_MS = 42;
-const CMD_LINE_PAUSE_MS = 520;
-const CMD_LOOP_GAP_MS = 2600;
+const CMD_MAX_LINES = 48;
+/** Velocidad escritura carácter a carácter (ms por carácter). */
+const CMD_TYPE_MS = 44;
+/** Pausa al terminar una línea completa antes de la siguiente. */
+const CMD_LINE_PAUSE_MS = 480;
+/** Pausa al cerrar un ciclo completo del guion antes de repetir. */
+const CMD_LOOP_GAP_MS = 3000;
+const CMD_DIAGNOSTIC_LINE_MS = 320;
 
 type CmdLineRow = { id: string; text: string };
 
-function CmdTypingWindow({ reduceMotion }: { reduceMotion: boolean }) {
+function CmdTypingWindow({
+  reduceMotion,
+  diagnosticHover,
+}: {
+  reduceMotion: boolean;
+  diagnosticHover: boolean;
+}) {
   const [lines, setLines] = useState<CmdLineRow[]>([]);
   const [currentChars, setCurrentChars] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const keyRef = useRef(0);
+  const lineIdxRef = useRef(0);
+  const charIdxRef = useRef(0);
+  const diagGenRef = useRef(0);
+  const diagnosticHoverRef = useRef(false);
+
+  useEffect(() => {
+    diagnosticHoverRef.current = diagnosticHover;
+  }, [diagnosticHover]);
+
+  const pushCompleteLine = useCallback((text: string) => {
+    keyRef.current += 1;
+    const id = `c-${keyRef.current}`;
+    setLines((prev) => {
+      const next = [...prev, { id, text }];
+      return next.length > CMD_MAX_LINES ? next.slice(-CMD_MAX_LINES) : next;
+    });
+  }, []);
 
   useEffect(() => {
     const el = scrollRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [lines, currentChars]);
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: reduceMotion ? "auto" : "smooth" });
+  }, [lines, currentChars, reduceMotion]);
 
   useEffect(() => {
     if (reduceMotion) {
-      setLines(CMD_SCRIPT.map((text, i) => ({ id: `s-${i}`, text })));
+      setLines(CMD_FEED_LINES.map((text, i) => ({ id: `s-${i}`, text })));
       setCurrentChars("");
       return;
     }
 
-    let lineIdx = 0;
-    let charIdx = 0;
-    let timeoutId: ReturnType<typeof setTimeout>;
     let cancelled = false;
-
-    const push = (text: string) => {
-      keyRef.current += 1;
-      const id = `c-${keyRef.current}`;
-      setLines((prev) => {
-        const next = [...prev, { id, text }];
-        return next.length > CMD_MAX_LINES ? next.slice(-CMD_MAX_LINES) : next;
-      });
-    };
+    let timeoutId: ReturnType<typeof setTimeout>;
 
     const step = () => {
       if (cancelled) return;
-      const full = CMD_SCRIPT[lineIdx % CMD_SCRIPT.length];
-      if (charIdx < full.length) {
-        charIdx += 1;
-        setCurrentChars(full.slice(0, charIdx));
+      if (diagnosticHoverRef.current) {
+        timeoutId = setTimeout(step, 100);
+        return;
+      }
+      const full = CMD_FEED_LINES[lineIdxRef.current % CMD_FEED_LINES.length];
+      if (charIdxRef.current < full.length) {
+        charIdxRef.current += 1;
+        setCurrentChars(full.slice(0, charIdxRef.current));
         timeoutId = setTimeout(step, CMD_TYPE_MS);
       } else {
-        push(full);
+        pushCompleteLine(full);
         setCurrentChars("");
-        charIdx = 0;
-        lineIdx += 1;
-        timeoutId =
-          lineIdx % CMD_SCRIPT.length === 0
-            ? setTimeout(step, CMD_LOOP_GAP_MS)
-            : setTimeout(step, CMD_LINE_PAUSE_MS);
+        charIdxRef.current = 0;
+        lineIdxRef.current += 1;
+        const wrappedCycle =
+          lineIdxRef.current % CMD_FEED_LINES.length === 0 && lineIdxRef.current >= CMD_FEED_LINES.length;
+        timeoutId = setTimeout(step, wrappedCycle ? CMD_LOOP_GAP_MS : CMD_LINE_PAUSE_MS);
       }
     };
 
@@ -622,112 +711,76 @@ function CmdTypingWindow({ reduceMotion }: { reduceMotion: boolean }) {
       cancelled = true;
       clearTimeout(timeoutId);
     };
-  }, [reduceMotion]);
+  }, [reduceMotion, pushCompleteLine]);
+
+  useEffect(() => {
+    if (reduceMotion || !diagnosticHover) return;
+    diagGenRef.current += 1;
+    const gen = diagGenRef.current;
+    const timers = CMD_DIAGNOSTIC_BURST.map((text, i) =>
+      setTimeout(() => {
+        if (diagGenRef.current !== gen) return;
+        pushCompleteLine(text);
+      }, CMD_DIAGNOSTIC_LINE_MS * i),
+    );
+    return () => {
+      timers.forEach(clearTimeout);
+    };
+  }, [diagnosticHover, reduceMotion, pushCompleteLine]);
 
   return (
     <div className={HERO_DESK_PRESETS.cmd.shell}>
       <div className={`flex flex-col overflow-hidden rounded-md ${CMD_PANEL} ${SHADOW_CMD}`}>
-      <WindowsTitleBar title="Símbolo del sistema — cmd.exe" variant="dark">
-        <WinControlsDecorative variant="dark" />
-      </WindowsTitleBar>
+        <WindowsTitleBar title="Símbolo del sistema — cmd.exe" variant="dark">
+          <WinControlsDecorative variant="dark" />
+        </WindowsTitleBar>
 
-      <div
-        ref={scrollRef}
-        className="hero-cmd-body h-[260px] overflow-y-auto border-t border-white/10 bg-black p-3.5 font-mono text-[10px] leading-relaxed sm:h-[300px] sm:p-4 sm:text-[11px]"
-      >
-        <MagneticLineWrap>
-          <p className="mb-1 text-neutral-500">Microsoft Windows [Versión 10.0.19045]</p>
-        </MagneticLineWrap>
-        <MagneticLineWrap>
-          <p className="mb-2 text-neutral-500">(c) Microsoft Corporation.</p>
-        </MagneticLineWrap>
-        <div className="space-y-1">
-          {lines.map((row) => (
-            <MagneticLineWrap key={row.id}>
-              <p className="wrap-break-word">
-                <CmdSyntaxLine text={row.text} />
-              </p>
-            </MagneticLineWrap>
-          ))}
-          {currentChars.length > 0 && (
-            <MagneticLineWrap>
-              <p className="wrap-break-word">
-                <CmdSyntaxLine text={currentChars} />
-              </p>
-            </MagneticLineWrap>
-          )}
-          <p>
-            <span className="text-neutral-500">C:\Users\ABEL&gt;</span>{" "}
-            <span className="inline-block h-3 w-1.5 animate-pulse align-middle bg-cyan-400/90" aria-hidden />
-          </p>
+        <div
+          ref={scrollRef}
+          className="hero-cmd-body h-[260px] overflow-y-auto border-t border-white/10 bg-black p-3.5 font-mono text-[10px] leading-relaxed sm:h-[300px] sm:p-4 sm:text-[11px]"
+        >
+          <MagneticLineWrap>
+            <p className="mb-1 text-neutral-500">Microsoft Windows [Versión 10.0.19045]</p>
+          </MagneticLineWrap>
+          <MagneticLineWrap>
+            <p className="mb-2 text-neutral-500">(c) Microsoft Corporation.</p>
+          </MagneticLineWrap>
+          <div className="space-y-1">
+            {lines.map((row) => (
+              <MagneticLineWrap key={row.id}>
+                <p className="wrap-break-word">
+                  <CmdSyntaxLine text={row.text} />
+                </p>
+              </MagneticLineWrap>
+            ))}
+            {currentChars.length > 0 && (
+              <MagneticLineWrap>
+                <p className="wrap-break-word">
+                  <CmdSyntaxLine text={currentChars} />
+                </p>
+              </MagneticLineWrap>
+            )}
+            <p>
+              <span className="text-neutral-500">C:\Users\ABEL&gt;</span>{" "}
+              <span className="inline-block h-3 w-1.5 animate-pulse align-middle bg-cyan-400/90" aria-hidden />
+            </p>
+          </div>
         </div>
       </div>
-      </div>
-    </div>
-  );
-}
-
-function DeskStackTilt({ reduceMotion, children }: { reduceMotion: boolean; children: ReactNode }) {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const tiltX = useMotionValue(0);
-  const tiltY = useMotionValue(0);
-  const sx = useSpring(tiltX, { stiffness: 420, damping: 38 });
-  const sy = useSpring(tiltY, { stiffness: 420, damping: 38 });
-
-  const reset = () => {
-    tiltX.set(0);
-    tiltY.set(0);
-  };
-
-  const onMove = (e: React.MouseEvent) => {
-    if (reduceMotion) return;
-    const el = wrapRef.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const nx = (e.clientX - r.left) / r.width - 0.5;
-    const ny = (e.clientY - r.top) / r.height - 0.5;
-    tiltY.set(nx * 5.5);
-    tiltX.set(-ny * 4.5);
-  };
-
-  return (
-    <div
-      ref={wrapRef}
-      className={[reduceMotion ? "" : "perspective-distant", "relative"].join(" ")}
-      onMouseMove={onMove}
-      onMouseLeave={() => reset()}
-      style={
-        reduceMotion
-          ? undefined
-          : { perspectiveOrigin: "50% 40%" }
-      }
-    >
-      <motion.div
-        className="relative transform-gpu will-change-transform"
-        style={
-          reduceMotion
-            ? { transformStyle: "preserve-3d" }
-            : {
-                rotateX: sx,
-                rotateY: sy,
-                transformStyle: "preserve-3d",
-              }
-        }
-      >
-        {children}
-      </motion.div>
     </div>
   );
 }
 
 function EngineerDeskStack({
   reduceMotion,
+  diagnosticHover,
   onFormTextFieldHover,
   onSubmitCtaHover,
   onWindowsHover,
   onWindowsMove,
 }: {
   reduceMotion: boolean;
+  diagnosticHover: boolean;
   onFormTextFieldHover: (v: boolean) => void;
   onSubmitCtaHover: (v: boolean) => void;
   onWindowsHover: (v: boolean) => void;
@@ -744,13 +797,11 @@ function EngineerDeskStack({
       }}
       onMouseMove={onWindowsMove}
     >
-      <DeskStackTilt reduceMotion={reduceMotion}>
-        <div className={HERO_DESK_STAGE_CLASS}>
-          <GoogleHomeWindow onFormTextFieldHover={onFormTextFieldHover} onSubmitCtaHover={onSubmitCtaHover} />
-          <CmdTypingWindow reduceMotion={reduceMotion} />
-          <ServicesMscWindow />
-        </div>
-      </DeskStackTilt>
+      <div className={HERO_DESK_STAGE_CLASS}>
+        <GoogleHomeWindow onFormTextFieldHover={onFormTextFieldHover} onSubmitCtaHover={onSubmitCtaHover} />
+        <CmdTypingWindow reduceMotion={reduceMotion} diagnosticHover={diagnosticHover} />
+        <ServicesMscWindow />
+      </div>
     </div>
   );
 }
@@ -760,6 +811,7 @@ export function Hero() {
   const [cursorHero, setCursorHero] = useState(false);
   const [formTextFieldHover, setFormTextFieldHover] = useState(false);
   const [submitCtaHover, setSubmitCtaHover] = useState(false);
+  const [diagnosticHover, setDiagnosticHover] = useState(false);
 
   const rawX = useMotionValue(-9999);
   const rawY = useMotionValue(-9999);
@@ -810,6 +862,8 @@ export function Hero() {
               <div className="flex flex-wrap items-center gap-2.5 pt-1">
                 <a
                   href="mailto:contacto@agithecreator.com?subject=Diagnosticar%20mi%20caso"
+                  onMouseEnter={() => setDiagnosticHover(true)}
+                  onMouseLeave={() => setDiagnosticHover(false)}
                   className="inline-flex items-center gap-2 border border-white/25 bg-white px-4 py-2.5 text-sm font-semibold text-[#05070f] transition-colors hover:bg-neutral-100"
                 >
                   <MessageSquareText className="h-4 w-4 shrink-0" aria-hidden />
@@ -833,6 +887,7 @@ export function Hero() {
               <div className="relative z-1">
                 <EngineerDeskStack
                   reduceMotion={reduceMotion}
+                  diagnosticHover={diagnosticHover}
                   onFormTextFieldHover={setFormTextFieldHover}
                   onSubmitCtaHover={setSubmitCtaHover}
                   onWindowsHover={setCursorHero}
@@ -844,6 +899,14 @@ export function Hero() {
         </div>
 
         <style jsx>{`
+          .hero-cmd-body {
+            scroll-behavior: smooth;
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .hero-cmd-body {
+              scroll-behavior: auto;
+            }
+          }
           .hero-tech-grid {
             background-image:
               linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
