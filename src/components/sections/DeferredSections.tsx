@@ -6,11 +6,6 @@ import { DeferredMount } from "@/components/utils/DeferredMount";
 // --- IMPORTS DINÁMICOS ---
 // Corregidos para manejar exportaciones por defecto o nombradas según corresponda
 
-const Manifesto = dynamic(
-  () => import("@/components/sections/Manifesto").then((m) => m.Manifesto),
-  { ssr: false }
-);
-
 // ELIMINAMOS el .then() porque TechStack ahora usa export default
 const TechStack = dynamic(
   () => import("@/components/sections/TechStack"), 
@@ -41,14 +36,6 @@ function Skeleton({ h }: { h: number }) {
 
 // --- COMPONENTES DIFERIDOS (EXPORTADOS) ---
 
-export function DeferredManifesto() {
-  return (
-    <DeferredMount fallback={<Skeleton h={300} />}>
-      <Manifesto />
-    </DeferredMount>
-  );
-}
-
 export function DeferredTechStack() {
   return (
     <DeferredMount fallback={<Skeleton h={520} />}>
@@ -67,7 +54,7 @@ export function DeferredProjects() {
 
 export function DeferredStrategicProfile() {
   return (
-    <DeferredMount fallback={<Skeleton h={520} />}>
+    <DeferredMount fallback={<Skeleton h={1100} />}>
       <StrategicProfile />
     </DeferredMount>
   );

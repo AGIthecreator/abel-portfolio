@@ -1,7 +1,6 @@
 import { Hero } from "@/components/sections/Hero";
 import { Footer } from "@/components/sections/Footer";
 import {
-  DeferredManifesto,
   DeferredProjects,
   DeferredStrategicProfile,
   DeferredTechStack,
@@ -29,21 +28,20 @@ export default function Page() {
       {/* 1. HERO */}
       <Hero />
 
-      {/* FRANJA 1: debajo del Hero en z-index para que el CMD solapado quede encima */}
-      <div className="relative z-0">
+      {/* FRANJA 1: por encima del bloque estratégico para que el CMD del Hero siga tapando solo la franja, no tapar la franja con el perfil */}
+      <div className="relative z-20">
         <StripSystemStatus />
       </div>
 
-      {/* BLOQUE 1: Narrativa Estratégica */}
-      <main className="relative z-10 mx-auto max-w-300 px-4 sm:px-6 lg:px-8">
-        <section className="relative pt-6 pb-6">
-          <div className="mt-8 sm:mt-12"><DeferredManifesto /></div>
-          <div className="mt-10 sm:mt-14"><DeferredStrategicProfile /></div>
+      {/* BLOQUE 1: Narrativa Estratégica (z por debajo de la franja para no ocultarla) */}
+      <main className="relative z-10 mx-auto max-w-300 overflow-visible px-4 sm:px-6 lg:px-8">
+        <section className="relative overflow-visible pt-0 pb-0">
+          <DeferredStrategicProfile />
         </section>
       </main>
 
-      {/* FRANJA 2: El interruptor Perfil → Proyectos */}
-      <div className="my-10 sm:my-16">
+      {/* FRANJA 2: sin margen superior para pegar al bloque estratégico */}
+      <div className="mb-6 sm:mb-8">
         <StripExecution />
       </div>
 

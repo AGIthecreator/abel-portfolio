@@ -26,6 +26,20 @@
   .ring-accent-glow {
     --tw-ring-color: rgba(139, 92, 246, 0.38);
   }
+
+  /** Grano sutil tipo papel (StrategicProfile ValueCards) */
+  .strategic-paper-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.055;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+  }
 }
 
 @layer base {
@@ -307,13 +321,13 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
   }
 
   /*
-    Franja: degradado simétrico arriba (Hero #04060d → crema) y abajo (crema → página #030014),
+    Franja: degradado simétrico arriba (Hero #04060d → crema) y abajo (crema → sección #070b13),
     + puntos 5% encima. Todo en una sola capa visual (sin duplicar con el Hero).
   */
   .strip-tech-paper {
     --strip-mid: #f4f4f4;
     --strip-hero: #04060d;
-    --strip-page: #030014;
+    --strip-page: #070b13;
     background-color: var(--strip-mid);
     background-image:
       radial-gradient(rgba(0, 0, 0, 0.05) 0.55px, transparent 0.55px),
