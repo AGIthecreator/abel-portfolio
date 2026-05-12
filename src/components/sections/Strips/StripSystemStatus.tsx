@@ -65,29 +65,36 @@ const STRIP_TECH_ITEMS: StripTechItem[] = [
   },
 ];
 
+function StripLogo({ src }: { src: string }) {
+  return (
+    <span className="strip-tech-logo-wrap strip-tech-logo-wrap--tint inline-flex shrink-0 cursor-default items-center motion-safe:animate-strip-logo-float">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt=""
+        role="presentation"
+        loading="lazy"
+        decoding="async"
+        className="h-[2.975rem] w-auto shrink-0 object-contain md:h-[3.4rem]"
+      />
+    </span>
+  );
+}
+
+/** Texto de marca: sin animación (evita pelear con el carrusel); solo opacidad al hover */
+function StripName({ label }: { label: string }) {
+  return (
+    <span className="inline-flex shrink-0 cursor-default whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.16em] text-[#415762]/55 opacity-90 transition-opacity duration-200 ease-out hover:opacity-100 md:text-[0.8125rem]">
+      {label}
+    </span>
+  );
+}
+
 function renderItem(item: StripTechItem, key: React.Key) {
   if (item.kind === "name") {
-    return (
-      <span
-        key={key}
-        className="shrink-0 whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.16em] text-[#415762]/70 md:text-[0.8125rem]"
-      >
-        {item.label}
-      </span>
-    );
+    return <StripName key={key} label={item.label} />;
   }
-
-  return (
-    <img
-      key={key}
-      src={item.src}
-      alt=""
-      role="presentation"
-      loading="lazy"
-      decoding="async"
-      className="strip-tech-logo-tint h-[2.975rem] w-auto shrink-0 object-contain md:h-[3.4rem]"
-    />
-  );
+  return <StripLogo key={key} src={item.src} />;
 }
 
 function LogoTrack({ idPrefix }: { idPrefix: string }) {
@@ -105,12 +112,14 @@ const StripSystemStatus = () => {
   return (
     <section
       aria-label="Stack tecnológico"
-      className="group w-full border-y border-black/6 bg-[#f4f5f7] py-5 md:py-7 px-3 sm:px-4"
+      className="strip-tech-paper relative isolate z-0 w-full overflow-hidden"
     >
-      <div className="strip-tech-marquee-mask w-full overflow-hidden">
-        <div className="flex w-max animate-strip-tech-marquee group-hover:[animation-play-state:paused]">
-          <LogoTrack idPrefix="a" />
-          <LogoTrack idPrefix="b" />
+      <div className="relative px-3 pb-5 pt-4 sm:px-4 md:pb-7 md:pt-6">
+        <div className="strip-tech-marquee-mask w-full overflow-hidden">
+          <div className="flex w-max animate-strip-tech-marquee">
+            <LogoTrack idPrefix="a" />
+            <LogoTrack idPrefix="b" />
+          </div>
         </div>
       </div>
     </section>

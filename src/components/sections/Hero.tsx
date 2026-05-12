@@ -99,10 +99,10 @@ export const HERO_DESK_SERVICES_PARTS = {
   desktop: "lg:left-[35%] lg:top-[-20px] lg:w-[520px]",
 } as const;
 
-/** Ventana CMD (z-30). */
+/** Ventana CMD (z-50): siempre por encima de la franja y del resto del escritorio. */
 export const HERO_DESK_CMD_PARTS = {
   base: "hero-desk-window relative left-auto right-auto top-auto bottom-auto translate-x-0 overflow-visible lg:absolute",
-  z: "z-30",
+  z: "z-50",
   mobile: "mx-auto w-[min(100%,21rem)] sm:w-[min(100%,23rem)]",
   desktop: "lg:right-[-20px] lg:bottom-[-45px] lg:w-[650px]",
 } as const;
@@ -855,7 +855,7 @@ export function Hero() {
   return (
     <CursorCtx.Provider value={cursorApi}>
       <section
-        className={`hero-engineer relative isolate z-10 w-full overflow-visible bg-[#04060d] py-5 sm:py-6 lg:py-8 ${useCustomPointer ? "cursor-none" : ""}`}
+        className={`hero-engineer relative isolate z-30 w-full overflow-visible bg-[#04060d] py-5 sm:py-6 lg:py-8 ${useCustomPointer ? "cursor-none" : ""}`}
       >
         <CursorHandLayer active={useCustomPointer} handScale={handScale} />
 
@@ -963,7 +963,7 @@ export function Hero() {
               </p>
             </motion.div>
 
-            <div className="relative z-20 -mb-40 overflow-visible sm:-mb-44 lg:-mb-52 xl:-mb-56">
+            <div className="relative z-40 -mb-40 overflow-visible sm:-mb-44 lg:-mb-52 xl:-mb-56">
               <div className="relative z-1">
                 <EngineerDeskStack
                   reduceMotion={reduceMotion}

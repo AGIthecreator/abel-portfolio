@@ -283,25 +283,92 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
     animation: footerTicker 60s linear infinite;
   }
 
-  /* Hero strip: ~20% más rápido que 38s → 38/1.2 */
+  /* Hero strip: marquee (velocidad constante; el hover en logos no debe retiming global) */
   .animate-strip-tech-marquee {
-    animation: footerTicker 31.67s linear infinite;
+    animation-name: footerTicker;
+    animation-duration: 19s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
     will-change: transform;
   }
 
+  @keyframes stripLogoFloat {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-3px);
+    }
+  }
+
+  .animate-strip-logo-float {
+    animation: stripLogoFloat 3.4s ease-in-out infinite;
+  }
+
   /*
-    Logos externos (img): tinte uniforme ≈ #415762.
-    brightness(0) → silueta; invert/sepia/hue aproximan el hex.
+    Franja: degradado simétrico arriba (Hero #04060d → crema) y abajo (crema → página #030014),
+    + puntos 5% encima. Todo en una sola capa visual (sin duplicar con el Hero).
   */
-  .strip-tech-logo-tint {
-    filter: brightness(0) saturate(100%) invert(31%) sepia(14%) saturate(720%)
-      hue-rotate(162deg) brightness(93%) contrast(88%);
-    opacity: 0.88;
+  .strip-tech-paper {
+    --strip-mid: #f4f4f4;
+    --strip-hero: #04060d;
+    --strip-page: #030014;
+    background-color: var(--strip-mid);
+    background-image:
+      radial-gradient(rgba(0, 0, 0, 0.05) 0.55px, transparent 0.55px),
+      linear-gradient(
+        to bottom,
+        var(--strip-hero) 0%,
+        rgba(4, 6, 13, 0.42) 7%,
+        rgba(4, 6, 13, 0) 20%
+      ),
+      linear-gradient(
+        to top,
+        var(--strip-page) 0%,
+        rgba(3, 0, 20, 0.42) 8%,
+        rgba(3, 0, 20, 0) 22%
+      );
+    background-size:
+      12px 12px,
+      100% 100%,
+      100% 100%;
+    background-repeat: repeat, no-repeat, no-repeat;
+    background-position:
+      0 0,
+      0 0,
+      0 100%;
+  }
+
+  /* Logos: siempre monocromo; color solo al hover (sin afectar al carrusel) */
+  .strip-tech-logo-wrap--tint > img {
+    filter: grayscale(1);
+    opacity: 0.72;
+  }
+
+  .strip-tech-logo-wrap--tint:hover > img,
+  .strip-tech-logo-wrap--tint:focus-visible > img {
+    filter: none;
+    opacity: 1;
+  }
+
+  .strip-tech-logo-wrap:hover {
+    animation: none;
+  }
+
+  .strip-tech-logo-wrap > img {
+    transition:
+      filter 0.2s ease,
+      opacity 0.2s ease;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-strip-tech-marquee {
+    animation: none;
+  }
+
+  .animate-strip-logo-float {
     animation: none;
   }
 }

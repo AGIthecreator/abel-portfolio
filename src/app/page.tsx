@@ -29,8 +29,10 @@ export default function Page() {
       {/* 1. HERO */}
       <Hero />
 
-      {/* FRANJA 1: El interruptor Hero → Manifesto */}
-      <StripSystemStatus />
+      {/* FRANJA 1: debajo del Hero en z-index para que el CMD solapado quede encima */}
+      <div className="relative z-0">
+        <StripSystemStatus />
+      </div>
 
       {/* BLOQUE 1: Narrativa Estratégica */}
       <main className="relative z-10 mx-auto max-w-300 px-4 sm:px-6 lg:px-8">
