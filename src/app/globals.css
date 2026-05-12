@@ -237,7 +237,7 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
 }
 
 @layer utilities {
-.ticker-mask {
+  .ticker-mask {
     -webkit-mask-image: linear-gradient(
       to right,
       transparent 0%,
@@ -254,12 +254,55 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
     );
   }
 
+  /*
+    Franja Hero → más ancho útil que ticker-mask global (sin max-w en el JSX).
+    Bordes suaves y ligeramente asimétricos para que entrar/salir no se lean igual.
+  */
+  .strip-tech-marquee-mask {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--color-black) 4%,
+      var(--color-black) 93%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--color-black) 4%,
+      var(--color-black) 93%,
+      transparent 100%
+    );
+  }
+
   .animate-ticker {
     animation: footerTicker 30s linear infinite;
   }
 
   .animate-ticker-slow {
     animation: footerTicker 60s linear infinite;
+  }
+
+  /* Hero strip: ~20% más rápido que 38s → 38/1.2 */
+  .animate-strip-tech-marquee {
+    animation: footerTicker 31.67s linear infinite;
+    will-change: transform;
+  }
+
+  /*
+    Logos externos (img): tinte uniforme ≈ #415762.
+    brightness(0) → silueta; invert/sepia/hue aproximan el hex.
+  */
+  .strip-tech-logo-tint {
+    filter: brightness(0) saturate(100%) invert(31%) sepia(14%) saturate(720%)
+      hue-rotate(162deg) brightness(93%) contrast(88%);
+    opacity: 0.88;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-strip-tech-marquee {
+    animation: none;
   }
 }
 
