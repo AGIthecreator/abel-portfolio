@@ -38,21 +38,17 @@ const fadeUp = {
   },
 };
 
+/** Legibilidad sobre foto clara — título y cuerpo con halos distintos */
+const HERO_TITLE_RELIEF =
+  "[text-shadow:0_1px_0_rgb(255_255_255/1),0_0_1px_rgb(255_255_255/1),0_0_20px_rgb(255_255_255/0.85),0_2px_14px_rgb(250_249_245/0.95)]";
+const HERO_BODY_RELIEF =
+  "[text-shadow:0_1px_0_rgb(255_255_255/1),0_0_1px_rgb(255_255_255/1),0_0_18px_rgb(255_255_255/0.92),0_2px_10px_rgb(252_250_246/0.98),0_3px_20px_rgb(255_255_255/0.55)]";
 const CARD_HERO =
-  "group relative flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-[#d8d2c8] bg-[#F3F1EB] p-4 shadow-[0_10px_40px_-16px_rgba(15,23,42,0.14),inset_0_1px_0_rgba(255,255,255,0.65)] transition-all duration-500 ease-out hover:-translate-y-1 hover:border-[#c9c2b6] hover:shadow-[0_14px_48px_-14px_rgba(15,23,42,0.18)] sm:p-5";
-const CARD_DARK =
-  "group relative flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-white/14 bg-[#0b1019] p-4 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.07)] transition-all duration-500 ease-out hover:-translate-y-1 hover:border-white/22 sm:p-5";
+  "group relative flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-[#d8d2c8] bg-[#F3F1EB] p-4 shadow-[0_10px_40px_-16px_rgba(15,23,42,0.14),inset_0_1px_0_rgba(255,255,255,0.65)] sm:p-5";
 
 const GRAIN_STYLE: React.CSSProperties = {
   backgroundColor: OFF_WHITE,
   backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E")`,
-};
-
-/** Textura de escamas — distinta del grain del hero y del checking */
-const PARCHMENT_BG: React.CSSProperties = {
-  backgroundColor: "#E3D9C8",
-  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='48' viewBox='0 0 56 48'%3E%3Cdefs%3E%3Cpattern id='s' width='28' height='24' patternUnits='userSpaceOnUse'%3E%3Cpath d='M0 12c7-8 21-8 28 0s21 8 28 0v12c-7 8-21 8-28 0S7 20 0 12z' fill='none' stroke='%23a89578' stroke-width='0.55' opacity='0.38'/%3E%3Cpath d='M-14 0c7-8 21-8 28 0s21 8 28 0' fill='none' stroke='%23b8a48c' stroke-width='0.45' opacity='0.28' transform='translate(0 12)'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23s)'/%3E%3C/svg%3E")`,
-  backgroundSize: "56px 48px",
 };
 
 function DotPattern() {
@@ -87,7 +83,8 @@ function BpCornerTicksOverlay({ light = false }: { light?: boolean }) {
 }
 
 /** Fondo fijo al card — no se redimensiona con el contenido interno */
-function CardBgImage({ src }: { src: string }) {
+function CardBgImage({ src, objectPosition }: { src: string; objectPosition?: string }) {
+  const pos = objectPosition ?? "72% 38%";
   return (
     <>
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
@@ -95,7 +92,8 @@ function CardBgImage({ src }: { src: string }) {
         <img
           src={src}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover object-[72%_38%] opacity-[0.68] saturate-[1.18] contrast-[1.08] sm:opacity-[0.74]"
+          className="absolute inset-0 h-full w-full object-cover opacity-[0.68] saturate-[1.18] contrast-[1.08] sm:opacity-[0.74]"
+          style={{ objectPosition: pos }}
           draggable={false}
         />
       </div>
@@ -111,11 +109,34 @@ function CardBgImage({ src }: { src: string }) {
   );
 }
 
-/** Comparativa web — obsoleta atrás/pequeña, premium delante */
+/** Línea en mayúsculas alineada — palabras + separador en flex (evita saltos del middot) */
+function MockupCapsLine({
+  children,
+  className,
+  gapClass = "gap-1",
+}: {
+  children: ReactNode;
+  className?: string;
+  gapClass?: string;
+}) {
+  return (
+    <span
+      className={`inline-flex flex-nowrap items-center ${gapClass} leading-none whitespace-nowrap uppercase ${className ?? ""}`}
+      style={{ textRendering: "geometricPrecision" }}
+    >
+      {children}
+    </span>
+  );
+}
+
+/** Comparativa web — tipografía alineada (mismo px/leading en ambas) */
 function VisualPercepcion() {
+  const sz = "text-[6.5px] leading-[7px] sm:text-[7px] sm:leading-[8px]";
+  const ui = `font-sans ${sz} antialiased tabular-nums tracking-normal`;
+
   return (
     <motion.div
-      className="relative mx-auto mt-auto h-[132px] w-full max-w-lg sm:h-[140px]"
+      className="relative mx-auto mt-auto flex h-[144px] w-full max-w-md justify-center sm:h-[158px]"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
@@ -123,94 +144,122 @@ function VisualPercepcion() {
     >
       <BpCornerTicksOverlay light />
 
-      {/* Web obsoleta — pequeña, atrás */}
-      <motion.div
-        className="absolute top-3 left-[2%] z-10 w-[38%] max-w-[150px] scale-[0.92] -rotate-6 overflow-hidden rounded border-2 border-[#808080] bg-[#c0c0c0] shadow-md"
-        initial={{ opacity: 0, x: -8 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true }}
-      >
-        <motion.div className="flex h-4 items-center justify-center bg-[#000080] px-1">
-          <span className="text-[5px] leading-none text-white">Internet Explorer</span>
+      <div className="relative h-full w-[min(100%,372px)] shrink-0">
+        {/* Web obsoleta — pequeña, atrás */}
+        <motion.div
+          className="absolute top-0 left-1/2 z-10 w-[41%] max-w-[144px] -translate-x-[108%] scale-[1] -rotate-5 overflow-hidden rounded border-2 border-[#808080] bg-[#c0c0c0] shadow-md"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          style={{ transformOrigin: "50% 100%" }}
+        >
+          <div className="flex min-h-[16px] items-center justify-center bg-[#000080] px-1">
+            <span className={`block text-white ${ui}`}>Internet Explorer</span>
+          </div>
+          <div className="flex h-3 items-center justify-center gap-1 bg-[#d4d4d4]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#c00]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-[#cc0]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-[#090]" />
+          </div>
+          <div className="flex min-h-[17px] items-center justify-center bg-[#ff0] px-1">
+            <span
+              className="inline-flex items-center whitespace-nowrap text-center font-sans text-[7.5px] font-black uppercase leading-none tracking-normal text-[#c00] [font-variant-ligatures:none] sm:text-[8px]"
+              style={{ textRendering: "optimizeLegibility", fontStretch: "100%" }}
+            >
+              BIENVENIDO
+            </span>
+          </div>
+          <div className={`flex min-h-[15px] items-center justify-center bg-[#ffffcc] px-1 ${ui}`}>
+            <span
+              className="inline-flex items-center gap-px whitespace-nowrap text-[#000080] underline decoration-1 underline-offset-2 [font-variant-ligatures:none]"
+              style={{ textRendering: "geometricPrecision" }}
+            >
+              <span className="leading-none">Inicio</span>
+              <span className="inline-flex h-[7px] items-center px-px text-[6px] leading-none text-[#000080] sm:h-[8px] sm:text-[6.5px]">
+                ·
+              </span>
+              <span className="leading-none">Productos</span>
+              <span className="inline-flex h-[7px] items-center px-px text-[6px] leading-none text-[#000080] sm:h-[8px] sm:text-[6.5px]">
+                ·
+              </span>
+              <span className="leading-none">Contacto</span>
+            </span>
+          </div>
+          <div className={`flex min-h-[28px] items-center justify-center gap-1 border-y border-[#999] bg-white px-1 ${ui}`}>
+            <div
+              className={`flex h-[19px] w-[19px] shrink-0 items-center justify-center border border-[#666] bg-[#ccc] font-mono font-bold text-zinc-900 ${sz}`}
+            >
+              ESL
+            </div>
+            <span className="truncate font-bold text-[#000080]">Empresa S.L.</span>
+          </div>
+          <div className="relative h-[40px] overflow-hidden bg-[#eee]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/gestoria.png"
+              alt=""
+              className="h-full w-full object-cover"
+              style={{ filter: "saturate(2.5) contrast(0.55) hue-rotate(-18deg)" }}
+              draggable={false}
+            />
+          </div>
+          <div className={`space-y-0.5 bg-[#f4f4f4] px-1 py-0.5 ${ui}`}>
+            <p className="text-center text-[#666]">Contador: 000427 visitas</p>
+            <p className="text-center text-[#888]">Últ. actualización: 2008</p>
+            <button
+              type="button"
+              className={`flex h-[15px] w-full items-center justify-center border-2 border-[#000] bg-[#0066cc] font-bold text-white ${ui}`}
+            >
+              ENTRAR
+            </button>
+          </div>
         </motion.div>
-        <div className="flex h-3.5 items-center justify-center gap-1 bg-[#d4d4d4]">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#c00]" />
-          <span className="h-1.5 w-1.5 rounded-full bg-[#cc0]" />
-          <span className="h-1.5 w-1.5 rounded-full bg-[#090]" />
-        </div>
-        <div className="flex h-4 items-center justify-center bg-[#ff0]">
-          <span className="animate-pulse text-[5px] font-bold leading-none text-[#c00]">★ BIENVENIDO ★</span>
-        </div>
-        <div className="flex h-4 items-center justify-center bg-[#ffffcc] px-0.5">
-          <span className="text-center text-[5px] leading-none text-[#000080] underline decoration-1">
-            Inicio · Productos · Contacto
-          </span>
-        </div>
-        <div className="flex h-7 items-center justify-center gap-1 border-y border-[#999] bg-white px-1">
-          <div className="flex h-5 w-5 shrink-0 items-center justify-center border border-[#666] bg-[#ccc] font-mono text-[4px] font-bold leading-none">
-            ESL
-          </div>
-          <span
-            className="truncate text-[7px] font-bold leading-none text-[#000080]"
-            style={{ fontFamily: "Comic Sans MS, cursive" }}
-          >
-            Empresa S.L.
-          </span>
-        </div>
-        <div className="relative h-9 overflow-hidden bg-[#eee]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/gestoria.png"
-            alt=""
-            className="h-full w-full object-cover"
-            style={{ filter: "saturate(2.5) contrast(0.55) hue-rotate(-18deg)" }}
-            draggable={false}
-          />
-        </div>
-        <div className="space-y-0.5 bg-[#f4f4f4] px-1 py-0.5">
-          <p className="text-center text-[4px] text-[#666]">Contador: 000427 visitas</p>
-          <p className="text-center text-[4px] text-[#888]">Últ. actualización: 2008</p>
-          <button type="button" className="w-full border-2 border-[#000] bg-[#0066cc] py-px text-[6px] font-bold text-white">
-            ENTRAR
-          </button>
-        </div>
-      </motion.div>
 
-      {/* Web actual — grande, delante */}
-      <motion.div
-        className="absolute top-0 right-0 z-30 w-[58%] max-w-[260px] rotate-[1.5deg] overflow-hidden rounded-lg border border-[#d6d3d1] bg-white shadow-[0_20px_40px_-12px_rgba(0,0,0,0.22)]"
-        initial={{ opacity: 0, y: 6 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.12 }}
-      >
-        <div className="flex h-6 items-center justify-between border-b border-[#e7e5e4] bg-white px-2.5">
-          <span className="text-[8px] font-semibold leading-none tracking-tight text-zinc-800">Tu Negocio</span>
-          <div className="flex items-center gap-1.5 text-[6px] font-medium leading-none text-zinc-500">
-            <span>Servicios</span>
-            <span>Reservas</span>
-            <span>Contacto</span>
+        {/* Web premium — solapada, misma escala tipográfica */}
+        <motion.div
+          className="absolute top-0.5 left-1/2 z-30 w-[63%] max-w-[278px] -translate-x-[6%] -rotate-[1.25deg] overflow-hidden rounded-lg border border-[#d6d3d1] bg-white shadow-[0_20px_40px_-12px_rgba(0,0,0,0.22)] sm:-ml-2.5 sm:w-[65%] sm:max-w-[294px]"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.12 }}
+          style={{ transformOrigin: "50% 100%" }}
+        >
+          <div className={`flex min-h-[23px] items-center justify-between border-b border-[#e7e5e4] bg-white px-2 ${ui}`}>
+            <span className="font-semibold text-zinc-800">Tu Negocio</span>
+            <div className="flex items-center gap-1.5 text-zinc-500">
+              <span>Servicios</span>
+              <span>Reservas</span>
+              <span>Contacto</span>
+            </div>
           </div>
-        </div>
-        <div className="relative h-[72px] overflow-hidden sm:h-[78px]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/gestoria.png" alt="" className="h-full w-full object-cover object-[48%_28%]" draggable={false} />
-          <div className="absolute inset-0 bg-linear-to-t from-zinc-900/55 via-zinc-900/10 to-transparent" />
-          <p className="absolute top-2 left-2 text-[7px] font-medium tracking-[0.12em] text-white/95 uppercase">
-            Profesional · Confiable
-          </p>
-          <div className="absolute right-2 bottom-2 flex items-center gap-1">
-            <span className="rounded bg-white/90 px-1 py-px text-[5px] font-medium leading-none text-zinc-700">★ 4.9</span>
-            <span className="rounded bg-emerald-600/90 px-1 py-px text-[5px] font-medium leading-none text-white">Verificado</span>
+          <div className="relative h-[70px] overflow-hidden sm:h-[76px]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/gestoria.png" alt="" className="h-full w-full object-cover object-[48%_28%]" draggable={false} />
+            <div className="absolute inset-0 bg-linear-to-t from-zinc-900/55 via-zinc-900/10 to-transparent" />
+            <p className={`absolute top-1.5 left-1.5 text-white/95 ${sz}`}>
+              <MockupCapsLine className="font-semibold tracking-[0.04em]" gapClass="gap-[2px] [font-variant-ligatures:none]">
+                <span className="shrink-0 whitespace-nowrap leading-none">Profesional</span>
+                <span className="shrink-0 leading-none text-white/75" aria-hidden>
+                  –
+                </span>
+                <span className="shrink-0 whitespace-nowrap leading-none">Confiable</span>
+              </MockupCapsLine>
+            </p>
+            <div className="absolute right-1.5 bottom-1.5 flex items-center gap-0.5">
+              <span className={`flex items-center rounded bg-white/90 px-1 py-px font-medium text-zinc-700 ${ui}`}>★ 4.9</span>
+              <span className={`flex items-center rounded bg-emerald-600/90 px-1 py-px font-medium text-white ${ui}`}>
+                Verificado
+              </span>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center justify-between gap-2 border-t border-[#e7e5e4] px-2.5 py-2">
-          <p className="text-[7px] text-zinc-500">Reserva en 30 segundos</p>
-          <button type="button" className="shrink-0 rounded-md bg-emerald-600 px-2.5 py-1 text-[8px] font-semibold text-white">
-            Reservar
-          </button>
-        </div>
-      </motion.div>
+          <div className={`flex min-h-[30px] items-center justify-between gap-2 border-t border-[#e7e5e4] px-2 py-1 ${ui}`}>
+            <p className="text-zinc-500">Reserva en 30 segundos</p>
+            <button type="button" className={`flex shrink-0 items-center justify-center rounded-md bg-emerald-600 px-2 py-1 font-semibold text-white ${ui}`}>
+              Reservar
+            </button>
+          </div>
+        </motion.div>
+      </div>
     </motion.div>
   );
 }
@@ -227,7 +276,7 @@ function ArrowFlow() {
 /** Sacos — profundidad y solape */
 function VisualAutoridad() {
   return (
-    <div className="relative mt-3 flex min-h-[100px] items-end justify-center pb-1" aria-hidden>
+    <div className="relative flex min-h-[100px] items-end justify-center pb-1" aria-hidden>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/sacodinero.png"
@@ -259,7 +308,7 @@ function VisualAutoridad() {
 /** Móvil con notificaciones + panel CRM */
 function VisualMotor() {
   return (
-    <div className="relative mt-3 grid min-h-[120px] grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-2 sm:gap-3" aria-hidden>
+    <div className="relative grid min-h-[120px] grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-2 sm:gap-3" aria-hidden>
       <div className="flex flex-col items-center justify-end pb-1">
         <div className="relative w-[86px] rounded-[18px] border-[2.5px] border-zinc-600 bg-zinc-950 p-1 shadow-[0_12px_28px_rgba(0,0,0,0.55)] sm:w-[94px]">
           <div className="absolute top-1.5 left-1/2 z-10 h-3 w-10 -translate-x-1/2 rounded-full bg-black" />
@@ -636,23 +685,29 @@ function Row3Bento() {
       </motion.div>
 
       <motion.div
-        className="flex min-h-[148px] min-w-0 flex-1 flex-col items-center justify-center rounded-xl border border-[#c9bfae]/55 px-4 py-5 text-center md:flex-[1.58] md:min-w-[300px]"
-        style={PARCHMENT_BG}
+        className="flex min-h-[148px] min-w-0 flex-1 flex-col items-center justify-center px-4 py-6 text-center md:flex-[1.58] md:min-w-[240px] md:px-6 md:py-5"
         initial={{ opacity: 0 }}
         animate={inView ? { opacity: 1 } : {}}
         transition={{ delay: 0.2 }}
       >
-        <BpCornerTicksOverlay light />
-        {PEACE_LINES.map((line, i) => (
-          <p
-            key={line}
-            className={`max-w-[260px] text-[13px] leading-relaxed sm:text-[14px] ${
-              i === 0 ? "font-medium text-zinc-800" : "mt-1.5 font-normal text-zinc-600"
-            }`}
-          >
-            {line}
+        <div className="mx-auto w-full max-w-md">
+          <blockquote className="mx-auto inline-block text-left text-[13px] font-medium leading-[1.55] tracking-[-0.02em] text-[#eae6dc]/95 sm:text-[13.5px]">
+            <p className="pl-3 sm:pl-4">{PEACE_LINES[0]}</p>
+            <p className="mt-2 pl-7 text-[12.5px] font-normal text-[#eae6dc]/82 sm:mt-2.5 sm:pl-10 sm:text-[13px]">
+              {PEACE_LINES[1]}
+            </p>
+            <p className="mt-2 max-w-[16rem] pl-2 text-[13px] font-medium text-[#eae6dc]/90 sm:text-[13.5px]">{PEACE_LINES[2]}</p>
+          </blockquote>
+          <p className="mx-auto mt-5 max-w-[19rem] text-center text-[11px] italic leading-snug text-zinc-500 sm:text-[11.5px]">
+            <span aria-hidden className="text-zinc-500/90 select-none">
+              &lsquo;&nbsp;
+            </span>
+            Así debería sentirse un negocio.
+            <span aria-hidden className="text-zinc-500/90 select-none">
+              &nbsp;&rsquo;
+            </span>
           </p>
-        ))}
+        </div>
       </motion.div>
     </motion.div>
   );
@@ -695,6 +750,7 @@ function HeroCard({
   body,
   diagram,
   bgImage,
+  bgObjectPosition,
   diagramFixed = false,
   compact = false,
 }: {
@@ -702,25 +758,31 @@ function HeroCard({
   body: string;
   diagram: ReactNode;
   bgImage?: string;
+  /** object-position del fondo (ej. subir encuadre) */
+  bgObjectPosition?: string;
   diagramFixed?: boolean;
   compact?: boolean;
 }) {
+  const titleRelief = bgImage ? HERO_TITLE_RELIEF : "";
+  const bodyRelief = bgImage ? HERO_BODY_RELIEF : "";
   return (
-    <article className={`${CARD_HERO}${compact ? " !p-3 sm:!p-4" : ""}`}>
-      {bgImage ? <CardBgImage src={bgImage} /> : null}
+    <article className={`w-full min-w-0 ${CARD_HERO}${compact ? " !p-3 sm:!p-4" : ""}`}>
+      {bgImage ? <CardBgImage src={bgImage} objectPosition={bgObjectPosition} /> : null}
       <BpCornerTicksOverlay light />
       <div className={`relative z-10 flex flex-1 flex-col ${diagramFixed ? "pb-[162px] sm:pb-[168px]" : ""}`}>
         <h3
-          className={`font-semibold leading-snug tracking-[-0.03em] text-zinc-950 ${
+          className={`font-semibold leading-snug tracking-[-0.03em] text-zinc-950 ${titleRelief} ${
             compact ? "text-base sm:text-lg" : "text-lg sm:text-xl"
           }`}
         >
           {title}
         </h3>
         <p
-          className={`max-w-[92%] leading-relaxed text-zinc-700 ${
-            compact ? "mt-1 text-[12px] sm:text-[13px]" : "mt-1.5 text-[13px] sm:text-sm"
-          }`}
+          className={`max-w-[92%] leading-relaxed text-[#1A1A1A] ${bodyRelief} ${
+            bgImage
+              ? "rounded-md border border-white/35 bg-white/40 px-2.5 py-2 shadow-[0_1px_14px_rgba(255,255,255,0.5)] backdrop-blur-[3px] sm:px-3"
+              : ""
+          } ${compact ? "mt-1 text-[12px] sm:text-[13px]" : "mt-1.5 text-[13px] sm:text-sm"}`}
         >
           {body}
         </p>
@@ -737,8 +799,8 @@ function HeroCard({
   );
 }
 
-/** Un solo bloque cerrado — sin burbujas anidadas */
-function DarkClosedCard({
+/** Bloque oscuro sin card — encaja en el fondo de la sección */
+function DarkOpenBlock({
   title,
   body,
   children,
@@ -748,14 +810,13 @@ function DarkClosedCard({
   children: ReactNode;
 }) {
   return (
-    <article className={CARD_DARK}>
-      <BpCornerTicksOverlay />
-      <div className="relative z-10 flex flex-1 flex-col">
+    <div className="relative flex min-h-0 w-full flex-1 flex-col">
+      <div className="relative z-10 flex min-h-full flex-1 flex-col pb-1">
         <h3 className="text-base font-medium leading-snug tracking-[-0.02em] text-zinc-50 sm:text-[1.05rem]">{title}</h3>
-        {body ? <p className="mt-1.5 max-w-[95%] text-[12px] leading-relaxed text-zinc-400">{body}</p> : null}
-        <div className="relative mt-auto w-full">{children}</div>
+        {body ? <p className="mt-2 max-w-[96%] text-[12px] leading-relaxed text-zinc-400 sm:text-[13px]">{body}</p> : null}
+        <div className="relative mt-auto w-full pt-3 sm:pt-4">{children}</div>
       </div>
-    </article>
+    </div>
   );
 }
 
@@ -779,7 +840,7 @@ function TestimonialCard({
   const [imgOk, setImgOk] = useState(true);
 
   return (
-    <figure className="flex items-start gap-3 rounded-lg border border-white/10 bg-[#05080f] p-3 transition-all duration-500 ease-out hover:-translate-y-1 hover:border-white/14 sm:p-3.5">
+    <figure className="flex items-start gap-3 rounded-lg border border-white/10 bg-[#05080f] p-3 sm:p-3.5">
       <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-white/12 bg-zinc-900 sm:h-14 sm:w-14">
         {imgOk ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -844,22 +905,23 @@ export function StrategicProfile() {
                 <HeroCard
                   compact
                   bgImage="/programador.png"
+                  bgObjectPosition="72% 52%"
                   title="El cliente te juzga antes de hablar contigo."
                   body="Buscan en Google. Ven tu web. Ven la del vecino. Si la tuya parece antigua, asumen que tu negocio también lo es."
                   diagram={<VisualPercepcion />}
                 />
               </motion.div>
               <motion.div variants={fadeUp} className="flex h-full lg:col-span-1">
-                <DarkClosedCard
-                  title="Si te ves mejor, puedes permitirte cobrar más."
-                  body="La calidad visual evita tener que justificar tu precio."
+                <DarkOpenBlock
+                  title="La percepción cambia lo que la gente está dispuesta a pagar."
+                  body="Cuando tu negocio se ve sólido, el precio necesita menos explicaciones."
                 >
                   <VisualAutoridad />
-                </DarkClosedCard>
+                </DarkOpenBlock>
               </motion.div>
             </motion.div>
 
-            {/* Fila 2 */}
+            {/* Fila 2 — misma proporción que fila 1: texto ancho cols 2–3 */}
             <motion.div
               className="mt-3 grid grid-cols-1 items-stretch gap-3 sm:mt-4 sm:gap-4 lg:grid-cols-3 lg:gap-4"
               initial="hidden"
@@ -867,15 +929,15 @@ export function StrategicProfile() {
               viewport={{ once: true, amount: 0.1 }}
               variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 } } }}
             >
-              <motion.div variants={fadeUp} className="order-2 flex h-full lg:order-0 lg:col-span-1 lg:z-20">
-                <DarkClosedCard
+              <motion.div variants={fadeUp} className="order-1 flex min-h-0 h-full lg:order-0 lg:col-span-1 lg:z-20">
+                <DarkOpenBlock
                   title="Tu competencia no descansa. Tu sistema tampoco debería."
                   body="Mientras duermes, el sistema sigue trabajando."
                 >
                   <VisualMotor />
-                </DarkClosedCard>
+                </DarkOpenBlock>
               </motion.div>
-              <motion.div variants={fadeUp} className="order-1 flex h-full lg:order-0 lg:col-span-2 lg:col-start-2">
+              <motion.div variants={fadeUp} className="order-2 flex min-h-0 h-full lg:order-0 lg:col-span-2 lg:col-start-2">
                 <HeroCard
                   bgImage="/gestoria.png"
                   title="El trabajo manual es un coste que no deberías asumir."
