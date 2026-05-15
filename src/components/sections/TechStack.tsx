@@ -7,6 +7,16 @@ import {
   SiStripe, SiDocker
 } from "react-icons/si";
 import { Terminal, ShieldCheck, Zap, Laptop, Globe, Layers, Eye, Target, TrendingUp, Cpu } from "lucide-react";
+import type { IconType } from "react-icons";
+
+type DiagramNode = {
+  id: string;
+  label: string;
+  icon: IconType | React.ComponentType<{ className?: string }>;
+  x: number;
+  y: number;
+};
+type DiagramLink = [fromId: string, toId: string];
 
 const SYSTEMS = {
   saas: {
@@ -197,9 +207,9 @@ export default function TechStack() {
           {/* DIAGRAMA */}
           <div className="lg:col-span-5 h-137.5 relative rounded-[2.5rem] border border-white/10 bg-black/40 backdrop-blur-md overflow-hidden shadow-2xl">
             <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40" viewBox="0 0 100 100" preserveAspectRatio="none">
-              {sys.links.map(([fromId, toId]: any, i: number) => {
-                const from = sys.nodes.find((n: any) => n.id === fromId);
-                const to = sys.nodes.find((n: any) => n.id === toId);
+              {(sys.links as DiagramLink[]).map(([fromId, toId], i) => {
+                const from = (sys.nodes as DiagramNode[]).find((n) => n.id === fromId);
+                const to = (sys.nodes as DiagramNode[]).find((n) => n.id === toId);
                 if (!from || !to) return null;
                 const isHighlight = hoveredNode === fromId || hoveredNode === toId;
                 

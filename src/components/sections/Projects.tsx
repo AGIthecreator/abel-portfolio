@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { FadeIn } from "@/components/motion/FadeIn";
 import Image from "next/image";
 import { Play, ExternalLink, ShieldCheck, Zap, Github } from "lucide-react";
 import { ProjectModal } from "@/components/ui/ProjectModal";

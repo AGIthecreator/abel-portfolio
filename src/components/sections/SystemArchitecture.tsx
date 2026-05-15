@@ -1,11 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  SiReact, SiNodedotjs, SiSupabase, SiPostgresql, SiVercel, 
-  SiCloudflare, SiMake, SiAirtable, SiOpenai, SiTypescript, SiStripe
-} from "react-icons/si";
-import { Terminal, Globe, ShieldCheck, Zap, Laptop, Database } from "lucide-react";
+import { SiReact, SiNodedotjs, SiPostgresql, SiVercel, SiStripe, SiMake, SiAirtable } from "react-icons/si";
+import { Terminal, Globe, Zap } from "lucide-react";
 
 const SYSTEMS = {
   saas: {

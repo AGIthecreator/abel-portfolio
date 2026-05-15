@@ -1,0 +1,206 @@
+function useExcelColumns(active: boolean) {
+  const [manual, setManual] = useState<string[][]>(() =>
+    EXCEL_COL_DATA.map(() => Array(EXCEL_ROW_COUNT).fill("")),
+  );
+  const [engine, setEngine] = useState<string[][]>(() =>
+    EXCEL_COL_DATA.map(() => Array(EXCEL_ROW_COUNT).fill("")),
+  );
+  const [colIdx, setColIdx] = useState(0);
+  const [rowIdx, setRowIdx] = useState(0);
+  const [typed, setTyped] = useState("");
+  const [phase, setPhase] = useState<"typing" | "burst" | "between" | "hold">("typing");
+  const [flashCol, setFlashCol] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!active) {
+      setManual(EXCEL_COL_DATA.map(() => Array(EXCEL_ROW_COUNT).fill("")));
+      setEngine(EXCEL_COL_DATA.map(() => Array(EXCEL_ROW_COUNT).fill("")));
+      setColIdx(0);
+      setRowIdx(0);
+      setTyped("");
+      setPhase("typing");
+      setFlashCol(null);
+      return;
+    }
+
+    if (phase === "typing") {
+      const full = EXCEL_COL_DATA[colIdx][rowIdx];
+      if (typed.length < full.length) {
+        const t = setTimeout(() => setTyped(full.slice(0, typed.length + 1)), 78);
+        return () => clearTimeout(t);
+      }
+      const t = setTimeout(() => {
+        setManual((m) => {
+          const next = m.map((col) => [...col]);
+          next[colIdx][rowIdx] = full;
+          return next;
+        });
+        setTyped("");
+        if (rowIdx < EXCEL_ROW_COUNT - 1) {
+          setRowIdx((r) => r + 1);
+        } else {
+          setPhase("burst");
+          setFlashCol(colIdx);
+        }
+      }, 320);
+      return () => clearTimeout(t);
+    }
+
+    if (phase === "burst") {
+      setEngine((e) => {
+        const next = e.map((col) => [...col]);
+        next[colIdx] = [...EXCEL_COL_DATA[colIdx]];
+        return next;
+      });
+      const t = setTimeout(() => {
+        setFlashCol(null);
+        if (colIdx < EXCEL_COL_LABELS.length - 1) {
+          setPhase("between");
+        } else {
+          setPhase("hold");
+        }
+      }, COL_BURST_MS);
+      return () => clearTimeout(t);
+    }
+
+    if (phase === "between") {
+      const t = setTimeout(() => {
+        setColIdx((c) => c + 1);
+        setRowIdx(0);
+        setPhase("typing");
+      }, 420);
+      return () => clearTimeout(t);
+    }
+
+    if (phase === "hold") {
+      const t = setTimeout(() => {
+        setManual(EXCEL_COL_DATA.map(() => Array(EXCEL_ROW_COUNT).fill("")));
+        setEngine(EXCEL_COL_DATA.map(() => Array(EXCEL_ROW_COUNT).fill("")));
+        setColIdx(0);
+        setRowIdx(0);
+        setTyped("");
+        setPhase("typing");
+      }, LOOP_PAUSE_MS);
+      return () => clearTimeout(t);
+    }
+  }, [active, phase, colIdx, rowIdx, typed]);
+
+  const getManualCell = (c: number, r: number) => {
+    if (c < colIdx) return manual[c][r] ?? "";
+    if (c > colIdx) return "";
+    if (r < rowIdx) return manual[c][r] ?? "";
+    if (r === rowIdx && phase === "typing") {
+      if (!typed) return manual[c][r] ?? "";
+      const full = EXCEL_COL_DATA[c][r];
+      return typed + (typed.length < full.length ? "|" : "");
+    }
+    return manual[c][r] ?? "";
+  };
+
+  return { engine, colIdx, rowIdx, phase, flashCol, getManualCell };
+}
+
+function ExcelSheet({
+  fileName,
+  grid,
+  mode,
+  activeCol,
+  activeRow,
+  phase,
+  flashCol,
+}: {
+  fileName: string;
+  grid: string[][];
+  mode: "manual" | "engine";
+  activeCol?: number;
+  activeRow?: number;
+  phase?: string;
+  flashCol?: number | null;
+}) {
+  const isEngine = mode === "engine";
+  const flashing = isEngine && flashCol !== null && flashCol !== undefined;
+
+  return (
+    <motion.div
+      className={`relative min-w-0 flex-1 overflow-hidden rounded-md border bg-white shadow-sm transition-colors duration-300 ${
+        flashing ? "border-emerald-400 ring-1 ring-emerald-300/50" : "border-[#d6d0c4]"
+      }`}
+    >
+      {flashing && <motion.div className="pointer-events-none absolute inset-0 z-10 animate-pulse bg-emerald-400/20" />}
+      <motion.div className={`flex h-6 items-center px-2 ${isEngine ? "bg-[#1e3a2f]" : "bg-[#217346]"}`}>
+        <span className="text-[9px] font-medium text-white">{fileName}</span>
+      </motion.div>
+      <motion.div className="grid grid-cols-[18px_repeat(3,1fr)] text-[10px] leading-tight sm:text-[11px]">
+        <motion.div className="border-r border-b border-[#e2e8f0] bg-[#f1f5f9]" />
+        {EXCEL_COL_LABELS.map((label) => (
+          <motion.div
+            key={label}
+            className="border-r border-b border-[#e2e8f0] bg-[#f1f5f9] px-0.5 py-0.5 text-center text-[8px] font-medium text-[#64748b]"
+          >
+            {label}
+          </motion.div>
+        ))}
+        {Array.from({ length: EXCEL_ROW_COUNT }, (_, r) => (
+          <motion.div key={`row-${r}`} className="contents">
+            <motion.div className="flex h-[17px] items-center justify-center border-r border-b border-[#f1f5f9] bg-[#f8fafc] text-[8px] text-[#64748b]">
+              {r + 1}
+            </motion.div>
+            {EXCEL_COL_LABELS.map((_, c) => {
+              const val = grid[c]?.[r] ?? "";
+              const isActive = !isEngine && phase === "typing" && activeCol === c && activeRow === r;
+              const isEngineFill = isEngine && val.length > 0;
+              return (
+                <motion.div
+                  key={`${r}-${c}`}
+                  className={`h-[17px] truncate border-r border-b border-[#f1f5f9] px-0.5 font-mono ${
+                    isActive
+                      ? "bg-amber-50 text-zinc-900"
+                      : isEngineFill
+                        ? "bg-emerald-50/80 font-medium text-emerald-900"
+                        : val
+                          ? "text-zinc-800"
+                          : "text-zinc-300"
+                  }`}
+                >
+                  {val}
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        ))}
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function VisualExcel() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: false, amount: 0.25 });
+  const { engine, colIdx, rowIdx, phase, flashCol, getManualCell } = useExcelColumns(inView);
+
+  const manualGrid = EXCEL_COL_LABELS.map((_, c) =>
+    Array.from({ length: EXCEL_ROW_COUNT }, (_, r) => getManualCell(c, r)),
+  );
+
+  return (
+    <motion.div ref={ref} className="relative mt-3 flex items-stretch gap-2 sm:gap-3" aria-hidden>
+      <BpCornerTicksOverlay light />
+      <ExcelSheet
+        fileName="clientes.xlsx · manual"
+        grid={manualGrid}
+        mode="manual"
+        activeCol={colIdx}
+        activeRow={rowIdx}
+        phase={phase}
+      />
+      <ArrowFlow />
+      <ExcelSheet
+        fileName="clientes.xlsx · SST_ENGINE"
+        grid={engine}
+        mode="engine"
+        flashCol={flashCol}
+        phase={phase}
+      />
+    </motion.div>
+  );
+}

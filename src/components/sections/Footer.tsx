@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Github, Linkedin, Download, ArrowUpRight } from "lucide-react";
+import { Download, ArrowUpRight } from "lucide-react";
 
 const email = "contacto@agithecreator.com";
 const githubUrl = "https://github.com";
