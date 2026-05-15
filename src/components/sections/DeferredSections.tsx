@@ -54,7 +54,7 @@ export function DeferredProjects() {
 
 export function DeferredStrategicProfile() {
   return (
-    <DeferredMount fallback={<Skeleton h={1100} />}>
+    <DeferredMount fallback={<Skeleton h={820} />}>
       <StrategicProfile />
     </DeferredMount>
   );
