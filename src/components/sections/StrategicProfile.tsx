@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { FadeIn } from "@/components/motion/FadeIn";
 
@@ -28,6 +29,11 @@ const CHECK_TASKS = [
 ] as const;
 
 const PEACE_LINES = ["Todo en su sitio.", "Sin mensajes de madrugada.", "Sin olvidos."] as const;
+const PEACE_CLOSING = "Todo en el mismo sitio. Menos perseguir cosas, más trabajar tranquilo." as const;
+
+/** Hero ventana Abel — espacio/arquitectura cálido (Unsplash) */
+const BP_PERCEPCION_PREMIUM_IMG =
+  "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1400&q=82";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 14 },
@@ -44,12 +50,29 @@ const HERO_TITLE_RELIEF =
 const HERO_BODY_RELIEF =
   "[text-shadow:0_1px_0_rgb(255_255_255/1),0_0_1px_rgb(255_255_255/1),0_0_18px_rgb(255_255_255/0.92),0_2px_10px_rgb(252_250_246/0.98),0_3px_20px_rgb(255_255_255/0.55)]";
 const CARD_HERO =
-  "group relative flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-[#d8d2c8] bg-[#F3F1EB] p-4 shadow-[0_10px_40px_-16px_rgba(15,23,42,0.14),inset_0_1px_0_rgba(255,255,255,0.65)] sm:p-5";
+  "group relative flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-[#d8d2c8] bg-[#F3F1EB] p-4 shadow-[0_10px_40px_-16px_rgba(15,23,42,0.14),inset_0_1px_0_rgba(255,255,255,0.65)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#cdc4b8] hover:shadow-[0_18px_44px_-14px_rgba(15,23,42,0.2)] sm:p-5";
+
+/** Grano fino reutilizable (cards claras / oscuras) */
+const CARD_GRAIN_NOISE =
+  `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")`;
 
 const GRAIN_STYLE: React.CSSProperties = {
   backgroundColor: OFF_WHITE,
   backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E")`,
 };
+
+function CardGrain({ light }: { light?: boolean }) {
+  return (
+    <div
+      className={`pointer-events-none absolute inset-0 z-1 rounded-[inherit] opacity-[0.55] ${light ? "mix-blend-multiply" : "mix-blend-soft-light"}`}
+      style={{
+        backgroundImage: CARD_GRAIN_NOISE,
+        backgroundSize: "256px 256px",
+      }}
+      aria-hidden
+    />
+  );
+}
 
 function DotPattern() {
   return (
@@ -88,13 +111,13 @@ function CardBgImage({ src, objectPosition }: { src: string; objectPosition?: st
   return (
     <>
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={src}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover opacity-[0.68] saturate-[1.18] contrast-[1.08] sm:opacity-[0.74]"
+          fill
+          sizes="(max-width: 640px) 100vw, min(28rem, 45vw)"
+          className="object-cover opacity-[0.68] saturate-[1.18] contrast-[1.08] sm:opacity-[0.74]"
           style={{ objectPosition: pos }}
-          draggable={false}
         />
       </div>
       <div
@@ -109,34 +132,11 @@ function CardBgImage({ src, objectPosition }: { src: string; objectPosition?: st
   );
 }
 
-/** Línea en mayúsculas alineada — palabras + separador en flex (evita saltos del middot) */
-function MockupCapsLine({
-  children,
-  className,
-  gapClass = "gap-1",
-}: {
-  children: ReactNode;
-  className?: string;
-  gapClass?: string;
-}) {
-  return (
-    <span
-      className={`inline-flex flex-nowrap items-center ${gapClass} leading-none whitespace-nowrap uppercase ${className ?? ""}`}
-      style={{ textRendering: "geometricPrecision" }}
-    >
-      {children}
-    </span>
-  );
-}
-
-/** Comparativa web — tipografía alineada (mismo px/leading en ambas) */
-function VisualPercepcion() {
-  const sz = "text-[6.5px] leading-[7px] sm:text-[7px] sm:leading-[8px]";
-  const ui = `font-sans ${sz} antialiased tabular-nums tracking-normal`;
-
+/** Comparativa perceptiva — HTML + aspect ratio, texto con flex/em (nitidez) */
+function BpPercepcion() {
   return (
     <motion.div
-      className="relative mx-auto mt-auto flex h-[144px] w-full max-w-md justify-center sm:h-[158px]"
+      className="relative mx-auto mt-auto w-full max-w-lg shrink-0"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
@@ -144,119 +144,147 @@ function VisualPercepcion() {
     >
       <BpCornerTicksOverlay light />
 
-      <div className="relative h-full w-[min(100%,372px)] shrink-0">
-        {/* Web obsoleta — pequeña, atrás */}
+      {/* Base tipográfica fluida para hijos — todo en em dentro de cada ventana */}
+      <div className="relative aspect-16/5.5 w-full max-w-90 min-h-0 sm:max-w-none">
+        {/* —— Web 2010 (atrás, queda bajo la superior) —— */}
         <motion.div
-          className="absolute top-0 left-1/2 z-10 w-[41%] max-w-[144px] -translate-x-[108%] scale-[1] -rotate-5 overflow-hidden rounded border-2 border-[#808080] bg-[#c0c0c0] shadow-md"
+          className="absolute top-[5%] bottom-0 left-[0.5%] z-10 flex w-[43%] max-w-50 min-h-0 origin-bottom -rotate-[5deg] flex-col overflow-hidden rounded-sm border-2 border-[#808080] bg-[#c0c0c0] font-serif shadow-md"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           style={{ transformOrigin: "50% 100%" }}
         >
-          <div className="flex min-h-[16px] items-center justify-center bg-[#000080] px-1">
-            <span className={`block text-white ${ui}`}>Internet Explorer</span>
-          </div>
-          <div className="flex h-3 items-center justify-center gap-1 bg-[#d4d4d4]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#c00]" />
-            <span className="h-1.5 w-1.5 rounded-full bg-[#cc0]" />
-            <span className="h-1.5 w-1.5 rounded-full bg-[#090]" />
-          </div>
-          <div className="flex min-h-[17px] items-center justify-center bg-[#ff0] px-1">
-            <span
-              className="inline-flex items-center whitespace-nowrap text-center font-sans text-[7.5px] font-black uppercase leading-none tracking-normal text-[#c00] [font-variant-ligatures:none] sm:text-[8px]"
-              style={{ textRendering: "optimizeLegibility", fontStretch: "100%" }}
-            >
-              BIENVENIDO
-            </span>
-          </div>
-          <div className={`flex min-h-[15px] items-center justify-center bg-[#ffffcc] px-1 ${ui}`}>
-            <span
-              className="inline-flex items-center gap-px whitespace-nowrap text-[#000080] underline decoration-1 underline-offset-2 [font-variant-ligatures:none]"
-              style={{ textRendering: "geometricPrecision" }}
-            >
-              <span className="leading-none">Inicio</span>
-              <span className="inline-flex h-[7px] items-center px-px text-[6px] leading-none text-[#000080] sm:h-[8px] sm:text-[6.5px]">
-                ·
-              </span>
-              <span className="leading-none">Productos</span>
-              <span className="inline-flex h-[7px] items-center px-px text-[6px] leading-none text-[#000080] sm:h-[8px] sm:text-[6.5px]">
-                ·
-              </span>
-              <span className="leading-none">Contacto</span>
-            </span>
-          </div>
-          <div className={`flex min-h-[28px] items-center justify-center gap-1 border-y border-[#999] bg-white px-1 ${ui}`}>
-            <div
-              className={`flex h-[19px] w-[19px] shrink-0 items-center justify-center border border-[#666] bg-[#ccc] font-mono font-bold text-zinc-900 ${sz}`}
-            >
-              ESL
+          <div className="flex min-h-0 flex-1 flex-col text-[clamp(0.5rem,2vw,0.6875rem)]">
+            <div className="flex min-h-[1.65em] shrink-0 items-center justify-center bg-[#000080] px-[0.4em]">
+              <span className="font-sans text-[0.72em] font-medium leading-none text-white">Internet Explorer</span>
             </div>
-            <span className="truncate font-bold text-[#000080]">Empresa S.L.</span>
-          </div>
-          <div className="relative h-[40px] overflow-hidden bg-[#eee]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/gestoria.png"
-              alt=""
-              className="h-full w-full object-cover"
-              style={{ filter: "saturate(2.5) contrast(0.55) hue-rotate(-18deg)" }}
-              draggable={false}
-            />
-          </div>
-          <div className={`space-y-0.5 bg-[#f4f4f4] px-1 py-0.5 ${ui}`}>
-            <p className="text-center text-[#666]">Contador: 000427 visitas</p>
-            <p className="text-center text-[#888]">Últ. actualización: 2008</p>
-            <button
-              type="button"
-              className={`flex h-[15px] w-full items-center justify-center border-2 border-[#000] bg-[#0066cc] font-bold text-white ${ui}`}
+            <div className="flex min-h-[0.55em] shrink-0 items-center justify-center gap-[0.25em] bg-[#d4d4d4] py-[0.15em]">
+              <span className="h-[0.45em] w-[0.45em] min-h-[5px] min-w-[5px] rounded-full bg-[#c00]" />
+              <span className="h-[0.45em] w-[0.45em] min-h-[5px] min-w-[5px] rounded-full bg-[#cc0]" />
+              <span className="h-[0.45em] w-[0.45em] min-h-[5px] min-w-[5px] rounded-full bg-[#090]" />
+            </div>
+
+            <div className="flex min-h-[1.75em] shrink-0 items-center justify-center bg-[#ff0] px-[0.45em]">
+              <p className="text-center font-serif text-[1em] font-bold uppercase leading-none tracking-wide text-[#c00]">
+                BIENVENIDO
+              </p>
+            </div>
+
+            <nav
+              aria-label="Menú ejemplo"
+              className="flex min-h-[1.55em] shrink-0 flex-wrap items-center justify-center gap-x-[0.2em] gap-y-0 bg-[#ffffcc] px-[0.35em] text-[0.82em] leading-none text-[#000080] underline decoration-1 underline-offset-2"
             >
-              ENTRAR
-            </button>
+              <span>Inicio</span>
+              <span className="select-none opacity-75" aria-hidden>
+                ·
+              </span>
+              <span>Productos</span>
+              <span className="select-none opacity-75" aria-hidden>
+                ·
+              </span>
+              <span>Contacto</span>
+            </nav>
+
+            <div className="flex min-h-[2.35em] shrink-0 items-center justify-center gap-[0.35em] border-y border-[#999] bg-white px-[0.35em]">
+              <div className="flex h-[1.85em] w-[1.85em] shrink-0 items-center justify-center border border-[#666] bg-[#ccc] font-mono text-[0.78em] font-bold leading-none text-zinc-900">
+                ESL
+              </div>
+              <span className="truncate text-[0.84em] font-bold leading-none text-[#000080]">Empresa S.L.</span>
+            </div>
+
+            <div className="relative min-h-[2.85rem] w-full flex-1 overflow-hidden bg-[#ddd]">
+              <Image
+                src="/gestoria.png"
+                alt=""
+                fill
+                sizes="140px"
+                className="scale-[1.08] object-cover [image-rendering:crisp-edges]"
+                style={{
+                  filter: "saturate(2.5) contrast(0.55) hue-rotate(-18deg) blur(0.4px)",
+                }}
+              />
+              {/* “Suciedad” CRT / submuestreo sutil */}
+              <div
+                className="pointer-events-none absolute inset-0 z-1 opacity-[0.22] mix-blend-multiply"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.12) 1px, rgba(0,0,0,0.12) 2px), repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(0,0,0,0.08) 1px, rgba(0,0,0,0.08) 2px)",
+                  backgroundSize: "100% 2px, 2px 100%",
+                }}
+                aria-hidden
+              />
+            </div>
+
+            <div className="flex shrink-0 flex-col gap-[0.4em] bg-[#f4f4f4] px-[0.4em] py-[0.35em] text-[0.78em] leading-tight">
+              <p className="text-center text-[#666]">Contador: 000427 visitas</p>
+              <p className="text-center text-[#888]">Últ. actualización: 2008</p>
+              <button
+                type="button"
+                className="flex min-h-[2em] w-full items-center justify-center border-[0.12em] border-black bg-[#0066cc] font-serif text-[0.92em] font-bold leading-none text-white"
+              >
+                ENTRAR
+              </button>
+            </div>
           </div>
         </motion.div>
 
-        {/* Web premium — solapada, misma escala tipográfica */}
+        {/* —— Web Abel (delante) —— */}
         <motion.div
-          className="absolute top-0.5 left-1/2 z-30 w-[63%] max-w-[278px] -translate-x-[6%] -rotate-[1.25deg] overflow-hidden rounded-lg border border-[#d6d3d1] bg-white shadow-[0_20px_40px_-12px_rgba(0,0,0,0.22)] sm:-ml-2.5 sm:w-[65%] sm:max-w-[294px]"
+          className="absolute top-[1%] bottom-0 right-0 z-30 flex w-[59%] max-w-69 origin-bottom rotate-[1.25deg] flex-col overflow-hidden rounded-lg border border-zinc-400/25 bg-white font-sans shadow-[0_28px_52px_-14px_rgba(0,0,0,0.42),0_14px_32px_-8px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.9)]"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.12 }}
+          transition={{ delay: 0.1 }}
           style={{ transformOrigin: "50% 100%" }}
         >
-          <div className={`flex min-h-[23px] items-center justify-between border-b border-[#e7e5e4] bg-white px-2 ${ui}`}>
-            <span className="font-semibold text-zinc-800">Tu Negocio</span>
-            <div className="flex items-center gap-1.5 text-zinc-500">
-              <span>Servicios</span>
-              <span>Reservas</span>
-              <span>Contacto</span>
+          <div className="flex min-h-0 flex-1 flex-col text-[clamp(0.52rem,2.1vw,0.6875rem)]">
+            <div className="flex min-h-[2em] shrink-0 items-center justify-between gap-[0.55em] border-b border-[#e7e5e4] px-[0.95em] py-[0.35em]">
+              <span className="text-[0.95em] font-semibold leading-none tracking-tight text-zinc-900">Tu Negocio</span>
+              <div className="flex items-center gap-[0.42em] text-[0.74em] leading-none text-zinc-500">
+                <span>Servicios</span>
+                <span>Reservas</span>
+                <span>Contacto</span>
+              </div>
             </div>
-          </div>
-          <div className="relative h-[70px] overflow-hidden sm:h-[76px]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/gestoria.png" alt="" className="h-full w-full object-cover object-[48%_28%]" draggable={false} />
-            <div className="absolute inset-0 bg-linear-to-t from-zinc-900/55 via-zinc-900/10 to-transparent" />
-            <p className={`absolute top-1.5 left-1.5 text-white/95 ${sz}`}>
-              <MockupCapsLine className="font-semibold tracking-[0.04em]" gapClass="gap-[2px] [font-variant-ligatures:none]">
-                <span className="shrink-0 whitespace-nowrap leading-none">Profesional</span>
-                <span className="shrink-0 leading-none text-white/75" aria-hidden>
-                  –
+
+            <div className="relative min-h-0 flex-1">
+              <Image
+                src={BP_PERCEPCION_PREMIUM_IMG}
+                alt=""
+                fill
+                sizes="(max-width:640px) 42vw, 320px"
+                className="object-cover object-[50%_45%]"
+                priority={false}
+              />
+              <div className="pointer-events-none absolute inset-0 z-1 bg-black/20" aria-hidden />
+              <div
+                className="pointer-events-none absolute inset-0 z-2 bg-linear-to-t from-black/45 via-black/10 to-black/25"
+                aria-hidden
+              />
+              <div className="absolute inset-x-0 top-0 z-3 flex justify-start px-[0.95em] pt-[0.62em]">
+                <p className="max-w-[95%] font-sans text-[0.74em] font-semibold uppercase leading-snug tracking-tighter text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)]">
+                  Estudio de ingeniería
+                </p>
+              </div>
+              <div className="absolute inset-x-[0.55em] bottom-[0.5em] z-3 flex items-center justify-end gap-[0.35em]">
+                <span className="inline-flex min-h-[1.7em] items-center justify-center rounded-md border border-white/10 bg-white/25 px-[0.5em] text-[0.67em] font-medium leading-none text-zinc-900 backdrop-blur-md">
+                  ★ 4.9
                 </span>
-                <span className="shrink-0 whitespace-nowrap leading-none">Confiable</span>
-              </MockupCapsLine>
-            </p>
-            <div className="absolute right-1.5 bottom-1.5 flex items-center gap-0.5">
-              <span className={`flex items-center rounded bg-white/90 px-1 py-px font-medium text-zinc-700 ${ui}`}>★ 4.9</span>
-              <span className={`flex items-center rounded bg-emerald-600/90 px-1 py-px font-medium text-white ${ui}`}>
-                Verificado
-              </span>
+                <span className="inline-flex min-h-[1.7em] items-center justify-center rounded-md border border-white/10 bg-white/25 px-[0.5em] text-[0.67em] font-medium leading-none text-zinc-900 backdrop-blur-md">
+                  Verificado
+                </span>
+              </div>
             </div>
-          </div>
-          <div className={`flex min-h-[30px] items-center justify-between gap-2 border-t border-[#e7e5e4] px-2 py-1 ${ui}`}>
-            <p className="text-zinc-500">Reserva en 30 segundos</p>
-            <button type="button" className={`flex shrink-0 items-center justify-center rounded-md bg-emerald-600 px-2 py-1 font-semibold text-white ${ui}`}>
-              Reservar
-            </button>
+
+            <div className="flex min-h-[2.35em] shrink-0 items-center justify-between gap-[0.5em] border-t border-[#e7e5e4] px-[0.95em] py-[0.4em]">
+              <p className="text-[0.78em] leading-tight text-zinc-500">Reserva en 30 segundos</p>
+              <button
+                type="button"
+                className="inline-flex min-h-[2.15em] min-w-[5.75em] shrink-0 items-center justify-center rounded-md bg-[#10b981] px-[0.85em] py-[0.5em] text-center text-[0.84em] font-bold leading-none text-white shadow-[0_6px_20px_-2px_rgba(16,185,129,0.55)] drop-shadow-[0_2px_10px_rgba(16,185,129,0.45)]"
+              >
+                Reservar
+              </button>
+            </div>
           </div>
         </motion.div>
       </div>
@@ -264,41 +292,43 @@ function VisualPercepcion() {
   );
 }
 
-function ArrowFlow() {
+function ArrowFlow({ prominent }: { prominent?: boolean }) {
+  const wrapper = prominent ? "mx-3 h-7 w-12 sm:h-9 sm:w-14 text-zinc-200 sm:text-zinc-100" : "mx-2 h-6 w-10 sm:h-7 sm:w-12 text-zinc-400";
+  const stroke = prominent ? "2.85" : "2";
   return (
-    <svg className="mx-2 h-6 w-10 shrink-0 text-zinc-400 sm:h-7 sm:w-12" viewBox="0 0 48 24" fill="none" aria-hidden>
-      <path d="M2 12h36" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M34 6l8 6-8 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <svg className={`${wrapper} shrink-0`} viewBox="0 0 48 24" fill="none" aria-hidden>
+      <path d="M2 12h36" stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" />
+      <path d="M34 6l8 6-8 6" stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-/** Sacos — profundidad y solape */
+/** Sacos — flotando sobre el fondo (sin sombras ni bordes) */
 function VisualAutoridad() {
   return (
-    <div className="relative flex min-h-[100px] items-end justify-center pb-1" aria-hidden>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+    <div className="relative flex min-h-[100px] -translate-y-[25px] items-end justify-center pb-1" aria-hidden>
+      <Image
         src="/sacodinero.png"
         alt=""
-        className="relative z-10 h-10 w-auto object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] -rotate-14 sm:h-11"
-        draggable={false}
+        width={200}
+        height={200}
+        className="relative z-10 h-10 w-auto object-contain -rotate-14 sm:h-11"
       />
-      <ArrowFlow />
+      <ArrowFlow prominent />
       <div className="relative flex items-end">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src="/sacodinero.png"
           alt=""
-          className="relative z-20 h-16 w-auto object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.55)] rotate-11 sm:h-[4.25rem]"
-          draggable={false}
+          width={200}
+          height={200}
+          className="relative z-20 h-16 w-auto object-contain rotate-11 sm:h-17"
         />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src="/sacodinero.png"
           alt=""
-          className="relative z-30 -ml-10 h-[4.5rem] w-auto object-contain drop-shadow-[0_14px_28px_rgba(0,0,0,0.6)] -rotate-7 sm:-ml-12 sm:h-20"
-          draggable={false}
+          width={200}
+          height={200}
+          className="relative z-30 -ml-10 h-18 w-auto object-contain -rotate-7 sm:-ml-12 sm:h-20"
         />
       </div>
     </div>
@@ -489,22 +519,24 @@ function ExcelSheet({
       }`}
     >
       {flashing ? <div className="pointer-events-none absolute inset-0 z-10 animate-pulse bg-emerald-400/20" /> : null}
-      <div className={`flex h-6 shrink-0 items-center px-2 ${isEngine ? "bg-[#1e3a2f]" : "bg-[#217346]"}`}>
-        <span className="truncate text-[9px] font-medium text-white">{fileName}</span>
+      <div
+        className={`flex min-h-[26px] shrink-0 items-center px-2 sm:h-6 sm:min-h-0 ${isEngine ? "bg-[#1e3a2f]" : "bg-[#217346]"}`}
+      >
+        <span className="truncate text-[11px] font-medium text-white tabular-nums sm:text-[9px]">{fileName}</span>
       </div>
-      <div className="grid grid-cols-[18px_repeat(3,minmax(0,1fr))] grid-rows-[15px_repeat(5,17px)] text-[10px] leading-none sm:text-[11px]">
+      <div className="grid grid-cols-[20px_repeat(3,minmax(0,1fr))] grid-rows-[18px_repeat(5,21px)] text-[12px] leading-none antialiased tabular-nums sm:grid-cols-[18px_repeat(3,minmax(0,1fr))] sm:grid-rows-[15px_repeat(5,17px)] sm:text-[11px]">
         <div className="border-r border-b border-[#e2e8f0] bg-[#f1f5f9]" />
         {EXCEL_COL_LABELS.map((label) => (
           <div
             key={label}
-            className="flex items-center justify-center border-r border-b border-[#e2e8f0] bg-[#f1f5f9] px-0.5 text-[8px] font-medium text-[#64748b]"
+            className="flex items-center justify-center border-r border-b border-[#e2e8f0] bg-[#f1f5f9] px-0.5 text-[10px] font-semibold tracking-tight text-[#64748b] sm:text-[8px] sm:font-medium"
           >
             {label}
           </div>
         ))}
         {Array.from({ length: EXCEL_ROW_COUNT }, (_, r) => (
           <div key={`row-${r}`} className="contents">
-            <div className="flex items-center justify-center border-r border-b border-[#f1f5f9] bg-[#f8fafc] text-[8px] text-[#64748b]">
+            <div className="flex items-center justify-center border-r border-b border-[#f1f5f9] bg-[#f8fafc] text-[10px] tabular-nums text-[#64748b] sm:text-[8px]">
               {r + 1}
             </div>
             {EXCEL_COL_LABELS.map((_, c) => {
@@ -514,7 +546,7 @@ function ExcelSheet({
               return (
                 <div
                   key={`${r}-${c}`}
-                  className={`flex h-[17px] items-center overflow-hidden border-r border-b border-[#f1f5f9] px-0.5 font-mono ${
+                  className={`flex h-[21px] items-center overflow-hidden border-r border-b border-[#f1f5f9] px-0.5 font-mono tracking-tight sm:h-[17px] ${
                     isActive
                       ? "bg-amber-50 text-zinc-900"
                       : isEngineFill
@@ -588,10 +620,7 @@ function Row3Bento() {
   const inView = useInView(ref, { once: true, amount: 0.12 });
 
   return (
-    <motion.div
-      ref={ref}
-      className="mt-3 flex flex-col gap-3 sm:mt-4 md:flex-row md:items-stretch md:gap-3"
-    >
+    <motion.div ref={ref} className="mt-3 flex flex-col gap-3 sm:mt-4 md:flex-row md:items-stretch md:gap-3">
       <motion.div
         className="mx-auto flex w-full max-w-[310px] shrink-0 flex-col overflow-hidden rounded-xl border border-white/10 shadow-[0_8px_28px_-10px_rgba(0,0,0,0.55)] md:mx-0 md:w-[295px] md:max-w-none"
         initial={{ opacity: 0, y: 8 }}
@@ -685,25 +714,23 @@ function Row3Bento() {
       </motion.div>
 
       <motion.div
-        className="flex min-h-[148px] min-w-0 flex-1 flex-col items-center justify-center px-4 py-6 text-center md:flex-[1.58] md:min-w-[240px] md:px-6 md:py-5"
+        className="flex min-h-[148px] min-w-0 flex-1 flex-col justify-center px-3 py-5 sm:px-5 md:flex-[1.58] md:min-w-[200px]"
         initial={{ opacity: 0 }}
         animate={inView ? { opacity: 1 } : {}}
         transition={{ delay: 0.2 }}
       >
-        <div className="mx-auto w-full max-w-md">
-          <blockquote className="mx-auto inline-block text-left text-[13px] font-medium leading-[1.55] tracking-[-0.02em] text-[#eae6dc]/95 sm:text-[13.5px]">
-            <p className="pl-3 sm:pl-4">{PEACE_LINES[0]}</p>
-            <p className="mt-2 pl-7 text-[12.5px] font-normal text-[#eae6dc]/82 sm:mt-2.5 sm:pl-10 sm:text-[13px]">
-              {PEACE_LINES[1]}
-            </p>
-            <p className="mt-2 max-w-[16rem] pl-2 text-[13px] font-medium text-[#eae6dc]/90 sm:text-[13.5px]">{PEACE_LINES[2]}</p>
+        <div className="mx-auto w-full max-w-md pb-3 pt-1 text-center">
+          <blockquote className="text-[13px] font-medium leading-[1.55] tracking-[-0.02em] text-[#eae6dc]/95 sm:text-[13.5px]">
+            <p>{PEACE_LINES[0]}</p>
+            <p className="mt-2 text-[12.5px] font-normal text-[#eae6dc]/82 sm:mt-2.5 sm:text-[13px]">{PEACE_LINES[1]}</p>
+            <p className="mt-2 text-[13px] font-medium text-[#eae6dc]/90 sm:text-[13.5px]">{PEACE_LINES[2]}</p>
           </blockquote>
-          <p className="mx-auto mt-5 max-w-[19rem] text-center text-[11px] italic leading-snug text-zinc-500 sm:text-[11.5px]">
-            <span aria-hidden className="text-zinc-500/90 select-none">
+          <p className="mx-auto mt-5 max-w-88 text-[11px] italic leading-snug text-zinc-500 sm:mt-6 sm:text-[11.5px]">
+            <span aria-hidden className="text-zinc-500/85 select-none">
               &lsquo;&nbsp;
             </span>
-            Así debería sentirse un negocio.
-            <span aria-hidden className="text-zinc-500/90 select-none">
+            {PEACE_CLOSING}
+            <span aria-hidden className="text-zinc-500/85 select-none">
               &nbsp;&rsquo;
             </span>
           </p>
@@ -766,8 +793,9 @@ function HeroCard({
   const titleRelief = bgImage ? HERO_TITLE_RELIEF : "";
   const bodyRelief = bgImage ? HERO_BODY_RELIEF : "";
   return (
-    <article className={`w-full min-w-0 ${CARD_HERO}${compact ? " !p-3 sm:!p-4" : ""}`}>
+    <article className={`w-full min-w-0 ${CARD_HERO}${compact ? " p-3! sm:p-4!" : ""}`}>
       {bgImage ? <CardBgImage src={bgImage} objectPosition={bgObjectPosition} /> : null}
+      <CardGrain light />
       <BpCornerTicksOverlay light />
       <div className={`relative z-10 flex flex-1 flex-col ${diagramFixed ? "pb-[162px] sm:pb-[168px]" : ""}`}>
         <h3
@@ -787,7 +815,7 @@ function HeroCard({
           {body}
         </p>
         {!diagramFixed ? (
-          <div className={`relative mt-auto min-h-0 w-full shrink-0 ${compact ? "pt-2" : "pt-3"}`}>{diagram}</div>
+          <div className={`relative mt-auto min-h-0 w-full shrink-0 ${compact ? "pt-1.5" : "pt-3"}`}>{diagram}</div>
         ) : null}
       </div>
       {diagramFixed ? (
@@ -803,17 +831,29 @@ function HeroCard({
 function DarkOpenBlock({
   title,
   body,
+  bodyClassName,
   children,
 }: {
   title: string;
   body?: string;
+  /** Clases extra para el párrafo (ej. énfasis en columna sacos) */
+  bodyClassName?: string;
   children: ReactNode;
 }) {
   return (
     <div className="relative flex min-h-0 w-full flex-1 flex-col">
       <div className="relative z-10 flex min-h-full flex-1 flex-col pb-1">
         <h3 className="text-base font-medium leading-snug tracking-[-0.02em] text-zinc-50 sm:text-[1.05rem]">{title}</h3>
-        {body ? <p className="mt-2 max-w-[96%] text-[12px] leading-relaxed text-zinc-400 sm:text-[13px]">{body}</p> : null}
+        {body ? (
+          <p
+            className={
+              bodyClassName ??
+              "mt-2 max-w-[96%] text-[12px] leading-relaxed text-zinc-400 sm:text-[13px]"
+            }
+          >
+            {body}
+          </p>
+        ) : null}
         <div className="relative mt-auto w-full pt-3 sm:pt-4">{children}</div>
       </div>
     </div>
@@ -840,34 +880,36 @@ function TestimonialCard({
   const [imgOk, setImgOk] = useState(true);
 
   return (
-    <figure className="flex items-start gap-3 rounded-lg border border-white/10 bg-[#05080f] p-3 sm:p-3.5">
-      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-white/12 bg-zinc-900 sm:h-14 sm:w-14">
+    <figure className="relative flex min-h-0 flex-col items-center gap-2.5 overflow-hidden rounded-lg border border-white/10 bg-[#05080f] p-2.5 text-center transition-all duration-300 ease-out hover:-translate-y-1 hover:border-white/[0.14] hover:shadow-[0_14px_36px_-12px_rgba(0,0,0,0.55)] sm:p-3">
+      <CardGrain />
+      <div className="relative z-10 flex h-16 w-16 shrink-0 overflow-hidden rounded-full border border-white/12 bg-zinc-900 shadow-inner">
         {imgOk ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={src}
             alt=""
-            width={56}
-            height={56}
+            width={64}
+            height={64}
             className="h-full w-full object-cover object-[50%_35%]"
             onError={() => setImgOk(false)}
           />
         ) : (
-          <span className="flex h-full w-full items-center justify-center font-mono text-[10px] text-zinc-500">
+          <span className="flex h-full w-full items-center justify-center font-mono text-xs text-zinc-500">
             {initialsFromName(name)}
           </span>
         )}
       </div>
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-          <span className="text-[12px] font-medium text-zinc-300">{name}</span>
-          <span className="text-[10px] text-zinc-600">· {business}</span>
+      <blockquote className="relative z-10 line-clamp-4 min-h-11 text-[11px] leading-snug text-zinc-400 sm:min-h-12 sm:text-[11.5px]">
+        &ldquo;{quote}&rdquo;
+      </blockquote>
+      <div className="relative z-10 mt-auto flex w-full flex-col items-center gap-0.5 pt-0.5">
+        <div className="flex flex-wrap items-center justify-center gap-x-1 gap-y-0.5">
+          <span className="text-[11.5px] font-medium text-zinc-200 sm:text-xs">{name}</span>
+          <span className="text-[10px] text-zinc-500">· {business}</span>
           <GoogleMapsBadge />
           <span className="rounded border border-white/10 bg-white/5 px-1 py-0.5 text-[7px] font-medium tracking-wide text-zinc-500 uppercase">
             Verificada
           </span>
         </div>
-        <blockquote className="mt-1.5 line-clamp-3 text-[12px] leading-snug text-zinc-400">&ldquo;{quote}&rdquo;</blockquote>
       </div>
     </figure>
   );
@@ -885,7 +927,7 @@ export function StrategicProfile() {
 
           <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <FadeIn className="max-w-6xl">
-              <h2 className="text-3xl font-bold leading-[1.08] tracking-tighter text-zinc-50 sm:text-4xl lg:whitespace-nowrap lg:text-[2.65rem] xl:text-5xl">
+              <h2 className="font-bold leading-[1.08] tracking-tighter text-zinc-50 text-[clamp(2rem,5vw,3.5rem)] lg:whitespace-nowrap">
                 Tu primera impresión ya no ocurre en la calle.
               </h2>
               <p className="mt-2 text-base text-zinc-500 sm:text-lg">
@@ -908,13 +950,14 @@ export function StrategicProfile() {
                   bgObjectPosition="72% 52%"
                   title="El cliente te juzga antes de hablar contigo."
                   body="Buscan en Google. Ven tu web. Ven la del vecino. Si la tuya parece antigua, asumen que tu negocio también lo es."
-                  diagram={<VisualPercepcion />}
+                  diagram={<BpPercepcion />}
                 />
               </motion.div>
               <motion.div variants={fadeUp} className="flex h-full lg:col-span-1">
                 <DarkOpenBlock
                   title="La percepción cambia lo que la gente está dispuesta a pagar."
                   body="Cuando tu negocio se ve sólido, el precio necesita menos explicaciones."
+                  bodyClassName="mt-2 max-w-[98%] text-[13px] font-medium leading-snug text-zinc-300/95 sm:text-[14px]"
                 >
                   <VisualAutoridad />
                 </DarkOpenBlock>
@@ -953,7 +996,7 @@ export function StrategicProfile() {
             </FadeIn>
 
             <FadeIn delay={0.06} className="mt-4 sm:mt-5">
-              <div className="grid gap-2.5 sm:grid-cols-3 sm:gap-3">
+              <div className="mx-auto grid max-w-5xl grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-2">
                 {TESTIMONIALS.map((t) => (
                   <TestimonialCard key={t.name} {...t} />
                 ))}

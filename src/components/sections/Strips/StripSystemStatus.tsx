@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React from "react";
 
 /** Extensible: añade `{ kind: "name", label: "Marca" }` cuando tengas marcas solo en texto. */
@@ -68,13 +69,13 @@ const STRIP_TECH_ITEMS: StripTechItem[] = [
 function StripLogo({ src }: { src: string }) {
   return (
     <span className="strip-tech-logo-wrap strip-tech-logo-wrap--tint inline-flex shrink-0 cursor-default items-center motion-safe:animate-strip-logo-float">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src={src}
         alt=""
+        width={120}
+        height={120}
+        unoptimized
         role="presentation"
-        loading="lazy"
-        decoding="async"
         className="h-[2.975rem] w-auto shrink-0 object-contain md:h-[3.4rem]"
       />
     </span>
