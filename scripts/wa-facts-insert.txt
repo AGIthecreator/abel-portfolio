@@ -1,0 +1,190 @@
+const WA_CONVERSATION = [
+  { text: "Hola, ¿seguís abiertos?", fromThem: true, time: "18:41" },
+  { text: "Sí, claro 🙂", fromThem: false, time: "18:42" },
+  { text: "Perfecto, una cosa, ¿cuánto costaría más o menos?", fromThem: true, time: "18:43" },
+  { text: "Depende un poco de lo que necesites.", fromThem: false, time: "18:44" },
+  { text: "Vale", fromThem: true, time: "18:51" },
+  { text: "¿Me puedes pasar info?", fromThem: true, time: "19:08" },
+  { text: "Perdona, acabo de salir del trabajo", fromThem: true, time: "20:14" },
+  { text: "¿Me lo vuelves a pasar? No encuentro el mensaje", fromThem: true, time: "21:02" },
+  { text: "Y otra cosa, ¿hacéis también fines de semana?", fromThem: true, time: "21:03" },
+  { text: "??", fromThem: true, time: "22:17" },
+  { text: "Lo necesito para hoy si puede ser", fromThem: true, time: "22:48" },
+  { text: "Perdón por insistir 😅", fromThem: true, time: "23:01" },
+] as const;
+
+const EDITORIAL_FACTS = [
+  {
+    title: "Lo que se ve, se paga.",
+    lines: ["La gente paga más tranquila cuando siente", "que está en buenas manos."],
+    marginLeft: 0,
+  },
+  {
+    title: "Tu competencia no necesita ser mejor.",
+    lines: ["Solo necesita parecer más seria", "durante diez segundos."],
+    marginLeft: 28,
+  },
+  {
+    title: "Una web fea no pierde visitas.",
+    lines: ["Pierde ventas."],
+    marginLeft: 10,
+  },
+  {
+    title: "Hay negocios que parecen tranquilos",
+    lines: ["porque tienen sistema.", "No trabajan menos.", "Persiguen menos cosas."],
+    marginLeft: 42,
+  },
+  {
+    title: "Cuando todo depende de ti,",
+    lines: ["tienes un cuello de botella.", "No un negocio."],
+    marginLeft: 10,
+  },
+] as const;
+
+function ReadTicks() {
+  return (
+    <span className="ml-1 inline-flex text-[#53bdeb]" aria-hidden>
+      <svg width="12" height="9" viewBox="0 0 16 11" fill="currentColor">
+        <path d="M11.2 0L5.6 6.4 3.2 4 0 7.2l5.6 5.6L16 2.4z" opacity="0.45" />
+        <path d="M16 0L9.6 6.4 7.2 4 4 7.2l5.6 5.6L20.8 2.4z" transform="translate(-4.8)" />
+      </svg>
+    </span>
+  );
+}
+
+function IphoneNotificacionesCompleto() {
+  return (
+    <div className="relative z-30 shrink-0 -translate-x-1 self-start sm:-translate-x-3" aria-hidden>
+      <div className="relative w-[108px] rounded-[22px] border-[2.5px] border-zinc-500/90 bg-zinc-950 p-1 shadow-[0_20px_48px_rgba(0,0,0,0.75)] sm:w-[118px]">
+        <div className="absolute top-2 left-1/2 z-10 h-3.5 w-11 -translate-x-1/2 rounded-full bg-black" />
+        <div className="overflow-hidden rounded-[18px] bg-[#0a0a0a]">
+          <div className="flex items-center justify-between px-2.5 pb-0.5 pt-5 text-[7px] text-zinc-500">
+            <span>23:47</span>
+            <span className="tracking-[0.2em]">●●●</span>
+          </div>
+          <div className="space-y-1 px-1.5 pb-2.5">
+            {[
+              { t: "Llamada perdida", c: "hace 2 min", hot: true },
+              { t: "WhatsApp", c: "ahora · 14", hot: true },
+              { t: "Cliente esperando", c: "23:41", hot: false },
+            ].map((n) => (
+              <div
+                key={n.t}
+                className={`rounded-md px-1.5 py-1 ${n.hot ? "bg-red-950/85 ring-1 ring-red-500/40" : "bg-zinc-900/85"}`}
+              >
+                <p className="text-[7px] font-medium leading-tight text-zinc-100">{n.t}</p>
+                <p className="text-[6px] text-zinc-500">{n.c}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+          14
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function WhatsAppCaosIntegrado() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.15 });
+
+  return (
+    <motion.div
+      ref={ref}
+      className="flex w-full min-h-[240px] items-stretch gap-1 sm:gap-2"
+      initial={{ opacity: 0 }}
+      animate={inView ? { opacity: 1 } : {}}
+      aria-hidden
+    >
+      <IphoneNotificacionesCompleto />
+      <motion.div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg shadow-[0_20px_48px_-12px_rgba(0,0,0,0.85)]">
+        <motion.div className="flex h-6 items-center justify-between bg-[#075e54] px-3 text-[9px] font-medium text-white/90">
+          <span>23:52</span>
+          <span className="flex gap-0.5 opacity-90">
+            <span className="h-1.5 w-3 rounded-sm bg-white/80" />
+            <span className="h-1.5 w-3 rounded-sm bg-white/50" />
+          </span>
+        </motion.div>
+        <motion.div className="flex h-10 shrink-0 items-center gap-2 border-b border-[#0a5c52] bg-[#075e54] px-2">
+          <svg className="h-4 w-4 shrink-0 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <motion.div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#128c7e] text-[11px] font-semibold text-white">
+            C
+          </motion.div>
+          <p className="min-w-0 flex-1 truncate text-[11px] font-medium text-white">Cliente</p>
+          <motion.div className="flex shrink-0 items-center gap-2.5 text-white/85">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+              <path d="M17 10.5V7a5 5 0 00-10 0v3.5H5v10h14v-10h-2zm-8-3.5a3 3 0 016 0V10H9V7z" />
+            </svg>
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+              <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C10.07 21 3 13.93 3 5a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.25 1.01l-2.2 2.2z" />
+            </svg>
+          </motion.div>
+        </motion.div>
+        <motion.div
+          className="flex max-h-[min(52vh,400px)] min-h-[220px] flex-1 flex-col gap-1.5 overflow-y-auto px-2 py-2.5 sm:min-h-[260px]"
+          style={{ backgroundColor: "#ece5dd" }}
+        >
+          {WA_CONVERSATION.map((msg, i) => (
+            <motion.div
+              key={`${msg.time}-${i}`}
+              className={`flex max-w-[92%] flex-col ${msg.fromThem ? "self-start" : "self-end items-end"}`}
+              initial={{ opacity: 0, y: 3 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.04 + i * 0.05 }}
+            >
+              <motion.div
+                className={`rounded-lg px-2.5 py-1.5 text-[11px] leading-snug shadow-sm sm:text-[10px] ${
+                  msg.fromThem ? "bg-white text-[#111b21]" : "bg-[#d9fdd3] text-[#111b21]"
+                }`}
+              >
+                {msg.text}
+              </motion.div>
+              <span className="mt-0.5 flex items-center text-[9px] text-[#667781]">
+                {msg.time}
+                {!msg.fromThem ? <ReadTicks /> : null}
+              </span>
+            </motion.div>
+          ))}
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function EditorialFactsColumn() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.12 });
+
+  return (
+    <motion.div ref={ref} className="flex flex-col gap-14 py-2 sm:gap-16 lg:py-4">
+      {EDITORIAL_FACTS.map((fact, i) => (
+        <motion.article
+          key={fact.title}
+          className="max-w-[260px] border-l border-white/[0.08] pl-4 sm:pl-5"
+          style={{ marginLeft: fact.marginLeft }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.32, 1] }}
+        >
+          <h4 className="text-[clamp(1.35rem,2.8vw,2rem)] font-semibold leading-[1.05] tracking-[-0.04em] text-zinc-50/95">
+            {fact.title}
+          </h4>
+          {fact.lines.length > 0 ? (
+            <div className="mt-3 space-y-0.5">
+              {fact.lines.map((line) => (
+                <p key={line} className="text-[14px] leading-[1.7] text-zinc-500">
+                  {line}
+                </p>
+              ))}
+            </div>
+          ) : null}
+        </motion.article>
+      ))}
+    </motion.div>
+  );
+}
+
