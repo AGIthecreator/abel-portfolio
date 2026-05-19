@@ -83,41 +83,40 @@ const SERVICES_ROWS = [
 // ¿No ves cambios al guardar? Reinicia `npm run dev` o fuerza hard refresh (caché del navegador).
 // -----------------------------------------------------------------------------
 
-/** Ventana Google (z-10, base). Móvil: capa trasera (scale-90); escritorio: absolute sin cambios. */
+/** Ventana Google: frente del mazo en móvil (formulario clicable); z-10 en lg+. */
 export const HERO_DESK_GOOGLE_PARTS = {
   base: "hero-desk-window relative left-auto right-auto top-auto bottom-auto translate-x-0 overflow-visible lg:absolute",
-  z: "z-10",
+  z: "max-md:z-30 lg:z-10",
   mobile:
-    "mx-auto w-[min(100%,22rem)] max-md:origin-top max-md:scale-90 sm:w-[min(100%,24rem)]",
+    "mx-auto w-[min(100%,22rem)] max-md:pointer-events-auto max-md:relative max-md:origin-top max-md:scale-100 md:mt-0 md:scale-100 sm:w-[min(100%,24rem)]",
   desktop: "lg:left-[15%] lg:-translate-x-[45%] lg:top-[-140px] lg:w-[720px]",
 } as const;
 
-/** Ventana Servicios (z-20 en lg+; frente del mazo en móvil). */
+/** Ventana Servicios: capa media del mazo en móvil; z-20 en lg+. */
 export const HERO_DESK_SERVICES_PARTS = {
   base: "hero-desk-window relative left-auto right-auto top-auto bottom-auto translate-x-0 overflow-visible lg:absolute",
-  z: "max-md:z-30 lg:z-20",
+  z: "max-md:z-20 lg:z-20",
   mobile:
-    "mx-auto w-[min(100%,21rem)] max-md:origin-top max-md:scale-100 sm:w-[min(100%,23rem)]",
+    "mx-auto w-[min(100%,21rem)] max-md:-mt-16 max-md:origin-top max-md:scale-95 max-md:pointer-events-none md:pointer-events-auto md:mt-0 md:scale-100 sm:w-[min(100%,23rem)]",
   desktop: "lg:left-[35%] lg:top-[-20px] lg:w-[520px]",
 } as const;
 
-/** Ventana CMD (z-50 en lg+; capa media del mazo en móvil). */
+/** Ventana CMD: fondo del mazo en móvil; z-50 en lg+. */
 export const HERO_DESK_CMD_PARTS = {
   base: "hero-desk-window relative left-auto right-auto top-auto bottom-auto translate-x-0 overflow-visible lg:absolute",
-  z: "max-md:z-20 lg:z-50",
+  z: "max-md:z-10 lg:z-50",
   mobile:
-    "mx-auto w-[min(100%,21rem)] max-md:origin-top max-md:scale-95 sm:w-[min(100%,23rem)]",
+    "mx-auto w-[min(100%,21rem)] max-md:-mt-16 max-md:origin-top max-md:scale-90 max-md:pointer-events-none md:pointer-events-auto md:mt-0 md:scale-100 sm:w-[min(100%,23rem)]",
   desktop: "lg:right-[-20px] lg:bottom-[-45px] lg:w-[650px]",
 } as const;
 
 /**
- * Móvil (&lt; md): columna con solape tipo baraja + padding inferior generoso.
- * md–lg: columna con gap (como antes). lg+: stage para `absolute` sin cambios.
+ * Móvil: columna apilada (pb del stack en EngineerDeskStack). md–lg: gap. lg+: absolute.
  */
 export const HERO_DESK_STAGE_PARTS = {
-  base: "relative overflow-visible max-md:flex max-md:flex-col max-md:items-center max-md:gap-0 md:max-lg:flex md:max-lg:flex-col md:max-lg:items-center md:max-lg:gap-5 sm:md:max-lg:gap-6 lg:block",
+  base: "relative isolate overflow-visible max-md:flex max-md:flex-col max-md:items-center max-md:gap-0 md:max-lg:flex md:max-lg:flex-col md:max-lg:items-center md:max-lg:gap-5 sm:md:max-lg:gap-6 lg:block",
   spacing:
-    "max-md:min-h-88 max-md:pb-44 max-md:pt-2 sm:max-md:pb-48 md:max-md:min-h-0 md:max-md:pb-0 md:max-md:pt-0 max-lg:min-h-0 max-lg:pb-0 max-lg:pt-0 lg:min-h-140 lg:pb-52 lg:pt-0",
+    "max-md:min-h-0 max-md:pb-0 max-md:pt-2 md:max-md:pt-0 max-lg:min-h-0 max-lg:pb-0 max-lg:pt-0 lg:min-h-140 lg:pb-52 lg:pt-0",
 } as const;
 
 function joinDeskClasses(parts: readonly string[]) {
@@ -350,7 +349,7 @@ function HeroDeskFloatShell({
 
   return (
     <motion.div
-      className={`relative z-0 w-full max-md:flex max-md:justify-center max-md:shrink-0 ${className}`}
+      className={`relative w-full max-md:flex max-md:justify-center max-md:shrink-0 ${className}`}
       initial={false}
       animate={float ? { y: [0, -7, 0] } : { y: 0 }}
       transition={
@@ -878,7 +877,7 @@ function EngineerDeskStack({
 }) {
   return (
     <div
-      className="relative mx-auto w-full overflow-visible"
+      className="relative mx-auto w-full max-md:pb-20 overflow-visible"
       onMouseEnter={() => onWindowsHover(true)}
       onMouseLeave={() => {
         onWindowsHover(false);
@@ -888,13 +887,13 @@ function EngineerDeskStack({
       onMouseMove={onWindowsMove}
     >
       <div className={HERO_DESK_STAGE_CLASS}>
-        <HeroDeskFloatShell reduceMotion={reduceMotion} delaySec={0}>
+        <HeroDeskFloatShell reduceMotion={reduceMotion} delaySec={0} className="max-md:order-1">
           <GoogleHomeWindow onFormTextFieldHover={onFormTextFieldHover} onSubmitCtaHover={onSubmitCtaHover} />
         </HeroDeskFloatShell>
-        <HeroDeskFloatShell reduceMotion={reduceMotion} delaySec={0.55} className="max-md:-mt-12">
+        <HeroDeskFloatShell reduceMotion={reduceMotion} delaySec={0.55} className="max-md:order-3">
           <CmdTypingWindow reduceMotion={reduceMotion} diagnosticHover={diagnosticHover} />
         </HeroDeskFloatShell>
-        <HeroDeskFloatShell reduceMotion={reduceMotion} delaySec={1.1} className="max-md:-mt-12">
+        <HeroDeskFloatShell reduceMotion={reduceMotion} delaySec={1.1} className="max-md:order-2">
           <ServicesMscWindow />
         </HeroDeskFloatShell>
       </div>
@@ -923,7 +922,7 @@ export function Hero() {
   return (
     <CursorCtx.Provider value={cursorApi}>
       <section
-        className={`hero-engineer relative isolate z-30 w-full overflow-visible bg-[#04060d] py-5 max-md:pb-10 sm:py-6 lg:py-8 ${useCustomPointer ? "cursor-none" : ""}`}
+        className={`hero-engineer relative isolate z-30 w-full overflow-visible bg-[#04060d] py-5 max-md:pb-32 sm:py-6 lg:py-8 ${useCustomPointer ? "cursor-none" : ""}`}
       >
         <CursorHandLayer active={useCustomPointer} handScale={handScale} />
 
