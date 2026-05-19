@@ -70,23 +70,6 @@ function DotPattern() {
   );
 }
 
-function BpCornerTicksOverlay({ light = false }: { light?: boolean }) {
-  const stroke = light ? "rgba(148,163,184,0.35)" : "rgba(100,116,139,0.4)";
-  const tick = (pos: string) => (
-    <svg className={`pointer-events-none absolute ${pos} z-20 h-3.5 w-3.5`} viewBox="0 0 12 12" aria-hidden>
-      <path d="M1 1h3M1 1v3" stroke={stroke} strokeWidth="1" fill="none" />
-    </svg>
-  );
-  return (
-    <>
-      {tick("left-1 top-1")}
-      {tick("right-1 top-1 scale-x-[-1]")}
-      {tick("left-1 bottom-1 scale-y-[-1]")}
-      {tick("right-1 bottom-1 scale-[-1]")}
-    </>
-  );
-}
-
 function FloatingBlock({
   title,
   body,
@@ -146,12 +129,12 @@ function ManifiestoAguarras() {
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.55, ease: [0.22, 1, 0.32, 1] }}
     >
-      <motion.div className="relative flex min-h-[14rem] w-full items-center justify-center sm:min-h-[16rem]">
+      <motion.div className="relative flex min-h-56 w-full items-center justify-center sm:min-h-64">
         <div
-          className="pointer-events-none absolute top-1/2 left-1/2 aspect-square w-[min(92vw,22rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_30%_20%,rgba(255,255,255,0.06),transparent_55%)] sm:w-[26rem]"
+          className="pointer-events-none absolute top-1/2 left-1/2 aspect-square w-[min(92vw,22rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_30%_20%,rgba(255,255,255,0.06),transparent_55%)] sm:w-104"
           aria-hidden
         />
-        <motion.div className="relative z-10 mx-auto w-fit max-w-[min(100%,24rem)] space-y-3.5 sm:max-w-[26rem] sm:space-y-7">
+        <motion.div className="relative z-10 mx-auto w-fit max-w-[min(100%,24rem)] space-y-3.5 sm:max-w-104 sm:space-y-7">
         {MANIFIESTO_LINES.map((line, i) => (
           <motion.p
             key={line.text}
@@ -184,7 +167,7 @@ function BpPercepcion() {
       viewport={{ once: true }}
       aria-hidden
     >
-      <div className="relative aspect-16/5.5 w-full min-h-[11rem] sm:min-h-[12.5rem]">
+      <div className="relative aspect-16/5.5 w-full min-h-44 sm:min-h-50">
         {/* —— Web 2010 (atrás, queda bajo la superior) —— */}
         <motion.div
           className="absolute top-[14%] bottom-[6%] left-0 z-10 flex w-[32%] max-w-40 min-h-0 origin-bottom -rotate-12 flex-col overflow-hidden rounded-sm border-2 border-zinc-600/70 bg-[#9a9a9a] font-serif opacity-[0.88] shadow-[0_6px_20px_-8px_rgba(0,0,0,0.7)] grayscale-[0.45] brightness-90"
@@ -231,7 +214,7 @@ function BpPercepcion() {
               <span className="truncate text-[0.84em] font-bold leading-none text-[#000080]">Empresa S.L.</span>
             </div>
 
-            <div className="relative min-h-[2.85rem] w-full flex-1 overflow-hidden bg-[#ddd]">
+            <div className="relative min-h-11.4 w-full flex-1 overflow-hidden bg-[#ddd]">
               <Image
                 src="/gestoria.png"
                 alt=""
@@ -244,7 +227,7 @@ function BpPercepcion() {
               />
               {/* “Suciedad” CRT / submuestreo sutil */}
               <div
-                className="pointer-events-none absolute inset-0 z-1 opacity-[0.22] mix-blend-multiply"
+                className="pointer-events-none absolute inset-0 z-1 opacity-22 mix-blend-multiply"
                 style={{
                   backgroundImage:
                     "repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.12) 1px, rgba(0,0,0,0.12) 2px), repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(0,0,0,0.08) 1px, rgba(0,0,0,0.08) 2px)",
@@ -475,11 +458,11 @@ function ExcelSheet({
             ? "border-emerald-500/20"
             : isEngine
               ? "border-emerald-500/25 bg-[#0a1210]/90"
-              : "border-white/12 bg-white/[0.06]"
+              : "border-white/12 bg-white/6"
       }`}
     >
       <div
-        className={`relative z-10 flex min-h-[26px] shrink-0 items-center px-2 sm:h-6 sm:min-h-0 ${
+        className={`relative z-10 flex min-h-6.5 shrink-0 items-center px-2 sm:h-6 sm:min-h-0 ${
           isEngine ? "bg-emerald-950/80" : "bg-[#217346]/90"
         }`}
       >
@@ -513,7 +496,7 @@ function ExcelSheet({
         ))}
         {Array.from({ length: EXCEL_ROW_COUNT }, (_, r) => (
           <div key={`row-${r}`} className="contents">
-            <div className="flex items-center justify-center border-r border-b border-white/8 bg-white/[0.03] text-[10px] tabular-nums text-zinc-500 sm:text-[8px]">
+            <div className="flex items-center justify-center border-r border-b border-white/8 bg-white/3 text-[10px] tabular-nums text-zinc-500 sm:text-[8px]">
               {r + 1}
             </div>
             {EXCEL_COL_LABELS.map((_, c) => {
@@ -529,7 +512,7 @@ function ExcelSheet({
                       : isEngineFill
                         ? "bg-emerald-500/15 font-medium text-emerald-200"
                         : val
-                          ? "bg-white/[0.04] text-zinc-200"
+                          ? "bg-white/4 text-zinc-200"
                           : "text-zinc-600"
                   }`}
                 >
@@ -567,11 +550,11 @@ function VisualExcel() {
           <div className="relative min-w-0 flex-[1.08]">
             {isGlowing ? (
               <div
-                className="pointer-events-none absolute top-1/2 left-1/2 z-0 h-[122%] w-[126%] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-red-500/8 blur-[40px]"
+                className="pointer-events-none absolute top-1/2 left-1/2 z-0 h-[122%] w-[126%] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-red-500/8 blur-2xl"
                 aria-hidden
               />
             ) : null}
-            <div className="relative z-[1]">
+            <div className="relative z-1">
               <ExcelSheet
                 fileName="clientes.xlsx · manual"
                 grid={manualGrid}
@@ -588,11 +571,11 @@ function VisualExcel() {
           <div className="relative min-w-0 flex-[1.08]">
             {isGlowing ? (
               <div
-                className="pointer-events-none absolute top-1/2 left-1/2 z-0 h-[122%] w-[126%] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-emerald-500/6 blur-[40px]"
+                className="pointer-events-none absolute top-1/2 left-1/2 z-0 h-[122%] w-[126%] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-emerald-500/6 blur-2xl"
                 aria-hidden
               />
             ) : null}
-            <div className="relative z-[1]">
+            <div className="relative z-1">
             <ExcelSheet
               fileName="clientes.xlsx · SST_ENGINE"
               grid={engine}
@@ -671,7 +654,7 @@ function ReadTicks() {
 
 function IphoneNotificacionesCompleto() {
   return (
-    <div className="relative w-[64px] sm:w-[72px]" aria-hidden>
+    <div className="relative w-16 sm:w-18" aria-hidden>
       <div className="relative w-full rounded-[16px] border-2 border-zinc-500/90 bg-zinc-950 p-0.5 shadow-[0_12px_28px_rgba(0,0,0,0.75)]">
         <div className="absolute top-1.5 left-1/2 z-10 h-2.5 w-8 -translate-x-1/2 rounded-full bg-black" />
         <div className="overflow-hidden rounded-[14px] bg-[#0a0a0a]">
@@ -710,7 +693,7 @@ function WhatsAppCaosIntegrado() {
   return (
     <motion.div
       ref={ref}
-      className="relative mx-auto w-full max-w-[248px] sm:max-w-[268px]"
+      className="relative mx-auto w-full max-w-62 sm:max-w-67"
       initial={{ opacity: 0 }}
       animate={inView ? { opacity: 1 } : {}}
       aria-hidden
@@ -745,12 +728,9 @@ function WhatsAppCaosIntegrado() {
               className="flex flex-col gap-1 px-2 py-2 sm:gap-1.5 sm:px-2.5 sm:py-2.5"
               style={{ backgroundColor: "#ece5dd" }}
             >
-              {(() => {
-                let lastWho: "client" | "business" | null = null;
-                return WA_SCRIPT.map((block, i) => {
+              {WA_SCRIPT.map((block, i) => {
                   const isClient = block.who === "client";
-                  const showLabel = block.who !== lastWho;
-                  lastWho = block.who;
+                  const showLabel = i === 0 || block.who !== WA_SCRIPT[i - 1].who;
 
                   return (
                     <motion.div
@@ -778,13 +758,12 @@ function WhatsAppCaosIntegrado() {
                       </span>
                     </motion.div>
                   );
-                });
-              })()}
+                })}
             </div>
           </div>
         </div>
 
-        <div className="mt-4 border-t border-white/[0.06] pt-4 text-center sm:mt-5 sm:pt-5">
+        <div className="mt-4 border-t border-white/6 pt-4 text-center sm:mt-5 sm:pt-5">
           <p className="text-[clamp(0.95rem,2.2vw,1.2rem)] font-normal italic leading-[1.2] tracking-[-0.02em] text-zinc-500">
             {WA_PUNCHLINE.line1}
           </p>
@@ -806,7 +785,7 @@ function EditorialFactsColumn() {
       {EDITORIAL_FACTS.map((fact, i) => (
         <motion.article
           key={fact.title}
-          className="max-w-[240px] border-l border-white/[0.08] pl-4 sm:max-w-[260px] sm:pl-5 lg:max-w-none"
+          className="max-w-60 border-l border-white/8 pl-4 sm:max-w-65 sm:pl-5 lg:max-w-none"
           style={{ marginLeft: Math.min(fact.marginLeft, 16) }}
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -851,39 +830,6 @@ const TESTIMONIALS = [
     quote: "He dejado de perder tardes enteras organizando citas.",
   },
 ] as const;
-
-/** Bloque oscuro sin card — encaja en el fondo de la sección */
-function DarkOpenBlock({
-  title,
-  body,
-  bodyClassName,
-  children,
-}: {
-  title: string;
-  body?: string;
-  /** Clases extra para el párrafo (ej. énfasis en columna sacos) */
-  bodyClassName?: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="relative flex min-h-0 w-full flex-1 flex-col">
-      <div className="relative z-10 flex min-h-full flex-1 flex-col pb-1">
-        <h3 className="text-lg font-semibold leading-snug tracking-[-0.02em] text-white sm:text-xl">{title}</h3>
-        {body ? (
-          <p
-            className={
-              bodyClassName ??
-              "mt-2 max-w-[96%] text-[13px] leading-relaxed text-zinc-500 sm:text-sm"
-            }
-          >
-            {body}
-          </p>
-        ) : null}
-        <div className="relative mt-auto w-full pt-3 sm:pt-4">{children}</div>
-      </div>
-    </div>
-  );
-}
 
 function initialsFromName(name: string) {
   const parts = name.split(/\s+/);
@@ -945,11 +891,11 @@ export function StrategicProfile() {
           <DotPattern />
 
           <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <FadeIn className="mx-auto max-w-4xl text-center">
-              <p className="whitespace-nowrap font-bold leading-[1.12] tracking-tighter text-zinc-50 text-[clamp(1.35rem,3.8vw,3rem)]">
+            <FadeIn className="mx-auto min-w-0 max-w-4xl text-center">
+              <p className="text-balance font-bold leading-[1.12] tracking-tighter text-zinc-50 text-[clamp(1.35rem,3.8vw,3rem)] sm:whitespace-nowrap">
                 {COPY.heroTitle}
               </p>
-              <p className="mt-3 whitespace-nowrap text-base text-zinc-500 sm:text-lg">
+              <p className="mx-auto mt-3 max-w-[34ch] text-pretty text-[15px] leading-[1.55] text-zinc-500 sm:max-w-2xl sm:text-base sm:leading-relaxed md:max-w-none md:text-lg lg:whitespace-nowrap">
                 {COPY.heroLead}
               </p>
             </FadeIn>
@@ -978,7 +924,7 @@ export function StrategicProfile() {
 
               <motion.div
                 variants={fadeUp}
-                className="order-1 mx-auto flex w-full min-w-0 max-w-[560px] flex-col gap-8 lg:order-2 lg:col-span-6 lg:col-start-4 lg:row-start-1 lg:gap-7 xl:max-w-[580px] xl:gap-8"
+                className="order-1 mx-auto flex w-full min-w-0 max-w-140 flex-col gap-8 lg:order-2 lg:col-span-6 lg:col-start-4 lg:row-start-1 lg:gap-7 xl:max-w-145 xl:gap-8"
               >
                 <FloatingBlock title={COPY.row1Title} body={COPY.row1Body} centered>
                   <BpPercepcion />

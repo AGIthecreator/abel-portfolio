@@ -117,7 +117,7 @@ export const HERO_DESK_CMD_PARTS = {
 export const HERO_DESK_STAGE_PARTS = {
   base: "relative overflow-visible max-md:flex max-md:flex-col max-md:items-center max-md:gap-0 md:max-lg:flex md:max-lg:flex-col md:max-lg:items-center md:max-lg:gap-5 sm:md:max-lg:gap-6 lg:block",
   spacing:
-    "max-md:min-h-[22rem] max-md:pb-44 max-md:pt-2 sm:max-md:pb-48 md:max-md:min-h-0 md:max-md:pb-0 md:max-md:pt-0 max-lg:min-h-0 max-lg:pb-0 max-lg:pt-0 lg:min-h-[560px] lg:pb-52 lg:pt-0",
+    "max-md:min-h-88 max-md:pb-44 max-md:pt-2 sm:max-md:pb-48 md:max-md:min-h-0 md:max-md:pb-0 md:max-md:pt-0 max-lg:min-h-0 max-lg:pb-0 max-lg:pt-0 lg:min-h-140 lg:pb-52 lg:pt-0",
 } as const;
 
 function joinDeskClasses(parts: readonly string[]) {
@@ -283,7 +283,7 @@ function WindowsTitleBar({
       : variant === "services"
         ? "border-b border-[#aab9cc] bg-[#c9d6e8]"
         : variant === "gray"
-          ? "border-b border-white/12 bg-white/[0.06]"
+          ? "border-b border-white/12 bg-white/6"
           : "border-b border-white/12 bg-neutral-950/90";
 
   const textClass =
@@ -643,7 +643,7 @@ function GoogleHomeWindow({
               type="submit"
               onPointerEnter={() => onSubmitCtaHover(true)}
               onPointerLeave={() => onSubmitCtaHover(false)}
-              className="inline-flex w-full min-h-[42px] items-center justify-center gap-1 rounded-md bg-[#1a73e8] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1558b0]"
+              className="inline-flex w-full min-h-10.5 items-center justify-center gap-1 rounded-md bg-[#1a73e8] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1558b0]"
             >
               <span>Enviar diagnóstico</span>
               <span className="text-base leading-none" aria-hidden>
@@ -667,7 +667,7 @@ function GoogleHomeWindow({
 function ServicesMscWindow() {
   return (
     <div className={HERO_DESK_PRESETS.services.shell}>
-      <div className={`flex h-full min-h-[230px] flex-col overflow-hidden rounded-md border border-[#aab9cc]/90 bg-[#d7e2ee] sm:min-h-[270px] lg:min-h-[300px] xl:min-h-[320px] ${SHADOW_SERVICES}`}>
+      <div className={`flex h-full min-h-57.5 flex-col overflow-hidden rounded-md border border-[#aab9cc]/90 bg-[#d7e2ee] sm:min-h-67.5 lg:min-h-75 xl:min-h-80 ${SHADOW_SERVICES}`}>
         <div className="flex h-7 shrink-0 items-center gap-4 border-b border-[#9eaebf] bg-[#c9d6e8] px-2 text-[10px] font-medium text-neutral-800 sm:h-8 sm:text-[11px]">
           <span className="px-1 py-0.5 hover:bg-black/5">Archivo</span>
           <span className="px-1 py-0.5 hover:bg-black/5">Acción</span>
@@ -676,7 +676,7 @@ function ServicesMscWindow() {
         </div>
 
         <div className="flex min-h-0 flex-1">
-          <aside className="flex w-[100px] shrink-0 flex-col border-r border-[#aab9cc] bg-[#c9d6e8] py-3 pl-2 pr-1 text-[10px] font-semibold leading-snug text-neutral-800 sm:w-[118px] sm:text-[11px]">
+          <aside className="flex w-25 shrink-0 flex-col border-r border-[#aab9cc] bg-[#c9d6e8] py-3 pl-2 pr-1 text-[10px] font-semibold leading-snug text-neutral-800 sm:w-29.5 sm:text-[11px]">
             <span className="mb-2 border-b border-[#aab9cc]/80 pb-2 text-neutral-900">Servicios (locales)</span>
             <span className="rounded bg-[#b8cae0]/70 px-1.5 py-1 font-medium ring-1 ring-[#aab9cc]/90">Este equipo</span>
           </aside>
@@ -827,7 +827,7 @@ function CmdTypingWindow({
 
         <div
           ref={scrollRef}
-          className="hero-cmd-body h-[260px] max-sm:h-[220px] overflow-y-auto border-t border-white/10 bg-black p-3.5 font-mono text-[10px] leading-relaxed sm:h-[300px] sm:p-4 sm:text-[11px]"
+          className="hero-cmd-body h-65 max-sm:h-55 overflow-y-auto border-t border-white/10 bg-black p-3.5 font-mono text-[10px] leading-relaxed sm:h-75 sm:p-4 sm:text-[11px]"
         >
           <MagneticLineWrap>
             <p className="mb-1 text-neutral-500">Microsoft Windows [Versión 10.0.19045]</p>
@@ -930,11 +930,11 @@ export function Hero() {
         <div className="pointer-events-none absolute inset-0 z-0">
           <div className="hero-tech-grid absolute inset-0" />
           <div className="hero-tech-glow absolute inset-0" />
-          <div className="hero-grain hero-grain-fine absolute inset-0 opacity-[0.02]" />
+          <div className="hero-grain hero-grain-fine absolute inset-0 opacity-2" />
           <div className="hero-tech-fade absolute inset-0" />
         </div>
 
-        <div className="relative z-10 mx-auto flex w-full max-w-[1580px] min-h-0 flex-1 items-center overflow-visible px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+        <div className="relative z-10 mx-auto flex w-full max-w-395 min-h-0 flex-1 items-center overflow-visible px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
           <div className="grid w-full items-center gap-10 overflow-visible lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 xl:gap-16">
             <motion.div
               initial={{ opacity: 0, x: -28 }}
@@ -995,7 +995,7 @@ export function Hero() {
               </ul>
 
               <p
-                className="pointer-events-auto max-w-[520px] text-[clamp(0.95rem,1.6vw,1.05rem)] leading-[1.35] text-neutral-400"
+                className="pointer-events-auto max-w-130 text-[clamp(0.95rem,1.6vw,1.05rem)] leading-[1.35] text-neutral-400"
                 style={{
                   display: "-webkit-box",
                   WebkitBoxOrient: "vertical",
@@ -1026,7 +1026,7 @@ export function Hero() {
                 </a>
               </div>
 
-              <p className="pointer-events-auto max-w-[520px] text-[12px] leading-relaxed text-neutral-400">
+              <p className="pointer-events-auto max-w-130 text-[12px] leading-relaxed text-neutral-400">
                 Menos trabajo manual. Menos errores. Más tiempo para el negocio.
               </p>
             </motion.div>
