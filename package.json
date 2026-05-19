@@ -6,7 +6,8 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate-favicons": "node scripts/generate-favicons.mjs"
   },
   "dependencies": {
     "framer-motion": "^12.34.4",
