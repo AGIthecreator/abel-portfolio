@@ -1,3 +1,4 @@
+
 "use client";
 
 import { motion, useMotionValue, useTransform } from "framer-motion";
@@ -83,40 +84,48 @@ const SERVICES_ROWS = [
 // ¿No ves cambios al guardar? Reinicia `npm run dev` o fuerza hard refresh (caché del navegador).
 // -----------------------------------------------------------------------------
 
-/** Ventana Google: frente del mazo en móvil (formulario clicable); z-10 en lg+. */
+/** Ventana Google (z-10, base). Escritorio: absolute. Móvil/tablet: ver HERO_DESK_STACK_*. */
 export const HERO_DESK_GOOGLE_PARTS = {
   base: "hero-desk-window relative left-auto right-auto top-auto bottom-auto translate-x-0 overflow-visible lg:absolute",
-  z: "max-md:z-30 lg:z-10",
-  mobile:
-    "mx-auto w-[min(100%,22rem)] max-md:pointer-events-auto max-md:relative max-md:origin-top max-md:scale-100 md:mt-0 md:scale-100 sm:w-[min(100%,24rem)]",
+  z: "z-10",
+  mobile: "mx-auto w-[min(100%,22rem)] sm:w-[min(100%,24rem)]",
   desktop: "lg:left-[15%] lg:-translate-x-[45%] lg:top-[-140px] lg:w-[720px]",
 } as const;
 
-/** Ventana Servicios: capa media del mazo en móvil; z-20 en lg+. */
+/** Ventana Servicios (z-20). */
 export const HERO_DESK_SERVICES_PARTS = {
   base: "hero-desk-window relative left-auto right-auto top-auto bottom-auto translate-x-0 overflow-visible lg:absolute",
-  z: "max-md:z-20 lg:z-20",
-  mobile:
-    "mx-auto w-[min(100%,21rem)] max-md:-mt-16 max-md:origin-top max-md:scale-95 max-md:pointer-events-none md:pointer-events-auto md:mt-0 md:scale-100 sm:w-[min(100%,23rem)]",
+  z: "z-20",
+  mobile: "mx-auto w-[min(100%,21rem)] sm:w-[min(100%,23rem)]",
   desktop: "lg:left-[35%] lg:top-[-20px] lg:w-[520px]",
 } as const;
 
-/** Ventana CMD: fondo del mazo en móvil; z-50 en lg+. */
+/** Ventana CMD (z-50): siempre por encima de la franja y del resto del escritorio. */
 export const HERO_DESK_CMD_PARTS = {
   base: "hero-desk-window relative left-auto right-auto top-auto bottom-auto translate-x-0 overflow-visible lg:absolute",
-  z: "max-md:z-10 lg:z-50",
-  mobile:
-    "mx-auto w-[min(100%,21rem)] max-md:-mt-16 max-md:origin-top max-md:scale-90 max-md:pointer-events-none md:pointer-events-auto md:mt-0 md:scale-100 sm:w-[min(100%,23rem)]",
+  z: "z-50",
+  mobile: "mx-auto w-[min(100%,21rem)] sm:w-[min(100%,23rem)]",
   desktop: "lg:right-[-20px] lg:bottom-[-45px] lg:w-[650px]",
 } as const;
 
 /**
- * Móvil: columna apilada (pb del stack en EngineerDeskStack). md–lg: gap. lg+: absolute.
+ * Móvil/tablet: columna centrada. Escritorio: altura mínima para `absolute` + padding inferior.
  */
 export const HERO_DESK_STAGE_PARTS = {
-  base: "relative isolate overflow-visible max-md:flex max-md:flex-col max-md:items-center max-md:gap-0 md:max-lg:flex md:max-lg:flex-col md:max-lg:items-center md:max-lg:gap-5 sm:md:max-lg:gap-6 lg:block",
-  spacing:
-    "max-md:min-h-0 max-md:pb-0 max-md:pt-2 md:max-md:pt-0 max-lg:min-h-0 max-lg:pb-0 max-lg:pt-0 lg:min-h-140 lg:pb-52 lg:pt-0",
+  base: "relative overflow-visible max-lg:flex max-lg:flex-col max-lg:items-center max-lg:gap-0 lg:block",
+  spacing: "max-lg:min-h-0 max-lg:pb-0 max-lg:pt-0 lg:min-h-[560px] lg:pb-52 lg:pt-0",
+} as const;
+
+/** Stage en escritorio: mismas clases que el diseño original (solo lg+). */
+export const HERO_DESK_STAGE_DESKTOP_CLASS =
+  "relative overflow-visible lg:block lg:min-h-[560px] lg:pb-52 lg:pt-0";
+
+/** Capas del mazo (&lt; lg únicamente): z-index, solape y ancho. No tocar en lg+. */
+export const HERO_DESK_STACK_SHELL = {
+  google: "max-lg:z-30 max-lg:w-full max-lg:max-w-[min(100%,22rem)] max-lg:pointer-events-auto sm:max-lg:max-w-[min(100%,24rem)] max-lg:order-1",
+  services:
+    "max-lg:z-20 max-lg:-mt-20 max-lg:w-full max-lg:max-w-[min(100%,21rem)] max-lg:pointer-events-none sm:max-lg:max-w-[min(100%,23rem)] max-lg:order-2",
+  cmd: "max-lg:z-10 max-lg:-mt-20 max-lg:w-full max-lg:max-w-[min(100%,21rem)] max-lg:pointer-events-none sm:max-lg:max-w-[min(100%,23rem)] max-lg:order-3",
 } as const;
 
 function joinDeskClasses(parts: readonly string[]) {
@@ -312,22 +321,22 @@ function usePrefersReducedMotion() {
   return reduce;
 }
 
-/** Coincide con Tailwind `max-md` (viewport &lt; 768px). */
-function useMaxMd() {
-  const [maxMd, setMaxMd] = useState(false);
+/** Coincide con Tailwind `max-lg` (viewport &lt; 1024px). */
+function useBelowLg() {
+  const [belowLg, setBelowLg] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const update = () => setMaxMd(mq.matches);
+    const mq = window.matchMedia("(max-width: 1023px)");
+    const update = () => setBelowLg(mq.matches);
     update();
     mq.addEventListener("change", update);
     return () => mq.removeEventListener("change", update);
   }, []);
-  return maxMd;
+  return belowLg;
 }
 
 /**
- * En escritorio (md+) no renderiza envoltorio: las ventanas `lg:absolute` deben
- * posicionarse respecto al stage, no a un contenedor intermedio `relative`.
+ * En lg+ no renderiza envoltorio: las ventanas `lg:absolute` deben posicionarse
+ * respecto al stage, no a un contenedor intermedio `relative`.
  */
 function HeroDeskFloatShell({
   children,
@@ -340,16 +349,16 @@ function HeroDeskFloatShell({
   delaySec?: number;
   className?: string;
 }) {
-  const isMobile = useMaxMd();
-  const float = isMobile && !reduceMotion;
+  const belowLg = useBelowLg();
+  const float = belowLg && !reduceMotion;
 
-  if (!isMobile) {
+  if (!belowLg) {
     return <>{children}</>;
   }
 
   return (
     <motion.div
-      className={`relative w-full max-md:flex max-md:justify-center max-md:shrink-0 ${className}`}
+      className={`relative w-full max-lg:flex max-lg:justify-center max-lg:shrink-0 ${className}`}
       initial={false}
       animate={float ? { y: [0, -7, 0] } : { y: 0 }}
       transition={
@@ -875,28 +884,48 @@ function EngineerDeskStack({
   onWindowsHover: (v: boolean) => void;
   onWindowsMove: (event: ReactMouseEvent) => void;
 }) {
+  const belowLg = useBelowLg();
+
+  const rootProps = {
+    className: belowLg
+      ? "relative mx-auto w-full max-lg:pb-20 overflow-visible"
+      : "relative mx-auto w-full overflow-visible",
+    onMouseEnter: () => onWindowsHover(true),
+    onMouseLeave: () => {
+      onWindowsHover(false);
+      onFormTextFieldHover(false);
+      onSubmitCtaHover(false);
+    },
+    onMouseMove: onWindowsMove,
+  };
+
+  if (!belowLg) {
+    return (
+      <div {...rootProps}>
+        <div className={HERO_DESK_STAGE_DESKTOP_CLASS}>
+          <GoogleHomeWindow onFormTextFieldHover={onFormTextFieldHover} onSubmitCtaHover={onSubmitCtaHover} />
+          <CmdTypingWindow reduceMotion={reduceMotion} diagnosticHover={diagnosticHover} />
+          <ServicesMscWindow />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div
-      className="relative mx-auto w-full max-md:pb-20 overflow-visible"
-      onMouseEnter={() => onWindowsHover(true)}
-      onMouseLeave={() => {
-        onWindowsHover(false);
-        onFormTextFieldHover(false);
-        onSubmitCtaHover(false);
-      }}
-      onMouseMove={onWindowsMove}
-    >
-      <div className={HERO_DESK_STAGE_CLASS}>
-        <HeroDeskFloatShell reduceMotion={reduceMotion} delaySec={0} className="max-md:order-1">
+    <div {...rootProps}>
+      <motion.div
+        className={`${HERO_DESK_STAGE_CLASS} max-lg:origin-top max-lg:scale-95 max-sm:scale-90`}
+      >
+        <HeroDeskFloatShell reduceMotion={reduceMotion} delaySec={0} className={HERO_DESK_STACK_SHELL.google}>
           <GoogleHomeWindow onFormTextFieldHover={onFormTextFieldHover} onSubmitCtaHover={onSubmitCtaHover} />
         </HeroDeskFloatShell>
-        <HeroDeskFloatShell reduceMotion={reduceMotion} delaySec={0.55} className="max-md:order-3">
+        <HeroDeskFloatShell reduceMotion={reduceMotion} delaySec={0.55} className={HERO_DESK_STACK_SHELL.cmd}>
           <CmdTypingWindow reduceMotion={reduceMotion} diagnosticHover={diagnosticHover} />
         </HeroDeskFloatShell>
-        <HeroDeskFloatShell reduceMotion={reduceMotion} delaySec={1.1} className="max-md:order-2">
+        <HeroDeskFloatShell reduceMotion={reduceMotion} delaySec={1.1} className={HERO_DESK_STACK_SHELL.services}>
           <ServicesMscWindow />
         </HeroDeskFloatShell>
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -922,7 +951,7 @@ export function Hero() {
   return (
     <CursorCtx.Provider value={cursorApi}>
       <section
-        className={`hero-engineer relative isolate z-30 w-full overflow-visible bg-[#04060d] py-5 max-md:pb-32 sm:py-6 lg:py-8 ${useCustomPointer ? "cursor-none" : ""}`}
+        className={`hero-engineer relative isolate z-30 w-full overflow-visible bg-[#04060d] py-5 sm:py-6 lg:py-8 max-lg:pb-20 md:max-lg:pb-32 ${useCustomPointer ? "cursor-none" : ""}`}
       >
         <CursorHandLayer active={useCustomPointer} handScale={handScale} />
 
@@ -933,7 +962,7 @@ export function Hero() {
           <div className="hero-tech-fade absolute inset-0" />
         </div>
 
-        <div className="relative z-10 mx-auto flex w-full max-w-395 min-h-0 flex-1 items-center overflow-visible px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+        <div className="relative z-10 mx-auto flex w-full max-w-[1580px] min-h-0 flex-1 items-center overflow-visible px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
           <div className="grid w-full items-center gap-10 overflow-visible lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 xl:gap-16">
             <motion.div
               initial={{ opacity: 0, x: -28 }}
@@ -1030,7 +1059,7 @@ export function Hero() {
               </p>
             </motion.div>
 
-            <div className="relative z-40 max-md:mb-0 -mb-40 overflow-visible sm:-mb-44 lg:-mb-52 xl:-mb-56">
+            <div className="relative z-40 -mb-40 overflow-visible sm:-mb-44 lg:-mb-52 xl:-mb-56">
               <div className="relative z-1">
                 <EngineerDeskStack
                   reduceMotion={reduceMotion}
