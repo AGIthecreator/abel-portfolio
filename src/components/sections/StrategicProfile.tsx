@@ -132,9 +132,9 @@ function FloatingBlock({
 }
 
 const MANIFIESTO_LINES = [
-  { text: "Todo en su sitio.", align: "left" as const, offset: 6 },
-  { text: "Sin prisas.", align: "right" as const, offset: 5 },
-  { text: "Sin olvidos.", align: "left" as const, offset: 10 },
+  { text: "Todo en su sitio.", indentRem: -3.5 },
+  { text: "Sin prisas.", indentRem: 8.5 },
+  { text: "Sin olvidos.", indentRem:-1.5 },
 ] as const;
 
 function ManifiestoAguarras() {
@@ -151,14 +151,12 @@ function ManifiestoAguarras() {
           className="pointer-events-none absolute top-1/2 left-1/2 aspect-square w-[min(92vw,22rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_30%_20%,rgba(255,255,255,0.06),transparent_55%)] sm:w-[26rem]"
           aria-hidden
         />
-        <div className="relative z-10 w-full space-y-3 px-6 sm:space-y-5.5 sm:px-8">
+        <motion.div className="relative z-10 mx-auto w-fit max-w-[min(100%,24rem)] space-y-3.5 sm:max-w-[26rem] sm:space-y-7">
         {MANIFIESTO_LINES.map((line, i) => (
           <motion.p
             key={line.text}
-            className={`whitespace-nowrap font-sans text-[clamp(1.45rem,3vw,2.35rem)] font-light leading-[1.15] tracking-[-0.04em] text-zinc-50/95 ${
-              line.align === "right" ? "text-right" : "text-left"
-            }`}
-            style={{ marginLeft: line.offset, marginRight: line.align === "right" ? line.offset : 0 }}
+            className="whitespace-nowrap text-left font-sans text-[clamp(1.45rem,3vw,2.35rem)] font-light leading-[1.15] tracking-[-0.04em] text-zinc-50/95"
+            style={{ marginLeft: `${line.indentRem}rem` }}
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -170,7 +168,7 @@ function ManifiestoAguarras() {
           <p className="mx-auto mt-6 max-w-[22ch] text-center text-[12px] leading-relaxed text-white/35 italic sm:mt-8">
             {MANIFIESTO_CLOSING}
           </p>
-        </div>
+        </motion.div>
       </motion.div>
     </motion.div>
   );
