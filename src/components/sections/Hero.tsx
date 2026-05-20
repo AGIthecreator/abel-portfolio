@@ -84,56 +84,68 @@ const SERVICES_ROWS = [
 // ¿No ves cambios al guardar? Reinicia `npm run dev` o fuerza hard refresh (caché del navegador).
 // -----------------------------------------------------------------------------
 
-/** Ventana Google (z-10, base). Misma foto de escritorio en todos los breakpoints (escala en HERO_DESK_SCALE_WRAPPER). */
+/** Ventana Google (z-10). Escritorio: lg:absolute + posiciones originales. */
 export const HERO_DESK_GOOGLE_PARTS = {
+  base: "hero-desk-window overflow-visible lg:absolute",
+  z: "z-10",
+  desktop: "lg:left-[15%] lg:-translate-x-[45%] lg:top-[-140px] lg:w-[720px]",
+} as const;
+
+/** Ventana Servicios (z-20). */
+export const HERO_DESK_SERVICES_PARTS = {
+  base: "hero-desk-window overflow-visible lg:absolute",
+  z: "z-20",
+  desktop: "lg:left-[35%] lg:top-[-20px] lg:w-[520px]",
+} as const;
+
+/** Ventana CMD (z-50): por encima de la franja. */
+export const HERO_DESK_CMD_PARTS = {
+  base: "hero-desk-window overflow-visible lg:absolute",
+  z: "z-50",
+  desktop: "lg:right-[-20px] lg:bottom-[-45px] lg:w-[650px]",
+} as const;
+
+/** Móvil/tablet: mismas posiciones relativas que escritorio (absolute dentro del lienzo escalado). */
+export const HERO_DESK_MOBILE_GOOGLE_PARTS = {
   base: "hero-desk-window absolute overflow-visible",
   z: "z-10",
   position: "left-[15%] -translate-x-[45%] top-[-140px] w-[720px]",
 } as const;
 
-/** Ventana Servicios (z-20). */
-export const HERO_DESK_SERVICES_PARTS = {
+export const HERO_DESK_MOBILE_SERVICES_PARTS = {
   base: "hero-desk-window absolute overflow-visible",
   z: "z-20",
-  position: "left-[35%] top-[-20px] w-[520px]",
+  position: "left-[35%] top-[-8px] w-[500px]",
 } as const;
 
-/** Ventana CMD (z-50): siempre por encima de la franja y del resto del escritorio. */
-export const HERO_DESK_CMD_PARTS = {
+export const HERO_DESK_MOBILE_CMD_PARTS = {
   base: "hero-desk-window absolute overflow-visible",
   z: "z-50",
   position: "right-[-20px] bottom-[-45px] w-[650px]",
-} as const;
-
-/** Lienzo del escritorio: contexto absolute unificado; overflow visible para solapes. */
-export const HERO_DESK_STAGE_PARTS = {
-  base: "relative block overflow-visible!",
-  spacing: "w-full",
 } as const;
 
 function joinDeskClasses(parts: readonly string[]) {
   return parts.join(" ");
 }
 
-/** Contenedor lógico del escritorio (pb-52 ancla el bottom del CMD). */
-export const HERO_DESK_SCALE_INNER = "relative min-h-[560px] w-full pb-52";
+/** Stage escritorio (sin cambios respecto al diseño original). */
+export const HERO_DESK_STAGE_DESKTOP_CLASS =
+  "relative overflow-visible lg:block lg:min-h-[560px] lg:pb-52 lg:pt-0";
 
-/** Altura de flujo tras scale (768px lógicos × factor) para no dejar hueco vacío en móvil/tablet. */
-const HERO_DESK_SCALE_FLOW_HEIGHT = joinDeskClasses([
-  "max-sm:h-[384px]",
-  "sm:max-md:h-[461px]",
-  "md:max-lg:h-[576px]",
-  "lg:h-auto",
+/** Lienzo móvil/tablet: altura fija de flujo (scale no reduce el espacio en documento). */
+export const HERO_DESK_MOBILE_STAGE_CLASS = joinDeskClasses([
+  "relative block w-full min-w-0 overflow-visible",
+  "max-md:h-[420px] md:max-lg:h-[480px]",
 ]);
 
-/** Escala proporcional del mazo: réplica exacta del escritorio a distinta escala. */
+/** Contenedor interno del mazo (pb-52 ancla el CMD). */
+export const HERO_DESK_SCALE_INNER = "relative min-h-[560px] w-full pb-52";
+
+/** Escala proporcional solo en &lt;lg; escritorio no usa este wrapper. */
 export const HERO_DESK_SCALE_WRAPPER = joinDeskClasses([
-  "w-full origin-top-center overflow-visible!",
-  HERO_DESK_SCALE_FLOW_HEIGHT,
-  "max-sm:scale-[0.5]",
-  "sm:max-md:scale-[0.6]",
-  "md:max-lg:scale-[0.75]",
-  "lg:scale-100",
+  "w-full min-w-0 max-w-full origin-top",
+  "max-sm:h-[384px] sm:max-md:h-[461px] md:max-lg:h-[576px]",
+  "max-sm:scale-[0.5] sm:max-md:scale-[0.6] md:max-lg:scale-[0.75]",
 ]);
 
 type HeroStatsMatplotlibPanelProps = {
@@ -172,29 +184,48 @@ export const HERO_DESK_PRESETS = {
     shell: joinDeskClasses([
       HERO_DESK_GOOGLE_PARTS.base,
       HERO_DESK_GOOGLE_PARTS.z,
-      HERO_DESK_GOOGLE_PARTS.position,
+      HERO_DESK_GOOGLE_PARTS.desktop,
     ]),
   },
   services: {
     shell: joinDeskClasses([
       HERO_DESK_SERVICES_PARTS.base,
       HERO_DESK_SERVICES_PARTS.z,
-      HERO_DESK_SERVICES_PARTS.position,
+      HERO_DESK_SERVICES_PARTS.desktop,
     ]),
   },
   cmd: {
     shell: joinDeskClasses([
       HERO_DESK_CMD_PARTS.base,
       HERO_DESK_CMD_PARTS.z,
-      HERO_DESK_CMD_PARTS.position,
+      HERO_DESK_CMD_PARTS.desktop,
     ]),
   },
 } as const;
 
-export const HERO_DESK_STAGE_CLASS = joinDeskClasses([
-  HERO_DESK_STAGE_PARTS.base,
-  HERO_DESK_STAGE_PARTS.spacing,
-]);
+export const HERO_DESK_MOBILE_PRESETS = {
+  google: {
+    shell: joinDeskClasses([
+      HERO_DESK_MOBILE_GOOGLE_PARTS.base,
+      HERO_DESK_MOBILE_GOOGLE_PARTS.z,
+      HERO_DESK_MOBILE_GOOGLE_PARTS.position,
+    ]),
+  },
+  services: {
+    shell: joinDeskClasses([
+      HERO_DESK_MOBILE_SERVICES_PARTS.base,
+      HERO_DESK_MOBILE_SERVICES_PARTS.z,
+      HERO_DESK_MOBILE_SERVICES_PARTS.position,
+    ]),
+  },
+  cmd: {
+    shell: joinDeskClasses([
+      HERO_DESK_MOBILE_CMD_PARTS.base,
+      HERO_DESK_MOBILE_CMD_PARTS.z,
+      HERO_DESK_MOBILE_CMD_PARTS.position,
+    ]),
+  },
+} as const;
 
 const CursorCtx =
   createContext<{ rawX: ReturnType<typeof useMotionValue<number>>; rawY: ReturnType<typeof useMotionValue<number>> } | null>(
@@ -492,6 +523,8 @@ function GoogleHomeWindow({
   onFormTextFieldHover: (v: boolean) => void;
   onSubmitCtaHover: (v: boolean) => void;
 }) {
+  const belowLg = useBelowLg();
+  const shell = belowLg ? HERO_DESK_MOBILE_PRESETS.google.shell : HERO_DESK_PRESETS.google.shell;
   const [task, setTask] = useState("");
   const [email, setEmail] = useState("");
   const [luckyOpen, setLuckyOpen] = useState(false);
@@ -511,7 +544,7 @@ function GoogleHomeWindow({
     "flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-neutral-600 transition-colors hover:bg-neutral-200/80";
 
   return (
-    <div className={HERO_DESK_PRESETS.google.shell}>
+    <div className={shell}>
       <LuckyEasterEggModal open={luckyOpen} onClose={() => setLuckyOpen(false)} />
       <div className={`flex flex-col overflow-hidden rounded-md border border-neutral-300/95 bg-white ${SHADOW_GOOGLE}`}>
         <div className="flex h-9 items-end gap-0.5 border-b border-[#c5c9d0] bg-[#dee1e6] px-1.5 pt-1">
@@ -630,8 +663,11 @@ function GoogleHomeWindow({
 }
 
 function ServicesMscWindow() {
+  const belowLg = useBelowLg();
+  const shell = belowLg ? HERO_DESK_MOBILE_PRESETS.services.shell : HERO_DESK_PRESETS.services.shell;
+
   return (
-    <div className={HERO_DESK_PRESETS.services.shell}>
+    <div className={shell}>
       <div className={`flex h-full min-h-57.5 flex-col overflow-hidden rounded-md border border-[#aab9cc]/90 bg-[#d7e2ee] sm:min-h-67.5 lg:min-h-75 xl:min-h-80 ${SHADOW_SERVICES}`}>
         <div className="flex h-7 shrink-0 items-center gap-4 border-b border-[#9eaebf] bg-[#c9d6e8] px-2 text-[10px] font-medium text-neutral-800 sm:h-8 sm:text-[11px]">
           <span className="px-1 py-0.5 hover:bg-black/5">Archivo</span>
@@ -701,6 +737,8 @@ function CmdTypingWindow({
   reduceMotion: boolean;
   diagnosticHover: boolean;
 }) {
+  const belowLg = useBelowLg();
+  const shell = belowLg ? HERO_DESK_MOBILE_PRESETS.cmd.shell : HERO_DESK_PRESETS.cmd.shell;
   const [lines, setLines] = useState<CmdLineRow[]>([]);
   const [currentChars, setCurrentChars] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -784,7 +822,7 @@ function CmdTypingWindow({
   }, [diagnosticHover, reduceMotion, pushCompleteLine]);
 
   return (
-    <div className={HERO_DESK_PRESETS.cmd.shell}>
+    <div className={shell}>
       <div className={`flex flex-col overflow-hidden rounded-md ${CMD_PANEL} ${SHADOW_CMD}`}>
         <WindowsTitleBar title="Símbolo del sistema — cmd.exe" variant="dark">
           <WinControlsDecorative variant="dark" />
@@ -792,7 +830,7 @@ function CmdTypingWindow({
 
         <div
           ref={scrollRef}
-          className="hero-cmd-body h-65 max-sm:h-55 overflow-y-auto border-t border-white/10 bg-black p-3.5 font-mono text-[10px] leading-relaxed sm:h-75 sm:p-4 sm:text-[11px]"
+          className="hero-cmd-body h-65 overflow-y-auto border-t border-white/10 bg-black p-3.5 font-mono text-[10px] leading-relaxed sm:h-75 sm:p-4 sm:text-[11px]"
         >
           <MagneticLineWrap>
             <p className="mb-1 text-neutral-500">Microsoft Windows [Versión 10.0.19045]</p>
@@ -844,37 +882,54 @@ function EngineerDeskStack({
   const belowLg = useBelowLg();
   const float = belowLg && !reduceMotion;
 
+  const rootProps = {
+    onMouseEnter: () => onWindowsHover(true),
+    onMouseLeave: () => {
+      onWindowsHover(false);
+      onFormTextFieldHover(false);
+      onSubmitCtaHover(false);
+    },
+    onMouseMove: onWindowsMove,
+  };
+
+  const deskWindows = (
+    <>
+      <GoogleHomeWindow onFormTextFieldHover={onFormTextFieldHover} onSubmitCtaHover={onSubmitCtaHover} />
+      <CmdTypingWindow reduceMotion={reduceMotion} diagnosticHover={diagnosticHover} />
+      <ServicesMscWindow />
+    </>
+  );
+
+  if (!belowLg) {
+    return (
+      <div className="relative mx-auto w-full overflow-visible" {...rootProps}>
+        <div className={HERO_DESK_STAGE_DESKTOP_CLASS}>
+          <GoogleHomeWindow onFormTextFieldHover={onFormTextFieldHover} onSubmitCtaHover={onSubmitCtaHover} />
+          <CmdTypingWindow reduceMotion={reduceMotion} diagnosticHover={diagnosticHover} />
+          <ServicesMscWindow />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
-      className="relative w-full max-lg:mt-32 overflow-visible!"
-      onMouseEnter={() => onWindowsHover(true)}
-      onMouseLeave={() => {
-        onWindowsHover(false);
-        onFormTextFieldHover(false);
-        onSubmitCtaHover(false);
-      }}
-      onMouseMove={onWindowsMove}
+      className="hero-desk-stack relative mx-auto w-full min-w-0 max-lg:mt-6 max-lg:overflow-x-clip overflow-visible"
+      {...rootProps}
     >
       <div className={HERO_DESK_SCALE_WRAPPER}>
-        <div className={`${HERO_DESK_STAGE_CLASS} overflow-visible!`}>
+        <div className={HERO_DESK_MOBILE_STAGE_CLASS}>
           <motion.div
             className={HERO_DESK_SCALE_INNER}
             initial={false}
             animate={float ? { y: [0, -7, 0] } : { y: 0 }}
             transition={
               float
-                ? {
-                    duration: 4.6,
-                    repeat: Infinity,
-                    repeatType: "loop",
-                    ease: "easeInOut",
-                  }
+                ? { duration: 4.6, repeat: Infinity, repeatType: "loop", ease: "easeInOut" }
                 : { duration: 0 }
             }
           >
-            <GoogleHomeWindow onFormTextFieldHover={onFormTextFieldHover} onSubmitCtaHover={onSubmitCtaHover} />
-            <CmdTypingWindow reduceMotion={reduceMotion} diagnosticHover={diagnosticHover} />
-            <ServicesMscWindow />
+            {deskWindows}
           </motion.div>
         </div>
       </div>
@@ -903,7 +958,7 @@ export function Hero() {
   return (
     <CursorCtx.Provider value={cursorApi}>
       <section
-        className={`hero-engineer relative isolate z-30 w-full overflow-visible! bg-[#04060d] pt-27 pb-5 sm:pt-28 sm:pb-6 max-lg:min-h-0 max-lg:pb-2 md:max-lg:pb-3 lg:pt-20 lg:pb-8 ${useCustomPointer ? "cursor-none" : ""}`}
+        className={`hero-engineer relative isolate z-30 w-full overflow-visible bg-[#04060d] pt-27 pb-5 sm:pt-28 sm:pb-6 lg:pt-20 lg:pb-8 ${useCustomPointer ? "cursor-none" : ""}`}
       >
         <CursorHandLayer active={useCustomPointer} handScale={handScale} />
 
@@ -915,7 +970,7 @@ export function Hero() {
         </div>
 
         <div className="relative z-10 mx-auto flex w-full max-w-[1580px] min-h-0 flex-1 items-center overflow-visible px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
-          <div className="grid w-full items-center gap-10 overflow-visible lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 xl:gap-16">
+          <div className="grid w-full min-w-0 items-center gap-5 overflow-visible max-lg:gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 xl:gap-16">
             <motion.div
               initial={{ opacity: 0, x: -28 }}
               animate={{ opacity: 1, x: 0 }}
@@ -1011,7 +1066,7 @@ export function Hero() {
               </p>
             </motion.div>
 
-            <div className="relative z-40 overflow-visible! max-lg:-mb-24 md:max-lg:-mb-28 lg:-mb-52 xl:-mb-56">
+            <div className="relative z-40 min-w-0 overflow-visible max-lg:-mb-28 lg:-mb-52 xl:-mb-56">
               <div className="relative z-1">
                 <EngineerDeskStack
                   reduceMotion={reduceMotion}
