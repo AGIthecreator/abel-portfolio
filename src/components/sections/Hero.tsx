@@ -119,13 +119,13 @@ export const HERO_DESK_MOBILE_GOOGLE_PARTS = {
 export const HERO_DESK_MOBILE_SERVICES_PARTS = {
   base: "hero-desk-window absolute overflow-visible",
   z: "z-20",
-  position: "left-[41%] top-[-18px] w-[510px]",
+  position: "left-[44%] top-[-10px] w-[510px]",
 } as const;
 
 export const HERO_DESK_MOBILE_CMD_PARTS = {
   base: "hero-desk-window absolute overflow-visible",
   z: "z-50",
-  position: "right-[82px] bottom-[58px] w-[500px]",
+  position: "right-[162px] bottom-[0px] w-[500px]",
 } as const;
 
 function joinDeskClasses(parts: readonly string[]) {
@@ -1050,19 +1050,19 @@ export function Hero() {
               <h1 className="pointer-events-auto m-0 p-0">
                 <span className="sr-only">Tu negocio pierde horas. Yo hago que las recupere.</span>
                 <div aria-hidden className="relative isolate z-20 space-y-2 overflow-visible sm:space-y-2.5">
-                  <div className="relative z-10 grid grid-cols-1 items-stretch gap-2 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-3">
-                    <div className="relative z-10 flex min-w-0 flex-col justify-center font-semibold leading-[0.93] tracking-[-0.042em] text-[clamp(1.85rem,3.5vw,3.35rem)] sm:text-[clamp(2.05rem,3.9vw,3.75rem)]">
-                      <span className="block text-neutral-200/88 sm:whitespace-nowrap">Tu negocio</span>
-                      <span className="block text-[#f2f0ec] sm:whitespace-nowrap">pierde horas.</span>
+                  <div className="relative z-10 grid grid-cols-1 items-stretch gap-2 lg:grid-cols-[auto_minmax(0,1fr)] lg:gap-3">
+                    <div className="relative z-10 flex min-w-0 max-lg:flex-row max-lg:flex-nowrap max-lg:items-baseline max-lg:whitespace-nowrap lg:flex-col lg:whitespace-normal justify-center font-semibold leading-[0.93] tracking-[-0.042em] text-[clamp(1.5rem,5.6vw,1.85rem)] lg:text-[clamp(2.05rem,3.9vw,3.75rem)]">
+                      <span className="text-neutral-200/88 lg:block lg:whitespace-nowrap">Tu negocio </span>
+                      <span className="text-[#f2f0ec] lg:block lg:whitespace-nowrap">pierde horas.</span>
                     </div>
                     <HeroStatsMatplotlibPanel variant="inefficiency" />
                   </div>
 
-                  <div className="relative z-10 grid grid-cols-1 items-stretch gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-3">
-                    <HeroStatsMatplotlibPanel variant="efficiency" className="max-sm:order-2" />
-                    <div className="relative z-10 flex min-w-0 max-w-full flex-col justify-center font-semibold leading-[0.93] tracking-[-0.042em] text-[clamp(1.85rem,3.5vw,3.35rem)] max-sm:order-1 sm:items-end sm:text-right sm:text-[clamp(2.05rem,3.9vw,3.75rem)]">
-                      <span className="block text-neutral-200/88 sm:whitespace-nowrap">Yo hago que</span>
-                      <span className="block text-[#f2f0ec] sm:whitespace-nowrap">las recupere.</span>
+                  <div className="relative z-10 grid grid-cols-1 items-stretch gap-2 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-3">
+                    <HeroStatsMatplotlibPanel variant="efficiency" className="max-lg:order-2" />
+                    <div className="relative z-10 flex min-w-0 max-w-full max-lg:order-1 max-lg:flex-row max-lg:flex-nowrap max-lg:items-baseline max-lg:whitespace-nowrap lg:flex-col lg:whitespace-normal justify-center font-semibold leading-[0.93] tracking-[-0.042em] text-[clamp(1.5rem,5.6vw,1.85rem)] lg:items-end lg:text-right lg:text-[clamp(2.05rem,3.9vw,3.75rem)]">
+                      <span className="text-neutral-200/88 lg:block lg:whitespace-nowrap">Yo hago que </span>
+                      <span className="text-[#f2f0ec] lg:block lg:whitespace-nowrap">las recupere.</span>
                     </div>
                   </div>
                 </div>
