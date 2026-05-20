@@ -1,54 +1,17 @@
-"use client";
-
-import React from 'react';
+import React from "react";
 
 const StripExecution = () => {
-  const words = ["Sistemas", "diseñados", "para", "producción"];
-
   return (
     <section
       id="proceso"
-      className="relative scroll-mt-24 w-full overflow-hidden border-t border-white/5 bg-[#070707] py-8 md:py-10"
+      aria-label="Consulta gratuita"
+      className="strip-tech-paper relative isolate z-0 scroll-mt-24 w-full overflow-hidden"
     >
-      
-      {/* Gradiente que respira (Efecto opacidad 4s) */}
-      <div className="absolute inset-0 pointer-events-none opacity-10 animate-pulse">
-        <div className="h-full w-1/3 bg-linear-to-r from-emerald-500/50 to-transparent"></div>
-      </div>
-
-      <div className="relative max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0">
-        
-        <div className="flex flex-col items-center md:items-start">
-          <span className="text-[10px] font-mono tracking-[0.3em] text-white/25 uppercase italic">
-            EXECUTION LAYER
-          </span>
-        </div>
-
-        {/* Headline con Stagger de palabras */}
-        <div className="text-center flex gap-x-3 flex-wrap justify-center">
-          {words.map((word, i) => (
-            <span 
-              key={i} 
-              className="text-2xl md:text-4xl font-semibold text-white tracking-tight animate-in fade-in slide-in-from-bottom-2 fill-mode-forwards"
-              style={{ animationDelay: `${i * 100}ms` }}
-            >
-              {word}
-            </span>
-          ))}
-        </div>
-
-        <div className="flex flex-col items-center md:items-end">
-          <p className="text-xs md:text-sm font-mono text-white/30 uppercase tracking-widest flex gap-2">
-            <span className="group/item cursor-default hover:text-red-400 hover:drop-shadow-[0_0_8px_rgba(248,113,113,0.4)] transition-all duration-300">
-              <span className="text-red-500/40">No</span> humo
-            </span>
-            <span className="text-white/10">/</span>
-            <span className="group/item cursor-default hover:text-red-400 hover:drop-shadow-[0_0_8px_rgba(248,113,113,0.4)] transition-all duration-300">
-              <span className="text-red-500/40">No</span> teoría
-            </span>
-            <span className="text-white/10">/</span>
-            <span className="text-emerald-500/60 italic hover:text-emerald-400 transition-colors duration-300 cursor-default">Sistemas reales</span>
-          </p>
+      <div className="relative px-3 pb-5 pt-4 sm:px-4 md:pb-7 md:pt-6">
+        <div className="flex h-[2.975rem] items-center justify-center gap-[clamp(18px,4vw,42px)] font-semibold tracking-[-0.02em] text-zinc-900 md:h-[3.4rem]">
+          <span>Consulta gratuita</span>
+          <span className="opacity-[0.65]">Hablamos claro</span>
+          <span className="opacity-80">Sin compromiso</span>
         </div>
       </div>
     </section>
