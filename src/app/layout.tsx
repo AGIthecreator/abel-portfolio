@@ -13,36 +13,96 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Abel González | Ingeniería de Sistemas y Eficiencia Operativa",
+  title: "Sistemas para negocios | Webs y automatización que ahorran tiempo",
+
   description:
-    "Desarrollo software propio para eliminar tareas manuales en negocios. Recupera tu tiempo y mejora tus márgenes con sistemas que funcionan solos y sin cuotas mensuales.",
+    "Diseño webs y sistemas para negocios que quieren vender más y perder menos tiempo. Reservas, automatización, formularios, facturación y procesos conectados.",
+
   keywords: [
+    // Servicios principales
+    "diseño web para negocios",
+    "crear página web negocio",
+    "crear web empresa",
+    "desarrollo web profesional",
+    "página web para tienda",
+    "página web para clínica",
+    "página web para restaurante",
+    "programador web",
+
+    // Automatización
     "automatización de negocios",
-    "desarrollo de software a medida",
-    "ingeniería de sistemas",
-    "ahorro de tiempo operativa",
-    "eliminar tareas manuales",
-    "sistemas de pago Stripe",
-    "SaaS Valladolid",
-    "programador Valladolid",
-    "consultoría tecnológica España",
+    "automatizar tareas",
+    "automatización de procesos",
+    "eliminar trabajo manual",
+    "ahorrar tiempo negocio",
+    "sistema para reservas",
+    "automatizar citas",
+    "automatizar formularios",
+    "automatizar clientes",
+    "software para negocios",
+
+    // Casos reales
     "software para clínicas",
-    "automatización para gestorías",
-    "AGI theCreator",
+    "software para restaurantes",
+    "software para gestorías",
+    "software para tiendas",
+    "software a medida",
+
+    // Intención de búsqueda real
+    "cómo conseguir más clientes",
+    "cómo ahorrar tiempo negocio",
+    "cómo automatizar un negocio",
+    "cómo conseguir reservas online",
+    "cómo digitalizar una empresa",
+    "negocio online",
+
+    // Local
+    "programador Valladolid",
+    "desarrollo web Valladolid",
+    "automatización Valladolid",
+    "diseño web Valladolid",
+    "software Valladolid",
+
+    // España
+    "programador España",
+    "automatización España",
+    "desarrollo software España",
+    "web para empresas España"
   ],
+
   openGraph: {
-    title: "Abel González | Sistemas que trabajan por ti",
+    title: "Webs y sistemas que trabajan por tu negocio",
+
     description:
-      "Programo el motor que devuelve el tiempo a tu negocio. Tecnología de autor en Valladolid.",
+      "Menos tiempo persiguiendo tareas. Más tiempo haciendo crecer el negocio.",
+
     url: "https://agithecreator.com",
-    siteName: "Abel González - AGI",
+
+    siteName: "AGI",
+
     locale: "es_ES",
+
     type: "website",
   },
+
   icons: {
-    icon: { url: "/logos/FaviconAGI.png", type: "image/png", sizes: "512x512" },
-    shortcut: { url: "/logos/FaviconAGI.png", type: "image/png", sizes: "512x512" },
-    apple: { url: "/apple-icon.png", type: "image/png", sizes: "180x180" },
+    icon: {
+      url: "/logos/FaviconAGI.png",
+      type: "image/png",
+      sizes: "512x512",
+    },
+
+    shortcut: {
+      url: "/logos/FaviconAGI.png",
+      type: "image/png",
+      sizes: "512x512",
+    },
+
+    apple: {
+      url: "/apple-icon.png",
+      type: "image/png",
+      sizes: "180x180",
+    },
   },
 };
 
