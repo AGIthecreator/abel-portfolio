@@ -491,7 +491,7 @@ next-route-announcer,
 
 /*
  * SiteNavbar — logo (FUERA de @layer).
- * - Logo: alto visual calc(4rem - 2px) para ~1 px de respiro arriba/abajo dentro de la franja.
+ * - Logo: alto visual calc(4rem - 5px) — 1px menos de respiro extra en el pico.
  */
 #navbar-brand-link {
   align-self: stretch !important;
@@ -506,9 +506,9 @@ next-route-announcer,
 #navbar-brand-logo-img {
   box-sizing: border-box !important;
   display: block !important;
-  height: calc(4rem - 4px) !important;
-  min-height: calc(4rem - 4px) !important;
-  max-height: calc(4rem - 4px) !important;
+  height: calc(4rem - 5px) !important;
+  min-height: calc(4rem - 5px) !important;
+  max-height: calc(4rem - 5px) !important;
   width: auto !important;
   max-width: none !important;
   object-fit: contain !important;
@@ -524,9 +524,9 @@ next-route-announcer,
   }
 
   #navbar-brand-logo-img {
-    height: 2.5rem !important;
+    height: calc(2.5rem - 1px) !important;
     min-height: 0 !important;
-    max-height: 2.5rem !important;
+    max-height: calc(2.5rem - 1px) !important;
     width: auto !important;
     max-width: none !important;
   }
@@ -548,7 +548,7 @@ next-route-announcer,
  */
 .footer-anchor {
   position: relative;
-  --footer-logo-scale: 1.2;
+  --footer-logo-scale: 1.5;
   --footer-logo-inset-top: 3px;
 }
 
@@ -569,7 +569,7 @@ next-route-announcer,
   .footer-contact {
     position: absolute;
     right: 0;
-    top: 0;
+    top: 5;
     bottom: 0;
     margin-top: 0;
     margin-block: auto;
