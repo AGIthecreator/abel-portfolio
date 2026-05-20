@@ -104,6 +104,21 @@ export const metadata: Metadata = {
       sizes: "180x180",
     },
   },
+
+  metadataBase: new URL("https://agithecreator.com"),
+
+  alternates: {
+    canonical: "/",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
 };
 
 export default function RootLayout({
