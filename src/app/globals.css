@@ -651,7 +651,7 @@ next-route-announcer,
 
     .footer-anchor {
       gap: 0;
-      padding-top: 0.25rem;
+      padding-top: 0.75rem;
     }
   }
 
@@ -663,7 +663,7 @@ next-route-announcer,
   }
 
   .footer-main-row {
-    padding-top: 0;
+    padding-top: 0.75rem;
   }
 
   footer .footer-grain-overlay {
