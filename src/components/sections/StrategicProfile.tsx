@@ -883,7 +883,7 @@ function TestimonialCard({
 
 export function StrategicProfile() {
   return (
-    <section id="perfil" className="relative z-0 -mt-6 w-full overflow-visible sm:-mt-10 lg:-mt-14">
+    <section id="perfil" className="relative z-0 -mt-6 scroll-mt-24 w-full overflow-visible sm:-mt-10 lg:-mt-14">
       <div className="relative left-1/2 w-screen max-w-none -translate-x-1/2">
         <div
           className="relative w-full pt-14 pb-10 text-zinc-200 sm:pt-18 sm:pb-12 lg:pt-22"

@@ -1,124 +1,80 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { EvidenceTestimonialsGrid } from "@/components/sections/EvidenceTestimonials";
+import { motion } from "framer-motion";
+import { RotateCw } from "lucide-react";
 
 const SECTION_BG = "#070b13";
 const POLAROID_CAPTION = "#F3F1EB";
+const CTA_MAIL_PRIMARY =
+  "mailto:contacto@agithecreator.com?subject=Ver%20c%C3%B3mo%20ser%C3%ADa%20en%20mi%20caso";
 
-type Point = { x: number; y: number };
+const IMAGE_SIZES = "(max-width: 768px) 400px, 520px";
+/** Eje central ~12,5 % más ancho para jerarquía */
+const IMAGE_SIZES_AXIS = "(max-width: 768px) 480px, 620px";
 
-const EVIDENCE_BLOCKS = [
+/** Orden: arriba centro → medio (local | factura) → eje (despacho) → abajo desplazado (tienda) */
+const BOARD_ITEMS = [
   {
-    id: "reserva",
-    headline: "Reserva confirmada.",
-    label: "Clínica",
-    position: "left-[22%] top-[4%] sm:left-[24%] sm:top-[5%]",
-    anchor: { x: 26, y: 9 } satisfies Point,
-    targetPolaroid: "notificacion",
-  },
-  {
-    id: "factura",
-    headline: "Factura enviada.",
-    label: "Asesoría",
-    position: "right-[24%] top-[3%] sm:right-[26%] sm:top-[4%]",
-    anchor: { x: 72, y: 8 } satisfies Point,
-    targetPolaroid: "factura",
-  },
-  {
-    id: "cliente",
-    headline: "Cliente atendido sin WhatsApp.",
-    label: "Restaurante",
-    position: "left-[38%] top-[30%] sm:left-[40%] sm:top-[32%]",
-    anchor: { x: 46, y: 34 } satisfies Point,
-    targetPolaroid: "notificacion",
-  },
-  {
-    id: "stock",
-    headline: "Stock actualizado.",
-    label: "Tienda",
-    position: "left-[26%] bottom-[34%] sm:left-[28%] sm:bottom-[36%]",
-    anchor: { x: 30, y: 60 } satisfies Point,
-    targetPolaroid: "gestoria",
-  },
-  {
-    id: "formulario",
-    headline: "Formulario respondido solo.",
-    label: "Negocio local",
-    position: "right-[28%] bottom-[32%] sm:right-[30%] sm:bottom-[34%]",
-    anchor: { x: 68, y: 58 } satisfies Point,
-    targetPolaroid: "programador",
-  },
-] as const;
-
-const POLAROIDS = [
-  {
-    id: "notificacion",
+    id: "cafe",
+    layout: "top" as const,
+    headline: "Mesa llena esta noche.",
+    label: "Cafetería",
     src: "/notificacion.png",
-    alt: "Notificación de cita confirmada en tiempo real",
-    caption: "Cita confirmada en tiempo real",
-    rotate: "-rotate-3",
-    position: "left-[8%] top-[15%]",
-    anchor: { x: 16, y: 22 } satisfies Point,
+    alt: "Cafetería con mesas ocupadas",
+    caption: "Cola cerrada",
+    rotateDeg: -1.25,
     floatDelay: 0,
   },
   {
-    id: "factura",
+    id: "local",
+    layout: "midLeft" as const,
+    headline: "Cliente atendido sin perseguir mensajes.",
+    label: "Local",
+    src: "/restaurante.png",
+    alt: "Servicio en local sin interrupciones",
+    caption: "Sala en calma",
+    rotateDeg: 1.5,
+    floatDelay: 0.15,
+  },
+  {
+    id: "asesoria",
+    layout: "midRight" as const,
+    headline: "Trabajo terminado. Factura enviada.",
+    label: "Asesoría",
     src: "/factura.png",
-    alt: "Sistema de cobro y facturación activo",
-    caption: "Sistema de cobro activo",
-    rotate: "rotate-2",
-    position: "right-[12%] top-[10%]",
-    anchor: { x: 84, y: 19 } satisfies Point,
-    floatDelay: 0.35,
+    alt: "Factura emitida",
+    caption: "Cobro listo",
+    rotateDeg: -1.75,
+    floatDelay: 0.3,
   },
   {
-    id: "gestoria",
-    src: "/gestoria.png",
-    alt: "Instalación en negocio local — despacho de gestoría",
-    caption: "Instalación en negocio local",
-    rotate: "rotate-[4deg]",
-    position: "left-[15%] bottom-[15%]",
-    anchor: { x: 24, y: 78 } satisfies Point,
-    floatDelay: 0.7,
-  },
-  {
-    id: "programador",
+    id: "ingenieria",
+    layout: "center" as const,
+    headline: "Tu negocio sigue funcionando.",
+    label: "Ingeniería aplicada",
     src: "/programador.png",
-    alt: "Monitorización de sistemas en despacho técnico",
-    caption: "Monitorización de sistemas",
-    rotate: "-rotate-2",
-    position: "right-[18%] bottom-[20%]",
-    anchor: { x: 78, y: 74 } satisfies Point,
-    floatDelay: 1.05,
+    alt: "Despacho técnico",
+    caption: "Siempre encendido",
+    rotateDeg: 0.75,
+    floatDelay: 0.45,
+  },
+  {
+    id: "comercio",
+    layout: "bottom" as const,
+    headline: "La tienda sigue moviéndose sola.",
+    label: "Comercio",
+    src: "/tienda.png",
+    alt: "Comercio activo",
+    caption: "Stock vivo",
+    rotateDeg: -1.5,
+    floatDelay: 0.6,
   },
 ] as const;
 
-/** Cableado ortogonal (solo 90°): texto → polaroid */
-function orthogonalPath(from: Point, to: Point) {
-  return `M ${from.x} ${from.y} L ${to.x} ${from.y} L ${to.x} ${to.y}`;
-}
-
-const PLANO_CONNECTIONS = EVIDENCE_BLOCKS.map((block) => {
-  const polaroid = POLAROIDS.find((p) => p.id === block.targetPolaroid);
-  if (!polaroid) return null;
-  return { id: block.id, d: orthogonalPath(block.anchor, polaroid.anchor) };
-}).filter(Boolean) as { id: string; d: string }[];
-
-const CTA_MAIL =
-  "mailto:contacto@agithecreator.com?subject=Qué%20necesita%20tu%20negocio";
-
-function randomRevealDelay(seed: number, min = 0.12, max = 0.68) {
-  const t = Math.sin(seed * 12.9898) * 43758.5453;
-  const n = t - Math.floor(t);
-  return min + n * (max - min);
-}
-
 function DotPattern() {
   return (
-    <motion.div
+    <div
       className="pointer-events-none absolute inset-0 z-0"
       style={{
         backgroundImage:
@@ -131,283 +87,265 @@ function DotPattern() {
   );
 }
 
-function EvidenceBlock({
-  headline,
-  label,
-  position,
-  delay,
-}: {
-  headline: string;
-  label: string;
-  position: string;
-  delay: number;
-}) {
+function TechnicalLabel({ headline, label }: { headline: string; label: string }) {
   return (
-    <motion.div
-      className={`absolute z-20 hidden max-w-[13.5rem] sm:block ${position}`}
-      initial={{ opacity: 0, filter: "blur(14px)", y: 6 }}
-      whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.9, delay, ease: [0.22, 1, 0.32, 1] }}
-    >
-      <p className="text-[13px] font-semibold leading-snug tracking-[-0.02em] text-zinc-100 sm:text-[15px]">
+    <div className="w-full text-left">
+      <p className="text-xs font-medium leading-snug tracking-[-0.01em] text-zinc-100 antialiased">
         {headline}
       </p>
-      <p className="mt-1 font-mono text-[10px] tracking-wide text-zinc-500 sm:text-[11px]">
+      <p className="mt-0.5 font-mono text-[10px] leading-none text-zinc-500">
         ↳ {label}
       </p>
-    </motion.div>
+    </div>
   );
 }
 
-function Polaroid({
+function PolaroidFigure({
   src,
   alt,
   caption,
-  rotate,
-  position,
-  delay,
+  rotateDeg,
   floatDelay,
-  inline = false,
+  isAxis,
 }: {
   src: string;
   alt: string;
   caption: string;
-  rotate: string;
-  position: string;
-  delay: number;
+  rotateDeg: number;
   floatDelay: number;
-  inline?: boolean;
+  isAxis?: boolean;
 }) {
+  const widthClass = isAxis
+    ? "w-[225px] lg:w-[292px]"
+    : "w-[200px] lg:w-[260px]";
+
   return (
     <motion.figure
-      className={
-        inline
-          ? `relative z-10 w-[9.5rem] shrink-0 sm:hidden ${rotate}`
-          : `absolute z-10 hidden w-40 md:w-48 lg:w-52 sm:block ${position} ${rotate}`
-      }
-      initial={{ opacity: 0, filter: "blur(16px)", y: 12 }}
-      whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 1, delay, ease: [0.22, 1, 0.32, 1] }}
+      className={`relative z-10 shrink-0 shadow-2xl ${widthClass}`}
+      style={{ rotate: `${rotateDeg}deg` }}
+      animate={{ y: [0, -3, 0] }}
+      transition={{
+        duration: 6.5,
+        repeat: Infinity,
+        ease: "easeInOut",
+        delay: floatDelay,
+      }}
     >
-      <motion.div
-        animate={{ y: [0, -9, 0] }}
-        transition={{
-          duration: 7.2,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: floatDelay,
+      <div
+        className="overflow-hidden rounded-[2px]"
+        style={{
+          backgroundColor: POLAROID_CAPTION,
+          padding: "6px 6px 0",
         }}
       >
-        <motion.div
-          className="overflow-hidden shadow-[0_24px_48px_-12px_rgba(0,0,0,0.85)]"
-          style={{
-            backgroundColor: POLAROID_CAPTION,
-            padding: "9px 9px 0",
-          }}
-          whileHover={{ scale: 1.02, rotate: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <div className="relative aspect-4/3 w-full overflow-hidden bg-zinc-900">
-            <Image
-              src={src}
-              alt={alt}
-              fill
-              className="object-cover object-center"
-              sizes="(max-width: 640px) 38vw, 208px"
-            />
-          </div>
+        <div className="relative aspect-4/3 w-full overflow-hidden bg-zinc-900">
+          <Image
+            src={src}
+            alt={alt}
+            fill
+            quality={95}
+            sizes={isAxis ? IMAGE_SIZES_AXIS : IMAGE_SIZES}
+            className="object-cover object-center"
+          />
+        </div>
+        <div className="flex h-7 shrink-0 items-center justify-center px-1">
           <p
-            className="px-1 pb-2.5 pt-2 text-center text-[9px] leading-tight tracking-[0.02em] text-zinc-600 sm:text-[10px]"
+            className="text-center text-[9px] font-medium leading-none tracking-wide text-zinc-700"
             style={{
-              fontFamily: '"Segoe Script", "Bradley Hand", "Apple Chancery", cursive',
+              fontFamily:
+                '"Segoe Script", "Bradley Hand", "Apple Chancery", cursive',
             }}
           >
             {caption}
           </p>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </motion.figure>
   );
 }
 
-export function WhatIBuild() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const inView = useInView(sectionRef, { once: true, amount: 0.06 });
-
-  const delays = useMemo(
-    () =>
-      [...EVIDENCE_BLOCKS, ...POLAROIDS].map((_, i) =>
-        randomRevealDelay(i + 1)
-      ),
-    []
+function EvidencePiece({
+  item,
+  index,
+  className = "",
+}: {
+  item: (typeof BOARD_ITEMS)[number];
+  index: number;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      className={`isolate flex w-max max-w-full flex-col items-start gap-0 ${className}`}
+      initial={{ opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{
+        duration: 0.6,
+        delay: 0.05 + index * 0.06,
+        ease: [0.22, 1, 0.32, 1],
+      }}
+    >
+      <div className="relative z-20 mb-2 w-full sm:mb-2.5">
+        <TechnicalLabel headline={item.headline} label={item.label} />
+      </div>
+      <PolaroidFigure
+        src={item.src}
+        alt={item.alt}
+        caption={item.caption}
+        rotateDeg={item.rotateDeg}
+        floatDelay={item.floatDelay}
+        isAxis={item.id === "ingenieria"}
+      />
+    </motion.div>
   );
+}
+
+/** Plano técnico: centro ↔ cada esquina del tablero (ortogonal, muy sutil) */
+function DraftingConnectors() {
+  const strokeCls = "stroke-zinc-900/50";
+  return (
+    <svg
+      className="pointer-events-none absolute inset-0 z-1 hidden h-full w-full overflow-visible md:block"
+      viewBox="0 0 600 520"
+      fill="none"
+      preserveAspectRatio="xMidYMid meet"
+      aria-hidden
+    >
+      <motion.path
+        d="M 300 268 L 300 200 L 268 200 L 268 108"
+        className={strokeCls}
+        strokeWidth={0.5}
+        vectorEffect="non-scaling-stroke"
+        initial={{ pathLength: 0, opacity: 0 }}
+        whileInView={{ pathLength: 1, opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ pathLength: { duration: 0.95, delay: 0.2 }, opacity: { duration: 0.35 } }}
+      />
+      <motion.path
+        d="M 300 268 L 220 268 L 220 232 L 132 232"
+        className={strokeCls}
+        strokeWidth={0.5}
+        vectorEffect="non-scaling-stroke"
+        initial={{ pathLength: 0, opacity: 0 }}
+        whileInView={{ pathLength: 1, opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ pathLength: { duration: 0.95, delay: 0.3 }, opacity: { duration: 0.35 } }}
+      />
+      <motion.path
+        d="M 300 268 L 380 268 L 380 232 L 472 232"
+        className={strokeCls}
+        strokeWidth={0.5}
+        vectorEffect="non-scaling-stroke"
+        initial={{ pathLength: 0, opacity: 0 }}
+        whileInView={{ pathLength: 1, opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ pathLength: { duration: 0.95, delay: 0.4 }, opacity: { duration: 0.35 } }}
+      />
+      <motion.path
+        d="M 300 268 L 300 336 L 352 336 L 352 408"
+        className={strokeCls}
+        strokeWidth={0.5}
+        vectorEffect="non-scaling-stroke"
+        initial={{ pathLength: 0, opacity: 0 }}
+        whileInView={{ pathLength: 1, opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ pathLength: { duration: 0.95, delay: 0.5 }, opacity: { duration: 0.35 } }}
+      />
+    </svg>
+  );
+}
+
+export function WhatIBuild() {
+  const cafe = BOARD_ITEMS.find((i) => i.id === "cafe")!;
+  const local = BOARD_ITEMS.find((i) => i.id === "local")!;
+  const asesoria = BOARD_ITEMS.find((i) => i.id === "asesoria")!;
+  const ingenieria = BOARD_ITEMS.find((i) => i.id === "ingenieria")!;
+  const comercio = BOARD_ITEMS.find((i) => i.id === "comercio")!;
 
   return (
     <section
-      ref={sectionRef}
       id="entregables"
-      className="relative z-0 -mt-2 w-full overflow-visible sm:-mt-4"
+      className="relative -mt-6 scroll-mt-24 w-full overflow-visible pt-16 sm:-mt-8 sm:pt-20"
       style={{ backgroundColor: SECTION_BG }}
-      aria-labelledby="what-i-build-heading"
+      aria-label="Mesa de trabajo — evidencias"
     >
-      <div className="relative left-1/2 w-screen max-w-none -translate-x-1/2 overflow-visible">
-        <div
-          className="relative w-full overflow-visible pt-10 pb-8 sm:pt-12 sm:pb-10 lg:pt-14 lg:pb-12"
-          style={{ backgroundColor: SECTION_BG }}
-        >
-          <DotPattern />
+      <DotPattern />
 
-          <motion.div
-            className="relative z-10"
-            initial={{ opacity: 0 }}
-            animate={inView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.35 }}
-          >
-            <motion.header
-              className="relative z-30 px-4 pb-4 text-center sm:pb-6"
-              initial={{ opacity: 0, filter: "blur(8px)" }}
-              whileInView={{ opacity: 1, filter: "blur(0px)" }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.65, delay: 0.04 }}
-            >
-              <p
-                id="what-i-build-heading"
-                className="font-mono text-[10px] uppercase tracking-[0.3em] text-zinc-500 sm:text-[11px]"
-              >
-                Lo que entrego.
-              </p>
-            </motion.header>
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pb-12 sm:px-6 lg:px-10 sm:pb-16">
+        <div className="relative mx-auto w-full">
+          <DraftingConnectors />
 
-            {/* Tablero de evidencias */}
-            <div className="relative mx-auto w-full max-w-7xl overflow-visible px-4 sm:px-6">
-              <div className="relative mx-auto min-h-[min(88vh,42rem)] w-full overflow-visible sm:min-h-[34rem] lg:min-h-[36rem]">
-                <svg
-                  className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full overflow-visible sm:block"
-                  viewBox="0 0 100 100"
-                  preserveAspectRatio="none"
-                  aria-hidden
-                >
-                  {PLANO_CONNECTIONS.map((line, i) => (
-                    <motion.path
-                      key={line.id}
-                      d={line.d}
-                      fill="none"
-                      stroke="rgba(113,113,122,0.2)"
-                      strokeWidth={0.8}
-                      vectorEffect="non-scaling-stroke"
-                      initial={{ pathLength: 0, opacity: 0 }}
-                      whileInView={{ pathLength: 1, opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{
-                        pathLength: {
-                          duration: 1.15,
-                          delay: 0.2 + i * 0.09,
-                          ease: [0.22, 1, 0.32, 1],
-                        },
-                        opacity: { duration: 0.35, delay: 0.15 + i * 0.09 },
-                      }}
-                    />
-                  ))}
-                </svg>
-
-                {EVIDENCE_BLOCKS.map((block, i) => (
-                  <EvidenceBlock
-                    key={block.id}
-                    headline={block.headline}
-                    label={block.label}
-                    position={block.position}
-                    delay={delays[i] ?? 0.2}
-                  />
-                ))}
-
-                {POLAROIDS.map((p, i) => (
-                  <Polaroid
-                    key={p.id}
-                    src={p.src}
-                    alt={p.alt}
-                    caption={p.caption}
-                    rotate={p.rotate}
-                    position={p.position}
-                    floatDelay={p.floatDelay}
-                    delay={delays[EVIDENCE_BLOCKS.length + i] ?? 0.35}
-                  />
-                ))}
-
-                {/* Móvil */}
-                <motion.div className="relative z-30 space-y-6 px-1 pb-6 pt-2 sm:hidden">
-                  {EVIDENCE_BLOCKS.map((block, i) => (
-                    <motion.div
-                      key={`m-${block.id}`}
-                      className="border-l border-zinc-700/50 pl-4"
-                      initial={{ opacity: 0, filter: "blur(10px)" }}
-                      whileInView={{ opacity: 1, filter: "blur(0px)" }}
-                      viewport={{ once: true }}
-                      transition={{ delay: delays[i], duration: 0.75 }}
-                    >
-                      <p className="text-sm font-semibold text-zinc-100">
-                        {block.headline}
-                      </p>
-                      <p className="mt-0.5 font-mono text-[10px] text-zinc-500">
-                        ↳ {block.label}
-                      </p>
-                    </motion.div>
-                  ))}
-                  <div className="grid grid-cols-2 gap-4 pt-2">
-                    {POLAROIDS.map((p, i) => (
-                      <Polaroid
-                        key={`m-${p.id}`}
-                        src={p.src}
-                        alt={p.alt}
-                        caption={p.caption}
-                        rotate={p.rotate}
-                        position=""
-                        floatDelay={p.floatDelay}
-                        inline
-                        delay={delays[EVIDENCE_BLOCKS.length + i] ?? 0.35}
-                      />
-                    ))}
-                  </div>
-                </motion.div>
-              </div>
+          <div className="grid grid-cols-1 gap-y-4 sm:gap-y-5 lg:grid-cols-12 lg:gap-x-6 lg:gap-y-3">
+            {/* Fila 1 — cafetería, centrada en el ancho del tablero */}
+            <div className="flex justify-center lg:col-span-12 lg:row-start-1">
+              <EvidencePiece
+                item={cafe}
+                index={0}
+                className="-translate-x-2 sm:-translate-x-3 lg:-translate-x-6"
+              />
             </div>
 
-            {/* Manifiesto + CTA */}
-            <motion.div
-              className="relative z-30 mx-auto mt-6 max-w-2xl px-4 sm:mt-8 sm:px-6"
-              initial={{ opacity: 0, filter: "blur(10px)", y: 10 }}
-              whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-              viewport={{ once: true, amount: 0.35 }}
-              transition={{ duration: 0.85, delay: 0.12, ease: [0.22, 1, 0.32, 1] }}
-            >
-              <div className="rounded-xl border border-white/5 bg-white/[0.02] px-6 py-8 text-center sm:px-10 sm:py-10">
-                <p className="text-lg font-semibold leading-snug tracking-[-0.03em] text-zinc-100 sm:text-xl">
-                  No construyo páginas bonitas.
-                </p>
-                <p className="mx-auto mt-4 max-w-md text-base font-medium leading-relaxed tracking-[-0.02em] text-zinc-300 sm:text-lg">
-                  Construyo sistemas que hacen que el negocio siga funcionando
-                  cuando tú estás ocupado.
-                </p>
-              </div>
+            {/* Fila 2 — local y factura: dos columnas en desktop, más separación horizontal */}
+            <div className="flex justify-center lg:col-span-5 lg:row-start-2 lg:justify-start lg:pl-2 xl:pl-6">
+              <EvidencePiece
+                item={local}
+                index={1}
+                className="sm:translate-x-0 lg:translate-x-2"
+              />
+            </div>
+            <div className="flex justify-center lg:col-span-5 lg:col-start-8 lg:row-start-2 lg:justify-end lg:pr-2 xl:pr-6">
+              <EvidencePiece
+                item={asesoria}
+                index={2}
+                className="sm:translate-x-0 lg:-translate-x-2"
+              />
+            </div>
 
-              <div className="mt-8 text-center sm:mt-10">
-                <p className="text-balance text-base font-medium leading-snug tracking-[-0.03em] text-zinc-200 sm:text-lg">
-                  ¿Quieres seguir persiguiendo tareas o que el sistema las
-                  persiga por ti?
-                </p>
-                <a
-                  href={CTA_MAIL}
-                  className="mt-6 inline-flex items-center justify-center rounded-full border border-zinc-600/60 bg-transparent px-7 py-3 font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-300 transition-all duration-300 hover:border-white hover:text-white"
-                >
-                  Ver qué necesita tu negocio
-                </a>
-              </div>
-            </motion.div>
+            {/* Fila 3 — eje (sin margen negativo: evita que las polaroids de arriba pisen este texto) */}
+            <div className="mt-4 flex justify-center sm:mt-6 lg:col-span-12 lg:row-start-3 lg:mt-10">
+              <EvidencePiece
+                item={ingenieria}
+                index={3}
+                className="translate-x-2 sm:translate-x-3 lg:translate-x-5"
+              />
+            </div>
 
-            <EvidenceTestimonialsGrid className="relative z-30 mt-8 px-4 sm:mt-10 sm:px-6" />
-          </motion.div>
+            {/* Fila 4 — comercio, desplazado */}
+            <div className="flex justify-center lg:col-span-12 lg:row-start-4 lg:mt-3 lg:justify-end lg:pr-6 xl:pr-12">
+              <EvidencePiece
+                item={comercio}
+                index={4}
+                className="translate-x-3 sm:translate-x-5 lg:translate-x-7"
+              />
+            </div>
+          </div>
         </div>
+
+        <motion.footer
+          className="mx-auto mt-12 max-w-lg px-1 text-center sm:mt-16"
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.32, 1] }}
+        >
+          <p className="font-serif text-[clamp(1.15rem,2.8vw,1.45rem)] font-normal leading-[1.35] tracking-[-0.02em] text-zinc-100">
+            Menos tiempo apagando fuegos.
+            <br />
+            Más tiempo haciendo crecer algo.
+          </p>
+
+          <p className="mx-auto mt-8 max-w-md text-[13px] leading-relaxed text-zinc-500 sm:text-sm">
+            Tu tiempo vuelve a estar donde importa.
+          </p>
+
+          <a
+            href={CTA_MAIL_PRIMARY}
+            className="mt-10 inline-flex items-center gap-2 rounded-md bg-white px-5 py-3 text-sm font-semibold text-[#05070f] shadow-sm transition-all duration-300 hover:bg-neutral-100 hover:shadow-[0_0_15px_rgba(52,211,153,0.3)] sm:mt-12"
+          >
+            <RotateCw className="h-4 w-4 shrink-0" aria-hidden />
+            Ver cómo sería en mi caso
+          </a>
+        </motion.footer>
       </div>
     </section>
   );

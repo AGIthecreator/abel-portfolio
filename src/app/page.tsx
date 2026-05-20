@@ -1,3 +1,4 @@
+import { SiteNavbar } from "@/components/SiteNavbar";
 import { Hero } from "@/components/sections/Hero";
 import { Footer } from "@/components/sections/Footer";
 import {
@@ -23,6 +24,8 @@ export default function Page() {
         />
         <div className="cyber-keyword-rain opacity-30" aria-hidden="true" />
       </div>
+
+      <SiteNavbar />
 
       {/* 1. HERO */}
       <Hero />

@@ -13,7 +13,10 @@ export function Footer({ activeColor = "#8B5CF6" }: { activeColor?: string }) {
 
   return (
     /* CORRECCIÓN: Eliminado mt-32 y márgenes de pantalla negativos */
-    <footer id="contacto" className="relative w-full bg-[#050505] border-t border-white/5 overflow-hidden">
+    <footer
+      id="contacto"
+      className="relative scroll-mt-24 w-full overflow-hidden border-t border-white/5 bg-[#050505]"
+    >
       
       {/* 🛠 LÍNEAS LATERALES TÉCNICAS */}
       <div className="hidden lg:block absolute left-[8%] top-1/2 -translate-y-1/2 w-[22%] h-px bg-linear-to-r from-transparent via-white/5 to-transparent pointer-events-none" />

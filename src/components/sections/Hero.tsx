@@ -951,7 +951,7 @@ export function Hero() {
   return (
     <CursorCtx.Provider value={cursorApi}>
       <section
-        className={`hero-engineer relative isolate z-30 w-full overflow-visible bg-[#04060d] py-5 sm:py-6 lg:py-8 max-lg:pb-20 md:max-lg:pb-32 ${useCustomPointer ? "cursor-none" : ""}`}
+        className={`hero-engineer relative isolate z-30 w-full overflow-visible bg-[#04060d] pt-[6.75rem] pb-5 sm:pt-28 sm:pb-6 lg:pt-20 lg:pb-8 max-lg:pb-20 md:max-lg:pb-32 ${useCustomPointer ? "cursor-none" : ""}`}
       >
         <CursorHandLayer active={useCustomPointer} handScale={handScale} />
 

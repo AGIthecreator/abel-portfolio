@@ -65,7 +65,7 @@ function ProjectVisual({ type, src, alt, isVertical = false }: { type: 'video' |
 
 export function Projects() {
   return (
-    <section id="proyectos" className="space-y-48 py-20 overflow-hidden">
+    <section id="proyectos" className="scroll-mt-24 space-y-48 overflow-hidden py-20">
       
       {/* PROYECTO 1: PUCELATICKETING */}
       <motion.div 

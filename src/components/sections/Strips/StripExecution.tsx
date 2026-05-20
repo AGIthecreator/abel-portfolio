@@ -6,7 +6,10 @@ const StripExecution = () => {
   const words = ["Sistemas", "diseñados", "para", "producción"];
 
   return (
-    <section className="relative w-full bg-[#070707] border-t border-white/5 py-8 md:py-10 overflow-hidden">
+    <section
+      id="proceso"
+      className="relative scroll-mt-24 w-full overflow-hidden border-t border-white/5 bg-[#070707] py-8 md:py-10"
+    >
       
       {/* Gradiente que respira (Efecto opacidad 4s) */}
       <div className="absolute inset-0 pointer-events-none opacity-10 animate-pulse">

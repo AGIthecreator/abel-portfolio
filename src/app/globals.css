@@ -43,6 +43,12 @@
 }
 
 @layer base {
+  html {
+    @media (prefers-reduced-motion: no-preference) {
+      scroll-behavior: smooth;
+    }
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-white);
@@ -468,4 +474,30 @@ next-route-announcer,
 #nextjs__container_build_error_label,
 #nextjs__container_errors_label {
   display: none !important;
+}
+
+/*
+ * SiteNavbar — logo (FUERA de @layer).
+ * - Logo: alto visual calc(4rem - 2px) para ~1 px de respiro arriba/abajo dentro de la franja.
+ */
+#navbar-brand-link {
+  align-self: stretch !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  flex-shrink: 0 !important;
+  line-height: 0 !important;
+  max-height: 4rem !important;
+}
+
+#navbar-brand-logo-img {
+  box-sizing: border-box !important;
+  display: block !important;
+  height: calc(4rem - 4px) !important;
+  min-height: calc(4rem - 4px) !important;
+  max-height: calc(4rem - 4px) !important;
+  width: auto !important;
+  max-width: none !important;
+  object-fit: contain !important;
+  object-position: left center !important;
 }
