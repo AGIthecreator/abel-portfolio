@@ -531,3 +531,75 @@ next-route-announcer,
     max-width: none !important;
   }
 }
+
+/* Footer — grano + logo absoluto (no altera la altura del footer) */
+.footer-grain-overlay {
+  z-index: 0;
+  opacity: 0.025;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+/*
+ * Logo (solo editar estas variables; el layout del footer no cambia):
+ *   --footer-logo-scale     → tamaño visual (1.2 = +20 %)
+ *   --footer-logo-inset-top → separación superior (3px por defecto)
+ */
+.footer-anchor {
+  position: relative;
+  --footer-logo-scale: 1.2;
+  --footer-logo-inset-top: 3px;
+}
+
+.footer-main-row {
+  position: relative;
+}
+
+/* Contacto fuera del flujo en desktop → nav centrada como la placa */
+@media (min-width: 1024px) {
+  .footer-main-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* py-3 en el markup + alto del bloque contacto */
+    min-height: calc(0.75rem * 2 + 2.75rem);
+  }
+
+  .footer-contact {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin-top: 0;
+    margin-block: auto;
+    height: fit-content;
+    transform: none;
+  }
+}
+
+#footer-brand-link {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  height: calc(100% - var(--footer-logo-inset-top));
+  max-height: calc(100% - var(--footer-logo-inset-top));
+  line-height: 0;
+  pointer-events: auto;
+  overflow: visible;
+}
+
+#footer-brand-logo-img {
+  display: block;
+  height: 100%;
+  max-height: 100%;
+  width: auto;
+  object-fit: contain;
+  object-position: left center;
+  transform: scale(var(--footer-logo-scale));
+  transform-origin: left center;
+}
+

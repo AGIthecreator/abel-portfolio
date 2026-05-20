@@ -1,88 +1,98 @@
-"use client";
+import { Fragment, type CSSProperties } from "react";
 
-import React from "react";
-import { Download, ArrowUpRight } from "lucide-react";
+const EMAIL = "contacto@agithecreator.com";
+const MAILTO = `mailto:${EMAIL}`;
 
-const email = "contacto@agithecreator.com";
-const githubUrl = "https://github.com";
-const linkedinUrl = "https://linkedin.com";
-const cvUrl = "/CV_Abel_Gonzalez_2026.pdf";
+const FOOTER_BG = "#070b13";
 
-export function Footer({ activeColor = "#8B5CF6" }: { activeColor?: string }) {
-  const year = 2026;
+const FOOTER_SURFACE: CSSProperties = {
+  background: `linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0) 20%), ${FOOTER_BG}`,
+};
 
+const NAV_LINKS = [
+  { href: "#perfil", label: "Qué construyo" },
+  { href: "#entregables", label: "Cómo funciona" },
+  { href: "#contacto", label: "Contacto" },
+] as const;
+
+const navLinkClass =
+  "whitespace-nowrap font-mono text-[11px] uppercase tracking-widest text-zinc-500 no-underline transition-colors duration-200 hover:text-zinc-200";
+
+export function Footer() {
   return (
-    /* CORRECCIÓN: Eliminado mt-32 y márgenes de pantalla negativos */
     <footer
       id="contacto"
-      className="relative scroll-mt-24 w-full overflow-hidden border-t border-white/5 bg-[#050505]"
+      className="relative w-full scroll-mt-24 overflow-hidden border-t border-white/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]"
+      style={FOOTER_SURFACE}
     >
-      
-      {/* 🛠 LÍNEAS LATERALES TÉCNICAS */}
-      <div className="hidden lg:block absolute left-[8%] top-1/2 -translate-y-1/2 w-[22%] h-px bg-linear-to-r from-transparent via-white/5 to-transparent pointer-events-none" />
-      <div className="hidden lg:block absolute right-[8%] top-1/2 -translate-y-1/2 w-[22%] h-px bg-linear-to-l from-transparent via-white/5 to-transparent pointer-events-none" />
+      <div
+        className="footer-grain-overlay pointer-events-none absolute inset-0"
+        aria-hidden
+      />
 
-      <div className="w-full px-6 md:px-12 py-10 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
-          
-          {/* BLOQUE IZQUIERDO: Branding Reforzado */}
-          <div className="flex flex-col gap-1.5 text-center lg:text-left">
-            <h3 className="text-xl md:text-2xl font-bold tracking-tighter text-white">
-              Sistemas en <span style={{ color: activeColor }} className="transition-colors duration-1000">producción.</span>
-            </h3>
-            <p className="text-[12px] font-mono text-white/30 uppercase tracking-[0.3em] font-bold">
-              production_mode // v2.0
-            </p>
-          </div>
+      <div className="relative z-10 mx-auto max-w-[1580px] px-4 sm:px-8 lg:px-12">
+        {/* La altura la define solo .footer-content (nav + contacto + placa), no el logo */}
+        <div className="footer-anchor relative">
+          <a
+            id="footer-brand-link"
+            href="/"
+            className="outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070b13]"
+            aria-label="Ir al inicio — AGItheCreator"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              id="footer-brand-logo-img"
+              src="/logos/LogoAGItheCreator.png"
+              alt="AGItheCreator"
+              decoding="async"
+            />
+          </a>
 
-          {/* BLOQUE CENTRAL: El Botón Elástico */}
-          <div className="flex flex-col items-center gap-3">
-             <div className="flex items-center gap-2 text-[9px] font-mono text-white/20 uppercase tracking-[0.3em]">
-               <div className="h-1 w-1 rounded-full animate-pulse" style={{ backgroundColor: activeColor }} />
-               Disponible para proyectos
-             </div>
-             
-             <a 
-              href={`mailto:${email}`}
-              className="group flex items-center justify-center gap-0 hover:gap-4 px-6 py-3 rounded-full border border-white/10 bg-white/2 hover:bg-white/5 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] min-w-52.5 hover:min-w-77.5"
-            >
-              <span className="text-sm font-bold text-white/90 group-hover:text-white/60 transition-colors duration-500">
-                {email}
-              </span>
-              
-              <div className="max-w-0 overflow-hidden group-hover:max-w-30 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex items-center">
-                <span className="text-xs font-black uppercase tracking-[0.2em] whitespace-nowrap pl-2 translate-x-4 group-hover:translate-x-0 transition-transform duration-700" style={{ color: activeColor }}>
-                  ¡Hablemos!
-                </span>
+          <div className="footer-content min-w-0">
+            <div className="footer-main-row relative py-3">
+              <nav
+                className="flex w-full flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5"
+                aria-label="Enlaces del sitio"
+              >
+                {NAV_LINKS.map(({ href, label }, index) => (
+                  <Fragment key={href}>
+                    {index > 0 ? (
+                      <span
+                        className="select-none font-mono text-[11px] text-white/10"
+                        aria-hidden
+                      >
+                        |
+                      </span>
+                    ) : null}
+                    <a href={href} className={navLinkClass}>
+                      {label}
+                    </a>
+                  </Fragment>
+                ))}
+              </nav>
+
+              <div className="footer-contact mt-3 flex flex-col items-center gap-0.5 lg:mt-0 lg:items-end">
+                <a
+                  href={MAILTO}
+                  className="inline-block border border-white/10 bg-white/2 px-2.5 py-1 font-mono text-[10px] tracking-wide text-zinc-300 no-underline transition-[border-color,background-color,color] duration-200 hover:border-white/16 hover:bg-white/4 hover:text-zinc-100 sm:text-[11px]"
+                >
+                  {EMAIL}
+                </a>
+                <p className="text-[9px] text-zinc-600 sm:text-[10px]">Respondo personalmente</p>
               </div>
-
-              <div className="p-1.5 rounded-full ml-2 shrink-0" style={{ backgroundColor: `${activeColor}15` }}>
-                <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-500 group-hover:rotate-45" style={{ color: activeColor }} />
-              </div>
-            </a>
-          </div>
-
-          {/* BLOQUE DERECHO: Infraestructura Ensanchada */}
-          <div className="flex items-center gap-10">
-            <div className="flex flex-col items-end gap-2.5">
-               <p className="text-[9px] font-black uppercase tracking-[0.4em] text-white/20">Infraestructura</p>
-               <div className="flex items-center gap-8">
-                  <a href={linkedinUrl} target="_blank" rel="noreferrer" className="text-[11px] font-bold text-white/40 hover:text-white transition-colors tracking-widest">LINKEDIN</a>
-                  <a href={githubUrl} target="_blank" rel="noreferrer" className="text-[11px] font-bold text-white/40 hover:text-white transition-colors tracking-widest">GITHUB</a>
-                  <a href={cvUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-[11px] font-bold text-white/40 hover:text-white transition-colors tracking-widest">
-                    CV <Download className="h-3 w-3" />
-                  </a>
-               </div>
             </div>
-            
-            <div className="h-10 w-px bg-white/5 hidden md:block" />
-            
-            <div className="text-right flex flex-col gap-0.5">
-              <p className="text-[11px] font-bold text-white/60 tracking-tight font-sans">© {year} ABEL GONZÁLEZ</p>
-              <p className="text-[9px] text-white/20 uppercase tracking-widest font-mono">España / Remoto</p>
+
+            <div className="flex flex-col items-center gap-2.5 pb-3 pt-0.5">
+              <div
+                className="h-px w-[min(72%,20rem)] bg-white/20 sm:w-[min(68%,24rem)]"
+                role="presentation"
+                aria-hidden
+              />
+              <p className="text-center font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500 opacity-40">
+                AGITHECREATOR HECHO EN VALLADOLID · ESPAÑA © 2026
+              </p>
             </div>
           </div>
-
         </div>
       </div>
     </footer>
