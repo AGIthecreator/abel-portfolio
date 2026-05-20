@@ -20,6 +20,7 @@ import {
   useRef,
   useState,
   type ReactNode,
+  type RefObject,
   type MouseEvent as ReactMouseEvent,
 } from "react";
 
@@ -105,7 +106,10 @@ export const HERO_DESK_CMD_PARTS = {
   desktop: "lg:right-[-20px] lg:bottom-[-45px] lg:w-[650px]",
 } as const;
 
-/** Móvil/tablet: mismas posiciones relativas que escritorio (absolute dentro del lienzo escalado). */
+/**
+ * Móvil/tablet: mismas posiciones % y px que escritorio, dentro de un artboard fijo
+ * que luego se escala al ancho del contenedor (no al % del viewport estrecho).
+ */
 export const HERO_DESK_MOBILE_GOOGLE_PARTS = {
   base: "hero-desk-window absolute overflow-visible",
   z: "z-10",
@@ -115,13 +119,13 @@ export const HERO_DESK_MOBILE_GOOGLE_PARTS = {
 export const HERO_DESK_MOBILE_SERVICES_PARTS = {
   base: "hero-desk-window absolute overflow-visible",
   z: "z-20",
-  position: "left-[35%] top-[-8px] w-[500px]",
+  position: "left-[35%] top-[-20px] w-[520px]",
 } as const;
 
 export const HERO_DESK_MOBILE_CMD_PARTS = {
   base: "hero-desk-window absolute overflow-visible",
   z: "z-50",
-  position: "right-[-20px] bottom-[-45px] w-[650px]",
+  position: "right-[-12px] bottom-[-45px] w-[480px]",
 } as const;
 
 function joinDeskClasses(parts: readonly string[]) {
@@ -132,21 +136,13 @@ function joinDeskClasses(parts: readonly string[]) {
 export const HERO_DESK_STAGE_DESKTOP_CLASS =
   "relative overflow-visible lg:block lg:min-h-[560px] lg:pb-52 lg:pt-0";
 
-/** Lienzo móvil/tablet: altura fija de flujo (scale no reduce el espacio en documento). */
-export const HERO_DESK_MOBILE_STAGE_CLASS = joinDeskClasses([
-  "relative block w-full min-w-0 overflow-visible",
-  "max-md:h-[420px] md:max-lg:h-[480px]",
-]);
+/** Ancho lógico del mazo (proporciones de escritorio); solo &lt;lg. */
+const HERO_DESK_ARTBOARD_W = 980;
+/** min-h 560 + pb-52 */
+const HERO_DESK_ARTBOARD_H = 768;
 
-/** Contenedor interno del mazo (pb-52 ancla el CMD). */
+/** Contenedor interno del mazo (pb-52 ancla el bottom del CMD). */
 export const HERO_DESK_SCALE_INNER = "relative min-h-[560px] w-full pb-52";
-
-/** Escala proporcional solo en &lt;lg; escritorio no usa este wrapper. */
-export const HERO_DESK_SCALE_WRAPPER = joinDeskClasses([
-  "w-full min-w-0 max-w-full origin-top",
-  "max-sm:h-[384px] sm:max-md:h-[461px] md:max-lg:h-[576px]",
-  "max-sm:scale-[0.5] sm:max-md:scale-[0.6] md:max-lg:scale-[0.75]",
-]);
 
 type HeroStatsMatplotlibPanelProps = {
   variant: "efficiency" | "inefficiency";
@@ -364,6 +360,47 @@ function useBelowLg() {
     return () => mq.removeEventListener("change", update);
   }, []);
   return belowLg;
+}
+
+/** Escala el artboard al ancho del contenedor; mantiene la misma distribución que escritorio. */
+function useHeroDeskArtboardScale(containerRef: RefObject<HTMLDivElement | null>) {
+  const totalH = HERO_DESK_ARTBOARD_H;
+
+  const [layout, setLayout] = useState({
+    scale: 0.4,
+    flowHeight: Math.ceil(totalH * 0.4),
+    topInset: 88,
+  });
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const update = () => {
+      const available = el.clientWidth;
+      const scale = Math.min(0.82, Math.max(0.3, (available - 8) / HERO_DESK_ARTBOARD_W));
+      const portrait = window.matchMedia("(orientation: portrait)").matches;
+      const topInset = portrait ? Math.round(100 * scale) : Math.round(48 * scale);
+      setLayout({
+        scale,
+        flowHeight: Math.ceil(totalH * scale) + topInset,
+        topInset,
+      });
+    };
+
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    window.addEventListener("resize", update);
+    window.addEventListener("orientationchange", update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+    };
+  }, [containerRef]);
+
+  return layout;
 }
 
 function CmdSyntaxLine({ text }: { text: string }) {
@@ -912,26 +949,40 @@ function EngineerDeskStack({
     );
   }
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scale, flowHeight, topInset } = useHeroDeskArtboardScale(containerRef);
+
   return (
     <div
-      className="hero-desk-stack relative mx-auto w-full min-w-0 max-lg:mt-6 max-lg:overflow-x-clip overflow-visible"
+      ref={containerRef}
+      className="hero-desk-stack relative mx-auto w-full min-w-0 overflow-x-clip overflow-y-visible"
       {...rootProps}
     >
-      <div className={HERO_DESK_SCALE_WRAPPER}>
-        <div className={HERO_DESK_MOBILE_STAGE_CLASS}>
-          <motion.div
-            className={HERO_DESK_SCALE_INNER}
-            initial={false}
-            animate={float ? { y: [0, -7, 0] } : { y: 0 }}
-            transition={
-              float
-                ? { duration: 4.6, repeat: Infinity, repeatType: "loop", ease: "easeInOut" }
-                : { duration: 0 }
-            }
+      <div className="relative w-full min-w-0" style={{ height: flowHeight }}>
+        <motion.div
+          className="absolute left-1/2 -translate-x-1/2"
+          style={{ top: topInset }}
+          initial={false}
+          animate={float ? { y: [0, -7, 0] } : { y: 0 }}
+          transition={
+            float
+              ? { duration: 4.6, repeat: Infinity, repeatType: "loop", ease: "easeInOut" }
+              : { duration: 0 }
+          }
+        >
+          <div
+            style={{
+              width: HERO_DESK_ARTBOARD_W,
+              height: HERO_DESK_ARTBOARD_H,
+              transform: `scale(${scale})`,
+              transformOrigin: "top center",
+            }}
           >
-            {deskWindows}
-          </motion.div>
-        </div>
+            <div className={HERO_DESK_SCALE_INNER} style={{ width: HERO_DESK_ARTBOARD_W }}>
+              {deskWindows}
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
@@ -970,7 +1021,7 @@ export function Hero() {
         </div>
 
         <div className="relative z-10 mx-auto flex w-full max-w-[1580px] min-h-0 flex-1 items-center overflow-visible px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
-          <div className="grid w-full min-w-0 items-center gap-5 overflow-visible max-lg:gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 xl:gap-16">
+          <div className="grid w-full min-w-0 items-start gap-8 overflow-visible max-lg:gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center lg:gap-14 xl:gap-16">
             <motion.div
               initial={{ opacity: 0, x: -28 }}
               animate={{ opacity: 1, x: 0 }}
@@ -1066,7 +1117,7 @@ export function Hero() {
               </p>
             </motion.div>
 
-            <div className="relative z-40 min-w-0 overflow-visible max-lg:-mb-28 lg:-mb-52 xl:-mb-56">
+            <div className="relative z-40 min-w-0 overflow-visible max-lg:-mb-24 max-lg:pt-1 lg:-mb-52 xl:-mb-56">
               <div className="relative z-1">
                 <EngineerDeskStack
                   reduceMotion={reduceMotion}
