@@ -22,6 +22,11 @@ const StrategicProfile = dynamic(
   { ssr: false }
 );
 
+const WhatIBuild = dynamic(
+  () => import("@/components/sections/WhatIBuild").then((m) => m.WhatIBuild),
+  { ssr: false }
+);
+
 // --- COMPONENTE SKELETON ---
 
 function Skeleton({ h }: { h: number }) {
@@ -56,6 +61,14 @@ export function DeferredStrategicProfile() {
   return (
     <DeferredMount fallback={<Skeleton h={1100} />}>
       <StrategicProfile />
+    </DeferredMount>
+  );
+}
+
+export function DeferredWhatIBuild() {
+  return (
+    <DeferredMount fallback={<Skeleton h={900} />}>
+      <WhatIBuild />
     </DeferredMount>
   );
 }

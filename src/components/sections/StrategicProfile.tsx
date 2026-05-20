@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { FadeIn } from "@/components/motion/FadeIn";
+import { EvidenceTestimonialsGrid } from "@/components/sections/EvidenceTestimonials";
 
 const DEEP_BLACK = "#070b13";
 
@@ -947,11 +948,7 @@ export function StrategicProfile() {
             </FadeIn>
 
             <FadeIn delay={0.05} className="mt-4 sm:mt-5">
-              <div className="mx-auto grid max-w-6xl grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-                {TESTIMONIALS.map((t) => (
-                  <TestimonialCard key={t.name} {...t} />
-                ))}
-              </div>
+              <EvidenceTestimonialsGrid />
             </FadeIn>
           </div>
         </div>
