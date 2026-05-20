@@ -58,7 +58,7 @@ export function SiteNavbar() {
             id="navbar-brand-link"
             href="/"
             onClick={scrollToTopCleanUrl}
-            className="relative z-20 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070b13]"
+            className="relative z-20 max-lg:min-w-0 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070b13]"
             aria-label="Ir al inicio"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -75,10 +75,10 @@ export function SiteNavbar() {
         {/* Celda central: reserva hueco flexible (el menú va en <nav> absoluto al header) */}
         <div className="min-h-0 min-w-0" aria-hidden />
 
-        <div className="relative z-20 justify-self-end pl-2 sm:pl-3">
+        <div className="relative z-20 min-w-0 shrink-0 justify-self-end pl-1 max-lg:pl-2 sm:pl-3">
           <a
             href={CTA_MAIL}
-            className="whitespace-nowrap border border-white/14 bg-transparent px-3 py-2 text-center text-[10px] font-semibold uppercase leading-snug tracking-[0.12em] text-zinc-200 no-underline transition-[background-color,border-color,color] duration-200 hover:border-white/22 hover:bg-white/[0.035] hover:text-white sm:px-3.5 sm:text-[11px] sm:tracking-[0.14em]"
+            className="whitespace-nowrap border border-white/14 bg-transparent px-3 py-2 text-center text-[10px] font-semibold uppercase leading-snug tracking-[0.12em] text-zinc-200 no-underline transition-[background-color,border-color,color] duration-200 hover:border-white/22 hover:bg-white/[0.035] hover:text-white max-lg:px-2.5 max-lg:py-1.5 max-lg:text-[9px] max-lg:tracking-widest sm:px-3.5 sm:text-[11px] sm:tracking-[0.14em]"
           >
             Ver qué necesita tu negocio
           </a>

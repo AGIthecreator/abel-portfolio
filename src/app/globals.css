@@ -501,3 +501,20 @@ next-route-announcer,
   object-fit: contain !important;
   object-position: left center !important;
 }
+
+/* Móvil / tablet: escala el logo por altura (ancho proporcional, sin recortar) */
+@media (max-width: 1023px) {
+  #navbar-brand-link {
+    max-height: 2.75rem !important;
+    min-width: 0 !important;
+    flex-shrink: 1 !important;
+  }
+
+  #navbar-brand-logo-img {
+    height: 2.5rem !important;
+    min-height: 0 !important;
+    max-height: 2.5rem !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+}
