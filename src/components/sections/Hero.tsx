@@ -363,7 +363,10 @@ function useBelowLg() {
 }
 
 /** Escala el artboard al ancho del contenedor; mantiene la misma distribución que escritorio. */
-function useHeroDeskArtboardScale(containerRef: RefObject<HTMLDivElement | null>) {
+function useHeroDeskArtboardScale(
+  containerRef: RefObject<HTMLDivElement | null>,
+  enabled: boolean,
+) {
   const totalH = HERO_DESK_ARTBOARD_H;
 
   const [layout, setLayout] = useState({
@@ -373,10 +376,12 @@ function useHeroDeskArtboardScale(containerRef: RefObject<HTMLDivElement | null>
   });
 
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
+    if (!enabled) return;
 
     const update = () => {
+      const el = containerRef.current;
+      if (!el) return;
+
       const available = el.clientWidth;
       const scale = Math.min(0.82, Math.max(0.3, (available - 8) / HERO_DESK_ARTBOARD_W));
       const portrait = window.matchMedia("(orientation: portrait)").matches;
@@ -389,16 +394,21 @@ function useHeroDeskArtboardScale(containerRef: RefObject<HTMLDivElement | null>
     };
 
     update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
+    const raf = requestAnimationFrame(update);
+
+    const el = containerRef.current;
+    const ro = el ? new ResizeObserver(update) : null;
+    if (el && ro) ro.observe(el);
+
     window.addEventListener("resize", update);
     window.addEventListener("orientationchange", update);
     return () => {
-      ro.disconnect();
+      cancelAnimationFrame(raf);
+      ro?.disconnect();
       window.removeEventListener("resize", update);
       window.removeEventListener("orientationchange", update);
     };
-  }, [containerRef]);
+  }, [containerRef, enabled]);
 
   return layout;
 }
@@ -918,6 +928,8 @@ function EngineerDeskStack({
 }) {
   const belowLg = useBelowLg();
   const float = belowLg && !reduceMotion;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scale, flowHeight, topInset } = useHeroDeskArtboardScale(containerRef, belowLg);
 
   const rootProps = {
     onMouseEnter: () => onWindowsHover(true),
@@ -948,9 +960,6 @@ function EngineerDeskStack({
       </div>
     );
   }
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scale, flowHeight, topInset } = useHeroDeskArtboardScale(containerRef);
 
   return (
     <div
