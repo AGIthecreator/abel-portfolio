@@ -113,7 +113,7 @@ export const HERO_DESK_CMD_PARTS = {
 export const HERO_DESK_MOBILE_GOOGLE_PARTS = {
   base: "hero-desk-window absolute overflow-visible",
   z: "z-10",
-  position: "left-[30%] -translate-x-[40%] top-[-125px] w-[680px]",
+  position: "left-[29%] -translate-x-[40%] top-[-125px] w-[680px]",
 } as const;
 
 export const HERO_DESK_MOBILE_SERVICES_PARTS = {
@@ -125,7 +125,7 @@ export const HERO_DESK_MOBILE_SERVICES_PARTS = {
 export const HERO_DESK_MOBILE_CMD_PARTS = {
   base: "hero-desk-window absolute overflow-visible",
   z: "z-50",
-  position: "right-[42px] bottom-[-58px] w-[500px]",
+  position: "right-[82px] bottom-[58px] w-[500px]",
 } as const;
 
 function joinDeskClasses(parts: readonly string[]) {
@@ -141,7 +141,7 @@ const HERO_DESK_ARTBOARD_W = 980;
 /** min-h 560 + pb móvil */
 const HERO_DESK_ARTBOARD_H = 768;
 /** Sangrado inferior del CMD hacia la franja StripSystemStatus. */
-const HERO_DESK_MOBILE_STRIP_OVERLAP = 56;
+const HERO_DESK_MOBILE_STRIP_OVERLAP = 48;
 
 /** Contenedor interno del mazo (pb-52 ancla el bottom del CMD). */
 export const HERO_DESK_SCALE_INNER = "relative min-h-[560px] w-full pb-52";
@@ -989,7 +989,7 @@ function EngineerDeskStack({
             style={{
               width: HERO_DESK_ARTBOARD_W,
               height: HERO_DESK_ARTBOARD_H,
-              transform: `scale(${scale}) translateX(4%)`,
+              transform: `scale(${scale}) translateX(2.5%)`,
               transformOrigin: "top center",
             }}
           >
@@ -1132,7 +1132,7 @@ export function Hero() {
               </p>
             </motion.div>
 
-            <div className="relative z-40 min-w-0 overflow-visible max-lg:-mb-36 max-lg:pt-1 lg:-mb-52 xl:-mb-56">
+            <div className="relative z-40 min-w-0 overflow-visible max-lg:-mb-38 max-lg:pt-1 lg:-mb-52 xl:-mb-56">
               <div className="relative z-1">
                 <EngineerDeskStack
                   reduceMotion={reduceMotion}
