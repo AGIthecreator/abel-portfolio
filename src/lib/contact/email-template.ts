@@ -121,3 +121,39 @@ export function sanitizeContactFields(name: string, email: string, message: stri
     safeMessageHtml: escapeHtmlWithBreaks(message),
   };
 }
+
+const CONFIRM_LOGO_URL = "https://agithecreator.com/logos/NavbarAGI.png";
+
+/** Confirmación automática al remitente del formulario. */
+export function buildClientConfirmationEmailHtml(): string {
+  return `
+<div style="margin:0;padding:32px 20px;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif;">
+  <div style="max-width:520px;margin:0 auto;background:#ffffff;border-radius:12px;padding:32px 28px;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
+    <div style="text-align:center;margin:0 0 28px;">
+      <img
+        src="${CONFIRM_LOGO_URL}"
+        alt="AGI theCreator"
+        width="120"
+        style="display:block;margin:0 auto;max-width:120px;width:120px;height:auto;border:0;"
+      />
+    </div>
+    <div style="font-size:15px;line-height:1.75;color:#1a1a1a;">
+      <p style="margin:0 0 18px;">Hola,</p>
+      <p style="margin:0 0 18px;">
+        Solo te escribo de forma automática para confirmarte que tu mensaje me ha llegado correctamente.
+      </p>
+      <p style="margin:0 0 18px;">
+        Lo leeré hoy mismo y te daré una respuesta en cuanto pueda sentarme a revisarlo con calma (normalmente en menos de 24h).
+      </p>
+      <p style="margin:0 0 18px;">Hablamos pronto.</p>
+      <p style="margin:0;">Abel — AGI theCreator</p>
+    </div>
+    <div style="margin-top:32px;padding-top:20px;border-top:1px solid rgba(0,0,0,0.08);">
+      <p style="margin:0;font-family:ui-monospace,'Courier New',monospace;font-size:10px;line-height:1.5;letter-spacing:0.04em;color:#888;opacity:0.55;">
+        REF: AGISTUDIO_CONFIRM_MSG // SISTEMA OPERATIVO
+      </p>
+    </div>
+  </div>
+</div>
+`;
+}

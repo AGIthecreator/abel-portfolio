@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import { NextResponse } from "next/server";
 import {
+  buildClientConfirmationEmailHtml,
   buildContactEmailHtml,
   sanitizeContactFields,
 } from "@/lib/contact/email-template";
@@ -8,8 +9,13 @@ import { getClientIp, isRateLimited } from "@/lib/contact/rate-limit";
 import { contactFormSchema } from "@/lib/contact/schema";
 import { stripHeaderInjection } from "@/lib/contact/sanitize";
 
-/** Remitente verificado en Resend (dominio agithecreator.com). */
-const RESEND_FROM = "AGI <contacto@agithecreator.com>";
+/** Notificación interna (lead). */
+const RESEND_FROM_LEAD = "AGI <contacto@agithecreator.com>";
+
+/** Confirmación al cliente. */
+const RESEND_FROM_CLIENT = "Abel | AGI theCreator <contacto@agithecreator.com>";
+
+const CLIENT_CONFIRM_SUBJECT = "Confirmado: He recibido tu mensaje";
 
 function getMailConfig() {
   const apiKey = process.env.RESEND_API_KEY;
@@ -67,13 +73,39 @@ export async function POST(req: Request) {
     const resend = new Resend(config.apiKey);
     const subjectName = cleanName || "Sin nombre";
 
-    await resend.emails.send({
-      from: RESEND_FROM,
-      to: config.contactEmail,
-      subject: `Nuevo contacto · ${subjectName}`,
-      replyTo: cleanEmail,
-      html: buildContactEmailHtml({ safeName, safeEmail, safeMessageHtml }),
-    });
+    const [leadResult, clientResult] = await Promise.allSettled([
+      resend.emails.send({
+        from: RESEND_FROM_LEAD,
+        to: config.contactEmail,
+        subject: `Nuevo contacto · ${subjectName}`,
+        replyTo: cleanEmail,
+        html: buildContactEmailHtml({ safeName, safeEmail, safeMessageHtml }),
+      }),
+      resend.emails.send({
+        from: RESEND_FROM_CLIENT,
+        to: cleanEmail,
+        subject: CLIENT_CONFIRM_SUBJECT,
+        html: buildClientConfirmationEmailHtml(),
+      }),
+    ]);
+
+    if (leadResult.status === "rejected") {
+      return NextResponse.json({ error: "Error interno" }, { status: 500 });
+    }
+
+    if (leadResult.value.error) {
+      return NextResponse.json({ error: "Error interno" }, { status: 500 });
+    }
+
+    // La confirmación al cliente es best-effort: no bloquea el éxito del formulario
+    if (clientResult.status === "rejected" || clientResult.value?.error) {
+      console.error("[contact] confirmación al cliente no enviada", {
+        reason:
+          clientResult.status === "rejected"
+            ? clientResult.reason
+            : clientResult.value.error,
+      });
+    }
 
     return NextResponse.json({ success: true });
   } catch {
