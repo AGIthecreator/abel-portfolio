@@ -13,13 +13,37 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-title: "Abel | Arquitecto Digital y Experto en Automatización",
-description: "Portfolio de Abel: Especialista en crear ecosistemas digitales escalables y seguros mediante automatizaciones con Make, Airtable y Supabase.",
-icons: {
-icon: { url: "/logos/FaviconAGI.png", type: "image/png", sizes: "512x512" },
-shortcut: { url: "/logos/FaviconAGI.png", type: "image/png", sizes: "512x512" },
-apple: { url: "/apple-icon.png", type: "image/png", sizes: "180x180" },
-},
+  title: "Abel González | Ingeniería de Sistemas y Eficiencia Operativa",
+  description:
+    "Desarrollo software propio para eliminar tareas manuales en negocios. Recupera tu tiempo y mejora tus márgenes con sistemas que funcionan solos y sin cuotas mensuales.",
+  keywords: [
+    "automatización de negocios",
+    "desarrollo de software a medida",
+    "ingeniería de sistemas",
+    "ahorro de tiempo operativa",
+    "eliminar tareas manuales",
+    "sistemas de pago Stripe",
+    "SaaS Valladolid",
+    "programador Valladolid",
+    "consultoría tecnológica España",
+    "software para clínicas",
+    "automatización para gestorías",
+    "AGI theCreator",
+  ],
+  openGraph: {
+    title: "Abel González | Sistemas que trabajan por ti",
+    description:
+      "Programo el motor que devuelve el tiempo a tu negocio. Tecnología de autor en Valladolid.",
+    url: "https://agithecreator.com",
+    siteName: "Abel González - AGI",
+    locale: "es_ES",
+    type: "website",
+  },
+  icons: {
+    icon: { url: "/logos/FaviconAGI.png", type: "image/png", sizes: "512x512" },
+    shortcut: { url: "/logos/FaviconAGI.png", type: "image/png", sizes: "512x512" },
+    apple: { url: "/apple-icon.png", type: "image/png", sizes: "180x180" },
+  },
 };
 
 export default function RootLayout({
@@ -29,7 +53,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#030014]`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#070b13]`}>
         {children}
       </body>
     </html>
