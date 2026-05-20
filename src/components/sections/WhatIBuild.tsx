@@ -2,12 +2,8 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { RotateCw } from "lucide-react";
-
 const SECTION_BG = "#070b13";
 const POLAROID_CAPTION = "#F3F1EB";
-const CTA_MAIL_PRIMARY =
-  "mailto:contacto@agithecreator.com?subject=Ver%20c%C3%B3mo%20ser%C3%ADa%20en%20mi%20caso";
 
 const IMAGE_SIZES = "(max-width: 768px) 400px, 520px";
 /** Eje central ~12,5 % más ancho para jerarquía */
@@ -116,8 +112,8 @@ function PolaroidFigure({
   isAxis?: boolean;
 }) {
   const widthClass = isAxis
-    ? "w-[225px] lg:w-[292px]"
-    : "w-[200px] lg:w-[260px]";
+    ? "w-[min(100%,calc(100vw-2.5rem))] max-w-[225px] sm:max-w-none sm:w-[225px] lg:w-[292px]"
+    : "w-[min(100%,calc(100vw-2.5rem))] max-w-[200px] sm:max-w-none sm:w-[200px] lg:w-[260px]";
 
   return (
     <motion.figure
@@ -265,14 +261,14 @@ export function WhatIBuild() {
   return (
     <section
       id="entregables"
-      className="relative -mt-6 scroll-mt-24 w-full overflow-visible pt-16 sm:-mt-8 sm:pt-20"
+      className="relative -mt-6 scroll-mt-24 w-full overflow-x-clip overflow-y-visible pt-16 sm:-mt-8 sm:pt-20"
       style={{ backgroundColor: SECTION_BG }}
       aria-label="Mesa de trabajo — evidencias"
     >
       <DotPattern />
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pb-12 sm:px-6 lg:px-10 sm:pb-16">
-        <div className="relative mx-auto w-full">
+      <div className="relative z-10 mx-auto w-full max-w-6xl overflow-x-clip px-4 pb-12 sm:px-6 lg:px-10 sm:pb-16">
+        <div className="relative mx-auto w-full min-w-0 max-w-full overflow-x-clip">
           <DraftingConnectors />
 
           <div className="grid grid-cols-1 gap-y-4 sm:gap-y-5 lg:grid-cols-12 lg:gap-x-6 lg:gap-y-3">
@@ -281,7 +277,7 @@ export function WhatIBuild() {
               <EvidencePiece
                 item={cafe}
                 index={0}
-                className="-translate-x-2 sm:-translate-x-3 lg:-translate-x-6"
+                className="max-sm:translate-x-0 -translate-x-2 sm:-translate-x-3 lg:-translate-x-6"
               />
             </div>
 
@@ -306,7 +302,7 @@ export function WhatIBuild() {
               <EvidencePiece
                 item={ingenieria}
                 index={3}
-                className="translate-x-2 sm:translate-x-3 lg:translate-x-5"
+                className="max-sm:translate-x-0 translate-x-2 sm:translate-x-3 lg:translate-x-5"
               />
             </div>
 
@@ -315,7 +311,7 @@ export function WhatIBuild() {
               <EvidencePiece
                 item={comercio}
                 index={4}
-                className="translate-x-3 sm:translate-x-5 lg:translate-x-7"
+                className="max-sm:translate-x-0 translate-x-3 sm:translate-x-5 lg:translate-x-7"
               />
             </div>
           </div>
@@ -337,14 +333,6 @@ export function WhatIBuild() {
           <p className="mx-auto mt-8 max-w-md text-[13px] leading-relaxed text-zinc-500 sm:text-sm">
             Tu tiempo vuelve a estar donde importa.
           </p>
-
-          <a
-            href={CTA_MAIL_PRIMARY}
-            className="mt-10 inline-flex items-center gap-2 rounded-md bg-white px-5 py-3 text-sm font-semibold text-[#05070f] shadow-sm transition-all duration-300 hover:bg-neutral-100 hover:shadow-[0_0_15px_rgba(52,211,153,0.3)] sm:mt-12"
-          >
-            <RotateCw className="h-4 w-4 shrink-0" aria-hidden />
-            Ver cómo sería en mi caso
-          </a>
         </motion.footer>
       </div>
     </section>

@@ -1,4 +1,9 @@
-import { Fragment, type CSSProperties } from "react";
+"use client";
+
+import { Fragment, type CSSProperties, type MouseEvent, useCallback } from "react";
+import Link from "next/link";
+import { useContactModal } from "@/components/contact/ContactModalContext";
+import { handleSectionNavClick } from "@/lib/scroll-to-section";
 
 const EMAIL = "contacto@agithecreator.com";
 const MAILTO = `mailto:${EMAIL}`;
@@ -10,15 +15,24 @@ const FOOTER_SURFACE: CSSProperties = {
 };
 
 const NAV_LINKS = [
-  { href: "#perfil", label: "Qué construyo" },
-  { href: "#entregables", label: "Cómo funciona" },
-  { href: "#contacto", label: "Contacto" },
+  { href: "#entregables", label: "Qué construyo" },
+  { href: "#perfil", label: "Cómo funciona" },
+  { label: "Contacto", opensContact: true },
 ] as const;
 
 const navLinkClass =
   "whitespace-nowrap font-mono text-[11px] uppercase tracking-widest text-zinc-500 no-underline transition-colors duration-200 hover:text-zinc-200";
 
 export function Footer() {
+  const { openModal } = useContactModal();
+
+  const scrollToTopCleanUrl = useCallback((e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "instant" : "smooth" });
+    window.history.replaceState(null, "", "/");
+  }, []);
+
   return (
     <footer
       id="contacto"
@@ -31,11 +45,11 @@ export function Footer() {
       />
 
       <div className="relative z-10 mx-auto max-w-[1580px] px-4 sm:px-8 lg:px-12">
-        {/* La altura la define solo .footer-content (nav + contacto + placa), no el logo */}
         <div className="footer-anchor relative">
-          <a
+          <Link
             id="footer-brand-link"
             href="/"
+            onClick={scrollToTopCleanUrl}
             className="outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070b13]"
             aria-label="Ir al inicio — AGItheCreator"
           >
@@ -46,7 +60,7 @@ export function Footer() {
               alt="AGItheCreator"
               decoding="async"
             />
-          </a>
+          </Link>
 
           <div className="footer-content min-w-0">
             <div className="footer-main-row relative py-3">
@@ -54,8 +68,8 @@ export function Footer() {
                 className="flex w-full flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5"
                 aria-label="Enlaces del sitio"
               >
-                {NAV_LINKS.map(({ href, label }, index) => (
-                  <Fragment key={href}>
+                {NAV_LINKS.map((item, index) => (
+                  <Fragment key={"href" in item ? item.href : item.label}>
                     {index > 0 ? (
                       <span
                         className="select-none font-mono text-[11px] text-white/10"
@@ -64,9 +78,23 @@ export function Footer() {
                         |
                       </span>
                     ) : null}
-                    <a href={href} className={navLinkClass}>
-                      {label}
-                    </a>
+                    {"href" in item ? (
+                      <a
+                        href={item.href}
+                        className={navLinkClass}
+                        onClick={(e) => handleSectionNavClick(e, item.href)}
+                      >
+                        {item.label}
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={openModal}
+                        className={`${navLinkClass} cursor-pointer border-0 bg-transparent p-0 font-inherit uppercase`}
+                      >
+                        {item.label}
+                      </button>
+                    )}
                   </Fragment>
                 ))}
               </nav>

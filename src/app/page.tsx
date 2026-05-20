@@ -1,4 +1,6 @@
 import { SiteNavbar } from "@/components/SiteNavbar";
+import { ContactModal } from "@/components/contact/ContactModal";
+import { ContactModalProvider } from "@/components/contact/ContactModalContext";
 import { Hero } from "@/components/sections/Hero";
 import { Footer } from "@/components/sections/Footer";
 import {
@@ -12,7 +14,8 @@ import StripExecution from "@/components/sections/Strips/StripExecution";
 
 export default function Page() {
   return (
-    <div className="relative min-h-screen bg-[#030014]">
+    <ContactModalProvider>
+      <div className="relative min-h-screen overflow-x-clip bg-[#030014]">
       {/* Fondo Global */}
       <div className="pointer-events-none fixed inset-0 z-0">
         <div
@@ -51,6 +54,8 @@ export default function Page() {
       <DeferredWhatIBuild />
 
       <Footer />
-    </div>
+      <ContactModal />
+      </div>
+    </ContactModalProvider>
   );
 }

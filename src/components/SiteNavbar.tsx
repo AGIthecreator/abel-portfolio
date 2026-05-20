@@ -1,18 +1,28 @@
 "use client";
 
 import type { CSSProperties, MouseEvent } from "react";
+import Link from "next/link";
 import { useCallback } from "react";
+import { useContactModal } from "@/components/contact/ContactModalContext";
+import { handleSectionNavClick } from "@/lib/scroll-to-section";
 
 const NAV = [
   { href: "#entregables", label: "Qué construyo" },
   { href: "#perfil", label: "Cómo funciona" },
-  { href: "#proceso", label: "Proceso" },
-  { href: "#contacto", label: "Contacto" },
+  { label: "Contacto", opensContact: true },
 ] as const;
 
-const CTA_MAIL =
-  "mailto:contacto@agithecreator.com?subject=" +
-  encodeURIComponent("Ver qué necesita mi negocio");
+const navLinkClass =
+  "pointer-events-auto group relative whitespace-nowrap py-1 text-[15px] font-medium tracking-[-0.015em] text-zinc-300 no-underline transition-colors duration-200 hover:text-zinc-100";
+
+const navLinkClassMobile =
+  "group relative py-0.5 text-[14px] font-medium tracking-[-0.01em] text-zinc-400 no-underline transition-colors hover:text-zinc-200";
+
+const navUnderlineClass =
+  "pointer-events-none absolute -bottom-0.5 left-1/2 h-0.5 w-[2.35rem] max-w-[70%] -translate-x-1/2 origin-center scale-x-0 bg-emerald-500/90 transition-transform duration-300 ease-out motion-safe:group-hover:scale-x-100";
+
+const navUnderlineClassMobile =
+  "pointer-events-none absolute -bottom-px left-1/2 h-0.5 w-8 -translate-x-1/2 origin-center scale-x-0 bg-emerald-500/90 transition-transform duration-300 ease-out motion-safe:group-hover:scale-x-100";
 
 const NAV_BAR_BG: CSSProperties = {
   backgroundColor: "#070b13",
@@ -24,6 +34,8 @@ const NAV_BAR_BG: CSSProperties = {
  * Altura de marca = fila `h-16`. Tamaño real: `#navbar-brand-link` / `#navbar-brand-logo-img` al final de globals.css (sin @layer).
  */
 export function SiteNavbar() {
+  const { openModal } = useContactModal();
+
   const scrollToTopCleanUrl = useCallback((e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -37,24 +49,34 @@ export function SiteNavbar() {
         className="pointer-events-none absolute left-1/2 top-8 z-30 hidden max-w-[calc(100%-16rem)] -translate-x-1/2 -translate-y-1/2 lg:flex lg:items-center lg:justify-center lg:gap-9 xl:max-w-none xl:gap-11"
         aria-label="Secciones"
       >
-        {NAV.map(({ href, label }) => (
-          <a
-            key={href}
-            href={href}
-            className="pointer-events-auto group relative whitespace-nowrap py-1 text-[13px] font-medium tracking-[-0.015em] text-zinc-300 no-underline transition-colors duration-200 hover:text-zinc-100"
-          >
-            {label}
-            <span
-              className="pointer-events-none absolute -bottom-0.5 left-1/2 h-0.5 w-[2.35rem] max-w-[70%] -translate-x-1/2 origin-center scale-x-0 bg-emerald-500/90 transition-transform duration-300 ease-out motion-safe:group-hover:scale-x-100"
-              aria-hidden
-            />
-          </a>
-        ))}
+        {NAV.map((item) =>
+          "href" in item ? (
+            <a
+              key={item.href}
+              href={item.href}
+              className={navLinkClass}
+              onClick={(e) => handleSectionNavClick(e, item.href)}
+            >
+              {item.label}
+              <span className={navUnderlineClass} aria-hidden />
+            </a>
+          ) : (
+            <button
+              key={item.label}
+              type="button"
+              onClick={openModal}
+              className={`${navLinkClass} cursor-pointer border-0 bg-transparent p-0 font-inherit`}
+            >
+              {item.label}
+              <span className={navUnderlineClass} aria-hidden />
+            </button>
+          ),
+        )}
       </nav>
 
       <div className="relative mx-auto grid h-16 min-h-16 max-h-16 w-full max-w-[1580px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 px-4 sm:gap-x-4 sm:px-8 lg:px-12">
         <div className="min-w-0">
-          <a
+          <Link
             id="navbar-brand-link"
             href="/"
             onClick={scrollToTopCleanUrl}
@@ -69,36 +91,39 @@ export function SiteNavbar() {
               fetchPriority="high"
               decoding="async"
             />
-          </a>
+          </Link>
         </div>
 
         {/* Celda central: reserva hueco flexible (el menú va en <nav> absoluto al header) */}
         <div className="min-h-0 min-w-0" aria-hidden />
 
-        <div className="relative z-20 min-w-0 shrink-0 justify-self-end pl-1 max-lg:pl-2 sm:pl-3">
-          <a
-            href={CTA_MAIL}
-            className="whitespace-nowrap border border-white/14 bg-transparent px-3 py-2 text-center text-[10px] font-semibold uppercase leading-snug tracking-[0.12em] text-zinc-200 no-underline transition-[background-color,border-color,color] duration-200 hover:border-white/22 hover:bg-white/[0.035] hover:text-white max-lg:px-2.5 max-lg:py-1.5 max-lg:text-[9px] max-lg:tracking-widest sm:px-3.5 sm:text-[11px] sm:tracking-[0.14em]"
-          >
-            Ver qué necesita tu negocio
-          </a>
-        </div>
+        <div className="min-h-0 min-w-0" aria-hidden />
       </div>
 
       <div className="mx-auto flex max-w-[1580px] flex-wrap items-center justify-center gap-x-5 gap-y-1 border-t border-white/5 px-5 pb-2.5 pt-2 sm:px-8 lg:hidden">
-        {NAV.map(({ href, label }) => (
-          <a
-            key={href}
-            href={href}
-            className="group relative py-0.5 text-[12px] font-medium tracking-[-0.01em] text-zinc-400 no-underline transition-colors hover:text-zinc-200"
-          >
-            {label}
-            <span
-              className="pointer-events-none absolute -bottom-px left-1/2 h-0.5 w-8 -translate-x-1/2 origin-center scale-x-0 bg-emerald-500/90 transition-transform duration-300 ease-out motion-safe:group-hover:scale-x-100"
-              aria-hidden
-            />
-          </a>
-        ))}
+        {NAV.map((item) =>
+          "href" in item ? (
+            <a
+              key={item.href}
+              href={item.href}
+              className={navLinkClassMobile}
+              onClick={(e) => handleSectionNavClick(e, item.href)}
+            >
+              {item.label}
+              <span className={navUnderlineClassMobile} aria-hidden />
+            </a>
+          ) : (
+            <button
+              key={item.label}
+              type="button"
+              onClick={openModal}
+              className={`${navLinkClassMobile} cursor-pointer border-0 bg-transparent p-0 font-inherit`}
+            >
+              {item.label}
+              <span className={navUnderlineClassMobile} aria-hidden />
+            </button>
+          ),
+        )}
       </div>
     </header>
   );
