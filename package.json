@@ -10,6 +10,7 @@
     "generate-favicons": "node scripts/generate-favicons.mjs"
   },
   "dependencies": {
+    "@next/third-parties": "^16.2.6",
     "framer-motion": "^12.34.4",
     "lucide-react": "^0.576.0",
     "next": "^16.2.6",

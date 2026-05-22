@@ -1,5 +1,0 @@
-# https://agithecreator.com
-User-agent: *
-Allow: /
-
-Sitemap: https://agithecreator.com/sitemap.xml
