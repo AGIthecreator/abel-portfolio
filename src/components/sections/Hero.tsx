@@ -23,6 +23,7 @@ import {
   type MouseEvent as ReactMouseEvent,
 } from "react";
 import { useContactModal } from "@/components/contact/ContactModalContext";
+import { trackEvent } from "@/lib/analytics";
 
 const MECHANICAL_TRANSITION = { type: "spring" as const, stiffness: 120, damping: 14 };
 
@@ -1012,6 +1013,11 @@ function EngineerDeskStack({
 
 export function Hero() {
   const { openModal } = useContactModal();
+
+  const handleHeroCtaClick = () => {
+    trackEvent("hero_cta_click", { location: "hero" });
+    openModal();
+  };
   const reduceMotion = usePrefersReducedMotion();
   const [cursorHero, setCursorHero] = useState(false);
   const [formTextFieldHover, setFormTextFieldHover] = useState(false);
@@ -1119,7 +1125,7 @@ export function Hero() {
               <div className="pointer-events-auto flex flex-wrap items-center gap-3 pt-1">
                 <button
                   type="button"
-                  onClick={openModal}
+                  onClick={handleHeroCtaClick}
                   onMouseEnter={() => setDiagnosticHover(true)}
                   onMouseLeave={() => setDiagnosticHover(false)}
                   className="inline-flex items-center gap-2 rounded-md bg-white px-5 py-3 text-sm font-semibold text-[#05070f] shadow-sm transition-colors hover:bg-neutral-100"

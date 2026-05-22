@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { trackEvent } from "@/lib/analytics";
 
 type ContactModalContextValue = {
   openModal: () => void;
@@ -20,7 +21,10 @@ const ContactModalContext = createContext<ContactModalContextValue | null>(null)
 export function ContactModalProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const openModal = useCallback(() => setIsOpen(true), []);
+  const openModal = useCallback(() => {
+    trackEvent("open_contact_modal", { source: "button" });
+    setIsOpen(true);
+  }, []);
   const closeModal = useCallback(() => setIsOpen(false), []);
 
   const value = useMemo(

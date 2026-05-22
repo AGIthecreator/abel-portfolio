@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { CornerTicks } from "@/components/contact/CornerTicks";
 import { useContactModal } from "@/components/contact/ContactModalContext";
 
+import { trackEvent } from "@/lib/analytics";
 import { MAX_MESSAGE_LENGTH } from "@/lib/contact/schema";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -163,6 +164,7 @@ function ContactModalDialog({ open, onClose }: ContactModalDialogProps) {
       });
 
       if (res.ok) {
+        trackEvent("contact_form_submit", { method: "modal_form" });
         setSent(true);
       } else {
         setSubmitError("failed");

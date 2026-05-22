@@ -4,6 +4,7 @@ import type { CSSProperties, MouseEvent } from "react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useContactModal } from "@/components/contact/ContactModalContext";
+import { trackEvent } from "@/lib/analytics";
 import { handleSectionNavClick } from "@/lib/scroll-to-section";
 
 const NAV = [
@@ -45,6 +46,11 @@ export function SiteNavbar() {
   const { openModal } = useContactModal();
   const [scrolled, setScrolled] = useState(false);
 
+  const handleNavbarContactClick = useCallback(() => {
+    trackEvent("navbar_contact_click", { location: "navbar" });
+    openModal();
+  }, [openModal]);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
@@ -83,7 +89,7 @@ export function SiteNavbar() {
             <button
               key={item.label}
               type="button"
-              onClick={openModal}
+              onClick={handleNavbarContactClick}
               className={`${navLinkClass} cursor-pointer border-0 bg-transparent p-0 font-inherit`}
             >
               {item.label}
@@ -135,7 +141,7 @@ export function SiteNavbar() {
             <button
               key={item.label}
               type="button"
-              onClick={openModal}
+              onClick={handleNavbarContactClick}
               className={`${navLinkClassMobile} cursor-pointer border-0 bg-transparent p-0 font-inherit`}
             >
               {item.label}

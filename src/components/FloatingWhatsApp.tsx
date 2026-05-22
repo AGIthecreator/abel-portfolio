@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { useContactModal } from "@/components/contact/ContactModalContext";
+import { trackEvent } from "@/lib/analytics";
 
 const BONE_WHITE = "rgba(243, 241, 235, 0.92)";
 const INK = "#070b13";
@@ -66,6 +67,7 @@ export function FloatingWhatsApp() {
           ? undefined
           : { y: -2, scale: 1.01, transition: { duration: 0.3, ease: "easeOut" } }
       }
+      onClick={() => trackEvent("click_whatsapp", { location: "floating_cta" })}
     >
       <WhatsAppIcon className="h-5 w-5 shrink-0" />
 
