@@ -20,6 +20,12 @@ const NAV_LINKS = [
   { label: "Contacto", opensContact: true },
 ] as const;
 
+const LEGAL_LINKS = [
+  { href: "/legal", label: "Aviso legal" },
+  { href: "/privacy", label: "Privacidad" },
+  { href: "/cookies", label: "Cookies" },
+] as const;
+
 const navLinkClass =
   "whitespace-nowrap font-mono text-[11px] uppercase tracking-widest text-zinc-500 no-underline transition-colors duration-200 hover:text-zinc-200";
 
@@ -111,6 +117,26 @@ export function Footer() {
             </div>
 
             <div className="flex flex-col items-center gap-2.5 pb-3 pt-0.5">
+              <nav
+                className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5"
+                aria-label="Enlaces legales"
+              >
+                {LEGAL_LINKS.map((item, index) => (
+                  <Fragment key={item.href}>
+                    {index > 0 ? (
+                      <span
+                        className="select-none font-mono text-[11px] text-white/10"
+                        aria-hidden
+                      >
+                        |
+                      </span>
+                    ) : null}
+                    <Link href={item.href} className={navLinkClass}>
+                      {item.label}
+                    </Link>
+                  </Fragment>
+                ))}
+              </nav>
               <div
                 className="h-px w-[min(72%,20rem)] bg-white/20 sm:w-[min(68%,24rem)]"
                 role="presentation"
