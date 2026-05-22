@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ContactModal } from "@/components/contact/ContactModal";
+import { ContactModalProvider } from "@/components/contact/ContactModalContext";
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 import "./globals.css";
 
@@ -130,8 +132,11 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#070b13]`}>
-        {children}
-        <FloatingWhatsApp />
+        <ContactModalProvider>
+          {children}
+          <ContactModal />
+          <FloatingWhatsApp />
+        </ContactModalProvider>
       </body>
     </html>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { useContactModal } from "@/components/contact/ContactModalContext";
 
 const BONE_WHITE = "rgba(243, 241, 235, 0.92)";
 const INK = "#070b13";
@@ -43,8 +44,9 @@ function WhatsAppIcon({ className }: { className?: string }) {
 
 export function FloatingWhatsApp() {
   const reduceMotion = useReducedMotion();
+  const { isOpen: contactModalOpen } = useContactModal();
 
-  if (!WHATSAPP_NUMBER) {
+  if (!WHATSAPP_NUMBER || contactModalOpen) {
     return null;
   }
 
@@ -54,7 +56,7 @@ export function FloatingWhatsApp() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Abrir WhatsApp — Te respondo yo"
-      className="fixed bottom-6 right-6 z-60 flex items-center gap-3 rounded-full px-5 py-3 text-[#070b13] shadow-[0_8px_30px_rgba(0,0,0,0.12)] backdrop-blur-sm transition-[box-shadow,transform] duration-300 ease-out hover:shadow-[0_12px_36px_rgba(0,0,0,0.16)] focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070b13]"
+      className="fixed bottom-4 right-4 z-60 flex items-center gap-3 rounded-full px-5 py-3 text-[#070b13] shadow-[0_8px_30px_rgba(0,0,0,0.12)] backdrop-blur-sm transition-[box-shadow,transform] duration-300 ease-out hover:shadow-[0_12px_36px_rgba(0,0,0,0.16)] focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070b13] sm:bottom-6 sm:right-6"
       style={{ backgroundColor: BONE_WHITE, color: INK }}
       initial={reduceMotion ? false : { opacity: 0, y: 16, scale: 0.96 }}
       animate={reduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}

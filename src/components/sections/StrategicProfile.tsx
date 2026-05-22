@@ -139,7 +139,7 @@ function ManifiestoAguarras() {
         {MANIFIESTO_LINES.map((line, i) => (
           <motion.p
             key={line.text}
-            className="whitespace-nowrap text-left font-sans text-[clamp(1.45rem,3vw,2.35rem)] font-light leading-[1.15] tracking-[-0.04em] text-zinc-50/95"
+            className="manifesto-line whitespace-nowrap text-left font-sans text-[clamp(1.45rem,3vw,2.35rem)] font-light leading-[1.15] tracking-[-0.04em] text-zinc-50/95"
             style={{ marginLeft: `${line.indentRem}rem` }}
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -701,7 +701,7 @@ function WhatsAppCaosIntegrado() {
     >
       <div className="relative pt-6 sm:pt-7">
         <div
-          className="pointer-events-none absolute top-0 z-20 -translate-x-1/2"
+          className="wa-chaos-iphone pointer-events-none absolute top-0 z-20 -translate-x-1/2"
           style={{ left: `${WA_IPHONE_LEFT_PERCENT}%` }}
         >
           <IphoneNotificacionesCompleto />
@@ -822,7 +822,7 @@ export function StrategicProfile() {
 
           <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <FadeIn className="mx-auto min-w-0 max-w-4xl text-center">
-              <p className="text-balance font-bold leading-[1.12] tracking-tighter text-zinc-50 text-[clamp(1.35rem,3.8vw,3rem)] sm:whitespace-nowrap">
+              <p className="text-balance font-bold leading-[1.12] tracking-tighter text-zinc-50 text-[clamp(1.35rem,3.8vw,3rem)] lg:whitespace-nowrap">
                 {COPY.heroTitle}
               </p>
               <p className="mx-auto mt-3 max-w-[34ch] text-pretty text-[15px] leading-[1.55] text-zinc-500 sm:max-w-2xl sm:text-base sm:leading-relaxed md:max-w-none md:text-lg lg:whitespace-nowrap">

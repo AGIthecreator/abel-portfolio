@@ -2,7 +2,7 @@
 
 import type { CSSProperties, MouseEvent } from "react";
 import Link from "next/link";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useContactModal } from "@/components/contact/ContactModalContext";
 import { handleSectionNavClick } from "@/lib/scroll-to-section";
 
@@ -24,10 +24,18 @@ const navUnderlineClass =
 const navUnderlineClassMobile =
   "pointer-events-none absolute -bottom-px left-1/2 h-0.5 w-8 -translate-x-1/2 origin-center scale-x-0 bg-emerald-500/90 transition-transform duration-300 ease-out motion-safe:group-hover:scale-x-100";
 
-const NAV_BAR_BG: CSSProperties = {
+/** Estado en inicio — idéntico al navbar aprobado. */
+const NAV_BAR_BG_TOP: CSSProperties = {
   backgroundColor: "#070b13",
   backdropFilter: "blur(18px)",
   WebkitBackdropFilter: "blur(18px)",
+};
+
+/** Solo al hacer scroll: un poco más de opacidad y blur. */
+const NAV_BAR_BG_SCROLLED: CSSProperties = {
+  backgroundColor: "rgba(7, 11, 19, 0.98)",
+  backdropFilter: "blur(22px)",
+  WebkitBackdropFilter: "blur(22px)",
 };
 
 /**
@@ -35,6 +43,14 @@ const NAV_BAR_BG: CSSProperties = {
  */
 export function SiteNavbar() {
   const { openModal } = useContactModal();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const scrollToTopCleanUrl = useCallback((e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -44,7 +60,10 @@ export function SiteNavbar() {
   }, []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-100 border-b border-white/5 transition-[border-color] duration-300 ease-out" style={NAV_BAR_BG}>
+    <header
+      className="fixed inset-x-0 top-0 z-100 border-b border-white/5 transition-[border-color,background-color,backdrop-filter] duration-300 ease-out"
+      style={scrolled ? NAV_BAR_BG_SCROLLED : NAV_BAR_BG_TOP}
+    >
       <nav
         className="pointer-events-none absolute left-1/2 top-8 z-30 hidden max-w-[calc(100%-16rem)] -translate-x-1/2 -translate-y-1/2 lg:flex lg:items-center lg:justify-center lg:gap-9 xl:max-w-none xl:gap-11"
         aria-label="Secciones"
@@ -100,7 +119,7 @@ export function SiteNavbar() {
         <div className="min-h-0 min-w-0" aria-hidden />
       </div>
 
-      <div className="mx-auto flex max-w-[1580px] flex-wrap items-center justify-center gap-x-5 gap-y-1 border-t border-white/5 px-5 pb-2.5 pt-2 sm:px-8 lg:hidden">
+      <div className="site-navbar-mobile-row mx-auto flex max-w-[1580px] flex-wrap items-center justify-center gap-x-5 gap-y-1 border-t border-white/5 px-5 pb-2.5 pt-2 sm:px-8 lg:hidden">
         {NAV.map((item) =>
           "href" in item ? (
             <a

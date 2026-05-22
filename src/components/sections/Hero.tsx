@@ -390,7 +390,14 @@ function useHeroDeskArtboardScale(
       const available = el.clientWidth;
       const scale = Math.min(0.82, Math.max(0.3, (available - 8) / HERO_DESK_ARTBOARD_W));
       const portrait = window.matchMedia("(orientation: portrait)").matches;
-      const topInset = portrait ? Math.round(100 * scale) : Math.round(48 * scale);
+      const shortLandscape = window.matchMedia(
+        "(max-width: 1023px) and (orientation: landscape) and (max-height: 520px)",
+      ).matches;
+      const topInset = portrait
+        ? Math.round(100 * scale)
+        : shortLandscape
+          ? Math.round(36 * scale)
+          : Math.round(48 * scale);
       const stripPull = Math.round(HERO_DESK_MOBILE_STRIP_OVERLAP * scale);
       setLayout({
         scale,
@@ -1025,7 +1032,7 @@ export function Hero() {
   return (
     <CursorCtx.Provider value={cursorApi}>
       <section
-        className={`hero-engineer relative isolate z-30 w-full overflow-visible bg-[#04060d] pt-27 pb-5 sm:pt-28 sm:pb-6 lg:pt-20 lg:pb-8 ${useCustomPointer ? "cursor-none" : ""}`}
+        className={`hero-engineer relative isolate z-30 w-full overflow-visible bg-[#04060d] pt-27 pb-5 max-lg:landscape:pt-24 sm:pt-28 sm:pb-6 lg:pt-20 lg:pb-8 ${useCustomPointer ? "cursor-none" : ""}`}
       >
         <CursorHandLayer active={useCustomPointer} handScale={handScale} />
 
@@ -1052,7 +1059,7 @@ export function Hero() {
                 <span className="sr-only">Tu negocio pierde horas. Yo hago que las recupere.</span>
                 <div aria-hidden className="relative isolate z-20 space-y-2 overflow-visible sm:space-y-2.5">
                   <div className="relative z-10 grid grid-cols-1 items-stretch gap-2 lg:grid-cols-[auto_minmax(0,1fr)] lg:gap-3">
-                    <div className="relative z-10 flex min-w-0 max-lg:flex-row max-lg:flex-nowrap max-lg:items-baseline max-lg:gap-x-[0.32em] max-lg:whitespace-nowrap lg:flex-col lg:gap-x-0 lg:whitespace-normal justify-center font-semibold leading-[0.93] tracking-[-0.042em] text-[clamp(1.5rem,5.6vw,1.85rem)] lg:text-[clamp(2.05rem,3.9vw,3.75rem)]">
+                    <div className="hero-headline-row relative z-10 flex min-w-0 max-lg:flex-row max-lg:flex-nowrap max-lg:items-baseline max-lg:gap-x-[0.32em] max-lg:whitespace-nowrap max-lg:landscape:flex-wrap max-lg:landscape:whitespace-normal lg:flex-col lg:gap-x-0 lg:whitespace-normal justify-center font-semibold leading-[0.93] tracking-[-0.042em] text-[clamp(1.5rem,5.6vw,1.85rem)] lg:text-[clamp(2.05rem,3.9vw,3.75rem)]">
                       <span className="text-neutral-200/88 lg:block lg:whitespace-nowrap">Tu negocio</span>
                       <span className="text-[#f2f0ec] lg:block lg:whitespace-nowrap">pierde horas.</span>
                     </div>
@@ -1061,7 +1068,7 @@ export function Hero() {
 
                   <div className="relative z-10 grid grid-cols-1 items-stretch gap-2 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-3">
                     <HeroStatsMatplotlibPanel variant="efficiency" className="max-lg:order-2" />
-                    <div className="relative z-10 flex min-w-0 max-w-full max-lg:order-1 max-lg:flex-row max-lg:flex-nowrap max-lg:items-baseline max-lg:gap-x-[0.32em] max-lg:whitespace-nowrap lg:flex-col lg:gap-x-0 lg:whitespace-normal justify-center font-semibold leading-[0.93] tracking-[-0.042em] text-[clamp(1.5rem,5.6vw,1.85rem)] lg:items-end lg:text-right lg:text-[clamp(2.05rem,3.9vw,3.75rem)]">
+                    <div className="hero-headline-row relative z-10 flex min-w-0 max-w-full max-lg:order-1 max-lg:flex-row max-lg:flex-nowrap max-lg:items-baseline max-lg:gap-x-[0.32em] max-lg:whitespace-nowrap max-lg:landscape:flex-wrap max-lg:landscape:whitespace-normal lg:flex-col lg:gap-x-0 lg:whitespace-normal justify-center font-semibold leading-[0.93] tracking-[-0.042em] text-[clamp(1.5rem,5.6vw,1.85rem)] lg:items-end lg:text-right lg:text-[clamp(2.05rem,3.9vw,3.75rem)]">
                       <span className="text-neutral-200/88 lg:block lg:whitespace-nowrap">Yo hago que</span>
                       <span className="text-[#f2f0ec] lg:block lg:whitespace-nowrap">las recupere.</span>
                     </div>
@@ -1127,7 +1134,7 @@ export function Hero() {
               </p>
             </motion.div>
 
-            <div className="relative z-40 min-w-0 overflow-visible max-lg:-mb-38 max-lg:pt-1 lg:-mb-52 xl:-mb-56">
+            <div className="relative z-40 min-w-0 overflow-visible max-lg:-mb-38 max-lg:landscape:-mb-28 max-lg:pt-1 lg:-mb-52 xl:-mb-56">
               <div className="relative z-1">
                 <EngineerDeskStack
                   reduceMotion={reduceMotion}

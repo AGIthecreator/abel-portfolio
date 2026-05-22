@@ -671,3 +671,35 @@ next-route-announcer,
   }
 }
 
+/*
+ * Responsive — solo por debajo de lg; escritorio (≥1024px) sin cambios visuales.
+ */
+@media (max-width: 1023px) and (orientation: landscape) and (max-height: 520px) {
+  .site-navbar-mobile-row {
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+    gap: 0.25rem 1rem;
+  }
+
+  .hero-engineer .hero-desk-stack {
+    margin-top: -0.25rem;
+  }
+
+  .manifesto-line {
+    white-space: normal !important;
+    margin-left: 0 !important;
+    text-align: center;
+  }
+
+  #perfil .wa-chaos-iphone {
+    left: 62% !important;
+  }
+}
+
+@media (max-width: 374px) {
+  .hero-headline-row {
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+}
+

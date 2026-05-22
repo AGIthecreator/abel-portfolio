@@ -181,7 +181,7 @@ function ContactModalDialog({ open, onClose }: ContactModalDialogProps) {
       {open ? (
         <motion.div
           key="contact-overlay"
-          className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6"
+          className="fixed inset-0 z-100 flex items-start justify-center overflow-y-auto p-4 sm:items-center sm:p-6"
           role="presentation"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -201,7 +201,7 @@ function ContactModalDialog({ open, onClose }: ContactModalDialogProps) {
             aria-modal="true"
             aria-labelledby={titleId}
             tabIndex={-1}
-            className="relative w-full max-w-[560px] rounded-2xl border border-[#d8d2c8] bg-[#F3F1EB] p-6 shadow-[0_25px_80px_-30px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.6)] outline-none sm:p-8"
+            className="relative my-auto w-full max-h-[min(100dvh-2rem,720px)] max-w-[560px] overflow-y-auto rounded-2xl border border-[#d8d2c8] bg-[#F3F1EB] p-6 shadow-[0_25px_80px_-30px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.6)] outline-none sm:p-8"
             initial={{ opacity: 0, y: 20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10 }}
