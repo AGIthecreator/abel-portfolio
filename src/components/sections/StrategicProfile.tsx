@@ -217,10 +217,11 @@ function BpPercepcion() {
 
             <div className="relative min-h-11.4 w-full flex-1 overflow-hidden bg-[#ddd]">
               <Image
-                src="/gestoria.png"
+                src="/gestoria.webp"
                 alt=""
                 fill
-                sizes="140px"
+                sizes="(max-width: 640px) 160px, 280px"
+                quality={92}
                 className="scale-[1.08] object-cover [image-rendering:crisp-edges]"
                 style={{
                   filter: "saturate(2.5) contrast(0.55) hue-rotate(-18deg) blur(0.4px)",
@@ -241,12 +242,12 @@ function BpPercepcion() {
             <div className="flex shrink-0 flex-col gap-[0.4em] bg-[#f4f4f4] px-[0.4em] py-[0.35em] text-[0.78em] leading-tight">
               <p className="text-center text-[#666]">Contador: 000427 visitas</p>
               <p className="text-center text-[#888]">Últ. actualización: 2008</p>
-              <button
-                type="button"
+              <span
+                aria-hidden
                 className="flex min-h-[2em] w-full items-center justify-center border-[0.12em] border-black bg-[#0066cc] font-serif text-[0.92em] font-bold leading-none text-white"
               >
                 ENTRAR
-              </button>
+              </span>
             </div>
           </div>
         </motion.div>
@@ -301,12 +302,12 @@ function BpPercepcion() {
 
             <div className="flex min-h-[2.35em] shrink-0 items-center justify-between gap-[0.5em] border-t border-[#e7e5e4] px-[0.95em] py-[0.4em]">
               <p className="text-[0.78em] leading-tight text-zinc-500">Reserva en 30 segundos</p>
-              <button
-                type="button"
+              <span
+                aria-hidden
                 className="inline-flex min-h-[2.15em] min-w-[5.75em] shrink-0 items-center justify-center rounded-md bg-[#10b981] px-[0.85em] py-[0.5em] text-center text-[0.84em] font-bold leading-none text-white shadow-[0_6px_20px_-2px_rgba(16,185,129,0.55)] drop-shadow-[0_2px_10px_rgba(16,185,129,0.45)]"
               >
                 Reservar
-              </button>
+              </span>
             </div>
           </div>
         </motion.div>

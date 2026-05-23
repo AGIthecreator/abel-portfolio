@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 const SECTION_BG = "#070b13";
 const POLAROID_CAPTION = "#F3F1EB";
 
+/** ~2× ancho visual máx. (200–292px) para retina sin servir 100vw */
 const IMAGE_SIZES = "(max-width: 768px) 400px, 520px";
-/** Eje central ~12,5 % más ancho para jerarquía */
 const IMAGE_SIZES_AXIS = "(max-width: 768px) 480px, 620px";
 
 /** Orden: arriba centro → medio (local | factura) → eje (despacho) → abajo desplazado (tienda) */
@@ -16,7 +16,7 @@ const BOARD_ITEMS = [
     layout: "top" as const,
     headline: "Mesa llena esta noche.",
     label: "Cafetería",
-    src: "/notificacion.png",
+    src: "/notificacion.webp",
     alt: "Cafetería con mesas ocupadas",
     caption: "Cola cerrada",
     rotateDeg: -1.25,
@@ -27,7 +27,7 @@ const BOARD_ITEMS = [
     layout: "midLeft" as const,
     headline: "Cliente atendido sin perseguir mensajes.",
     label: "Local",
-    src: "/restaurante.png",
+    src: "/restaurante.webp",
     alt: "Servicio en local sin interrupciones",
     caption: "Sala en calma",
     rotateDeg: 1.5,
@@ -38,7 +38,7 @@ const BOARD_ITEMS = [
     layout: "midRight" as const,
     headline: "Trabajo terminado. Factura enviada.",
     label: "Asesoría",
-    src: "/factura.png",
+    src: "/factura.webp",
     alt: "Factura emitida",
     caption: "Cobro listo",
     rotateDeg: -1.75,
@@ -49,7 +49,7 @@ const BOARD_ITEMS = [
     layout: "center" as const,
     headline: "Tu negocio sigue funcionando.",
     label: "Ingeniería aplicada",
-    src: "/programador.png",
+    src: "/programador.webp",
     alt: "Despacho técnico",
     caption: "Siempre encendido",
     rotateDeg: 0.75,
@@ -60,7 +60,7 @@ const BOARD_ITEMS = [
     layout: "bottom" as const,
     headline: "La tienda sigue moviéndose sola.",
     label: "Comercio",
-    src: "/tienda.png",
+    src: "/tienda.webp",
     alt: "Comercio activo",
     caption: "Stock vivo",
     rotateDeg: -1.5,
@@ -139,7 +139,7 @@ function PolaroidFigure({
             src={src}
             alt={alt}
             fill
-            quality={95}
+            quality={92}
             sizes={isAxis ? IMAGE_SIZES_AXIS : IMAGE_SIZES}
             className="object-cover object-center"
           />

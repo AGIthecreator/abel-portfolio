@@ -112,7 +112,7 @@ export function Footer() {
                 >
                   {EMAIL}
                 </a>
-                <p className="text-[9px] text-zinc-600 sm:text-[10px]">Respondo personalmente</p>
+                <p className="text-[9px] text-zinc-400 sm:text-[10px]">Respondo personalmente</p>
               </div>
             </div>
 
@@ -142,7 +142,7 @@ export function Footer() {
                 role="presentation"
                 aria-hidden
               />
-              <p className="text-center font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500 opacity-40">
+              <p className="text-center font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-400 opacity-50">
                 AGITHECREATOR HECHO EN VALLADOLID · ESPAÑA © 2026
               </p>
             </div>

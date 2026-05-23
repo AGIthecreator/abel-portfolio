@@ -8,6 +8,7 @@ import {
   Home,
   RotateCw,
 } from "lucide-react";
+import Image from "next/image";
 import { createPortal } from "react-dom";
 import {
   createContext,
@@ -156,7 +157,7 @@ type HeroStatsMatplotlibPanelProps = {
 };
 
 /**
- * Recorte de `public/hero_stats.png` (dos paneles en un solo PNG: izq. eficiencia, der. ineficiencia).
+ * Recorte de `public/hero_stats.webp` (dos paneles en un solo asset: izq. eficiencia, der. ineficiencia).
  * Fila 1 (pierde horas): ineficiencia · Fila 2 (recupere): eficiencia.
  */
 function HeroStatsMatplotlibPanel({ variant, className }: HeroStatsMatplotlibPanelProps) {
@@ -166,15 +167,19 @@ function HeroStatsMatplotlibPanel({ variant, className }: HeroStatsMatplotlibPan
       className={`relative z-30 flex min-h-0 min-w-0 flex-1 flex-col border border-white/9 bg-[#070910] px-1.5 pb-1 pt-1.5 sm:min-h-22 ${className ?? ""}`}
       aria-hidden
     >
-      <div
-        className="pointer-events-none min-h-20 w-full flex-1 rounded-sm bg-[#04060d] bg-no-repeat sm:min-h-23 lg:min-h-25"
-        style={{
-          backgroundImage: "url(/hero_stats.png)",
-          backgroundSize: "200% auto",
-          backgroundPosition: isGain ? "left center" : "right center",
-        }}
-      />
-      <p className="mt-1 text-[9px] leading-tight text-neutral-500 sm:text-[10px]">
+      <div className="pointer-events-none relative min-h-20 w-full flex-1 overflow-hidden rounded-sm bg-[#04060d] sm:min-h-23 lg:min-h-25">
+        <Image
+          src="/hero_stats.webp"
+          alt=""
+          width={2965}
+          height={1047}
+          quality={92}
+          priority={!isGain}
+          sizes="(max-width: 1024px) 50vw, 320px"
+          className={`absolute top-0 h-full max-w-none object-cover ${isGain ? "left-0 w-[200%] object-left" : "right-0 left-auto w-[200%] object-right"}`}
+        />
+      </div>
+      <p className="mt-1 text-[9px] leading-tight text-neutral-400 sm:text-[10px]">
         {isGain ? "Menos horas, más margen." : "Más horas manuales, menos resultado."}
       </p>
     </div>
@@ -627,18 +632,18 @@ function GoogleHomeWindow({
 
         <div className="flex items-center gap-1 border-b border-neutral-200 bg-white px-2 py-1.5">
           <div className="flex shrink-0 items-center gap-0.5">
-            <button type="button" tabIndex={-1} className={navIconBtn} title="Atrás (decorativo)" aria-hidden>
+            <span className={navIconBtn} title="Atrás (decorativo)" aria-hidden>
               <ChevronLeft className="h-4 w-4" />
-            </button>
-            <button type="button" tabIndex={-1} className={navIconBtn} title="Adelante (decorativo)" aria-hidden>
+            </span>
+            <span className={navIconBtn} title="Adelante (decorativo)" aria-hidden>
               <ChevronRight className="h-4 w-4" />
-            </button>
-            <button type="button" tabIndex={-1} className={navIconBtn} title="Recargar (decorativo)" aria-hidden>
+            </span>
+            <span className={navIconBtn} title="Recargar (decorativo)" aria-hidden>
               <RotateCw className="h-3.5 w-3.5" />
-            </button>
-            <button type="button" tabIndex={-1} className={navIconBtn} title="Inicio (decorativo)" aria-hidden>
+            </span>
+            <span className={navIconBtn} title="Inicio (decorativo)" aria-hidden>
               <Home className="h-4 w-4" />
-            </button>
+            </span>
           </div>
           <div className="flex min-w-0 flex-1 items-center gap-2 rounded-md border border-neutral-200 bg-[#f6f8fa] px-2.5 py-1 shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]">
             <span className="truncate font-mono text-[10px] text-neutral-700 sm:text-[11px]" lang="en">

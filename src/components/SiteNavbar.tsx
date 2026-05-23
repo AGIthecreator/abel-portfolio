@@ -1,6 +1,7 @@
 "use client";
 
 import type { CSSProperties, MouseEvent } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useContactModal } from "@/components/contact/ContactModalContext";
@@ -108,13 +109,15 @@ export function SiteNavbar() {
             className="relative z-20 max-lg:min-w-0 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070b13]"
             aria-label="Ir al inicio"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               id="navbar-brand-logo-img"
-              src="/logos/NavbarAGI.png"
+              src="/logos/NavbarAGI.webp"
               alt="AGI"
-              fetchPriority="high"
-              decoding="async"
+              width={116}
+              height={39}
+              priority
+              quality={100}
+              sizes="(max-width: 1023px) 120px, 200px"
             />
           </Link>
         </div>
