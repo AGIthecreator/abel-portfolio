@@ -9,16 +9,48 @@ import { EvidenceTestimonialsGrid } from "@/components/sections/EvidenceTestimon
 
 const DEEP_BLACK = "#070b13";
 
-const EXCEL_ROW_COUNT = 5;
 const EXCEL_COL_LABELS = ["A", "B", "C"] as const;
-/** [columna][fila] — mismos campos en manual y motor */
-const EXCEL_COL_DATA = [
-  ["Nombre...", "Nombre2...", "Email...", "Teléfono...", "Fecha..."],
-  ["Ana G.", "Luis M.", "info@...", "+346...", "15/05..."],
-  ["Web", "Referido", "Lead", "Móvil", "OK"],
-] as const;
-const LOOP_PAUSE_MS = 3600;
-const COL_BURST_MS = 950;
+const EXCEL_FIELD_HEADERS = ["Nombre", "Email", "Teléfono"] as const;
+/** 8 líneas: A/B/C + cabecera campos + 6 filas de datos */
+const DATA_ROW_COUNT = 6;
+const SHEET_GRID_ROWS = 8;
+const LOOP_PAUSE_MS = 3800;
+const ENGINE_FLASH_MS = 880;
+const MANUAL_CHAR_MS = 92;
+const MANUAL_CELL_PAUSE_MS = 280;
+const COL_COMPLETE_PAUSE_MS = 420;
+
+/** [fila][columna] — mismos datos en ambas tablas */
+const SPREADSHEET_DATA: readonly (readonly [string, string, string])[] = [
+  ["Ana G.", "ana@clinica.es", "+34 611 206 230"],
+  ["Luis M.", "luis@tienda.es", "+34 622 114 488"],
+  ["Elena V.", "elena@studio.es", "+34 633 552 210"],
+  ["Jordi P.", "jordi@local.es", "+34 644 881 902"],
+  ["Marta S.", "marta@shop.es", "+34 655 120 447"],
+  ["Carlos R.", "carlos@gest.es", "+34 666 903 118"],
+];
+
+/** Columna A → B → C: escribe toda la columna en manual y rellena la misma en SST de un plumazo */
+const TYPING_QUEUE = (() => {
+  const queue: { col: number; dataRow: number; text: string }[] = [];
+  for (let col = 0; col < EXCEL_FIELD_HEADERS.length; col++) {
+    for (let dataRow = 0; dataRow < DATA_ROW_COUNT; dataRow++) {
+      queue.push({ col, dataRow, text: SPREADSHEET_DATA[dataRow][col] });
+    }
+  }
+  return queue;
+})();
+
+function emptyGrid() {
+  return Array.from({ length: EXCEL_FIELD_HEADERS.length }, () =>
+    Array.from({ length: DATA_ROW_COUNT }, () => ""),
+  );
+}
+
+/** Fila de hoja: 0 = A/B/C, 1 = cabecera, 2..7 = datos */
+function sheetRowToDataRow(sheetRow: number) {
+  return sheetRow - 2;
+}
 
 const MANIFIESTO_CLOSING = "Así debería sentirse un negocio.";
 
@@ -316,29 +348,32 @@ function BpPercepcion() {
   );
 }
 
-function ArrowFlow({ prominent }: { prominent?: boolean }) {
-  const wrapper = prominent ? "mx-2 h-4 w-7 text-zinc-200 sm:h-5 sm:w-8" : "mx-1.5 h-3.5 w-6 text-zinc-400 sm:h-4 sm:w-7";
-  const stroke = prominent ? "2" : "1.6";
+function ArrowFlow() {
   return (
-    <svg className={`${wrapper} shrink-0`} viewBox="0 0 48 24" fill="none" aria-hidden>
-      <path d="M2 12h36" stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" />
-      <path d="M34 6l8 6-8 6" stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <div className="flex shrink-0 flex-col items-center justify-center px-1 sm:px-1.5" aria-hidden>
+      <span className="mb-0.5 font-mono text-[7px] tracking-[0.2em] text-zinc-600 uppercase">sync</span>
+      <svg className="h-4 w-8 text-zinc-300 sm:h-5 sm:w-9" viewBox="0 0 48 24" fill="none">
+        <path d="M2 12h34" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path
+          d="M32 7l8 5-8 5"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
   );
 }
 
-function useExcelColumns(active: boolean) {
-  const [manual, setManual] = useState<string[][]>(() =>
-    EXCEL_COL_DATA.map(() => Array(EXCEL_ROW_COUNT).fill("")),
-  );
-  const [engine, setEngine] = useState<string[][]>(() =>
-    EXCEL_COL_DATA.map(() => Array(EXCEL_ROW_COUNT).fill("")),
-  );
-  const [colIdx, setColIdx] = useState(0);
-  const [rowIdx, setRowIdx] = useState(0);
+function useExcelComparison(active: boolean) {
+  const [manual, setManual] = useState<string[][]>(emptyGrid);
+  const [engine, setEngine] = useState<string[][]>(emptyGrid);
+  const [cellIdx, setCellIdx] = useState(0);
   const [typed, setTyped] = useState("");
-  const [phase, setPhase] = useState<"typing" | "burst" | "between" | "hold">("typing");
+  const [phase, setPhase] = useState<"typing" | "column-burst" | "hold">("typing");
   const [flashCol, setFlashCol] = useState<number | null>(null);
+  const [buttonPulse, setButtonPulse] = useState(false);
   const [started, setStarted] = useState(false);
 
   useEffect(() => {
@@ -346,182 +381,255 @@ function useExcelColumns(active: boolean) {
   }, [active]);
 
   const running = started || active;
+  const activeCell = phase === "typing" ? TYPING_QUEUE[cellIdx] : null;
+  const isTyping = phase === "typing" && !!activeCell;
 
   useEffect(() => {
-    if (!running) return;
+    if (!running || phase !== "typing") return;
 
-    if (phase === "typing") {
-      const full = EXCEL_COL_DATA[colIdx][rowIdx];
-      if (typed.length < full.length) {
-        const t = setTimeout(() => setTyped(full.slice(0, typed.length + 1)), 78);
-        return () => clearTimeout(t);
-      }
-      const t = setTimeout(() => {
-        setManual((m) => {
-          const next = m.map((col) => [...col]);
-          next[colIdx][rowIdx] = full;
-          return next;
-        });
-        setTyped("");
-        if (rowIdx < EXCEL_ROW_COUNT - 1) {
-          setRowIdx((r) => r + 1);
-        } else {
-          setPhase("burst");
-          setFlashCol(colIdx);
-        }
-      }, 320);
+    const target = TYPING_QUEUE[cellIdx];
+    if (!target) {
+      setPhase("hold");
+      return;
+    }
+
+    const full = target.text;
+
+    if (typed.length < full.length) {
+      const t = setTimeout(() => setTyped(full.slice(0, typed.length + 1)), MANUAL_CHAR_MS);
       return () => clearTimeout(t);
     }
 
-    if (phase === "burst") {
-      setEngine((e) => {
-        const next = e.map((col) => [...col]);
-        next[colIdx] = [...EXCEL_COL_DATA[colIdx]];
+    const t = setTimeout(() => {
+      setManual((m) => {
+        const next = m.map((col) => [...col]);
+        next[target.col][target.dataRow] = full;
         return next;
       });
-      const t = setTimeout(() => {
-        setFlashCol(null);
-        if (colIdx < EXCEL_COL_LABELS.length - 1) {
-          setPhase("between");
-        } else {
-          setPhase("hold");
-        }
-      }, COL_BURST_MS);
-      return () => clearTimeout(t);
-    }
+      setTyped("");
 
-    if (phase === "between") {
-      const t = setTimeout(() => {
-        setColIdx((c) => c + 1);
-        setRowIdx(0);
+      const nextCell = TYPING_QUEUE[cellIdx + 1];
+      const blockDone = !nextCell || nextCell.col !== target.col;
+
+      if (blockDone) {
+        setPhase("column-burst");
+        setButtonPulse(true);
+        setFlashCol(target.col);
+        setEngine((e) => {
+          const next = e.map((col) => [...col]);
+          for (let r = 0; r < DATA_ROW_COUNT; r++) {
+            next[target.col][r] = SPREADSHEET_DATA[r][target.col];
+          }
+          return next;
+        });
+      } else {
+        setCellIdx((i) => i + 1);
+      }
+    }, MANUAL_CELL_PAUSE_MS);
+
+    return () => clearTimeout(t);
+  }, [running, phase, cellIdx, typed]);
+
+  useEffect(() => {
+    if (!running || phase !== "column-burst") return;
+
+    const t = setTimeout(() => {
+      setFlashCol(null);
+      setButtonPulse(false);
+      if (cellIdx >= TYPING_QUEUE.length - 1) {
+        setPhase("hold");
+      } else {
+        setCellIdx((i) => i + 1);
         setPhase("typing");
-      }, 420);
-      return () => clearTimeout(t);
+      }
+    }, ENGINE_FLASH_MS + COL_COMPLETE_PAUSE_MS);
+
+    return () => clearTimeout(t);
+  }, [running, phase, cellIdx]);
+
+  useEffect(() => {
+    if (!running || phase !== "hold") return;
+
+    const t = setTimeout(() => {
+      setManual(emptyGrid());
+      setEngine(emptyGrid());
+      setCellIdx(0);
+      setTyped("");
+      setFlashCol(null);
+      setButtonPulse(false);
+      setPhase("typing");
+    }, LOOP_PAUSE_MS);
+
+    return () => clearTimeout(t);
+  }, [running, phase]);
+
+  const getManualDisplay = (col: number, sheetRow: number) => {
+    if (sheetRow === 0) return "";
+    if (sheetRow === 1) return EXCEL_FIELD_HEADERS[col] ?? "";
+
+    const dataRow = sheetRowToDataRow(sheetRow);
+    if (dataRow < 0 || dataRow >= DATA_ROW_COUNT) return "";
+
+    const committed = manual[col]?.[dataRow] ?? "";
+
+    if (activeCell && activeCell.col === col && activeCell.dataRow === dataRow) {
+      const full = activeCell.text;
+      const showCursor = typed.length < full.length;
+      return typed + (showCursor ? "|" : "");
     }
 
-    if (phase === "hold") {
-      const t = setTimeout(() => {
-        setManual(EXCEL_COL_DATA.map(() => Array(EXCEL_ROW_COUNT).fill("")));
-        setEngine(EXCEL_COL_DATA.map(() => Array(EXCEL_ROW_COUNT).fill("")));
-        setColIdx(0);
-        setRowIdx(0);
-        setTyped("");
-        setPhase("typing");
-      }, LOOP_PAUSE_MS);
-      return () => clearTimeout(t);
-    }
-  }, [running, phase, colIdx, rowIdx, typed]);
-
-  const getManualCell = (c: number, r: number) => {
-    if (c < colIdx) return manual[c][r] ?? "";
-    if (c > colIdx) return "";
-    if (r < rowIdx) return manual[c][r] ?? "";
-    if (r === rowIdx && phase === "typing") {
-      if (!typed) return manual[c][r] ?? "";
-      const full = EXCEL_COL_DATA[c][r];
-      return typed + (typed.length < full.length ? "|" : "");
-    }
-    return manual[c][r] ?? "";
+    return committed;
   };
 
-  return { engine, colIdx, rowIdx, phase, flashCol, getManualCell };
+  const getEngineDisplay = (col: number, sheetRow: number) => {
+    if (sheetRow === 0) return "";
+    if (sheetRow === 1) return EXCEL_FIELD_HEADERS[col] ?? "";
+
+    const dataRow = sheetRowToDataRow(sheetRow);
+    if (dataRow < 0 || dataRow >= DATA_ROW_COUNT) return "";
+
+    return engine[col]?.[dataRow] ?? "";
+  };
+
+  const activeSheetRow =
+    activeCell != null ? activeCell.dataRow + 2 : null;
+  const activeColLetter = activeCell != null ? EXCEL_COL_LABELS[activeCell.col] : "A";
+  const activeExcelRow = activeCell != null ? activeCell.dataRow + 2 : 1;
+
+  return {
+    getManualDisplay,
+    getEngineDisplay,
+    flashCol,
+    buttonPulse,
+    isTyping,
+    isGlowing: flashCol !== null,
+    activeSheetRow,
+    activeCol: activeCell?.col ?? null,
+    activeColLetter,
+    activeExcelRow,
+    formulaPreview: activeCell ? typed || activeCell.text : "",
+  };
 }
 
-function ExcelSheet({
-  fileName,
-  grid,
-  mode,
-  activeCol,
-  activeRow,
-  phase,
-  flashCol,
-  large,
-}: {
-  fileName: string;
-  grid: string[][];
-  mode: "manual" | "engine";
-  activeCol?: number;
-  activeRow?: number;
-  phase?: string;
-  flashCol?: number | null;
-  large?: boolean;
-}) {
-  const isEngine = mode === "engine";
-  const bursting = flashCol !== null && flashCol !== undefined && phase === "burst";
-  const manualFlashing = !isEngine && bursting;
-  const engineFlashing = isEngine && bursting;
+const SHEET_GRID_CLASS =
+  "grid shrink-0 grid-cols-[26px_repeat(3,minmax(0,1fr))] grid-rows-[18px_repeat(7,22px)] text-[11px] leading-none tabular-nums sm:grid-cols-[28px_repeat(3,minmax(0,1fr))] sm:text-[11px]";
+
+function ExcelWindowControls({ variant }: { variant: "classic" | "dark" }) {
+  const btn =
+    variant === "classic"
+      ? "grid h-4 w-4 place-items-center text-[9px] leading-none text-white/90"
+      : "grid h-4 w-4 place-items-center border border-slate-600/80 bg-slate-800/90 text-[9px] leading-none text-slate-400";
 
   return (
-    <motion.div
-      className={`relative min-h-0 min-w-0 flex-1 overflow-hidden rounded-lg border backdrop-blur-sm transition-all duration-300 shadow-xl shadow-black/50 ${
-        manualFlashing
-          ? "border-white/12"
-          : engineFlashing
-            ? "border-emerald-500/20"
-            : isEngine
-              ? "border-emerald-500/25 bg-[#0a1210]/90"
-              : "border-white/12 bg-white/6"
-      }`}
-    >
-      <div
-        className={`relative z-10 flex min-h-6.5 shrink-0 items-center px-2 sm:h-6 sm:min-h-0 ${
-          isEngine ? "bg-emerald-950/80" : "bg-[#217346]/90"
-        }`}
+    <div className="flex shrink-0 items-center gap-0.5" aria-hidden>
+      <span className={btn}>—</span>
+      <span className={btn}>□</span>
+      <span
+        className={
+          variant === "classic"
+            ? "grid h-4 w-4 place-items-center bg-white/15 text-[9px] text-white"
+            : "grid h-4 w-4 place-items-center border border-slate-600/80 bg-slate-700/90 text-[9px] text-slate-300"
+        }
       >
-        <span
-          className={`truncate font-medium text-white tabular-nums ${large ? "text-[12px] sm:text-[11px]" : "text-[11px] sm:text-[9px]"}`}
-        >
-          {fileName}
-        </span>
-        {engineFlashing ? (
-          <span className="ml-auto text-[8px] font-bold tracking-wider text-emerald-300 uppercase">Procesado</span>
-        ) : null}
-        {manualFlashing ? (
-          <span className="ml-auto text-[8px] font-bold tracking-wider text-red-300 uppercase">Manual</span>
-        ) : null}
-      </div>
-      <div
-        className={`relative z-10 grid grid-cols-[22px_repeat(3,minmax(0,1fr))] leading-none antialiased tabular-nums ${
-          large
-            ? "grid-rows-[16px_repeat(5,28px)] text-[14px] sm:grid-cols-[26px_repeat(3,minmax(0,1fr))] sm:grid-rows-[14px_repeat(5,26px)] sm:text-[13px]"
-            : "grid-rows-[14px_repeat(5,22px)] text-[13px] sm:grid-cols-[18px_repeat(3,minmax(0,1fr))] sm:grid-rows-[12px_repeat(5,20px)] sm:text-[12px]"
-        }`}
-      >
-        <div className="border-r border-b border-white/10 bg-white/5" />
-        {EXCEL_COL_LABELS.map((label) => (
-          <div
-            key={label}
-            className="flex items-center justify-center border-r border-b border-white/10 bg-white/5 px-0.5 text-[10px] font-semibold tracking-tight text-zinc-400 sm:text-[8px] sm:font-medium"
-          >
-            {label}
-          </div>
-        ))}
-        {Array.from({ length: EXCEL_ROW_COUNT }, (_, r) => (
-          <div key={`row-${r}`} className="contents">
-            <div className="flex items-center justify-center border-r border-b border-white/8 bg-white/3 text-[10px] tabular-nums text-zinc-500 sm:text-[8px]">
-              {r + 1}
+        ×
+      </span>
+    </div>
+  );
+}
+
+function SpreadsheetGrid({
+  variant,
+  getCell,
+  activeSheetRow,
+  activeCol,
+  flashCol,
+}: {
+  variant: "classic" | "engine";
+  getCell: (col: number, sheetRow: number) => string;
+  activeSheetRow: number | null;
+  activeCol: number | null;
+  flashCol: number | null;
+}) {
+  const isClassic = variant === "classic";
+
+  return (
+    <div className={SHEET_GRID_CLASS}>
+      {Array.from({ length: SHEET_GRID_ROWS }, (_, sheetRow) => {
+        if (sheetRow === 0) {
+          return (
+            <div key={`${variant}-sr-0`} className="contents">
+              <div
+                className={
+                  isClassic
+                    ? "border-r border-b border-[#c5c5c5] bg-[#f0f0f0]"
+                    : "border-r border-b border-slate-700/55 bg-slate-900/90"
+                }
+              />
+              {EXCEL_COL_LABELS.map((label) => (
+                <div
+                  key={`${variant}-abc-${label}`}
+                  className={
+                    isClassic
+                      ? "flex items-center justify-center border-r border-b border-[#c5c5c5] bg-[#f0f0f0] text-center text-[10px] text-[#333333]"
+                      : "flex items-center justify-center border-r border-b border-slate-700/55 bg-slate-800/95 font-mono text-[9px] text-slate-500"
+                  }
+                >
+                  {label}
+                </div>
+              ))}
             </div>
-            {EXCEL_COL_LABELS.map((_, c) => {
-              const val = grid[c]?.[r] ?? "";
-              const isActive = !isEngine && phase === "typing" && activeCol === c && activeRow === r;
-              const isEngineFill = isEngine && val.length > 0;
+          );
+        }
+
+        const isFieldHeader = sheetRow === 1;
+
+        return (
+          <div key={`${variant}-sr-${sheetRow}`} className="contents">
+            <div
+              className={
+                isClassic
+                  ? "flex items-center justify-center border-r border-b border-[#d4d4d4] bg-[#f0f0f0] text-[10px] text-[#666666]"
+                  : "flex items-center justify-center border-r border-b border-slate-700/45 bg-slate-900/75 font-mono text-[9px] text-slate-600"
+              }
+            >
+              {sheetRow}
+            </div>
+            {EXCEL_COL_LABELS.map((_, col) => {
+              const val = getCell(col, sheetRow);
+              const isActive =
+                !isFieldHeader && activeSheetRow === sheetRow && activeCol === col;
+              const showCursor = isClassic && isActive && val.endsWith("|");
+              const display = showCursor ? val.slice(0, -1) : val;
+              const hasValue = display.length > 0;
+              const colFlash = !isClassic && hasValue && !isFieldHeader && flashCol === col;
+
+              const cellClass = isClassic
+                ? isFieldHeader
+                  ? "bg-[#fafafa] text-[10px] font-semibold text-[#333333]"
+                  : isActive
+                    ? "bg-white text-[#000000] outline outline-2 outline-[#217346] -outline-offset-2"
+                    : "bg-white text-[#000000]"
+                : isFieldHeader
+                  ? "bg-slate-800/70 text-[9px] font-semibold text-slate-400"
+                  : hasValue
+                    ? colFlash
+                      ? "excel-engine-flash text-slate-100"
+                      : "bg-emerald-500/8 text-slate-200"
+                    : "bg-[#0f172a] text-slate-700";
+
               return (
                 <div
-                  key={`${r}-${c}`}
-                  className={`relative flex min-h-0 items-center overflow-hidden border-r border-b border-white/8 px-1 font-mono tracking-tight ${
-                    isActive
-                      ? "bg-amber-400/20 text-amber-50 ring-1 ring-inset ring-amber-400/50"
-                      : isEngineFill
-                        ? "bg-emerald-500/15 font-medium text-emerald-200"
-                        : val
-                          ? "bg-white/4 text-zinc-200"
-                          : "text-zinc-600"
-                  }`}
+                  key={`${variant}-${sheetRow}-${col}`}
+                  className={`relative flex min-h-0 items-center overflow-hidden border-r border-b px-1.5 ${
+                    isClassic
+                      ? "border-[#d4d4d4] font-[Segoe_UI,Calibri,system-ui,sans-serif]"
+                      : "border-slate-700/40 font-mono"
+                  } ${cellClass}`}
                 >
-                  <span className="block w-full truncate">{val}</span>
-                  {isActive ? (
+                  <span className="block w-full truncate">{display}</span>
+                  {showCursor ? (
                     <span
-                      className="absolute right-0.5 top-1/2 h-3 w-px -translate-y-1/2 animate-pulse bg-amber-300"
+                      className="excel-manual-cursor ml-px inline-block h-3.5 w-px shrink-0 bg-[#217346]"
                       aria-hidden
                     />
                   ) : null}
@@ -529,70 +637,271 @@ function ExcelSheet({
               );
             })}
           </div>
-        ))}
+        );
+      })}
+    </div>
+  );
+}
+
+function ClassicExcelSheet({
+  getCell,
+  activeSheetRow,
+  activeCol,
+  activeColLetter,
+  activeExcelRow,
+  formulaPreview,
+}: {
+  getCell: (col: number, sheetRow: number) => string;
+  activeSheetRow: number | null;
+  activeCol: number | null;
+  activeColLetter: string;
+  activeExcelRow: number;
+  formulaPreview: string;
+}) {
+  return (
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border border-[#a6a6a6] bg-[#f3f3f3] shadow-[0_1px_0_rgba(0,0,0,0.06)]">
+      <div className="flex h-7 shrink-0 items-center justify-between bg-[#217346] px-1">
+        <div className="flex min-w-0 items-center gap-1.5 pl-1">
+          <span className="grid h-3.5 w-3.5 shrink-0 place-items-center bg-white/20 text-[8px] font-bold text-white">
+            ▣
+          </span>
+          <span className="truncate text-[10px] font-normal text-white">Excel</span>
+          <span className="hidden truncate text-[10px] text-white/85 sm:inline">— clientes.xlsx</span>
+        </div>
+        <ExcelWindowControls variant="classic" />
       </div>
-    </motion.div>
+
+      <div className="flex h-5 shrink-0 items-stretch border-b border-[#d4d4d4] bg-[#f3f3f3]">
+        <div className="flex w-9 shrink-0 items-center justify-center border-r border-[#d4d4d4] text-[9px] font-semibold text-[#444444]">
+          {activeColLetter}
+          {activeExcelRow}
+        </div>
+        <div className="flex w-7 shrink-0 items-center justify-center border-r border-[#d4d4d4] text-[9px] italic text-[#888888]">
+          fx
+        </div>
+        <div className="flex min-w-0 flex-1 items-center bg-white px-2 text-[10px] text-[#222222]">
+          <span className="truncate">{formulaPreview}</span>
+        </div>
+      </div>
+
+      <div className="shrink-0 bg-white p-px">
+        <SpreadsheetGrid
+          variant="classic"
+          getCell={getCell}
+          activeSheetRow={activeSheetRow}
+          activeCol={activeCol}
+          flashCol={null}
+        />
+      </div>
+
+      <div className="flex h-5 shrink-0 items-center border-t border-[#d4d4d4] bg-[#f3f3f3] px-1">
+        <span className="rounded-sm border border-[#217346] bg-[#e8f5ee] px-2 py-px text-[9px] font-medium text-[#217346]">
+          clientes
+        </span>
+        <span className="ml-2 text-[9px] text-[#888888]">+</span>
+      </div>
+    </div>
+  );
+}
+
+function ModernEngineSheet({
+  getCell,
+  flashCol,
+}: {
+  getCell: (col: number, sheetRow: number) => string;
+  flashCol: number | null;
+}) {
+  return (
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border border-slate-700/60 bg-[#0f172a] shadow-[0_1px_0_rgba(0,0,0,0.2)]">
+      <div className="flex h-7 shrink-0 items-center justify-between gap-1 border-b border-slate-700/70 bg-[#0f172a] px-1">
+        <div className="flex min-w-0 items-center gap-1 pl-1">
+          <span className="min-w-0 truncate font-mono text-[10px] text-slate-400">
+            clientes.xlsx · SST_ENGINE
+          </span>
+          <span className="hidden shrink-0 rounded border border-emerald-500/35 bg-emerald-500/10 px-1 py-px font-mono text-[7px] font-bold tracking-[0.08em] text-emerald-400 sm:inline">
+            [ AUTOMAIZACIÓN AGI ]
+          </span>
+        </div>
+        <ExcelWindowControls variant="dark" />
+      </div>
+
+      <div className="flex h-5 shrink-0 items-stretch border-b border-slate-700/60 bg-[#0c1220]">
+        <div className="flex w-9 shrink-0 items-center justify-center border-r border-slate-700/50 font-mono text-[9px] text-slate-500">
+          A1
+        </div>
+        <div className="flex w-7 shrink-0 items-center justify-center border-r border-slate-700/50 font-mono text-[9px] italic text-slate-600">
+          fx
+        </div>
+        <div className="flex min-w-0 flex-1 items-center px-2 font-mono text-[10px] text-slate-600">
+          <span className="truncate opacity-60">=SST_FILL()</span>
+        </div>
+      </div>
+
+      <div className="shrink-0 p-px">
+        <SpreadsheetGrid
+          variant="engine"
+          getCell={getCell}
+          activeSheetRow={null}
+          activeCol={null}
+          flashCol={flashCol}
+        />
+      </div>
+
+      <div className="flex h-5 shrink-0 items-center border-t border-slate-700/60 bg-[#0c1220] px-1">
+        <span className="rounded-sm border border-emerald-500/30 bg-emerald-500/10 px-2 py-px font-mono text-[9px] text-emerald-400/90">
+          clientes
+        </span>
+        <span className="ml-2 font-mono text-[9px] text-slate-600">+</span>
+      </div>
+    </div>
+  );
+}
+
+function TypingIndicator({ visible }: { visible: boolean }) {
+  if (!visible) {
+    return <div className="mt-2 h-5" aria-hidden />;
+  }
+
+  return (
+    <div className="mt-2 flex h-5 items-center gap-1.5 text-[10px] text-zinc-500" aria-live="polite">
+      <span className="inline-flex gap-0.5">
+        <span className="excel-typing-dot animation-delay-0">·</span>
+        <span className="excel-typing-dot animation-delay-1">·</span>
+        <span className="excel-typing-dot animation-delay-2">·</span>
+      </span>
+      <span className="italic">Escribiendo...</span>
+    </div>
+  );
+}
+
+function OneClickButton({ pulse }: { pulse: boolean }) {
+  return (
+    <div className="mt-2 flex h-[22px] items-center justify-center">
+      <motion.button
+        type="button"
+        tabIndex={-1}
+        className="min-w-18 border border-[#707070] bg-[linear-gradient(180deg,#fdfdfd_0%,#e8e8e8_55%,#dcdcdc_100%)] px-3 py-0.5 font-[Segoe_UI,Tahoma,sans-serif] text-[11px] leading-tight text-[#1a1a1a] shadow-[inset_0_1px_0_#fff,inset_0_-1px_0_#c8c8c8,0_1px_0_rgba(0,0,0,0.06)]"
+        animate={pulse ? { scale: [1, 0.94, 1.02, 1] } : { scale: 1 }}
+        transition={{ duration: 0.28, ease: "easeOut" }}
+      >
+        1 clic
+      </motion.button>
+    </div>
   );
 }
 
 function VisualExcel() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.12 });
-  const { engine, colIdx, rowIdx, phase, flashCol, getManualCell } = useExcelColumns(inView);
-
-  const manualGrid = EXCEL_COL_LABELS.map((_, c) =>
-    Array.from({ length: EXCEL_ROW_COUNT }, (_, r) => getManualCell(c, r)),
-  );
-  const isGlowing = flashCol !== null && phase === "burst";
+  const {
+    getManualDisplay,
+    getEngineDisplay,
+    flashCol,
+    buttonPulse,
+    isTyping,
+    isGlowing,
+    activeSheetRow,
+    activeCol,
+    activeColLetter,
+    activeExcelRow,
+    formulaPreview,
+  } = useExcelComparison(inView);
 
   return (
-    <div ref={ref} className="relative w-full min-w-0" aria-hidden>
-      <div className="relative flex flex-col items-center gap-2 sm:gap-2.5">
-        <div className="relative flex w-full min-w-0 max-w-[min(100%,560px)] items-stretch justify-center gap-1 sm:gap-1.5">
-          <div className="relative min-w-0 flex-[1.08]">
-            {isGlowing ? (
-              <div
-                className="pointer-events-none absolute top-1/2 left-1/2 z-0 h-[122%] w-[126%] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-red-500/8 blur-2xl"
-                aria-hidden
-              />
-            ) : null}
-            <div className="relative z-1">
-              <ExcelSheet
-                fileName="clientes.xlsx · manual"
-                grid={manualGrid}
-                mode="manual"
-                activeCol={colIdx}
-                activeRow={rowIdx}
-                phase={phase}
-                flashCol={flashCol}
-                large
-              />
-            </div>
-          </div>
-          <ArrowFlow prominent />
-          <div className="relative min-w-0 flex-[1.08]">
-            {isGlowing ? (
-              <div
-                className="pointer-events-none absolute top-1/2 left-1/2 z-0 h-[122%] w-[126%] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-emerald-500/6 blur-2xl"
-                aria-hidden
-              />
-            ) : null}
-            <div className="relative z-1">
-            <ExcelSheet
-              fileName="clientes.xlsx · SST_ENGINE"
-              grid={engine}
-              mode="engine"
-              flashCol={flashCol}
-              phase={phase}
-              large
+    <div ref={ref} className="relative mx-auto w-full min-w-0 max-w-[min(100%,640px)]" aria-hidden>
+      <div className="relative flex w-full min-w-0 items-start justify-center gap-0.5 sm:gap-1">
+        <div className="relative flex min-w-0 flex-1 flex-col">
+          {isGlowing ? (
+            <div
+              className="pointer-events-none absolute top-[38%] left-1/2 z-0 h-[92%] w-[118%] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-red-500/8 blur-2xl"
+              aria-hidden
             />
-            </div>
+          ) : null}
+          <div className="relative z-1">
+            <ClassicExcelSheet
+              getCell={getManualDisplay}
+              activeSheetRow={activeSheetRow}
+              activeCol={activeCol}
+              activeColLetter={activeColLetter}
+              activeExcelRow={activeExcelRow}
+              formulaPreview={formulaPreview}
+            />
           </div>
+          <TypingIndicator visible={isTyping} />
         </div>
-        <p className="shrink-0 text-center font-mono text-[9px] font-bold tracking-[0.28em] text-zinc-400 uppercase sm:text-[10px]">
-          ¿TE SUENA?
-        </p>
+
+        <div className="flex shrink-0 self-center pb-7 sm:pb-8">
+          <ArrowFlow />
+        </div>
+
+        <div className="relative flex min-w-0 flex-1 flex-col">
+          {isGlowing ? (
+            <div
+              className="pointer-events-none absolute top-[38%] left-1/2 z-0 h-[92%] w-[118%] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-emerald-500/6 blur-2xl"
+              aria-hidden
+            />
+          ) : null}
+          <div className="relative z-1">
+            <ModernEngineSheet getCell={getEngineDisplay} flashCol={flashCol} />
+          </div>
+          <OneClickButton pulse={buttonPulse} />
+        </div>
       </div>
+
+      <p className="mt-2.5 text-center font-mono text-[9px] font-bold tracking-[0.28em] text-zinc-400 uppercase sm:mt-3 sm:text-[10px]">
+        ¿TE SUENA?
+      </p>
+
+      <style jsx>{`
+        .excel-manual-cursor {
+          animation: excel-cursor-blink 1.05s step-end infinite;
+        }
+        @keyframes excel-cursor-blink {
+          0%,
+          45% {
+            opacity: 1;
+          }
+          50%,
+          100% {
+            opacity: 0;
+          }
+        }
+        .excel-typing-dot {
+          animation: excel-typing-bounce 1.2s ease-in-out infinite;
+        }
+        .animation-delay-0 {
+          animation-delay: 0ms;
+        }
+        .animation-delay-1 {
+          animation-delay: 160ms;
+        }
+        .animation-delay-2 {
+          animation-delay: 320ms;
+        }
+        @keyframes excel-typing-bounce {
+          0%,
+          60%,
+          100% {
+            opacity: 0.25;
+            transform: translateY(0);
+          }
+          30% {
+            opacity: 1;
+            transform: translateY(-2px);
+          }
+        }
+        :global(.excel-engine-flash) {
+          animation: excel-engine-cell-flash 0.88s ease-out forwards;
+        }
+        @keyframes excel-engine-cell-flash {
+          0% {
+            background-color: rgba(16, 185, 129, 0.45);
+          }
+          100% {
+            background-color: rgba(16, 185, 129, 0.08);
+          }
+        }
+      `}</style>
     </div>
   );
 }
@@ -873,7 +1182,7 @@ export function StrategicProfile() {
               </motion.div>
             </motion.div>
 
-            <FadeIn delay={0.04}>
+            <FadeIn delay={0.04} className="mt-12 sm:mt-14 lg:mt-16">
               <ManifiestoAguarras />
             </FadeIn>
 
