@@ -252,8 +252,9 @@ function BpPercepcion() {
                 src="/gestoria.webp"
                 alt=""
                 fill
+                loading="lazy"
                 sizes="(max-width: 640px) 160px, 280px"
-                quality={92}
+                quality={75}
                 className="scale-[1.08] object-cover [image-rendering:crisp-edges]"
                 style={{
                   filter: "saturate(2.5) contrast(0.55) hue-rotate(-18deg) blur(0.4px)",

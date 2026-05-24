@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script";
 import { ContactChrome } from "@/components/contact/ContactChrome";
+import { DeferredAnalytics } from "@/components/DeferredAnalytics";
 import { ContactModalProvider } from "@/components/contact/ContactModalContext";
 import "./globals.css";
 
@@ -152,17 +152,7 @@ export default function RootLayout({
           {children}
           <ContactChrome />
         </ContactModalProvider>
-        {process.env.NEXT_PUBLIC_GA_ID ? (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-              strategy="lazyOnload"
-            />
-            <Script id="ga-init" strategy="lazyOnload">
-              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${process.env.NEXT_PUBLIC_GA_ID}');`}
-            </Script>
-          </>
-        ) : null}
+        <DeferredAnalytics />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -1,14 +1,9 @@
 type GtagEventParameters = Record<string, string | number | boolean>;
 
-type Gtag = (
-  command: "event",
-  eventName: string,
-  parameters?: GtagEventParameters,
-) => void;
-
 declare global {
   interface Window {
-    gtag?: Gtag;
+    dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
