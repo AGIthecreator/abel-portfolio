@@ -40,12 +40,12 @@ function StripLogo({ src }: { src: string }) {
       <img
         src={src}
         alt=""
-        width={96}
+        width={88}
         height={34}
         loading="lazy"
         decoding="async"
         role="presentation"
-        className="max-h-full max-w-full object-contain object-center"
+        className="h-[2.975rem] w-[5.5rem] object-contain object-center md:h-[3.4rem] md:w-[6.25rem]"
       />
     </span>
   );

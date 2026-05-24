@@ -534,6 +534,7 @@ next-route-announcer,
 
 /* Footer — grano + logo absoluto (no altera la altura del footer) */
 .footer-grain-overlay {
+  content-visibility: auto;
   z-index: 0;
   opacity: 0.025;
   mix-blend-mode: soft-light;

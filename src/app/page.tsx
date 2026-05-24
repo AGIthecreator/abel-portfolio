@@ -5,10 +5,8 @@ import {
   DeferredStrategicProfile,
   DeferredWhatIBuild,
 } from "@/components/sections/DeferredSections";
-import {
-  DeferredStripExecution,
-  DeferredStripSystemStatus,
-} from "@/components/sections/DeferredStrips";
+import StripSystemStatus from "@/components/sections/Strips/StripSystemStatus";
+import StripExecution from "@/components/sections/Strips/StripExecution";
 
 export default function Page() {
   return (
@@ -32,7 +30,7 @@ export default function Page() {
 
       {/* FRANJA 1: por encima del bloque estratégico para que el CMD del Hero siga tapando solo la franja, no tapar la franja con el perfil */}
       <div className="relative z-20">
-        <DeferredStripSystemStatus />
+        <StripSystemStatus />
       </div>
 
       {/* BLOQUE 1: Narrativa Estratégica (z por debajo de la franja para no ocultarla) */}
@@ -44,7 +42,7 @@ export default function Page() {
 
       {/* FRANJA 2: sin margen superior para pegar al bloque estratégico */}
       <div className="mb-6 sm:mb-8">
-        <DeferredStripExecution />
+        <StripExecution />
       </div>
 
       {/* Mesa de evidencias — entrega de resultados */}
