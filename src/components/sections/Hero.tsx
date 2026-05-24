@@ -173,9 +173,10 @@ function HeroStatsMatplotlibPanel({ variant, className }: HeroStatsMatplotlibPan
           alt=""
           width={2965}
           height={1047}
-          quality={92}
-          priority={!isGain}
-          sizes="(max-width: 1024px) 50vw, 320px"
+          quality={isGain ? 92 : 80}
+          priority={isGain}
+          fetchPriority={isGain ? "high" : "low"}
+          sizes="(max-width: 640px) 42vw, (max-width: 1024px) 38vw, 320px"
           className={`absolute top-0 h-full max-w-none object-cover ${isGain ? "left-0 w-[200%] object-left" : "right-0 left-auto w-[200%] object-right"}`}
         />
       </div>

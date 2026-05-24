@@ -5,9 +5,10 @@ import { motion } from "framer-motion";
 const SECTION_BG = "#070b13";
 const POLAROID_CAPTION = "#F3F1EB";
 
-/** ~2× ancho visual máx. (200–292px) para retina sin servir 100vw */
-const IMAGE_SIZES = "(max-width: 768px) 400px, 520px";
-const IMAGE_SIZES_AXIS = "(max-width: 768px) 480px, 620px";
+/** Alineado al ancho real en móvil (max ~200–225px) para no pedir 750–1080px a Next */
+const IMAGE_SIZES = "(max-width: 640px) 200px, (max-width: 1024px) 220px, 260px";
+const IMAGE_SIZES_AXIS = "(max-width: 640px) 230px, (max-width: 1024px) 250px, 292px";
+const POLAROID_QUALITY = 80;
 
 /** Orden: arriba centro → medio (local | factura) → eje (despacho) → abajo desplazado (tienda) */
 const BOARD_ITEMS = [
@@ -139,7 +140,8 @@ function PolaroidFigure({
             src={src}
             alt={alt}
             fill
-            quality={92}
+            quality={POLAROID_QUALITY}
+            loading="lazy"
             sizes={isAxis ? IMAGE_SIZES_AXIS : IMAGE_SIZES}
             className="object-cover object-center"
           />

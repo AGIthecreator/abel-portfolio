@@ -6,9 +6,13 @@ const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: projectRoot,
+  experimental: {
+    optimizePackageImports: ["framer-motion", "lucide-react"],
+  },
   images: {
-    /** Valores usados en el proyecto (WhatIBuild, Hero, StrategicProfile: 92 · Navbar: 100) */
-    qualities: [75, 92, 100],
+    qualities: [75, 80, 92],
+    imageSizes: [16, 32, 48, 64, 96, 128, 180, 200, 225, 256, 288, 320, 384],
+    deviceSizes: [384, 640, 750, 828, 1080, 1200],
     remotePatterns: [
       {
         protocol: "https",
