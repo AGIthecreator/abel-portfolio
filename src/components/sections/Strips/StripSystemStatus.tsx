@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import React from "react";
 
 /** Extensible: añade `{ kind: "name", label: "Marca" }` cuando tengas marcas solo en texto. */
@@ -9,72 +8,42 @@ type StripTechItem =
   | { kind: "name"; label: string };
 
 const STRIP_TECH_ITEMS: StripTechItem[] = [
+  { kind: "logo", src: "/icons/devicon/nextjs-plain.svg", alt: "Next.js" },
+  { kind: "logo", src: "/icons/devicon/react-original-wordmark.svg", alt: "React" },
+  { kind: "logo", src: "/icons/devicon/typescript-plain.svg", alt: "TypeScript" },
+  { kind: "logo", src: "/icons/devicon/nodejs-plain-wordmark.svg", alt: "Node.js" },
   {
     kind: "logo",
-    src: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-plain.svg",
-    alt: "Next.js",
-  },
-  {
-    kind: "logo",
-    src: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original-wordmark.svg",
-    alt: "React",
-  },
-  {
-    kind: "logo",
-    src: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-plain.svg",
-    alt: "TypeScript",
-  },
-  {
-    kind: "logo",
-    src: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-plain-wordmark.svg",
-    alt: "Node.js",
-  },
-  {
-    kind: "logo",
-    src: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-plain-wordmark.svg",
+    src: "/icons/devicon/postgresql-plain-wordmark.svg",
     alt: "PostgreSQL",
   },
+  { kind: "logo", src: "/icons/devicon/supabase-plain.svg", alt: "Supabase" },
   {
     kind: "logo",
-    src: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-plain.svg",
-    alt: "Supabase",
-  },
-  {
-    kind: "logo",
-    src: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-plain-wordmark.svg",
+    src: "/icons/devicon/tailwindcss-plain-wordmark.svg",
     alt: "Tailwind CSS",
   },
   {
     kind: "logo",
-    src: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cloudflare/cloudflare-plain-wordmark.svg",
+    src: "/icons/devicon/cloudflare-plain-wordmark.svg",
     alt: "Cloudflare",
   },
-  {
-    kind: "logo",
-    src: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original-wordmark.svg",
-    alt: "Vercel",
-  },
-  {
-    kind: "logo",
-    src: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-plain-wordmark.svg",
-    alt: "Docker",
-  },
-  {
-    kind: "logo",
-    src: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg",
-    alt: "GitHub",
-  },
+  { kind: "logo", src: "/icons/devicon/vercel-original-wordmark.svg", alt: "Vercel" },
+  { kind: "logo", src: "/icons/devicon/docker-plain-wordmark.svg", alt: "Docker" },
+  { kind: "logo", src: "/icons/devicon/github-original.svg", alt: "GitHub" },
 ];
 
 function StripLogo({ src }: { src: string }) {
   return (
     <span className="strip-tech-logo-wrap strip-tech-logo-wrap--tint inline-flex shrink-0 cursor-default items-center motion-safe:animate-strip-logo-float">
-      <Image
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         src={src}
         alt=""
         width={120}
         height={120}
-        unoptimized
+        loading="lazy"
+        decoding="async"
         role="presentation"
         className="h-[2.975rem] w-auto shrink-0 object-contain md:h-[3.4rem]"
       />

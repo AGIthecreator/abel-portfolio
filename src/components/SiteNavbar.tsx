@@ -117,7 +117,7 @@ export function SiteNavbar() {
               height={39}
               priority
               fetchPriority="high"
-              quality={92}
+              quality={80}
               sizes="(max-width: 1023px) 116px, 200px"
             />
           </Link>

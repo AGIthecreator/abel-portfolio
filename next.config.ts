@@ -7,6 +7,7 @@ const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig: NextConfig = {
   outputFileTracingRoot: projectRoot,
   experimental: {
+    inlineCss: true,
     optimizePackageImports: ["framer-motion", "lucide-react"],
   },
   images: {
@@ -17,11 +18,6 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "images.unsplash.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "cdn.jsdelivr.net",
         pathname: "/**",
       },
     ],
