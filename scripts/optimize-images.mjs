@@ -17,6 +17,12 @@ const JOBS = [
   { in: "public/programador.png", out: "public/programador.webp", quality: 92 },
   { in: "public/tienda.png", out: "public/tienda.webp", quality: 92 },
   { in: "public/gestoria.png", out: "public/gestoria.webp", quality: 92 },
+  {
+    in: "public/logos/LogoAGItheCreator.png",
+    out: "public/logos/LogoAGItheCreator.webp",
+    quality: 82,
+    width: 320,
+  },
 ];
 
 for (const job of JOBS) {
@@ -24,7 +30,15 @@ for (const job of JOBS) {
   const output = path.join(root, job.out);
   const meta = await sharp(input).metadata();
 
-  await sharp(input)
+  let pipeline = sharp(input);
+  if (job.width) {
+    pipeline = pipeline.resize(job.width, null, {
+      fit: "inside",
+      withoutEnlargement: true,
+    });
+  }
+
+  await pipeline
     .webp({ quality: job.quality, effort: 6, alphaQuality: 100 })
     .toFile(output);
 

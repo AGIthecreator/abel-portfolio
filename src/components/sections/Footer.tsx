@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, type CSSProperties, type MouseEvent, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useContactModal } from "@/components/contact/ContactModalContext";
 import { handleSectionNavClick } from "@/lib/scroll-to-section";
@@ -59,12 +60,15 @@ export function Footer() {
             className="outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070b13]"
             aria-label="Ir al inicio — AGItheCreator"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               id="footer-brand-logo-img"
-              src="/logos/LogoAGItheCreator.png"
+              src="/logos/LogoAGItheCreator.webp"
               alt="AGItheCreator"
-              decoding="async"
+              width={320}
+              height={320}
+              quality={80}
+              loading="lazy"
+              sizes="(max-width: 1023px) 130px, 200px"
             />
           </Link>
 

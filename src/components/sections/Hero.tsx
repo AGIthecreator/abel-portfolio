@@ -427,7 +427,7 @@ function CmdSyntaxLine({ text }: { text: string }) {
     const tail = t.slice("> [OK]".length);
     return (
       <span>
-        <span className="text-neutral-500">&gt; </span>
+        <span className="text-neutral-400">&gt; </span>
         <span className="text-emerald-400">[OK]</span>
         <span className="text-emerald-200/88">{tail}</span>
       </span>
@@ -437,7 +437,7 @@ function CmdSyntaxLine({ text }: { text: string }) {
     const tail = t.slice("> [INFO]".length);
     return (
       <span>
-        <span className="text-neutral-500">&gt; </span>
+        <span className="text-neutral-400">&gt; </span>
         <span className="text-sky-400">[INFO]</span>
         <span className="text-sky-200/90">{tail}</span>
       </span>
@@ -447,7 +447,7 @@ function CmdSyntaxLine({ text }: { text: string }) {
     const tail = t.slice("> [ERROR]".length);
     return (
       <span>
-        <span className="text-neutral-500">&gt; </span>
+        <span className="text-neutral-400">&gt; </span>
         <span className="text-rose-400">[ERROR]</span>
         <span className="text-rose-200/88">{tail}</span>
       </span>
@@ -456,7 +456,7 @@ function CmdSyntaxLine({ text }: { text: string }) {
   if (t.startsWith("> ")) {
     return (
       <span>
-        <span className="text-neutral-500">&gt; </span>
+        <span className="text-neutral-400">&gt; </span>
         <span className="text-cyan-300">{t.slice(2)}</span>
       </span>
     );
@@ -464,7 +464,7 @@ function CmdSyntaxLine({ text }: { text: string }) {
   if (t.startsWith(">")) {
     return (
       <span>
-        <span className="text-neutral-500">&gt;</span>
+        <span className="text-neutral-400">&gt;</span>
         <span className="text-cyan-300">{t.slice(1)}</span>
       </span>
     );
@@ -888,10 +888,10 @@ function CmdTypingWindow({
           className="hero-cmd-body h-65 overflow-y-auto border-t border-white/10 bg-black p-3.5 font-mono text-[10px] leading-relaxed sm:h-75 sm:p-4 sm:text-[11px]"
         >
           <MagneticLineWrap>
-            <p className="mb-1 text-neutral-500">Microsoft Windows [Versión 10.0.19045]</p>
+            <p className="mb-1 text-neutral-400">Microsoft Windows [Versión 10.0.19045]</p>
           </MagneticLineWrap>
           <MagneticLineWrap>
-            <p className="mb-2 text-neutral-500">(c) Microsoft Corporation.</p>
+            <p className="mb-2 text-neutral-400">(c) Microsoft Corporation.</p>
           </MagneticLineWrap>
           <div className="space-y-1">
             {lines.map((row) => (
@@ -909,7 +909,7 @@ function CmdTypingWindow({
               </MagneticLineWrap>
             )}
             <p>
-              <span className="text-neutral-500">C:\Users\AGITHECREATOR&gt;</span>{" "}
+              <span className="text-neutral-400">C:\Users\AGITHECREATOR&gt;</span>{" "}
               <span className="inline-block h-3 w-1.5 animate-pulse align-middle bg-cyan-400/90" aria-hidden />
             </p>
           </div>
