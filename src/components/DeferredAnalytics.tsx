@@ -42,10 +42,7 @@ export function DeferredAnalytics() {
       });
     }
 
-    const timeoutId = window.setTimeout(load, 5000);
-
     function cleanup() {
-      window.clearTimeout(timeoutId);
       for (const event of events) {
         window.removeEventListener(event, onInteraction, { capture: true });
       }

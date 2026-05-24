@@ -67,7 +67,7 @@ export function DeferredStrategicProfile() {
 
 export function DeferredWhatIBuild() {
   return (
-    <DeferredMount fallback={<Skeleton h={900} />}>
+    <DeferredMount fallback={<Skeleton h={1020} />}>
       <WhatIBuild />
     </DeferredMount>
   );

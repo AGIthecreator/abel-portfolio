@@ -214,9 +214,9 @@ function BpPercepcion() {
               <span className="font-sans text-[0.72em] font-medium leading-none text-white">Internet Explorer</span>
             </div>
             <div className="flex min-h-[0.55em] shrink-0 items-center justify-center gap-[0.25em] bg-[#d4d4d4] py-[0.15em]">
-              <span className="h-[0.45em] w-[0.45em] min-h-[5px] min-w-[5px] rounded-full bg-[#c00]" />
-              <span className="h-[0.45em] w-[0.45em] min-h-[5px] min-w-[5px] rounded-full bg-[#cc0]" />
-              <span className="h-[0.45em] w-[0.45em] min-h-[5px] min-w-[5px] rounded-full bg-[#090]" />
+              <span className="h-[0.45em] w-[0.45em] min-h-1.25 min-w-1.25 rounded-full bg-[#c00]" />
+              <span className="h-[0.45em] w-[0.45em] min-h-1.25 min-w-1.25 rounded-full bg-[#cc0]" />
+              <span className="h-[0.45em] w-[0.45em] min-h-1.25 min-w-1.25 rounded-full bg-[#090]" />
             </div>
 
             <div className="flex min-h-[1.75em] shrink-0 items-center justify-center bg-[#ff0] px-[0.45em]">
@@ -254,7 +254,7 @@ function BpPercepcion() {
                 fill
                 loading="lazy"
                 sizes="(max-width: 640px) 160px, 280px"
-                quality={75}
+                quality={70}
                 className="scale-[1.08] object-cover [image-rendering:crisp-edges]"
                 style={{
                   filter: "saturate(2.5) contrast(0.55) hue-rotate(-18deg) blur(0.4px)",

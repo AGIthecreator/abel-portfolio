@@ -35,17 +35,17 @@ const STRIP_TECH_ITEMS: StripTechItem[] = [
 
 function StripLogo({ src }: { src: string }) {
   return (
-    <span className="strip-tech-logo-wrap strip-tech-logo-wrap--tint inline-flex shrink-0 cursor-default items-center motion-safe:animate-strip-logo-float">
+    <span className="strip-tech-logo-wrap strip-tech-logo-wrap--tint inline-flex h-[2.975rem] w-[5.5rem] shrink-0 cursor-default items-center justify-center motion-safe:animate-strip-logo-float md:h-[3.4rem] md:w-[6.25rem]">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt=""
-        width={120}
-        height={120}
+        width={96}
+        height={34}
         loading="lazy"
         decoding="async"
         role="presentation"
-        className="h-[2.975rem] w-auto shrink-0 object-contain md:h-[3.4rem]"
+        className="max-h-full max-w-full object-contain object-center"
       />
     </span>
   );

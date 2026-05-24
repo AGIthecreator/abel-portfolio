@@ -558,6 +558,22 @@ next-route-announcer,
 
 /* Contacto fuera del flujo en desktop → nav centrada como la placa */
 @media (min-width: 1024px) {
+  .footer-anchor {
+    min-height: calc(0.75rem * 2 + 2.75rem);
+  }
+
+  #footer-brand-link {
+    width: 11rem;
+    min-height: calc(0.75rem * 2 + 2.75rem - var(--footer-logo-inset-top));
+  }
+
+  #footer-brand-logo-img {
+    height: 3.65rem !important;
+    min-height: 3.65rem;
+    max-height: 3.65rem !important;
+    width: auto !important;
+  }
+
   .footer-main-row {
     display: flex;
     align-items: center;
