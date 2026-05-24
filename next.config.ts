@@ -7,7 +7,6 @@ const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig: NextConfig = {
   outputFileTracingRoot: projectRoot,
   experimental: {
-    inlineCss: true,
     optimizePackageImports: ["framer-motion", "lucide-react"],
   },
   images: {

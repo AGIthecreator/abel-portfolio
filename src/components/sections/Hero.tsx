@@ -1,7 +1,6 @@
 
 "use client";
 
-import { motion, useMotionValue, useTransform } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
@@ -11,12 +10,9 @@ import {
 import Image from "next/image";
 import { createPortal } from "react-dom";
 import {
-  createContext,
-  useContext,
   useEffect,
   useId,
   useCallback,
-  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -25,8 +21,6 @@ import {
 } from "react";
 import { useContactModal } from "@/components/contact/ContactModalContext";
 import { trackEvent } from "@/lib/analytics";
-
-const MECHANICAL_TRANSITION = { type: "spring" as const, stiffness: 120, damping: 14 };
 
 /** Google: ventana clara real. Servicios/CMD: sombras grandes y suaves */
 const SHADOW_GOOGLE =
@@ -235,11 +229,6 @@ export const HERO_DESK_MOBILE_PRESETS = {
   },
 } as const;
 
-const CursorCtx =
-  createContext<{ rawX: ReturnType<typeof useMotionValue<number>>; rawY: ReturnType<typeof useMotionValue<number>> } | null>(
-    null,
-  );
-
 function MagneticCloseWrap({ children }: { children: ReactNode }) {
   return <span className="inline-flex">{children}</span>;
 }
@@ -268,25 +257,24 @@ function HandGlyph() {
   );
 }
 
-function CursorHandLayer({ active, handScale = 1 }: { active: boolean; handScale?: number }) {
-  const store = useContext(CursorCtx);
-  const fallbackX = useMotionValue(-9999);
-  const fallbackY = useMotionValue(-9999);
-  const rawX = store?.rawX ?? fallbackX;
-  const rawY = store?.rawY ?? fallbackY;
-  const gx = useTransform(rawX, (v) => v - 10);
-  const gy = useTransform(rawY, (v) => v - 8);
-
-  if (!store || !active) return null;
+function CursorHandLayer({
+  active,
+  handRef,
+}: {
+  active: boolean;
+  handRef: RefObject<HTMLDivElement | null>;
+}) {
+  if (!active) return null;
 
   return (
-    <motion.div
+    <div
+      ref={handRef}
       aria-hidden
       className="pointer-events-none fixed left-0 top-0 z-130 origin-top-left mix-blend-difference"
-      style={{ x: gx, y: gy, scale: handScale }}
+      style={{ transform: "translate3d(-9999px, -9999px, 0) scale(1)" }}
     >
       <HandGlyph />
-    </motion.div>
+    </div>
   );
 }
 
@@ -988,16 +976,9 @@ function EngineerDeskStack({
       {...rootProps}
     >
       <div className="relative w-full min-w-0" style={{ height: flowHeight }}>
-        <motion.div
-          className="absolute left-1/2 -translate-x-1/2"
+        <div
+          className={`absolute left-1/2 -translate-x-1/2 ${float ? "hero-desk-float" : ""}`}
           style={{ top: topInset }}
-          initial={false}
-          animate={float ? { y: [0, -7, 0] } : { y: 0 }}
-          transition={
-            float
-              ? { duration: 4.6, repeat: Infinity, repeatType: "loop", ease: "easeInOut" }
-              : { duration: 0 }
-          }
         >
           <div
             style={{
@@ -1011,7 +992,7 @@ function EngineerDeskStack({
               {deskWindows}
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
@@ -1030,23 +1011,35 @@ export function Hero() {
   const [submitCtaHover, setSubmitCtaHover] = useState(false);
   const [diagnosticHover, setDiagnosticHover] = useState(false);
 
-  const rawX = useMotionValue(-9999);
-  const rawY = useMotionValue(-9999);
-  const cursorApi = useMemo(() => ({ rawX, rawY }), [rawX, rawY]);
+  const handRef = useRef<HTMLDivElement>(null);
+  const pointerRef = useRef({ x: -9999, y: -9999 });
   const useCustomPointer = cursorHero && !reduceMotion && !formTextFieldHover;
   const handScale = submitCtaHover ? 1.1 : 1;
 
+  const moveHand = useCallback(
+    (x: number, y: number, scale: number) => {
+      pointerRef.current = { x, y };
+      const el = handRef.current;
+      if (!el) return;
+      el.style.transform = `translate3d(${x - 10}px, ${y - 8}px, 0) scale(${scale})`;
+    },
+    [],
+  );
+
+  useEffect(() => {
+    const { x, y } = pointerRef.current;
+    moveHand(x, y, handScale);
+  }, [handScale, moveHand]);
+
   const onHeroMove = (e: ReactMouseEvent) => {
-    rawX.set(e.clientX);
-    rawY.set(e.clientY);
+    moveHand(e.clientX, e.clientY, handScale);
   };
 
   return (
-    <CursorCtx.Provider value={cursorApi}>
       <section
         className={`hero-engineer relative isolate z-30 w-full overflow-visible bg-[#04060d] pt-27 pb-5 max-lg:landscape:pt-24 sm:pt-28 sm:pb-6 lg:pt-20 lg:pb-8 ${useCustomPointer ? "cursor-none" : ""}`}
       >
-        <CursorHandLayer active={useCustomPointer} handScale={handScale} />
+        <CursorHandLayer active={useCustomPointer} handRef={handRef} />
 
         <div className="pointer-events-none absolute inset-0 z-0">
           <div className="hero-tech-grid absolute inset-0" />
@@ -1057,12 +1050,7 @@ export function Hero() {
 
         <div className="relative z-10 mx-auto flex w-full max-w-[1580px] min-h-0 flex-1 items-center overflow-visible px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
           <div className="grid w-full min-w-0 items-start gap-8 overflow-visible max-lg:gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center lg:gap-14 xl:gap-16">
-            <motion.div
-              initial={{ opacity: 0, x: -28 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={MECHANICAL_TRANSITION}
-              className="relative z-50 max-w-[min(100%,540px)] space-y-3 lg:max-w-[min(100%,560px)] pointer-events-none"
-            >
+            <div className="hero-headline-enter relative z-50 max-w-[min(100%,540px)] space-y-3 lg:max-w-[min(100%,560px)] pointer-events-none">
               <p className="pointer-events-auto inline-flex w-fit border border-white/15 bg-white/4.5 px-2.5 py-1 text-[8px] font-medium uppercase tracking-[0.13em] text-neutral-400 sm:text-[9px] sm:tracking-[0.14em]">
                 Sistemas que trabajan solos
               </p>
@@ -1144,7 +1132,7 @@ export function Hero() {
               <p className="pointer-events-auto max-w-130 text-[12px] leading-relaxed text-neutral-400">
                 Menos trabajo manual. Menos errores. Más tiempo para el negocio.
               </p>
-            </motion.div>
+            </div>
 
             <div className="relative z-40 min-w-0 overflow-visible max-lg:-mb-38 max-lg:landscape:-mb-28 max-lg:pt-1 lg:-mb-52 xl:-mb-56">
               <div className="relative z-1">
@@ -1165,9 +1153,42 @@ export function Hero() {
           .hero-cmd-body {
             scroll-behavior: smooth;
           }
+          @keyframes hero-desk-float {
+            0%,
+            100% {
+              transform: translate(-50%, 0);
+            }
+            50% {
+              transform: translate(-50%, -7px);
+            }
+          }
+          .hero-desk-float {
+            animation: hero-desk-float 4.6s ease-in-out infinite;
+          }
+          @keyframes hero-headline-enter {
+            from {
+              opacity: 0;
+              transform: translateX(-28px);
+            }
+            to {
+              opacity: 1;
+              transform: translateX(0);
+            }
+          }
+          .hero-headline-enter {
+            animation: hero-headline-enter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+          }
           @media (prefers-reduced-motion: reduce) {
             .hero-cmd-body {
               scroll-behavior: auto;
+            }
+            .hero-desk-float {
+              animation: none;
+            }
+            .hero-headline-enter {
+              animation: none;
+              opacity: 1;
+              transform: none;
             }
           }
           .hero-tech-grid {
@@ -1202,6 +1223,5 @@ export function Hero() {
           }
         `}</style>
       </section>
-    </CursorCtx.Provider>
   );
 }
