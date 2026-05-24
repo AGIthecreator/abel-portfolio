@@ -68,7 +68,7 @@ export function Footer() {
               height={320}
               quality={80}
               loading="lazy"
-              sizes="(max-width: 1023px) 130px, 200px"
+              sizes="(max-width: 1023px) 150px, 220px"
             />
           </Link>
 
