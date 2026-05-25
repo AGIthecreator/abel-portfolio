@@ -715,13 +715,41 @@ next-route-announcer,
  * Responsive — solo por debajo de lg; escritorio (≥1024px) sin cambios visuales.
  */
 @media (max-width: 1023px) and (orientation: landscape) and (max-height: 520px) {
+  .footer-anchor {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem 1.25rem;
+    padding-top: 0.5rem;
+    --footer-logo-scale: 1;
+  }
+
   #footer-brand-link {
     display: flex;
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    max-width: 42%;
+    flex-shrink: 0;
+    align-self: center;
+    justify-content: flex-start;
   }
 
   #footer-brand-logo-img {
-    height: 3.85rem;
-    max-height: 4.25rem;
+    height: 11.55rem;
+    max-height: 12.75rem;
+    width: auto;
+    object-position: left center;
+    transform: none;
+  }
+
+  .footer-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .footer-main-row {
+    padding-top: 0.35rem;
   }
 
   .site-navbar-mobile-row {

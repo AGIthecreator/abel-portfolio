@@ -72,14 +72,14 @@ function FaqHeadlineMascot({ className }: { className?: string }) {
       className={`relative flex w-fit max-w-full shrink-0 min-h-0 flex-col justify-center self-center max-lg:mx-0 lg:self-auto ${className ?? ""}`}
       aria-hidden
     >
-      <div className="pointer-events-none relative flex h-full min-h-20 w-fit max-w-full items-center justify-center overflow-hidden sm:min-h-23 lg:min-h-25">
+      <div className="pointer-events-none relative flex h-full min-h-50 w-fit max-w-full items-center justify-center overflow-hidden max-lg:sm:min-h-57.5 lg:min-h-25">
         <Image
           src="/logos/mascot-faqs-hero.webp"
           alt=""
           width={217}
           height={188}
           quality={85}
-          sizes="(max-width: 640px) 42vw, (max-width: 1024px) 38vw, 217px"
+          sizes="(max-width: 1023px) min(105vw, 540px), 217px"
           className="h-full max-h-full w-auto max-w-full object-contain object-center"
         />
       </div>
@@ -206,17 +206,17 @@ export function Faq() {
                 <span className="text-[#F3F1EB]/72">frecuentes</span>
               </p>
 
-              <div className="mt-4 grid items-center gap-2 max-lg:grid-cols-[minmax(0,1fr)_auto] lg:grid-cols-[auto_auto] lg:justify-start lg:gap-3">
-                <div className="min-w-0 w-fit max-w-full text-[clamp(2rem,4.2vw,3rem)] font-semibold leading-[1.08] tracking-tight">
+              <div className="mt-4 flex w-fit max-w-full items-center gap-2 max-lg:flex-nowrap lg:grid lg:grid-cols-[auto_auto] lg:justify-start lg:gap-3">
+                <div className="min-w-0 shrink-0 text-[clamp(2rem,4.2vw,3rem)] font-semibold leading-[1.08] tracking-tight">
                   <h2
                     id="faq-heading"
-                    className="max-w-[36ch] text-balance text-zinc-50 lg:max-w-none"
+                    className="w-fit max-w-[36ch] text-balance text-zinc-50 lg:max-w-none"
                   >
                     Hablemos claro.
                   </h2>
                   <FaqHeadlineAccentBar />
                 </div>
-                <FaqHeadlineMascot />
+                <FaqHeadlineMascot className="max-lg:shrink-0" />
               </div>
 
               <p className="mt-6 max-w-[42ch] text-[15px] leading-[1.8] text-zinc-400 sm:text-base sm:leading-[1.85] lg:max-w-none">
