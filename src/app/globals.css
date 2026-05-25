@@ -116,6 +116,29 @@
   }
 }
 
+/* 404 — flotación suave del pavo explorador */
+@keyframes notFoundMascotFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(2deg);
+  }
+}
+
+.not-found-mascot {
+  animation: notFoundMascotFloat 4.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .not-found-mascot {
+    animation: none;
+    transform: none;
+  }
+}
+
 @utility glass-card {
 background: rgba(255, 255, 255, 0.03);
 backdrop-filter: blur(8px);
