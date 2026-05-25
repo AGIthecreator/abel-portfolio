@@ -35,7 +35,7 @@ export default function NotFound() {
       <div className="relative z-10 flex w-full max-w-lg flex-col items-center text-center">
         <NotFoundMascot />
 
-        <div className="mt-12 flex w-full flex-col items-center gap-6 sm:mt-14 sm:gap-7">
+        <div className="flex w-full flex-col items-center gap-6 sm:gap-7">
           <p className="font-mono text-xs uppercase tracking-[0.16em] text-zinc-500/70">
             PÁGINA NO ENCONTRADA
           </p>

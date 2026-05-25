@@ -3,6 +3,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useCallback, useId, useState } from "react";
 import { useContactModal } from "@/components/contact/ContactModalContext";
+import Image from "next/image";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { trackEvent } from "@/lib/analytics";
 
@@ -69,16 +70,13 @@ function ManifestoHeadlineAccentBar() {
   );
 }
 
-/** Corchetes al tamaño del +, no tipográficos grandes */
 function FeatureMark() {
   return (
     <span
-      className="inline-flex shrink-0 items-center font-mono text-[13px] font-normal leading-none tracking-tight text-[#070b13]/45"
+      className="inline-flex shrink-0 items-center font-mono text-[13px] font-normal leading-none text-[#070b13]/45"
       aria-hidden
     >
-      <span>[</span>
-      <span>+</span>
-      <span>]</span>
+      &gt;
     </span>
   );
 }
@@ -127,20 +125,22 @@ function PricingTierBlock({
         onClick={onToggle}
         aria-expanded={isOpen}
         aria-controls={panelId}
-        className="group flex w-full gap-3 px-4 py-4 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#F3F1EB] sm:gap-3.5 sm:px-5 sm:py-4.5"
+        className="group flex w-full items-start gap-3 px-4 py-3.5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#F3F1EB] sm:gap-3.5 sm:px-5 sm:py-4"
       >
         <TierChevron isOpen={isOpen} />
-        <span className="min-w-0 flex-1 space-y-1">
-          <span
-            className="block text-[clamp(1.2rem,2.8vw,1.45rem)] font-semibold leading-tight tracking-[-0.02em]"
-            style={{ color: PLAN_NAME }}
-          >
-            {name}
+        <span className="min-w-0 flex-1">
+          <span className="flex items-baseline justify-between gap-x-3 gap-y-1">
+            <span
+              className="text-[clamp(1.2rem,2.8vw,1.45rem)] font-semibold leading-tight tracking-[-0.02em]"
+              style={{ color: PLAN_NAME }}
+            >
+              {name}
+            </span>
+            <span className="shrink-0 text-[13px] font-medium tabular-nums text-[#070b13]/55 sm:text-[14px]">
+              {price}
+            </span>
           </span>
-          <span className="block text-[13px] font-medium tabular-nums text-[#070b13]/55">
-            {price}
-          </span>
-          <span className="block text-[12px] leading-snug text-[#070b13]/40 sm:text-[13px]">
+          <span className="mt-1.5 block text-[12px] leading-snug text-[#070b13]/40 sm:text-[13px]">
             {summary}
           </span>
         </span>
@@ -199,37 +199,60 @@ export function Pricing() {
 
   return (
     <div className="relative min-h-screen bg-[#070b13] text-zinc-300">
-      {/* Hero original — fondo web, sin CTA */}
+      {/* Hero — dos columnas, compacto */}
       <section
-        className="relative z-10 bg-[#070b13] px-4 pb-12 pt-28 sm:px-6 sm:pb-14 sm:pt-32 lg:px-10 lg:pb-16 lg:pt-36"
+        className="relative z-10 bg-[#070b13] px-4 pb-8 pt-24 sm:px-6 sm:pb-10 sm:pt-28 lg:px-10 lg:pb-12 lg:pt-32"
         aria-labelledby="pricing-hero-heading"
       >
-        <FadeIn className="relative mx-auto w-full max-w-3xl lg:max-w-4xl">
+        <FadeIn className="relative mx-auto w-full max-w-6xl">
           <h1
             id="pricing-hero-heading"
-            className="font-serif text-[clamp(2rem,5.2vw,2.85rem)] font-normal leading-[1.12] tracking-[-0.03em] text-[#f2f0ec]"
+            className="text-center font-serif text-[clamp(2.35rem,6.5vw,3.85rem)] font-normal leading-[1.04] tracking-[-0.038em] text-[#f2f0ec]"
           >
-            Cada negocio empieza desde un punto distinto.
+            <span className="block">Lo importante</span>
+            <span className="block">no es cuánto cuesta una web.</span>
           </h1>
-          <p className="mt-6 max-w-[52ch] text-[15px] leading-[1.8] text-zinc-400 sm:text-base sm:leading-[1.85]">
-            Una cafetería no necesita lo mismo que una clínica, un taller o una tienda. Hay
-            proyectos que necesitan algo sencillo y otros algo construido alrededor de cómo
-            funciona el negocio.
-          </p>
-          <aside
-            className="mt-8 max-w-[48ch] rounded-sm border border-violet-500/12 bg-violet-500/3 px-4 py-3.5 shadow-[0_8px_32px_-24px_rgba(80,50,200,0.35)] sm:px-5 sm:py-4"
-            aria-label="Presencial en Valladolid"
-          >
-            <p className="text-[14px] leading-[1.65] text-zinc-400 sm:text-[15px] sm:leading-[1.7]">
-              Si estás en Valladolid, podemos sentarnos y hablarlo tranquilamente.
-            </p>
-          </aside>
+
+          <div className="mx-auto mt-6 w-full max-w-184 sm:mt-8 lg:max-w-216">
+            <div className="grid grid-cols-1 items-center gap-5 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-x-8 lg:gap-y-0">
+              <div className="min-w-0 text-left">
+                <p
+                  className="max-w-[44ch] text-[clamp(1.05rem,2.4vw,1.35rem)] font-medium leading-[1.32] tracking-[-0.02em] text-zinc-200"
+                  role="doc-subtitle"
+                >
+                  Lo importante es construir algo que tenga sentido para quien lo va a usar.
+                </p>
+
+                <p className="mt-4 max-w-[48ch] text-[15px] leading-[1.8] text-zinc-400 sm:text-base sm:leading-[1.85]">
+                  Hay proyectos que pueden resolverse con algo sencillo y otros que necesitan más
+                  trabajo detrás. Mi trabajo es explicarte qué tiene sentido para tu caso.
+                </p>
+
+                <p className="mt-4 max-w-[48ch] text-sm italic leading-relaxed text-zinc-500 sm:text-[15px]">
+                  Sin extras raros. Sin costes sorpresa.
+                </p>
+              </div>
+
+              <div className="flex w-fit shrink-0 justify-center self-center lg:justify-end">
+                <Image
+                  src="/logos/mascot-pricing.webp"
+                  alt=""
+                  width={640}
+                  height={560}
+                  quality={85}
+                  priority
+                  sizes="(max-width: 1023px) 400px, 448px"
+                  className="h-auto w-[min(100%,25rem)] max-w-full object-contain object-center sm:w-84 lg:w-92"
+                />
+              </div>
+            </div>
+          </div>
         </FadeIn>
       </section>
 
       {/* Precios — fondo más claro, dos columnas */}
       <section
-        className="relative z-10 overflow-x-clip border-t border-white/5"
+        className="relative z-10"
         aria-labelledby="pricing-editorial-heading"
       >
         <div
@@ -254,29 +277,26 @@ export function Pricing() {
               style={{ left: "calc(46% + 0.125rem)" }}
             />
 
-            <div className="grid grid-cols-1 gap-10 lg:grid-cols-[46fr_54fr] lg:gap-x-12 xl:gap-x-14">
-              <FadeIn className="min-w-0 lg:pr-2">
-                <h1
+            <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[46fr_54fr] lg:items-center lg:gap-x-12 xl:gap-x-14">
+              <FadeIn className="min-w-0 lg:pr-2 lg:py-2">
+                <h2
                   id="pricing-editorial-heading"
-                  className="text-[clamp(1.25rem,2.8vw,1.55rem)] font-medium leading-tight tracking-[-0.02em] text-zinc-100"
+                  className="font-serif text-[clamp(1.25rem,2.8vw,1.55rem)] font-normal leading-[1.14] tracking-[-0.03em] text-[#F3F1EB]"
                 >
-                  Lo importante no es cuánto vale crear una página web.
-                </h1>
-                <div className="mt-5 space-y-4 text-[15px] leading-[1.8] text-zinc-400 sm:text-base sm:leading-[1.85]">
+                  Elegir quién va a construir una web también forma parte del proyecto.
+                </h2>
+                <div className="mt-5 space-y-4 text-[15px] leading-[1.8] text-zinc-300 sm:text-base sm:leading-[1.85]">
                   <p>
-                    Lo importante es construir algo que tenga sentido para quien lo va a usar.
+                    Hay páginas hechas para estar publicadas y otras pensadas para acompañar cómo
+                    funciona un negocio de verdad.
                   </p>
                   <p>
-                    Hay negocios que necesitan empezar con algo sencillo y otros que necesitan
-                    algo más construido alrededor de cómo trabajan cada día.
-                  </p>
-                  <p>
-                    Prefiero explicar qué merece la pena antes que llenar un presupuesto con
-                    cosas que probablemente nunca vas a necesitar.
+                    Por eso prefiero trabajar pocos proyectos y construirlos bien, en lugar de
+                    hacer diez iguales cambiando colores y un logo.
                   </p>
                 </div>
-                <p className="mt-6 text-sm italic leading-relaxed text-zinc-500 sm:text-[15px]">
-                  Sin extras raros. Sin costes sorpresa.
+                <p className="mt-6 text-sm leading-relaxed text-zinc-400 sm:text-[15px]">
+                  Si estás en Valladolid, podemos sentarnos y hablarlo tranquilamente.
                 </p>
               </FadeIn>
 
@@ -300,34 +320,13 @@ export function Pricing() {
         </div>
       </section>
 
-      {/* Manifiesto — como antes, sin rectángulo contenedor; fondo web */}
+      {/* Manifiesto — mismo fondo plano que el hero */}
       <section
-        className="relative z-10 overflow-hidden border-t border-white/4 bg-[#070b13]"
+        className="relative z-10 overflow-hidden bg-[#070b13]"
         aria-labelledby="pricing-manifesto-heading"
       >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background: `
-              linear-gradient(165deg,
-                rgba(45, 32, 82, 0.14) 0%,
-                rgba(28, 42, 78, 0.1) 32%,
-                rgba(10, 14, 22, 0.95) 68%,
-                #070b13 100%
-              )
-            `,
-          }}
-        />
-
         <FadeIn className="relative mx-auto w-full max-w-3xl px-4 py-20 sm:px-6 sm:py-24 lg:px-10 lg:py-28">
           <div className="relative text-center">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -top-20 left-1/2 h-44 w-[min(100%,26rem)] -translate-x-1/2 rounded-full blur-[80px]"
-              style={{ background: "rgba(100, 70, 180, 0.12)" }}
-            />
-
             <div className="relative mx-auto w-fit max-w-full">
               <h2
                 id="pricing-manifesto-heading"
@@ -369,7 +368,7 @@ export function Pricing() {
         </FadeIn>
       </section>
 
-      {/* Claridad — fondo más claro; negrita + cursiva */}
+      {/* Claridad */}
       <section
         className="relative z-10 overflow-x-clip border-t border-white/5"
         aria-labelledby="pricing-clarity-heading"
@@ -381,11 +380,12 @@ export function Pricing() {
         />
 
         <FadeIn className="relative mx-auto w-full max-w-xl px-4 py-14 text-center sm:px-6 sm:py-16 lg:px-10 lg:py-20">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-200">
-            Los precios son orientativos.
-          </p>
-          <h2 id="pricing-clarity-heading" className="sr-only">
-            Aclaración sobre precios
+          <h2
+            id="pricing-clarity-heading"
+            className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em]"
+          >
+            <span className="text-[#F3F1EB]">Los precios </span>
+            <span className="text-violet-300/85">son orientativos.</span>
           </h2>
           <p className="mx-auto mt-5 max-w-[44ch] text-[14px] leading-[1.75] text-zinc-400 sm:text-[15px] sm:leading-[1.8]">
             Cada negocio funciona de forma distinta. Algunos proyectos necesitan menos trabajo
