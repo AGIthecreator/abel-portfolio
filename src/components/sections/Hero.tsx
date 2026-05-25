@@ -17,7 +17,6 @@ import {
   useState,
   type ReactNode,
   type RefObject,
-  type MouseEvent as ReactMouseEvent,
 } from "react";
 import { useContactModal } from "@/components/contact/ContactModalContext";
 import { trackEvent } from "@/lib/analytics";
@@ -259,47 +258,6 @@ function MagneticLineWrap({ children }: { children: ReactNode }) {
   return <div>{children}</div>;
 }
 
-function HandGlyph() {
-  return (
-    <svg
-      aria-hidden
-      viewBox="0 0 32 36"
-      className="h-8 w-6.5 text-white"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.35"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M13 4 L13 19" />
-      <path d="M9 13 L10 26 Q10.5 30 13.5 30 L19 29 Q21.5 28.5 22 26 L22 21" />
-      <path d="M16 17 L17 26" opacity="0.85" />
-      <path d="M19 16 L19.8 23.8" opacity="0.72" />
-    </svg>
-  );
-}
-
-function CursorHandLayer({
-  active,
-  handRef,
-}: {
-  active: boolean;
-  handRef: RefObject<HTMLDivElement | null>;
-}) {
-  if (!active) return null;
-
-  return (
-    <div
-      ref={handRef}
-      aria-hidden
-      className="pointer-events-none fixed left-0 top-0 z-130 origin-top-left mix-blend-difference"
-      style={{ transform: "translate3d(-9999px, -9999px, 0) scale(1)" }}
-    >
-      <HandGlyph />
-    </div>
-  );
-}
-
 function WinControlsDecorative({ variant }: { variant: "light" | "dark" | "chrome" }) {
   const line =
     variant === "dark" ? "border-white/20" : variant === "chrome" ? "border-neutral-400/65" : "border-white/30";
@@ -510,14 +468,19 @@ function GoogleLogoMark({ className }: { className?: string }) {
   );
 }
 
+/** Título visible en pestaña (alineado con keywords/meta del sitio). */
+const AGI_BROWSER_TAB_TITLE = "Diseño web y Automatización";
+
 function AgiTabFavicon({ className }: { className?: string }) {
   return (
-    <span
-      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-sm bg-neutral-900 text-[7px] font-bold uppercase leading-none text-white ring-1 ring-neutral-600/70 ${className ?? ""}`}
+    <Image
+      src="/favicon.ico"
+      alt=""
+      width={16}
+      height={16}
+      className={`shrink-0 rounded-sm ${className ?? "h-3.5 w-3.5"}`}
       aria-hidden
-    >
-      <span className="bg-linear-to-br from-cyan-400/95 to-indigo-500/90 px-[3px] py-[4px]">AGI</span>
-    </span>
+    />
   );
 }
 
@@ -593,13 +556,7 @@ function LuckyEasterEggModal({ open, onClose }: { open: boolean; onClose: () => 
   );
 }
 
-function GoogleHomeWindow({
-  onFormTextFieldHover,
-  onSubmitCtaHover,
-}: {
-  onFormTextFieldHover: (v: boolean) => void;
-  onSubmitCtaHover: (v: boolean) => void;
-}) {
+function GoogleHomeWindow() {
   const belowLg = useBelowLg();
   const shell = belowLg ? HERO_DESK_MOBILE_PRESETS.google.shell : HERO_DESK_PRESETS.google.shell;
   const [task, setTask] = useState("");
@@ -624,19 +581,30 @@ function GoogleHomeWindow({
     <div className={shell}>
       <LuckyEasterEggModal open={luckyOpen} onClose={() => setLuckyOpen(false)} />
       <div className={`flex flex-col overflow-hidden rounded-md border border-neutral-300/95 bg-white ${SHADOW_GOOGLE}`}>
-        <div className="flex h-9 items-end gap-0.5 border-b border-[#c5c9d0] bg-[#dee1e6] px-1.5 pt-1">
-          <div className="flex min-w-0 max-w-[46%] flex-1 items-center gap-2 rounded-t border border-b-0 border-[#b5bac1] bg-white px-2.5 py-2 shadow-[0_-1px_0_0_white]">
-            <span className="relative h-3.5 w-3.5 shrink-0 rounded-full bg-[conic-gradient(#ea4335_0deg,#fbbc05_90deg,#34a853_180deg,#4285f4_270deg,#ea4335_360deg)] ring-1 ring-neutral-300/75">
-              <span className="absolute inset-[3.1px] rounded-full bg-[#4285f4]" />
-            </span>
-            <span className="truncate text-[11px] font-medium text-neutral-800">Google</span>
+        <div className="flex h-9 items-center gap-1 border-b border-[#c5c9d0] bg-[#dee1e6] px-1.5">
+          <div className="flex min-w-0 w-[74%] max-w-136 items-end gap-0.5 self-end pr-1.5">
+            <div className="flex min-w-0 flex-1 basis-0 items-center gap-1.5 rounded-t border border-b-0 border-[#b5bac1] bg-white px-2 py-2 shadow-[0_-1px_0_0_white]">
+              <span className="relative h-3.5 w-3.5 shrink-0 rounded-full bg-[conic-gradient(#ea4335_0deg,#fbbc05_90deg,#34a853_180deg,#4285f4_270deg,#ea4335_360deg)] ring-1 ring-neutral-300/75">
+                <span className="absolute inset-[3.1px] rounded-full bg-[#4285f4]" />
+              </span>
+              <span className="min-w-0 truncate text-[11px] font-medium text-neutral-800">Google</span>
+            </div>
+            <div className="flex min-w-0 flex-1 basis-0 items-center gap-1 rounded-t border border-b-0 border-transparent bg-[#e7eaef] px-2 py-1.5 text-[11px] text-neutral-600">
+              <AgiTabFavicon />
+              <span className="max-w-21 min-w-0 shrink truncate">agithecreator.com</span>
+              <span className="h-3 w-px shrink-0 bg-neutral-400/60" aria-hidden />
+              <span className="min-w-0 flex-1 truncate text-[10px] leading-tight text-neutral-500 sm:text-[11px]">
+                {AGI_BROWSER_TAB_TITLE}
+              </span>
+            </div>
           </div>
-          <div className="flex min-w-0 max-w-[46%] items-center gap-2 rounded-t border border-b-0 border-transparent bg-[#e7eaef] px-2.5 py-1.5 text-[11px] text-neutral-600">
-            <AgiTabFavicon className="h-3.5 w-3.5" />
-            <span className="truncate">agithecreator.com</span>
-          </div>
-          <span className="mb-0.5 shrink-0 px-0.5 text-lg leading-none text-neutral-500">+</span>
-          <div className="mb-0.5 ml-auto shrink-0">
+          <span
+            className="flex h-5 w-5 shrink-0 items-center justify-center text-base leading-none text-neutral-500"
+            aria-hidden
+          >
+            +
+          </span>
+          <div className="ml-auto flex shrink-0 items-center pl-1.5">
             <WinControlsDecorative variant="chrome" />
           </div>
         </div>
@@ -675,11 +643,7 @@ function GoogleHomeWindow({
             Diagnóstico de operativa
           </h2>
 
-          <div
-            className="max-w-xs space-y-4"
-            onPointerEnter={() => onFormTextFieldHover(true)}
-            onPointerLeave={() => onFormTextFieldHover(false)}
-          >
+          <div className="max-w-xs space-y-4">
             <div>
               <label htmlFor={taskId} className="mb-1.5 block text-sm text-neutral-800">
                 ¿Qué tarea manual te quita más tiempo?
@@ -716,9 +680,7 @@ function GoogleHomeWindow({
           <div className="mt-6 flex max-w-xs flex-col gap-3">
             <button
               type="submit"
-              onPointerEnter={() => onSubmitCtaHover(true)}
-              onPointerLeave={() => onSubmitCtaHover(false)}
-              className="inline-flex w-full min-h-10.5 items-center justify-center gap-1 rounded-md bg-[#1a73e8] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1558b0]"
+              className="inline-flex w-full min-h-10.5 cursor-pointer items-center justify-center gap-1 rounded-md bg-[#1a73e8] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1558b0]"
             >
               <span>Enviar diagnóstico</span>
               <span className="text-base leading-none" aria-hidden>
@@ -728,7 +690,7 @@ function GoogleHomeWindow({
             <button
               type="button"
               onClick={() => setLuckyOpen(true)}
-              className="self-center text-center text-[12px] font-normal leading-tight text-[#70757a] underline decoration-neutral-300/70 decoration-1 underline-offset-[3px] transition-colors hover:text-[#3c4043] hover:decoration-neutral-400"
+              className="cursor-pointer self-center text-center text-[12px] font-normal leading-tight text-[#70757a] underline decoration-neutral-300/70 decoration-1 underline-offset-[3px] transition-colors hover:text-[#3c4043] hover:decoration-neutral-400"
             >
               Voy a tener suerte
             </button>
@@ -944,36 +906,18 @@ function CmdTypingWindow({
 function EngineerDeskStack({
   reduceMotion,
   diagnosticHover,
-  onFormTextFieldHover,
-  onSubmitCtaHover,
-  onWindowsHover,
-  onWindowsMove,
 }: {
   reduceMotion: boolean;
   diagnosticHover: boolean;
-  onFormTextFieldHover: (v: boolean) => void;
-  onSubmitCtaHover: (v: boolean) => void;
-  onWindowsHover: (v: boolean) => void;
-  onWindowsMove: (event: ReactMouseEvent) => void;
 }) {
   const belowLg = useBelowLg();
   const float = belowLg && !reduceMotion;
   const containerRef = useRef<HTMLDivElement>(null);
   const { scale, flowHeight, topInset } = useHeroDeskArtboardScale(containerRef, belowLg);
 
-  const rootProps = {
-    onMouseEnter: () => onWindowsHover(true),
-    onMouseLeave: () => {
-      onWindowsHover(false);
-      onFormTextFieldHover(false);
-      onSubmitCtaHover(false);
-    },
-    onMouseMove: onWindowsMove,
-  };
-
   const deskWindows = (
     <>
-      <GoogleHomeWindow onFormTextFieldHover={onFormTextFieldHover} onSubmitCtaHover={onSubmitCtaHover} />
+      <GoogleHomeWindow />
       <CmdTypingWindow reduceMotion={reduceMotion} diagnosticHover={diagnosticHover} />
       <ServicesMscWindow />
     </>
@@ -981,9 +925,9 @@ function EngineerDeskStack({
 
   if (!belowLg) {
     return (
-      <div className="relative mx-auto w-full overflow-visible" {...rootProps}>
+      <div className="relative mx-auto w-full overflow-visible">
         <div className={HERO_DESK_STAGE_DESKTOP_CLASS}>
-          <GoogleHomeWindow onFormTextFieldHover={onFormTextFieldHover} onSubmitCtaHover={onSubmitCtaHover} />
+          <GoogleHomeWindow />
           <CmdTypingWindow reduceMotion={reduceMotion} diagnosticHover={diagnosticHover} />
           <ServicesMscWindow />
         </div>
@@ -995,7 +939,6 @@ function EngineerDeskStack({
     <div
       ref={containerRef}
       className="hero-desk-stack relative mx-auto w-full min-w-0 overflow-x-clip overflow-y-visible"
-      {...rootProps}
     >
       <div className="relative w-full min-w-0" style={{ height: flowHeight }}>
         <div
@@ -1028,41 +971,10 @@ export function Hero() {
     openModal();
   };
   const reduceMotion = usePrefersReducedMotion();
-  const [cursorHero, setCursorHero] = useState(false);
-  const [formTextFieldHover, setFormTextFieldHover] = useState(false);
-  const [submitCtaHover, setSubmitCtaHover] = useState(false);
   const [diagnosticHover, setDiagnosticHover] = useState(false);
 
-  const handRef = useRef<HTMLDivElement>(null);
-  const pointerRef = useRef({ x: -9999, y: -9999 });
-  const useCustomPointer = cursorHero && !reduceMotion && !formTextFieldHover;
-  const handScale = submitCtaHover ? 1.1 : 1;
-
-  const moveHand = useCallback(
-    (x: number, y: number, scale: number) => {
-      pointerRef.current = { x, y };
-      const el = handRef.current;
-      if (!el) return;
-      el.style.transform = `translate3d(${x - 10}px, ${y - 8}px, 0) scale(${scale})`;
-    },
-    [],
-  );
-
-  useEffect(() => {
-    const { x, y } = pointerRef.current;
-    moveHand(x, y, handScale);
-  }, [handScale, moveHand]);
-
-  const onHeroMove = (e: ReactMouseEvent) => {
-    moveHand(e.clientX, e.clientY, handScale);
-  };
-
   return (
-      <section
-        className={`hero-engineer relative isolate z-30 w-full overflow-visible bg-[#04060d] pt-27 pb-5 max-lg:landscape:pt-24 sm:pt-28 sm:pb-6 lg:pt-20 lg:pb-8 ${useCustomPointer ? "cursor-none" : ""}`}
-      >
-        <CursorHandLayer active={useCustomPointer} handRef={handRef} />
-
+      <section className="hero-engineer relative isolate z-30 w-full overflow-visible bg-[#04060d] pt-27 pb-5 max-lg:landscape:pt-24 sm:pt-28 sm:pb-6 lg:pt-20 lg:pb-8">
         <div className="pointer-events-none absolute inset-0 z-0">
           <div className="hero-tech-grid absolute inset-0" />
           <div className="hero-tech-glow absolute inset-0" />
@@ -1158,14 +1070,7 @@ export function Hero() {
 
             <div className="relative z-40 min-w-0 overflow-visible max-lg:-mb-38 max-lg:landscape:-mb-28 max-lg:pt-1 lg:-mb-52 xl:-mb-56">
               <div className="relative z-1">
-                <EngineerDeskStack
-                  reduceMotion={reduceMotion}
-                  diagnosticHover={diagnosticHover}
-                  onFormTextFieldHover={setFormTextFieldHover}
-                  onSubmitCtaHover={setSubmitCtaHover}
-                  onWindowsHover={setCursorHero}
-                  onWindowsMove={onHeroMove}
-                />
+                <EngineerDeskStack reduceMotion={reduceMotion} diagnosticHover={diagnosticHover} />
               </div>
             </div>
           </div>
