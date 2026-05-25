@@ -8,6 +8,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      url: "https://agithecreator.com/precios",
+      lastModified: new Date(),
+      priority: 0.85,
+    },
+    {
       url: "https://agithecreator.com/blog",
       lastModified: new Date(),
       priority: 0.8,

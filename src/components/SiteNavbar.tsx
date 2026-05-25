@@ -3,14 +3,16 @@
 import type { CSSProperties, MouseEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useContactModal } from "@/components/contact/ContactModalContext";
 import { trackEvent } from "@/lib/analytics";
 import { handleSectionNavClick } from "@/lib/scroll-to-section";
 
 const NAV = [
-  { href: "#entregables", label: "Qué construyo" },
-  { href: "#perfil", label: "Cómo funciona" },
+  { href: "#entregables", label: "Qué construyo", section: true },
+  { href: "#perfil", label: "Cómo funciona", section: true },
+  { href: "/precios", label: "Precios", section: false },
   { label: "Contacto", opensContact: true },
 ] as const;
 
@@ -44,6 +46,8 @@ const NAV_BAR_BG_SCROLLED: CSSProperties = {
  * Altura de marca = fila `h-16`. Tamaño real: `#navbar-brand-link` / `#navbar-brand-logo-img` al final de globals.css (sin @layer).
  */
 export function SiteNavbar() {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   const { openModal } = useContactModal();
   const [scrolled, setScrolled] = useState(false);
 
@@ -66,38 +70,62 @@ export function SiteNavbar() {
     window.history.replaceState(null, "", "/");
   }, []);
 
+  const renderNavItem = (item: (typeof NAV)[number], linkClass: string, underlineClass: string) => {
+    if ("opensContact" in item) {
+      return (
+        <button
+          key={item.label}
+          type="button"
+          onClick={handleNavbarContactClick}
+          className={`${linkClass} cursor-pointer border-0 bg-transparent p-0 font-inherit`}
+        >
+          {item.label}
+          <span className={underlineClass} aria-hidden />
+        </button>
+      );
+    }
+
+    if ("section" in item && item.section) {
+      const href = isHome ? item.href : `/${item.href}`;
+      if (isHome) {
+        return (
+          <a
+            key={item.href}
+            href={item.href}
+            className={linkClass}
+            onClick={(e) => handleSectionNavClick(e, item.href)}
+          >
+            {item.label}
+            <span className={underlineClass} aria-hidden />
+          </a>
+        );
+      }
+      return (
+        <Link key={item.href} href={href} className={linkClass}>
+          {item.label}
+          <span className={underlineClass} aria-hidden />
+        </Link>
+      );
+    }
+
+    return (
+      <Link key={item.href} href={item.href} className={linkClass}>
+        {item.label}
+        <span className={underlineClass} aria-hidden />
+      </Link>
+    );
+  };
+
   return (
     <header
       className="fixed inset-x-0 top-0 z-100 border-b border-white/5 transition-[border-color,background-color,backdrop-filter] duration-300 ease-out"
       style={scrolled ? NAV_BAR_BG_SCROLLED : NAV_BAR_BG_TOP}
     >
       <nav
-        className="pointer-events-none absolute left-1/2 top-8 z-30 hidden max-w-[calc(100%-16rem)] -translate-x-1/2 -translate-y-1/2 lg:flex lg:items-center lg:justify-center lg:gap-9 xl:max-w-none xl:gap-11"
+        className="pointer-events-none absolute left-1/2 top-8 z-30 hidden max-w-[calc(100%-16rem)] -translate-x-1/2 -translate-y-1/2 lg:flex lg:items-center lg:justify-center lg:gap-7 xl:max-w-none xl:gap-9"
         aria-label="Secciones"
       >
-        {NAV.map((item) =>
-          "href" in item ? (
-            <a
-              key={item.href}
-              href={item.href}
-              className={navLinkClass}
-              onClick={(e) => handleSectionNavClick(e, item.href)}
-            >
-              {item.label}
-              <span className={navUnderlineClass} aria-hidden />
-            </a>
-          ) : (
-            <button
-              key={item.label}
-              type="button"
-              onClick={handleNavbarContactClick}
-              className={`${navLinkClass} cursor-pointer border-0 bg-transparent p-0 font-inherit`}
-            >
-              {item.label}
-              <span className={navUnderlineClass} aria-hidden />
-            </button>
-          ),
-        )}
+        {NAV.map((item) => renderNavItem(item, navLinkClass, navUnderlineClass))}
       </nav>
 
       <div className="relative mx-auto grid h-16 min-h-16 max-h-16 w-full max-w-[1580px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 px-4 sm:gap-x-4 sm:px-8 lg:px-12">
@@ -105,7 +133,7 @@ export function SiteNavbar() {
           <Link
             id="navbar-brand-link"
             href="/"
-            onClick={scrollToTopCleanUrl}
+            onClick={isHome ? scrollToTopCleanUrl : undefined}
             className="relative z-20 max-lg:min-w-0 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070b13]"
             aria-label="Ir al inicio"
           >
@@ -123,36 +151,12 @@ export function SiteNavbar() {
           </Link>
         </div>
 
-        {/* Celda central: reserva hueco flexible (el menú va en <nav> absoluto al header) */}
         <div className="min-h-0 min-w-0" aria-hidden />
-
         <div className="min-h-0 min-w-0" aria-hidden />
       </div>
 
-      <div className="site-navbar-mobile-row mx-auto flex max-w-[1580px] flex-wrap items-center justify-center gap-x-5 gap-y-1 border-t border-white/5 px-5 pb-2.5 pt-2 sm:px-8 lg:hidden">
-        {NAV.map((item) =>
-          "href" in item ? (
-            <a
-              key={item.href}
-              href={item.href}
-              className={navLinkClassMobile}
-              onClick={(e) => handleSectionNavClick(e, item.href)}
-            >
-              {item.label}
-              <span className={navUnderlineClassMobile} aria-hidden />
-            </a>
-          ) : (
-            <button
-              key={item.label}
-              type="button"
-              onClick={handleNavbarContactClick}
-              className={`${navLinkClassMobile} cursor-pointer border-0 bg-transparent p-0 font-inherit`}
-            >
-              {item.label}
-              <span className={navUnderlineClassMobile} aria-hidden />
-            </button>
-          ),
-        )}
+      <div className="site-navbar-mobile-row mx-auto flex max-w-[1580px] flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-white/5 px-5 pb-2.5 pt-2 sm:px-8 sm:gap-x-5 lg:hidden">
+        {NAV.map((item) => renderNavItem(item, navLinkClassMobile, navUnderlineClassMobile))}
       </div>
     </header>
   );
