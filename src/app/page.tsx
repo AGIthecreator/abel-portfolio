@@ -2,6 +2,7 @@ import { SiteNavbar } from "@/components/SiteNavbar";
 import { Hero } from "@/components/sections/Hero";
 import { Footer } from "@/components/sections/Footer";
 import {
+  DeferredFaq,
   DeferredStrategicProfile,
   DeferredWhatIBuild,
 } from "@/components/sections/DeferredSections";
@@ -47,6 +48,8 @@ export default function Page() {
 
       {/* Mesa de evidencias — entrega de resultados */}
       <DeferredWhatIBuild />
+
+      <DeferredFaq />
 
       <Footer />
       </div>

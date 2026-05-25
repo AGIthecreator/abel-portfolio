@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ContactChrome } from "@/components/contact/ContactChrome";
+import { CookieConsentBanner } from "@/components/cookies/CookieConsentBanner";
+import { CookieConsentProvider } from "@/components/cookies/CookieConsentContext";
 import { DeferredAnalytics } from "@/components/DeferredAnalytics";
 import { ContactModalProvider } from "@/components/contact/ContactModalContext";
 import "./globals.css";
@@ -148,11 +150,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#070b13]`}
       >
-        <ContactModalProvider>
-          {children}
-          <ContactChrome />
-        </ContactModalProvider>
-        <DeferredAnalytics />
+        <CookieConsentProvider>
+          <ContactModalProvider>
+            {children}
+            <ContactChrome />
+          </ContactModalProvider>
+          <CookieConsentBanner />
+          <DeferredAnalytics />
+        </CookieConsentProvider>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

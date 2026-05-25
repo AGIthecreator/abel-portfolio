@@ -15,10 +15,20 @@ const WhatIBuild = dynamic(() =>
   })),
 );
 
+const Faq = dynamic(() =>
+  import("@/components/sections/Faq").then((m) => ({
+    default: m.Faq,
+  })),
+);
+
 export function DeferredStrategicProfile() {
   return <StrategicProfile />;
 }
 
 export function DeferredWhatIBuild() {
   return <WhatIBuild />;
+}
+
+export function DeferredFaq() {
+  return <Faq />;
 }
