@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 import { Fragment, useId, useState } from "react";
 import { Stagger, StaggerChild } from "@/components/motion/Stagger";
 import {
@@ -13,6 +14,10 @@ import {
 
 const SECTION_SURFACE =
   "linear-gradient(180deg, #0c121c 0%, #131b2a 48%, #0c121c 100%)";
+
+const FAQ_BONE = "#F3F1EB";
+/** Casi negro para que la barra contraste con el fondo de la sección. */
+const FAQ_BAR_DARK = "#06080d";
 
 /** Columna fija del indicador — evita que el texto se mueva al abrir/cerrar. */
 const FAQ_ROW_GRID = "grid w-full grid-cols-[1.75rem_minmax(0,1fr)] gap-x-2.5 sm:gap-x-3";
@@ -44,6 +49,41 @@ function RichText({ parts }: { parts: FaqTextPart[] }) {
         ),
       )}
     </>
+  );
+}
+
+/** Mascota recortada (`mascot-faqs-hero.webp`), a la derecha del titular — mismo criterio que el hero. */
+/** Barra bajo el titular: ancho hasta la «a» de «claro»; 80% casi negro + 20% hueso. */
+function FaqHeadlineAccentBar() {
+  return (
+    <div
+      aria-hidden
+      className="mt-2.5 flex h-2 w-[11.2ch] max-w-full overflow-hidden sm:mt-3 sm:h-2.5"
+    >
+      <span className="h-full w-[80%] shrink-0" style={{ backgroundColor: FAQ_BAR_DARK }} />
+      <span className="h-full w-[20%] shrink-0" style={{ backgroundColor: FAQ_BONE }} />
+    </div>
+  );
+}
+
+function FaqHeadlineMascot({ className }: { className?: string }) {
+  return (
+    <div
+      className={`relative flex w-fit max-w-full shrink-0 min-h-0 flex-col justify-center self-center max-lg:mx-0 lg:self-auto ${className ?? ""}`}
+      aria-hidden
+    >
+      <div className="pointer-events-none relative flex h-full min-h-20 w-fit max-w-full items-center justify-center overflow-hidden sm:min-h-23 lg:min-h-25">
+        <Image
+          src="/logos/mascot-faqs-hero.webp"
+          alt=""
+          width={217}
+          height={188}
+          quality={85}
+          sizes="(max-width: 640px) 42vw, (max-width: 1024px) 38vw, 217px"
+          className="h-full max-h-full w-auto max-w-full object-contain object-center"
+        />
+      </div>
+    </div>
   );
 }
 
@@ -154,7 +194,7 @@ export function Faq() {
           />
 
           <motion.div
-            className="grid grid-cols-1 gap-12 lg:grid-cols-[58fr_42fr] lg:items-start lg:gap-x-5 xl:gap-x-6"
+            className="grid grid-cols-1 gap-12 lg:grid-cols-[58fr_42fr] lg:items-center lg:gap-x-5 xl:gap-x-6"
             variants={{ hidden: {}, show: { transition: { staggerChildren: 0.05 } } }}
           >
             <motion.aside
@@ -166,12 +206,18 @@ export function Faq() {
                 <span className="text-[#F3F1EB]/72">frecuentes</span>
               </p>
 
-              <h2
-                id="faq-heading"
-                className="mt-4 max-w-[36ch] text-balance text-[clamp(2rem,4.2vw,3rem)] font-semibold leading-[1.08] tracking-tight text-zinc-50 lg:max-w-none"
-              >
-                Hablemos claro.
-              </h2>
+              <div className="mt-4 grid items-center gap-2 max-lg:grid-cols-[minmax(0,1fr)_auto] lg:grid-cols-[auto_auto] lg:justify-start lg:gap-3">
+                <div className="min-w-0 w-fit max-w-full text-[clamp(2rem,4.2vw,3rem)] font-semibold leading-[1.08] tracking-tight">
+                  <h2
+                    id="faq-heading"
+                    className="max-w-[36ch] text-balance text-zinc-50 lg:max-w-none"
+                  >
+                    Hablemos claro.
+                  </h2>
+                  <FaqHeadlineAccentBar />
+                </div>
+                <FaqHeadlineMascot />
+              </div>
 
               <p className="mt-6 max-w-[42ch] text-[15px] leading-[1.8] text-zinc-400 sm:text-base sm:leading-[1.85] lg:max-w-none">
                 <RichText parts={FAQ_EDITORIAL_LEAD} />
@@ -191,7 +237,10 @@ export function Faq() {
               </p>
             </motion.aside>
 
-            <motion.div variants={fadeUp} className="min-w-0 w-full lg:pl-4 xl:pl-5">
+            <motion.div
+              variants={fadeUp}
+              className="min-w-0 w-full lg:pl-4 lg:pt-2 xl:pl-5 xl:pt-3"
+            >
               <Stagger
                 className="w-full divide-y divide-white/10"
                 stagger={0.04}
