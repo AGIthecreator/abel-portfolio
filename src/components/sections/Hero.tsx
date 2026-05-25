@@ -150,9 +150,31 @@ type HeroStatsMatplotlibPanelProps = {
   className?: string;
 };
 
+/** Fila 1 (pierde horas): mascota recortada (`mascot-computer-hero.webp`, sin márgenes transparentes). */
+function HeroHeadlineMascot({ className }: { className?: string }) {
+  return (
+    <div
+      className={`relative z-30 flex w-fit max-w-full shrink-0 min-h-0 flex-col justify-center self-center sm:min-h-22 max-lg:mx-auto lg:self-auto ${className ?? ""}`}
+      aria-hidden
+    >
+      <div className="pointer-events-none relative flex h-full min-h-20 w-fit max-w-full items-center justify-center overflow-hidden sm:min-h-23 lg:min-h-25">
+        <Image
+          src="/logos/mascot-computer-hero.webp"
+          alt=""
+          width={236}
+          height={179}
+          quality={85}
+          sizes="(max-width: 640px) 42vw, (max-width: 1024px) 38vw, 236px"
+          className="h-full max-h-full w-auto max-w-full object-contain object-center"
+        />
+      </div>
+    </div>
+  );
+}
+
 /**
  * Recorte de `public/hero_stats.webp` (dos paneles en un solo asset: izq. eficiencia, der. ineficiencia).
- * Fila 1 (pierde horas): ineficiencia · Fila 2 (recupere): eficiencia.
+ * Fila 2 (recupere): eficiencia.
  */
 function HeroStatsMatplotlibPanel({ variant, className }: HeroStatsMatplotlibPanelProps) {
   const isGain = variant === "efficiency";
@@ -1058,12 +1080,12 @@ export function Hero() {
               <h1 className="pointer-events-auto m-0 p-0">
                 <span className="sr-only">Tu negocio pierde horas. Yo hago que las recupere.</span>
                 <div aria-hidden className="relative isolate z-20 space-y-2 overflow-visible sm:space-y-2.5">
-                  <div className="relative z-10 grid grid-cols-1 items-stretch gap-2 lg:grid-cols-[auto_minmax(0,1fr)] lg:gap-3">
+                  <div className="relative z-10 grid grid-cols-1 items-center gap-2 max-lg:justify-items-center lg:grid-cols-[auto_auto] lg:justify-start lg:gap-3">
                     <div className="hero-headline-row relative z-10 flex min-w-0 max-lg:flex-row max-lg:flex-nowrap max-lg:items-baseline max-lg:gap-x-[0.32em] max-lg:whitespace-nowrap max-lg:landscape:flex-wrap max-lg:landscape:whitespace-normal lg:flex-col lg:gap-x-0 lg:whitespace-normal justify-center font-semibold leading-[0.93] tracking-[-0.042em] text-[clamp(1.5rem,5.6vw,1.85rem)] lg:text-[clamp(2.05rem,3.9vw,3.75rem)]">
                       <span className="text-neutral-200/88 lg:block lg:whitespace-nowrap">Tu negocio</span>
                       <span className="text-[#f2f0ec] lg:block lg:whitespace-nowrap">pierde horas.</span>
                     </div>
-                    <HeroStatsMatplotlibPanel variant="inefficiency" />
+                    <HeroHeadlineMascot />
                   </div>
 
                   <div className="relative z-10 grid grid-cols-1 items-stretch gap-2 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-3">
