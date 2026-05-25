@@ -149,22 +149,26 @@ type HeroStatsMatplotlibPanelProps = {
   className?: string;
 };
 
+/** Móvil hero: altura explícita (no compartir con FAQ). Escritorio: contenedor min-h + imagen h-full. */
+const HERO_MASCOT_MOBILE_IMG =
+  "max-lg:h-44 max-lg:max-h-44 max-lg:w-auto max-lg:max-w-[min(40vw,13.75rem)]";
+
 /** Fila 1 (pierde horas): mascota recortada (`mascot_computer-hero.webp`, sin márgenes transparentes). */
 function HeroHeadlineMascot({ className }: { className?: string }) {
   return (
     <div
-      className={`relative z-30 flex w-fit max-w-full shrink-0 min-h-0 flex-col justify-center self-center sm:min-h-22 ${className ?? ""}`}
+      className={`relative z-30 flex w-fit max-w-full shrink-0 min-h-0 flex-col justify-center self-center max-lg:min-h-0 ${className ?? ""}`}
       aria-hidden
     >
-      <div className="pointer-events-none relative flex h-full min-h-50 w-fit max-w-full items-center justify-center overflow-hidden max-lg:sm:min-h-57.5 lg:min-h-25">
+      <div className="pointer-events-none relative flex w-fit max-w-full items-center justify-center overflow-hidden max-lg:min-h-0 min-h-20 sm:min-h-23 lg:min-h-25">
         <Image
           src="/logos/mascot_computer-hero.webp"
           alt=""
           width={236}
           height={189}
           quality={85}
-          sizes="(max-width: 1023px) min(105vw, 590px), 236px"
-          className="h-full max-h-full w-auto max-w-full object-contain object-center"
+          sizes="(max-width: 1023px) 176px, 236px"
+          className={`h-full max-h-full w-auto object-contain object-center lg:max-w-full ${HERO_MASCOT_MOBILE_IMG}`}
         />
       </div>
     </div>
@@ -179,10 +183,10 @@ function HeroStatsMatplotlibPanel({ variant, className }: HeroStatsMatplotlibPan
   const isGain = variant === "efficiency";
   return (
     <div
-      className={`relative z-30 flex min-h-0 min-w-0 flex-col border border-white/9 bg-[#070910] px-1.5 pb-1 pt-1.5 max-lg:w-fit max-lg:min-w-35 max-lg:max-w-46 max-lg:shrink-0 lg:flex-1 ${className ?? ""}`}
+      className={`relative z-30 flex min-h-0 min-w-0 flex-col border border-white/9 bg-[#070910] px-1.5 pb-1 pt-1.5 max-lg:w-42 max-lg:shrink-0 lg:flex-1 ${className ?? ""}`}
       aria-hidden
     >
-      <div className="pointer-events-none relative min-h-50 w-full flex-1 overflow-hidden rounded-sm bg-[#04060d] max-lg:sm:min-h-57.5 lg:min-h-25">
+      <div className="pointer-events-none relative w-full flex-1 overflow-hidden rounded-sm bg-[#04060d] max-lg:min-h-16 max-lg:sm:min-h-18 min-h-20 sm:min-h-23 lg:min-h-25">
         <Image
           src="/hero_stats.webp"
           alt=""
@@ -992,19 +996,19 @@ export function Hero() {
               <h1 className="pointer-events-auto m-0 p-0">
                 <span className="sr-only">Tu negocio pierde horas. Yo hago que las recupere.</span>
                 <div aria-hidden className="relative isolate z-20 space-y-2 overflow-visible sm:space-y-2.5">
-                  <div className="relative z-10 grid w-fit max-w-full items-center gap-1.5 max-lg:grid-cols-[auto_auto] max-lg:justify-start lg:grid-cols-[auto_auto] lg:justify-start lg:gap-3">
-                    <div className="hero-headline-row relative z-10 flex min-w-0 shrink-0 flex-col justify-center font-semibold leading-[0.93] tracking-[-0.042em] text-[clamp(1.9rem,8vw,2.35rem)] lg:text-[clamp(2.05rem,3.9vw,3.75rem)]">
+                  <div className="relative z-10 grid w-fit max-w-full items-center max-lg:gap-x-4 max-lg:grid-cols-[auto_auto] max-lg:justify-start lg:grid-cols-[auto_auto] lg:justify-start lg:gap-3">
+                    <div className="hero-headline-row relative z-10 flex min-w-0 shrink-0 flex-col justify-center font-semibold leading-[0.93] tracking-[-0.042em] text-[clamp(1.75rem,7.2vw,2.15rem)] max-lg:pr-0.5 lg:text-[clamp(2.05rem,3.9vw,3.75rem)]">
                       <span className="text-neutral-200/88 lg:block lg:whitespace-nowrap">Tu negocio</span>
                       <span className="text-[#f2f0ec] lg:block lg:whitespace-nowrap">pierde horas.</span>
                     </div>
                     <HeroHeadlineMascot />
                   </div>
 
-                  <div className="relative z-10 grid w-fit max-w-full items-center gap-1.5 max-lg:w-full max-lg:grid-cols-[auto_auto] max-lg:justify-end max-lg:justify-self-end lg:grid-cols-[minmax(0,1fr)_auto] lg:w-fit lg:items-stretch lg:justify-self-auto lg:gap-3">
+                  <div className="relative z-10 grid w-fit max-w-full items-center max-lg:gap-x-4 max-lg:w-full max-lg:grid-cols-[auto_auto] max-lg:justify-end max-lg:justify-self-end lg:grid-cols-[minmax(0,1fr)_auto] lg:w-fit lg:items-stretch lg:justify-self-auto lg:gap-3">
                     <HeroStatsMatplotlibPanel variant="efficiency" />
-                    <div className="hero-headline-row relative z-10 flex min-w-0 shrink-0 flex-col items-end justify-center text-right font-semibold leading-[0.93] tracking-[-0.042em] text-[clamp(1.9rem,8vw,2.35rem)] lg:text-[clamp(2.05rem,3.9vw,3.75rem)]">
-                      <span className="text-neutral-200/88 lg:block lg:whitespace-nowrap">Yo hago que</span>
-                      <span className="text-[#f2f0ec] lg:block lg:whitespace-nowrap">las recupere.</span>
+                    <div className="hero-headline-row hero-headline-row--recover relative z-10 flex min-w-0 shrink-0 flex-col flex-nowrap items-end justify-center text-right font-semibold leading-[0.93] tracking-[-0.042em] text-[clamp(1.75rem,7.2vw,2.15rem)] max-lg:pl-0.5 lg:text-[clamp(2.05rem,3.9vw,3.75rem)]">
+                      <span className="block whitespace-nowrap text-neutral-200/88">Yo hago que</span>
+                      <span className="block whitespace-nowrap text-[#f2f0ec]">las recupere.</span>
                     </div>
                   </div>
                 </div>

@@ -773,8 +773,18 @@ next-route-announcer,
   }
 }
 
-@media (max-width: 374px) {
+@media (max-width: 1023px) {
   .hero-headline-row {
+    flex-wrap: nowrap;
+  }
+
+  .hero-headline-row > span {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 374px) {
+  .hero-headline-row:not(.hero-headline-row--recover) {
     flex-wrap: wrap;
     white-space: normal;
   }
