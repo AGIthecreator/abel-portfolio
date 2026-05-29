@@ -779,7 +779,7 @@ function HeroMonitorScene({ reduceMotion }: { reduceMotion: boolean }) {
   const groupScale = Math.min(1, scale / MASCOT_SCALE_REF);
 
   return (
-    <div className="hero-scene relative mx-auto w-full max-w-[min(100%,700px)] select-none" aria-hidden>
+    <div className="hero-scene relative mx-auto w-full max-w-[min(100%,460px)] select-none lg:max-w-[min(100%,700px)]" aria-hidden>
       <div className="relative w-full" style={{ height: flowHeight + Math.round(56 * groupScale) }}>
         <div
           ref={containerRef}
@@ -925,7 +925,7 @@ export function Hero() {
             </p>
           </div>
 
-          <div className="relative z-10 min-w-0 max-lg:max-w-[min(100%,460px)] max-lg:justify-self-center">
+          <div className="relative z-10 w-full min-w-0">
             <HeroMonitorScene reduceMotion={reduceMotion} />
           </div>
         </div>
