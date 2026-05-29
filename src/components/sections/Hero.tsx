@@ -931,27 +931,42 @@ export function Hero() {
               Diseño web y automatización para negocios en Valladolid
             </p>
 
-            <h1 className="m-0 font-(family-name:--font-hero-display) text-[clamp(1.95rem,5.4vw,3.05rem)] font-medium leading-[1.2] tracking-[-0.012em] text-neutral-50">
-              <span className="block">Tu negocio ya tiene</span>
-              <span className="mt-1.5 block">suficiente trabajo encima.</span>
-              <span className="mt-3 block text-[0.92em] font-normal leading-[1.22] text-neutral-300/92">
-                Nosotros hacemos que las cosas{" "}
-                <span className="text-violet-300/95 italic">funcionen solas.</span>
+            <h1 className="m-0 font-(family-name:--font-hero-display) text-[clamp(1.95rem,5.4vw,3.05rem)] font-medium leading-[1.05] tracking-[-0.015em] text-neutral-50">
+              <span className="block">
+                <span className="text-zinc-500">Tu negocio</span> ya tiene
               </span>
+              <span className="block">suficiente trabajo encima.</span>
             </h1>
 
-            <p className="max-w-136 font-(family-name:--font-hero-ui) text-[clamp(0.92rem,1.4vw,1.02rem)] font-normal leading-[1.55] text-neutral-400/95">
-              Más presencia online, menos tareas repetitivas y herramientas que siguen funcionando cuando tú
-              estás con otras cosas — sin añadir más líos al día a día.
+            <p className="max-w-136 pt-2.5 font-(family-name:--font-hero-ui) text-[clamp(0.92rem,1.4vw,1.02rem)] font-normal leading-[1.55] text-neutral-400/95">
+              <span className="text-violet-300/95">Cinco</span> ventanas abiertas,{" "}
+              <span className="text-violet-300/95">tres</span> cosas pendientes y{" "}
+              <span className="text-violet-300/95">un</span> cliente llamando desde hace media hora.
+            </p>
+
+            <p className="max-w-136 font-(family-name:--font-hero-ui) text-[clamp(0.92rem,1.4vw,1.02rem)] font-normal leading-[1.55] text-neutral-300/92">
+              Hay partes del negocio que deberían{" "}
+              <span className="text-violet-300/95 italic">funcionar solas</span>. Y sí, bastante antes de
+              que acabes sudando como el pavo de la derecha.
             </p>
 
             <div className="flex flex-wrap items-center gap-2.5 pt-1">
               <button
                 type="button"
                 onClick={handlePrimaryCta}
-                className="font-(family-name:--font-hero-ui) inline-flex min-h-10 cursor-pointer items-center justify-center rounded-md border border-violet-400/35 bg-violet-600/90 px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-violet-500"
+                className="group font-(family-name:--font-hero-ui) relative inline-flex min-h-10 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-[rgba(150,142,180,0.26)] bg-[linear-gradient(180deg,#34343b_0%,#1d1d22_44%,#141417_56%,#0b0b0d_100%)] px-4 py-2.5 text-[13px] font-semibold text-white/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.55),0_6px_18px_-9px_rgba(0,0,0,0.85)] transition-all duration-300 hover:border-violet-400/45 hover:text-white hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.24),inset_0_-1px_0_rgba(0,0,0,0.55),0_10px_26px_-10px_rgba(124,58,237,0.45)]"
               >
-                Ver qué podría mejorar en mi negocio
+                {/* Reflejo horizontal tipo titanio */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0))] opacity-80 transition-opacity duration-300 group-hover:opacity-100"
+                />
+                {/* Acento violeta inferior muy fino */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-3 bottom-0 h-px bg-[linear-gradient(90deg,transparent,rgba(167,139,250,0.55),transparent)] opacity-60 transition-opacity duration-300 group-hover:opacity-100"
+                />
+                <span className="relative z-10">Ver qué podría mejorar en mi negocio</span>
               </button>
               <button
                 type="button"
@@ -961,10 +976,6 @@ export function Hero() {
                 Cuéntame cómo trabajas hoy
               </button>
             </div>
-
-            <p className="font-(family-name:--font-hero-ui) text-[12px] leading-relaxed text-neutral-500/88">
-              Porque bastante tienes ya con llevar un negocio.
-            </p>
           </div>
 
           <div className="relative z-10 w-full min-w-0">
