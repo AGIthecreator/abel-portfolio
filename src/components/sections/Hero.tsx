@@ -882,11 +882,46 @@ export function Hero() {
       className={`${heroDisplay.variable} ${heroUi.variable} hero-editorial relative isolate z-30 w-full overflow-hidden bg-[#070b13] pt-24 pb-5 sm:pt-28 sm:pb-7 lg:pt-20 lg:pb-8`}
     >
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
+        {/* Atmósfera izquierda: base oscura, limpia, editorial */}
         <div className="absolute inset-0 bg-[#070b13]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_88%_68%_at_68%_36%,rgba(124,58,237,0.1),transparent_58%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_42%_at_14%_78%,rgba(139,92,246,0.05),transparent_55%)]" />
-        <div className="hero-editorial-grain absolute inset-0 opacity-[0.32]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_100%_at_50%_50%,transparent_44%,rgba(0,0,0,0.4)_100%)]" />
+
+        {/* —— Composición editorial derecha (desktop): capas de color, bordes limpios.
+            Misma inclinación que el overlay del monitor (~18% de desfase top→bottom).
+            El punto más a la izquierda (47%) queda fuera de la columna de texto. —— */}
+        <div className="absolute inset-0 hidden lg:block">
+          {/* Panel gris suave (empieza un poco antes) */}
+          <div
+            className="absolute inset-0 bg-[#12151f]"
+            style={{ clipPath: "polygon(63% 0, 100% 0, 100% 100%, 45% 100%)" }}
+          />
+          {/* Bloque violeta superpuesto (misma inclinación) */}
+          <div
+            className="absolute inset-0 bg-[#251c49]"
+            style={{ clipPath: "polygon(79% 0, 100% 0, 100% 100%, 61% 100%)" }}
+          />
+          {/* Banda violeta más clara (acento de profundidad, misma inclinación) */}
+          <div
+            className="absolute inset-0 bg-[#3a2d6b]/55"
+            style={{ clipPath: "polygon(79% 0, 82% 0, 64% 100%, 61% 100%)" }}
+          />
+        </div>
+
+        {/* —— Móvil: la zona inferior (escena) recibe la composición de color —— */}
+        <div className="absolute inset-x-0 bottom-0 h-[60%] lg:hidden">
+          <div
+            className="absolute inset-0 bg-[#12151f]"
+            style={{ clipPath: "polygon(0 16%, 100% 0, 100% 100%, 0 100%)" }}
+          />
+          <div
+            className="absolute inset-0 bg-[#251c49]"
+            style={{ clipPath: "polygon(0 48%, 100% 26%, 100% 100%, 0 100%)" }}
+          />
+        </div>
+
+        {/* Grano editorial muy sutil */}
+        <div className="hero-editorial-grain absolute inset-0 opacity-[0.28]" />
+        {/* Viñeta ligera en bordes */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,transparent_56%,rgba(0,0,0,0.45)_100%)]" />
       </div>
 
       <div className="relative z-10 mx-auto flex w-full max-w-[1320px] min-h-0 items-center px-5 py-4 sm:px-8 sm:py-5 lg:max-h-[78vh] lg:px-10 lg:py-6">
