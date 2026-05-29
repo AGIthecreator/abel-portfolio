@@ -346,12 +346,12 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
   }
 
   /*
-    Franja: degradado simétrico arriba (Hero #04060d → crema) y abajo (crema → sección #070b13),
+    Franja: degradado simétrico arriba (Hero #070b13 → crema) y abajo (crema → sección #070b13),
     + puntos 5% encima. Todo en una sola capa visual (sin duplicar con el Hero).
   */
   .strip-tech-paper {
     --strip-mid: #f4f4f4;
-    --strip-hero: #04060d;
+    --strip-hero: #070b13;
     --strip-page: #070b13;
     background-color: var(--strip-mid);
     background-image:
@@ -359,8 +359,8 @@ background-image: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.6));
       linear-gradient(
         to bottom,
         var(--strip-hero) 0%,
-        rgba(4, 6, 13, 0.42) 7%,
-        rgba(4, 6, 13, 0) 20%
+        rgba(7, 11, 19, 0.42) 7%,
+        rgba(7, 11, 19, 0) 20%
       ),
       linear-gradient(
         to top,
@@ -741,10 +741,6 @@ next-route-announcer,
     gap: 0.25rem 1rem;
   }
 
-  .hero-engineer .hero-desk-stack {
-    margin-top: -0.25rem;
-  }
-
   .manifesto-line {
     white-space: normal !important;
     margin-left: 0 !important;
@@ -753,16 +749,6 @@ next-route-announcer,
 
   #perfil .wa-chaos-iphone {
     left: 62% !important;
-  }
-}
-
-@media (max-width: 1023px) {
-  .hero-headline-row {
-    flex-wrap: nowrap;
-  }
-
-  .hero-headline-row > span {
-    white-space: nowrap;
   }
 }
 

@@ -29,7 +29,7 @@ export default function Page() {
       {/* 1. HERO */}
       <Hero />
 
-      {/* FRANJA 1: por encima del bloque estratégico para que el CMD del Hero siga tapando solo la franja, no tapar la franja con el perfil */}
+      {/* FRANJA 1: logos / estado — justo debajo del hero compacto */}
       <div className="relative z-20">
         <StripSystemStatus />
       </div>
