@@ -947,7 +947,7 @@ export function Hero() {
             <p className="max-w-136 font-(family-name:--font-hero-ui) text-[clamp(0.92rem,1.4vw,1.02rem)] font-normal leading-[1.55] text-neutral-300/92">
               Hay partes del negocio que deberían{" "}
               <span className="text-violet-300/95 italic">funcionar solas</span>. Y sí, bastante antes de
-              que acabes sudando como el pavo de la derecha.
+              que acabes sudando como el pavo de al lado.
             </p>
 
             <div className="flex flex-wrap items-center gap-2.5 pt-1">

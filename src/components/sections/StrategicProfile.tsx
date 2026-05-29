@@ -247,8 +247,11 @@ function EditorialFactsColumn() {
       {EDITORIAL_FACTS.map((fact, i) => (
         <motion.article
           key={fact.title}
-          className="max-w-60 border-l border-white/8 pl-4 sm:max-w-65 sm:pl-5 lg:max-w-none"
-          style={{ marginLeft: Math.min(fact.marginLeft, 16) }}
+          className={`max-w-60 border-white/8 sm:max-w-65 lg:ml-0 lg:mr-0 lg:max-w-none lg:border-l lg:border-r-0 lg:pr-0 lg:pl-5 lg:text-left ${
+            i % 2 === 1
+              ? "ml-auto border-r pr-4 text-right sm:pr-5"
+              : "mr-auto border-l pl-4 text-left sm:pl-5"
+          }`}
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.32, 1] }}
@@ -343,6 +346,17 @@ export function StrategicProfile() {
             />
           </div>
 
+          {/* Fondo para móvil/tablet (la diagonal solo existe en lg). Lavado violeta
+              suave en diagonal para que no quede un negro plano. */}
+          <div
+            className="pointer-events-none absolute inset-0 z-0 lg:hidden"
+            style={{
+              background:
+                "linear-gradient(158deg, #0a0e18 0%, #110d22 42%, #1c1540 68%, #0a0d16 100%)",
+            }}
+            aria-hidden
+          />
+
           <DotPattern />
 
           <div className="relative z-10 isolate mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -353,6 +367,15 @@ export function StrategicProfile() {
               <p className="mx-auto mt-3 max-w-[34ch] text-pretty text-[15px] leading-[1.55] text-zinc-500 sm:max-w-2xl sm:text-base sm:leading-relaxed md:max-w-none md:text-lg lg:whitespace-nowrap">
                 {COPY.heroLead}
               </p>
+              {/* Línea plateada fina, más estrecha que el h1 */}
+              <div
+                className="mx-auto mt-5 h-px w-[clamp(140px,42%,380px)]"
+                style={{
+                  background:
+                    "linear-gradient(90deg, transparent 0%, rgba(228,228,231,0.55) 28%, rgba(212,212,216,0.85) 50%, rgba(228,228,231,0.55) 72%, transparent 100%)",
+                }}
+                aria-hidden
+              />
             </FadeIn>
 
             <motion.div
@@ -366,18 +389,22 @@ export function StrategicProfile() {
                 variants={fadeUp}
                 className="order-2 flex min-w-0 flex-col lg:order-1 lg:col-span-3 lg:col-start-1 lg:row-start-1 lg:pr-1 xl:pr-2"
               >
-                <div className="mb-3 lg:mb-4">
+                <div className="mb-3 text-center lg:mb-4 lg:text-left">
                   <h3 className="text-lg font-semibold leading-snug tracking-[-0.02em] text-white sm:text-xl">
-                    Las reservas no saben
-                    <br />
-                    que hoy era tu día libre.
-                    <br />
-                    Los mensajes tampoco.
+                    <span className="block -translate-x-2 lg:translate-x-0">
+                      Las reservas no saben
+                    </span>
+                    <span className="block translate-x-4 lg:translate-x-0">
+                      que hoy era tu día libre.
+                    </span>
+                    <span className="block -translate-x-4 lg:translate-x-0">
+                      Los mensajes tampoco.
+                    </span>
                   </h3>
-                  <p className="mt-3 max-w-[95%] text-[13px] leading-relaxed text-zinc-500 sm:text-sm">
+                  <p className="mx-auto mt-3 max-w-[95%] -translate-x-3 text-[13px] leading-relaxed text-zinc-500 sm:text-sm lg:mx-0 lg:translate-x-0">
                     La pregunta no es si van a llegar clientes.
                   </p>
-                  <p className="mt-2 max-w-[95%] text-[13px] leading-relaxed text-zinc-500 sm:text-sm">
+                  <p className="mx-auto mt-2 max-w-[95%] translate-x-4 text-[13px] leading-relaxed text-zinc-500 sm:text-sm lg:mx-0 lg:translate-x-0">
                     La pregunta es qué ocurre cuando llegan.
                   </p>
                 </div>
@@ -389,7 +416,8 @@ export function StrategicProfile() {
                 className="order-1 mx-auto flex w-full min-w-0 max-w-140 flex-col items-center text-center lg:order-2 lg:col-span-6 lg:col-start-4 lg:row-start-1"
               >
                 <h3 className="max-w-[28ch] text-xl font-semibold leading-[1.15] tracking-[-0.03em] text-white sm:text-2xl lg:text-[1.65rem]">
-                  {COPY.boardTitle}
+                  <span className="text-zinc-500">Uno</span> se acostumbra al caos más{" "}
+                  <span className="text-zinc-500">rápido</span> de lo que debería.
                 </h3>
                 <p className="mt-2.5 max-w-[38ch] text-[13px] leading-relaxed text-zinc-500 sm:text-sm">
                   {COPY.boardBody}

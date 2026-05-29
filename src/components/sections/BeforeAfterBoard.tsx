@@ -46,11 +46,11 @@ const BEFORE: BeforeItem[] = [
   { text: "mensajes fuera de hora", tilt: -1.3, shift: 3 },
 ];
 
-type AfterItem = { text: string; tilt: number; shift: number };
+type AfterItem = { text: string; tilt: number; shift: number; nowrap?: boolean };
 
 const AFTER: AfterItem[] = [
   { text: "reservas organizadas", tilt: 1.6, shift: -4 },
-  { text: "formularios conectados", tilt: -1.9, shift: 5 },
+  { text: "formularios conectados", tilt: -1.9, shift: -6, nowrap: true },
   { text: "menos cosas pendientes", tilt: 1.2, shift: -2 },
   { text: "menos caos diario", tilt: -2.1, shift: 6 },
   { text: "todo funcionando mejor", tilt: 1.5, shift: -3 },
@@ -269,7 +269,7 @@ function AfterColumn({ active }: { active: boolean }) {
         >
           <ChalkTick />
           <span
-            className={`text-white/90 ${LINE}`}
+            className={`text-white/90 ${LINE} ${item.nowrap ? "sm:whitespace-nowrap" : ""}`}
             style={{ textShadow: "0 0 6px rgba(255,255,255,0.12)", ...CHALK_FILTER }}
           >
             {item.text}
