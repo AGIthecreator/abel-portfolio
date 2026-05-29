@@ -1,14 +1,11 @@
 ﻿"use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { FadeIn } from "@/components/motion/FadeIn";
-import { EvidenceTestimonialsGrid } from "@/components/sections/EvidenceTestimonials";
 import { BeforeAfterBoard } from "@/components/sections/BeforeAfterBoard";
 
 const DEEP_BLACK = "#070b13";
-
-const MANIFIESTO_CLOSING = "Así debería sentirse un negocio.";
 
 /**
  * Posición horizontal del mock iPhone sobre el chat (0–100).
@@ -18,13 +15,10 @@ const WA_IPHONE_LEFT_PERCENT = 71;
 
 /** Copys — tono premium, sin repetir estructuras */
 const COPY = {
-  heroTitle: "Tu primera impresión ya no ocurre en la calle.",
+  heroTitle: "La primera impresión ya no ocurre en la calle.",
   heroLead:
-    "El escaparate físico sigue ahí. El que cuenta hoy se abre en el móvil de tu cliente.",
-  row2AsideTitle: "Tu negocio no debería apagarse contigo.",
-  row2AsideBody:
-    "Las preguntas llegan igual. Las reservas llegan igual. La diferencia está en si mañana te encuentras trabajo acumulado o trabajo hecho.",
-  boardTitle: "El desorden cuesta. El orden no se nota… hasta que llega.",
+    "El escaparate de tu tienda sigue ahí. El digital suele llegar primero.",
+  boardTitle: "Uno se acostumbra al caos más rápido de lo que debería.",
   boardBody:
     "Lo de la izquierda parece normal. Lo de la derecha es cómo debería funcionar.",
 } as const;
@@ -52,65 +46,23 @@ function DotPattern() {
   );
 }
 
-const MANIFIESTO_LINES = [
-  { text: "Todo en su sitio.", indentRem: -3.5 },
-  { text: "Sin prisas.", indentRem: 8.5 },
-  { text: "Sin olvidos.", indentRem: -1.5 },
-] as const;
-
-function ManifiestoAguarras() {
-  return (
-    <motion.div
-      className="relative mx-auto w-full max-w-2xl px-2 py-8 sm:py-10"
-      initial={{ opacity: 0, y: 12 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.55, ease: [0.22, 1, 0.32, 1] }}
-    >
-      <motion.div className="relative flex min-h-56 w-full items-center justify-center sm:min-h-64">
-        <div
-          className="pointer-events-none absolute top-1/2 left-1/2 aspect-square w-[min(92vw,22rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_30%_20%,rgba(255,255,255,0.06),transparent_55%)] sm:w-104"
-          aria-hidden
-        />
-        <motion.div className="relative z-10 mx-auto w-fit max-w-[min(100%,24rem)] space-y-3.5 sm:max-w-104 sm:space-y-7">
-          {MANIFIESTO_LINES.map((line, i) => (
-            <motion.p
-              key={line.text}
-              className="manifesto-line whitespace-nowrap text-left font-sans text-[clamp(1.45rem,3vw,2.35rem)] font-light leading-[1.15] tracking-[-0.04em] text-zinc-50/95"
-              style={{ marginLeft: `${line.indentRem}rem` }}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08, duration: 0.5 }}
-            >
-              {line.text}
-            </motion.p>
-          ))}
-          <p className="mx-auto mt-6 max-w-[22ch] text-center text-[12px] leading-relaxed text-white/35 italic sm:mt-8">
-            {MANIFIESTO_CLOSING}
-          </p>
-        </motion.div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
 type WaBlock = { kind: "msg"; who: "client" | "business"; text: string; time: string };
 
 const WA_SCRIPT: WaBlock[] = [
-  { kind: "msg", who: "client", text: "Hola, ¿seguís abiertos?", time: "11:04" },
-  { kind: "msg", who: "business", text: "Sí, claro 🙂", time: "11:05" },
-  { kind: "msg", who: "client", text: "Perfecto. ¿Cuánto cuesta?", time: "11:06" },
-  { kind: "msg", who: "business", text: "Depende de lo que necesites.", time: "11:07" },
-  { kind: "msg", who: "client", text: "¿Me puedes pasar información?", time: "11:24" },
-  { kind: "msg", who: "client", text: "Hola?", time: "12:41" },
-  { kind: "msg", who: "business", text: "Perdona, estaba con un cliente.", time: "12:58" },
-  {
-    kind: "msg",
-    who: "client",
-    text: "No te preocupes. Ya lo he reservado en otro sitio.",
-    time: "13:07",
-  },
+  { kind: "msg", who: "client", text: "Hola 🙂", time: "" },
+  { kind: "msg", who: "client", text: "¿Seguís abiertos?", time: "11:04" },
+  { kind: "msg", who: "business", text: "Buenos días!", time: "11:05" },
+  { kind: "msg", who: "business", text: "Sí, claro.", time: "11:05" },
+  { kind: "msg", who: "client", text: "Perfecto.", time: "" },
+  { kind: "msg", who: "client", text: "Estoy mirando varias opciones.", time: "11:06" },
+  { kind: "msg", who: "client", text: "¿Me puedes pasar información?", time: "11:07" },
+  { kind: "msg", who: "client", text: "Y si tienes precios orientativos mejor.", time: "11:08" },
+  { kind: "msg", who: "client", text: "Gracias 🙂", time: "11:24" },
+  { kind: "msg", who: "client", text: "Hola?", time: "12:58" },
+  { kind: "msg", who: "business", text: "Perdona. Estaba con un cliente.", time: "12:58" },
+  { kind: "msg", who: "business", text: "Ahora te lo paso.", time: "12:59" },
+  { kind: "msg", who: "client", text: "No te preocupes.", time: "13:02" },
+  { kind: "msg", who: "client", text: "Ya lo he reservado en otro sitio.", time: "" },
 ];
 
 const WA_PUNCHLINE = {
@@ -189,6 +141,13 @@ function IphoneNotificacionesCompleto() {
 function WhatsAppCaosIntegrado() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.12 });
+  const chatRef = useRef<HTMLDivElement>(null);
+
+  // Al cargar, dejamos el chat desplazado al FINAL (último mensaje a la vista).
+  useEffect(() => {
+    const el = chatRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, []);
 
   return (
     <motion.div
@@ -225,7 +184,8 @@ function WhatsAppCaosIntegrado() {
               <p className="min-w-0 flex-1 truncate text-[11px] font-medium text-white">Cliente</p>
             </div>
             <div
-              className="flex flex-col gap-1 px-2 py-2 sm:gap-1.5 sm:px-2.5 sm:py-2.5"
+              ref={chatRef}
+              className="flex h-[460px] flex-col gap-1 overflow-y-auto overscroll-contain px-2 py-2 [scrollbar-width:thin] [scrollbar-color:rgba(0,0,0,0.25)_transparent] sm:gap-1.5 sm:px-2.5 sm:py-2.5 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-black/20"
               style={{ backgroundColor: "#ece5dd" }}
             >
               {WA_SCRIPT.map((block, i) => {
@@ -252,10 +212,12 @@ function WhatsAppCaosIntegrado() {
                     >
                       {block.text}
                     </div>
-                    <span className="mt-0.5 flex items-center text-[9px] tabular-nums text-[#667781]">
-                      {block.time}
-                      {!isClient ? <ReadTicks /> : null}
-                    </span>
+                    {block.time ? (
+                      <span className="mt-0.5 flex items-center text-[9px] tabular-nums text-[#667781]">
+                        {block.time}
+                        {!isClient ? <ReadTicks /> : null}
+                      </span>
+                    ) : null}
                   </motion.div>
                 );
               })}
@@ -310,16 +272,80 @@ function EditorialFactsColumn() {
 }
 
 export function StrategicProfile() {
+  // Medimos la altura real del hero para que la diagonal tenga EXACTAMENTE su misma
+  // inclinación (mismo ancho 100vw + misma altura → mismo ángulo).
+  const [heroHeight, setHeroHeight] = useState<number | null>(null);
+  const bandRef = useRef<HTMLDivElement>(null);
+  const [bandHeight, setBandHeight] = useState<number | null>(null);
+
+  useEffect(() => {
+    const hero = document.querySelector<HTMLElement>(".hero-editorial");
+    if (!hero) return;
+    const measure = () => setHeroHeight(hero.offsetHeight);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(hero);
+    return () => ro.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const el = bandRef.current;
+    if (!el) return;
+    const measure = () => setBandHeight(el.clientHeight);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // La diagonal del hero recorre 18% de ancho a lo largo de su altura. Extrapolamos
+  // ese MISMO ángulo a lo alto de la banda (ratio = altoBanda / altoHero), de modo que
+  // los 3 colores siguen la misma diagonal hasta donde llegue la sección (sin tramo vertical).
+  const ratio = heroHeight && bandHeight ? bandHeight / heroHeight : 1;
+  const greyBottom = (45 + 18 * ratio).toFixed(2);
+  const violetBottom = (61 + 18 * ratio).toFixed(2);
+  const lightLeftBottom = (61 + 18 * ratio).toFixed(2);
+  const lightRightBottom = (64 + 18 * ratio).toFixed(2);
+
   return (
     <section id="perfil" className="relative z-0 -mt-6 scroll-mt-24 w-full overflow-visible sm:-mt-10 lg:-mt-14">
       <div className="relative left-1/2 w-screen max-w-none -translate-x-1/2">
         <div
-          className="relative w-full pt-14 pb-10 text-zinc-200 sm:pt-18 sm:pb-12 lg:pt-22"
+          className="relative w-full overflow-hidden pt-14 pb-10 text-zinc-200 sm:pt-18 sm:pb-12 lg:pt-22"
           style={{ backgroundColor: DEEP_BLACK }}
         >
+          {/* Fondo: misma composición diagonal del hero pero en espejo ("\").
+              - `top-14` compensa el -mt-14 de la sección → el vértice (45%) cae justo
+                en la costura, bajo la franja, alineado con el del hero.
+              - El punto inferior de cada color se extrapola con la MISMA pendiente del
+                hero (ratio alto), así la diagonal continúa recta hasta el fondo de la
+                sección, sin tramo vertical.
+              Clips invertidos verticalmente respecto al hero + los mismos 3 colores. */}
+          <div
+            ref={bandRef}
+            className="pointer-events-none absolute inset-x-0 top-14 bottom-0 z-0 hidden lg:block"
+            aria-hidden
+          >
+            {/* Panel gris suave */}
+            <div
+              className="absolute inset-0 bg-[#12151f]"
+              style={{ clipPath: `polygon(45% 0, 100% 0, 100% 100%, ${greyBottom}% 100%)` }}
+            />
+            {/* Bloque violeta superpuesto (misma inclinación) */}
+            <div
+              className="absolute inset-0 bg-[#251c49]"
+              style={{ clipPath: `polygon(61% 0, 100% 0, 100% 100%, ${violetBottom}% 100%)` }}
+            />
+            {/* Banda violeta más clara (acento de profundidad, misma inclinación) */}
+            <div
+              className="absolute inset-0 bg-[#3a2d6b]/55"
+              style={{ clipPath: `polygon(61% 0, 64% 0, ${lightRightBottom}% 100%, ${lightLeftBottom}% 100%)` }}
+            />
+          </div>
+
           <DotPattern />
 
-          <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="relative z-10 isolate mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <FadeIn className="mx-auto min-w-0 max-w-4xl text-center">
               <p className="text-balance font-bold leading-[1.12] tracking-tighter text-zinc-50 text-[clamp(1.35rem,3.8vw,3rem)] lg:whitespace-nowrap">
                 {COPY.heroTitle}
@@ -342,10 +368,17 @@ export function StrategicProfile() {
               >
                 <div className="mb-3 lg:mb-4">
                   <h3 className="text-lg font-semibold leading-snug tracking-[-0.02em] text-white sm:text-xl">
-                    {COPY.row2AsideTitle}
+                    Las reservas no saben
+                    <br />
+                    que hoy era tu día libre.
+                    <br />
+                    Los mensajes tampoco.
                   </h3>
+                  <p className="mt-3 max-w-[95%] text-[13px] leading-relaxed text-zinc-500 sm:text-sm">
+                    La pregunta no es si van a llegar clientes.
+                  </p>
                   <p className="mt-2 max-w-[95%] text-[13px] leading-relaxed text-zinc-500 sm:text-sm">
-                    {COPY.row2AsideBody}
+                    La pregunta es qué ocurre cuando llegan.
                   </p>
                 </div>
                 <WhatsAppCaosIntegrado />
@@ -373,14 +406,6 @@ export function StrategicProfile() {
                 <EditorialFactsColumn />
               </motion.div>
             </motion.div>
-
-            <FadeIn delay={0.04} className="mt-12 sm:mt-14 lg:mt-16">
-              <ManifiestoAguarras />
-            </FadeIn>
-
-            <FadeIn delay={0.05} className="mt-4 sm:mt-5">
-              <EvidenceTestimonialsGrid />
-            </FadeIn>
           </div>
         </div>
       </div>

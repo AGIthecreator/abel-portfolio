@@ -31,7 +31,7 @@ export default function Page() {
 
       {/* FRANJA 1: logos / estado — justo debajo del hero compacto */}
       <div className="relative z-20">
-        <StripSystemStatus />
+        <StripExecution />
       </div>
 
       {/* BLOQUE 1: Narrativa Estratégica (z por debajo de la franja para no ocultarla) */}
@@ -43,7 +43,7 @@ export default function Page() {
 
       {/* FRANJA 2: sin margen superior para pegar al bloque estratégico */}
       <div className="mb-6 sm:mb-8">
-        <StripExecution />
+        <StripSystemStatus />
       </div>
 
       {/* Mesa de evidencias — entrega de resultados */}
