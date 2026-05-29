@@ -93,6 +93,12 @@ const CMD_PANEL = "rounded-sm border border-white/12 bg-[#0c1018]";
 export const MONITOR_ARTBOARD_W = 880;
 export const MONITOR_ARTBOARD_H = 500;
 
+// Escala del monitor cuando el contenedor está "a tope" en desktop (≈ columna 646px / 880).
+// El pavo y la gota se escalan con (scale / MASCOT_SCALE_REF), de modo que en desktop el
+// factor vale 1 (todo idéntico a ahora) y en resoluciones menores el conjunto entero —pavo,
+// gota, monitor y ventanas— se encoge manteniendo EXACTAMENTE las mismas proporciones.
+export const MASCOT_SCALE_REF = 0.734;
+
 const CMD_FEED_LINES = [
   "[OK] 18 correos enviados automáticamente.",
   "[INFO] Revisando tareas repetitivas...",
@@ -769,9 +775,12 @@ function HeroMonitorScene({ reduceMotion }: { reduceMotion: boolean }) {
   const { scale, flowHeight } = useMonitorArtboardScale(containerRef);
   const outlookActiveIndex = useOutlookMailCycle(reduceMotion);
 
+  // Factor del conjunto pavo + gota: 1 en desktop, proporcional en pantallas menores.
+  const groupScale = Math.min(1, scale / MASCOT_SCALE_REF);
+
   return (
     <div className="hero-scene relative mx-auto w-full max-w-[min(100%,700px)] select-none" aria-hidden>
-      <div className="relative w-full" style={{ height: flowHeight + 56 }}>
+      <div className="relative w-full" style={{ height: flowHeight + Math.round(56 * groupScale) }}>
         <div
           ref={containerRef}
           className="absolute inset-x-0 top-0 mx-auto w-full max-w-full"
@@ -815,12 +824,13 @@ function HeroMonitorScene({ reduceMotion }: { reduceMotion: boolean }) {
         </div>
 
         <div
-          className="absolute"
+          className="absolute origin-bottom-left"
           style={{
-            bottom: MASCOT_PRESET.bottom,
-            left: MASCOT_PRESET.left,
+            bottom: MASCOT_PRESET.bottom * groupScale,
+            left: MASCOT_PRESET.left * groupScale,
             width: MASCOT_PRESET.width,
             zIndex: MASCOT_PRESET.z,
+            transform: `scale(${groupScale})`,
           }}
         >
           <div className="relative">
@@ -872,7 +882,7 @@ export function Hero() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_100%_at_50%_50%,transparent_44%,rgba(0,0,0,0.4)_100%)]" />
       </div>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1320px] min-h-0 max-h-[78vh] items-center px-5 py-4 sm:px-8 sm:py-5 lg:px-10 lg:py-6">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1320px] min-h-0 items-center px-5 py-4 sm:px-8 sm:py-5 lg:max-h-[78vh] lg:px-10 lg:py-6">
         <div className="grid w-full min-w-0 items-center gap-7 max-lg:gap-6 lg:grid-cols-[46%_54%] lg:gap-9 xl:gap-11">
           <div className="hero-copy-enter relative z-20 max-w-[min(100%,540px)] space-y-4 lg:space-y-4.5">
             <p className="font-(family-name:--font-hero-ui) inline-flex w-fit border border-white/11 bg-white/3 px-2.5 py-1 text-[7.5px] font-semibold uppercase tracking-[0.16em] text-neutral-500 sm:text-[8px]">
