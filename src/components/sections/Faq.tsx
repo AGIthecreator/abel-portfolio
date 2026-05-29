@@ -68,7 +68,7 @@ function FaqHeadlineAccentBar() {
 
 /** Móvil FAQ: misma altura visual que hero móvil; props propias (no compartir constantes). */
 const FAQ_MASCOT_MOBILE_IMG =
-  "max-lg:h-44 max-lg:max-h-44 max-lg:w-auto max-lg:max-w-[min(40vw,12.7rem)]";
+  "max-lg:h-36 max-lg:max-h-36 max-lg:w-auto max-lg:max-w-[min(33vw,9.5rem)]";
 
 function FaqHeadlineMascot({ className }: { className?: string }) {
   return (

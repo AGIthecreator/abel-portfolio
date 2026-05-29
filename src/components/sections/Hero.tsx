@@ -68,6 +68,9 @@ export const MASCOT_PRESET = {
   z: 40,
 } as const;
 
+/** En móvil el pavo se separa del borde izquierdo (si no, queda cortado). */
+export const MASCOT_MOBILE_LEFT = 12;
+
 /** Gota de sudor — posición % dentro del contenedor del pavo. */
 export const SWEAT_PRESET = {
   topPercent: 18,
@@ -221,6 +224,7 @@ function useMonitorArtboardScale(containerRef: RefObject<HTMLDivElement | null>)
   const [layout, setLayout] = useState({
     scale: 0.5,
     flowHeight: Math.ceil(MONITOR_ARTBOARD_H * 0.5),
+    isMobile: false,
   });
 
   useEffect(() => {
@@ -232,6 +236,7 @@ function useMonitorArtboardScale(containerRef: RefObject<HTMLDivElement | null>)
       setLayout({
         scale,
         flowHeight: Math.ceil(MONITOR_ARTBOARD_H * scale),
+        isMobile: window.innerWidth < 1024,
       });
     };
     update();
@@ -772,11 +777,13 @@ function MascotSweatDrop() {
 
 function HeroMonitorScene({ reduceMotion }: { reduceMotion: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { scale, flowHeight } = useMonitorArtboardScale(containerRef);
+  const { scale, flowHeight, isMobile } = useMonitorArtboardScale(containerRef);
   const outlookActiveIndex = useOutlookMailCycle(reduceMotion);
 
   // Factor del conjunto pavo + gota: 1 en desktop, proporcional en pantallas menores.
   const groupScale = Math.min(1, scale / MASCOT_SCALE_REF);
+  // En móvil el pavo se separa del borde para no cortarse; en desktop, valor del preset.
+  const mascotLeft = isMobile ? MASCOT_MOBILE_LEFT : MASCOT_PRESET.left * groupScale;
 
   return (
     <div className="hero-scene relative mx-auto w-full max-w-[min(100%,460px)] select-none lg:max-w-[min(100%,700px)]" aria-hidden>
@@ -827,7 +834,7 @@ function HeroMonitorScene({ reduceMotion }: { reduceMotion: boolean }) {
           className="absolute origin-bottom-left"
           style={{
             bottom: MASCOT_PRESET.bottom * groupScale,
-            left: MASCOT_PRESET.left * groupScale,
+            left: mascotLeft,
             width: MASCOT_PRESET.width,
             zIndex: MASCOT_PRESET.z,
             transform: `scale(${groupScale})`,

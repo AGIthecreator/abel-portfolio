@@ -200,7 +200,7 @@ function BpPercepcion() {
       viewport={{ once: true }}
       aria-hidden
     >
-      <div className="relative aspect-16/5.5 w-full min-h-44 sm:min-h-50">
+      <div className="relative aspect-16/5.5 w-full min-h-44 translate-x-[4%] sm:min-h-50">
         {/* —— Web 2010 (atrás, queda bajo la superior) —— */}
         <motion.div
           className="absolute top-[14%] bottom-[6%] left-0 z-10 flex w-[32%] max-w-40 min-h-0 origin-bottom -rotate-12 flex-col overflow-hidden rounded-sm border-2 border-zinc-600/70 bg-[#9a9a9a] font-serif opacity-[0.88] shadow-[0_6px_20px_-8px_rgba(0,0,0,0.7)] grayscale-[0.45] brightness-90"
