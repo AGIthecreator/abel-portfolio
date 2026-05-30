@@ -916,6 +916,11 @@ export function Hero() {
             className="absolute inset-0 bg-[#251c49]"
             style={{ clipPath: "polygon(0 48%, 100% 26%, 100% 100%, 0 100%)" }}
           />
+          {/* Banda violeta más clara (acento de profundidad) — 3.er color */}
+          <div
+            className="absolute inset-0 bg-[#3a2d6b]/55"
+            style={{ clipPath: "polygon(0 42%, 100% 20%, 100% 26%, 0 48%)" }}
+          />
         </div>
 
         {/* Grano editorial muy sutil */}

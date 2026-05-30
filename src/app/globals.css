@@ -497,7 +497,7 @@ next-route-announcer,
 
 /*
  * SiteNavbar — logo (FUERA de @layer).
- * - Logo: alto visual calc(4rem - 5px) — 1px menos de respiro extra en el pico.
+ * - Logo: alto visual calc(4rem - 18px) — más aire arriba/abajo dentro de la fila h-16.
  */
 #navbar-brand-link {
   align-self: stretch !important;
@@ -512,9 +512,9 @@ next-route-announcer,
 #navbar-brand-logo-img {
   box-sizing: border-box !important;
   display: block !important;
-  height: calc(4rem - 5px) !important;
-  min-height: calc(4rem - 5px) !important;
-  max-height: calc(4rem - 5px) !important;
+  height: calc(4rem - 18px) !important;
+  min-height: calc(4rem - 18px) !important;
+  max-height: calc(4rem - 18px) !important;
   width: auto !important;
   max-width: none !important;
   object-fit: contain !important;
