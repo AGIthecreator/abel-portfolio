@@ -16,7 +16,7 @@ const FOOTER_SURFACE: CSSProperties = {
 };
 
 const NAV_LINKS = [
-  { href: "#entregables", label: "Qué construyo" },
+  { href: "#entregables", label: "Por qué yo" },
   { href: "#perfil", label: "Cómo funciona" },
   { label: "Contacto", opensContact: true },
 ] as const;

@@ -340,6 +340,7 @@ export function StrategicProfile() {
               Clips invertidos verticalmente respecto al hero + los mismos 3 colores. */}
           <div
             ref={bandRef}
+            id="strategic-diagonal-band"
             className="pointer-events-none absolute inset-x-0 top-14 bottom-0 z-0 hidden lg:block"
             aria-hidden
           >

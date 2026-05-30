@@ -10,7 +10,7 @@ import { trackEvent } from "@/lib/analytics";
 import { handleSectionNavClick } from "@/lib/scroll-to-section";
 
 const NAV = [
-  { href: "#entregables", label: "Qué construyo", section: true },
+  { href: "#entregables", label: "Por qué yo", section: true },
   { href: "#perfil", label: "Cómo funciona", section: true },
   { href: "/precios", label: "Precios", section: false },
   { label: "Contacto", opensContact: true },

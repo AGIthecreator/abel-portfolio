@@ -801,7 +801,7 @@ function HeroMonitorScene({ reduceMotion }: { reduceMotion: boolean }) {
                   className="pointer-events-none absolute inset-0 bg-cover bg-center"
                   style={{ backgroundImage: "url('/monitor-wallpaper.png')" }}
                 />
-                <div className="hero-monitor-glow pointer-events-none absolute inset-0 z-50 bg-[radial-gradient(ellipse_75%_50%_at_50%_35%,rgba(139,92,246,0.08),transparent_65%)]" />
+                <div className="hero-monitor-glow pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(ellipse_75%_50%_at_50%_35%,rgba(139,92,246,0.08),transparent_65%)]" />
                 <div
                   className="hero-monitor-canvas absolute left-1/2 top-0 origin-top"
                   style={{

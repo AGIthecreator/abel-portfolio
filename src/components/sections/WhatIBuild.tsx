@@ -1,73 +1,48 @@
 "use client";
 
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { FadeIn } from "@/components/motion/FadeIn";
+
 const SECTION_BG = "#070b13";
-const POLAROID_CAPTION = "#F3F1EB";
+/** Hueso cálido — coherente con el resto de la web */
+const BONE = "#F3F1EB";
+/** Negro casi absoluto — banda del statement */
+const NEAR_BLACK = "#030305";
 
-/** Alineado al ancho real en móvil (max ~200–225px) para no pedir 750–1080px a Next */
-const IMAGE_SIZES = "(max-width: 640px) 200px, (max-width: 1024px) 220px, 260px";
-const IMAGE_SIZES_AXIS = "(max-width: 640px) 230px, (max-width: 1024px) 250px, 292px";
-const POLAROID_QUALITY = 80;
-
-/** Orden: arriba centro → medio (local | factura) → eje (despacho) → abajo desplazado (tienda) */
-const BOARD_ITEMS = [
-  {
-    id: "cafe",
-    layout: "top" as const,
-    headline: "Mesa llena esta noche.",
-    label: "Cafetería",
-    src: "/notificacion.webp",
-    alt: "Cafetería con mesas ocupadas",
-    caption: "Cola cerrada",
-    rotateDeg: -1.25,
-    floatDelay: 0,
-  },
-  {
-    id: "local",
-    layout: "midLeft" as const,
-    headline: "Cliente atendido sin perseguir mensajes.",
-    label: "Local",
-    src: "/restaurante.webp",
-    alt: "Servicio en local sin interrupciones",
-    caption: "Sala en calma",
-    rotateDeg: 1.5,
-    floatDelay: 0.15,
-  },
-  {
-    id: "asesoria",
-    layout: "midRight" as const,
-    headline: "Trabajo terminado. Factura enviada.",
-    label: "Asesoría",
-    src: "/factura.webp",
-    alt: "Factura emitida",
-    caption: "Cobro listo",
-    rotateDeg: -1.75,
-    floatDelay: 0.3,
-  },
-  {
-    id: "ingenieria",
-    layout: "center" as const,
-    headline: "Tu negocio sigue funcionando.",
-    label: "Ingeniería aplicada",
-    src: "/programador.webp",
-    alt: "Despacho técnico",
-    caption: "Siempre encendido",
-    rotateDeg: 0.75,
-    floatDelay: 0.45,
-  },
-  {
-    id: "comercio",
-    layout: "bottom" as const,
-    headline: "La tienda sigue moviéndose sola.",
-    label: "Comercio",
-    src: "/tienda.webp",
-    alt: "Comercio activo",
-    caption: "Stock vivo",
-    rotateDeg: -1.5,
-    floatDelay: 0.6,
-  },
+/** Izquierda: lo que todos prometen (vacío, intercambiable). */
+const PROMISES = [
+  "Soluciones a medida",
+  "Transformación digital",
+  "Compromiso con la excelencia",
+  "Optimización de procesos",
+  "Presencia digital potente",
+  "Ecosistema digital",
+  "Metodologías ágiles",
+  "Valor añadido",
+  "Tecnología de última generación",
+  "Sinergias digitales",
 ] as const;
+
+/** Derecha: lo que de verdad mueve un negocio. */
+const REALITY = [
+  "Que aparezcas cuando te buscan.",
+  "Que no se vayan a la competencia por esperar una respuesta.",
+  "Que reservar sea más fácil que llamar.",
+  "Que los clientes encuentren la información sin preguntarla.",
+  "Que no acabes gestionando el negocio por WhatsApp.",
+  "Que tu web trabaje incluso cuando tú no estás.",
+  "Que tu negocio parezca tan profesional como realmente es.",
+] as const;
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.32, 1] as const },
+  },
+};
 
 function DotPattern() {
   return (
@@ -77,265 +52,306 @@ function DotPattern() {
         backgroundImage:
           "radial-gradient(rgba(255,255,255,0.55) 0.5px, transparent 0.5px)",
         backgroundSize: "18px 18px",
-        opacity: 0.04,
+        opacity: 0.025,
       }}
       aria-hidden
     />
   );
 }
 
-function TechnicalLabel({ headline, label }: { headline: string; label: string }) {
-  return (
-    <div className="w-full text-left">
-      <p className="text-xs font-medium leading-snug tracking-[-0.01em] text-zinc-100 antialiased">
-        {headline}
-      </p>
-      <p className="mt-0.5 font-mono text-[10px] leading-none text-zinc-500">
-        ↳ {label}
-      </p>
-    </div>
-  );
-}
-
-function PolaroidFigure({
-  src,
-  alt,
-  caption,
-  rotateDeg,
-  floatDelay,
-  isAxis,
-}: {
-  src: string;
-  alt: string;
-  caption: string;
-  rotateDeg: number;
-  floatDelay: number;
-  isAxis?: boolean;
-}) {
-  const widthClass = isAxis
-    ? "w-[min(100%,calc(100vw-2.5rem))] max-w-[225px] sm:max-w-none sm:w-[225px] lg:w-[292px]"
-    : "w-[min(100%,calc(100vw-2.5rem))] max-w-[200px] sm:max-w-none sm:w-[200px] lg:w-[260px]";
-
-  return (
-    <motion.figure
-      className={`relative z-10 shrink-0 shadow-2xl ${widthClass}`}
-      style={{ rotate: `${rotateDeg}deg` }}
-      animate={{ y: [0, -3, 0] }}
-      transition={{
-        duration: 6.5,
-        repeat: Infinity,
-        ease: "easeInOut",
-        delay: floatDelay,
-      }}
-    >
-      <div
-        className="overflow-hidden rounded-[2px]"
-        style={{
-          backgroundColor: POLAROID_CAPTION,
-          padding: "6px 6px 0",
-        }}
-      >
-        <div className="relative aspect-4/3 w-full overflow-hidden bg-zinc-900">
-          <Image
-            src={src}
-            alt={alt}
-            fill
-            quality={POLAROID_QUALITY}
-            loading="lazy"
-            sizes={isAxis ? IMAGE_SIZES_AXIS : IMAGE_SIZES}
-            className="object-cover object-center"
-          />
-        </div>
-        <div className="flex h-7 shrink-0 items-center justify-center px-1">
-          <p
-            className="text-center text-[9px] font-medium leading-none tracking-wide text-zinc-700"
-            style={{
-              fontFamily:
-                '"Segoe Script", "Bradley Hand", "Apple Chancery", cursive',
-            }}
-          >
-            {caption}
-          </p>
-        </div>
-      </div>
-    </motion.figure>
-  );
-}
-
-function EvidencePiece({
-  item,
-  index,
-  className = "",
-}: {
-  item: (typeof BOARD_ITEMS)[number];
-  index: number;
-  className?: string;
-}) {
-  return (
-    <motion.div
-      className={`isolate flex w-max max-w-full flex-col items-start gap-0 ${className}`}
-      initial={{ opacity: 0, y: 12 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.12 }}
-      transition={{
-        duration: 0.6,
-        delay: 0.05 + index * 0.06,
-        ease: [0.22, 1, 0.32, 1],
-      }}
-    >
-      <div className="relative z-20 mb-2 w-full sm:mb-2.5">
-        <TechnicalLabel headline={item.headline} label={item.label} />
-      </div>
-      <PolaroidFigure
-        src={item.src}
-        alt={item.alt}
-        caption={item.caption}
-        rotateDeg={item.rotateDeg}
-        floatDelay={item.floatDelay}
-        isAxis={item.id === "ingenieria"}
-      />
-    </motion.div>
-  );
-}
-
-/** Plano técnico: centro ↔ cada esquina del tablero (ortogonal, muy sutil) */
-function DraftingConnectors() {
-  const strokeCls = "stroke-zinc-900/50";
+/** Check fino. `muted` lo deja apagado (columna izquierda). */
+function Check({ muted = false }: { muted?: boolean }) {
   return (
     <svg
-      className="pointer-events-none absolute inset-0 z-1 hidden h-full w-full overflow-visible md:block"
-      viewBox="0 0 600 520"
+      className={`mt-[3px] h-3.5 w-3.5 shrink-0 ${
+        muted ? "text-zinc-600" : "text-violet-300/90"
+      }`}
+      viewBox="0 0 24 24"
       fill="none"
-      preserveAspectRatio="xMidYMid meet"
+      stroke="currentColor"
+      strokeWidth={muted ? 1.5 : 2}
       aria-hidden
     >
-      <motion.path
-        d="M 300 268 L 300 200 L 268 200 L 268 108"
-        className={strokeCls}
-        strokeWidth={0.5}
-        vectorEffect="non-scaling-stroke"
-        initial={{ pathLength: 0, opacity: 0 }}
-        whileInView={{ pathLength: 1, opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ pathLength: { duration: 0.95, delay: 0.2 }, opacity: { duration: 0.35 } }}
-      />
-      <motion.path
-        d="M 300 268 L 220 268 L 220 232 L 132 232"
-        className={strokeCls}
-        strokeWidth={0.5}
-        vectorEffect="non-scaling-stroke"
-        initial={{ pathLength: 0, opacity: 0 }}
-        whileInView={{ pathLength: 1, opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ pathLength: { duration: 0.95, delay: 0.3 }, opacity: { duration: 0.35 } }}
-      />
-      <motion.path
-        d="M 300 268 L 380 268 L 380 232 L 472 232"
-        className={strokeCls}
-        strokeWidth={0.5}
-        vectorEffect="non-scaling-stroke"
-        initial={{ pathLength: 0, opacity: 0 }}
-        whileInView={{ pathLength: 1, opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ pathLength: { duration: 0.95, delay: 0.4 }, opacity: { duration: 0.35 } }}
-      />
-      <motion.path
-        d="M 300 268 L 300 336 L 352 336 L 352 408"
-        className={strokeCls}
-        strokeWidth={0.5}
-        vectorEffect="non-scaling-stroke"
-        initial={{ pathLength: 0, opacity: 0 }}
-        whileInView={{ pathLength: 1, opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ pathLength: { duration: 0.95, delay: 0.5 }, opacity: { duration: 0.35 } }}
-      />
+      <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
+function Eyebrow({
+  children,
+  muted = false,
+}: {
+  children: React.ReactNode;
+  muted?: boolean;
+}) {
+  return (
+    <p
+      className={`mb-6 text-[11px] font-medium uppercase leading-none sm:mb-7 ${
+        muted
+          ? "tracking-[0.28em] text-zinc-600"
+          : "tracking-[0.26em] text-violet-300/90"
+      }`}
+    >
+      {children}
+    </p>
+  );
+}
+
 export function WhatIBuild() {
-  const cafe = BOARD_ITEMS.find((i) => i.id === "cafe")!;
-  const local = BOARD_ITEMS.find((i) => i.id === "local")!;
-  const asesoria = BOARD_ITEMS.find((i) => i.id === "asesoria")!;
-  const ingenieria = BOARD_ITEMS.find((i) => i.id === "ingenieria")!;
-  const comercio = BOARD_ITEMS.find((i) => i.id === "comercio")!;
+  // Para que la diagonal ARRANQUE exactamente donde termina la de StrategicProfile,
+  // medimos: el hero (define la pendiente, 18% por cada alto de hero), la banda real
+  // de StrategicProfile (de ahí salen sus X de salida) y esta propia banda.
+  const [heroHeight, setHeroHeight] = useState<number | null>(null);
+  const [stratBandHeight, setStratBandHeight] = useState<number | null>(null);
+  const bandRef = useRef<HTMLDivElement>(null);
+  const [bandHeight, setBandHeight] = useState<number | null>(null);
+
+  useEffect(() => {
+    const hero = document.querySelector<HTMLElement>(".hero-editorial");
+    if (!hero) return;
+    const measure = () => setHeroHeight(hero.offsetHeight);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(hero);
+    return () => ro.disconnect();
+  }, []);
+
+  useEffect(() => {
+    let ro: ResizeObserver | null = null;
+    let raf = 0;
+    const attach = () => {
+      const el = document.getElementById("strategic-diagonal-band");
+      if (!el) {
+        raf = requestAnimationFrame(attach);
+        return;
+      }
+      const measure = () => setStratBandHeight(el.offsetHeight || null);
+      measure();
+      ro = new ResizeObserver(measure);
+      ro.observe(el);
+    };
+    attach();
+    return () => {
+      if (ro) ro.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  useEffect(() => {
+    const el = bandRef.current;
+    if (!el) return;
+    const measure = () => setBandHeight(el.clientHeight || null);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // Misma fórmula que StrategicProfile (greyBottom = 45 + 18·ratio). Sus X de SALIDA
+  // (abajo) son el ARRANQUE (arriba) de esta sección. Desde ahí, reflejamos la
+  // pendiente hacia la izquierda (igual que el hero) y dejamos que las diagonales
+  // sigan su curso hasta donde alcancen dentro de la sección.
+  const ratioStrat = heroHeight && stratBandHeight ? stratBandHeight / heroHeight : 1.5;
+  const ratioSelf = heroHeight && bandHeight ? bandHeight / heroHeight : 2.4;
+
+  const topGrey = 45 + 18 * ratioStrat;
+  const topVioletEdge = 61 + 18 * ratioStrat;
+  const topLightRight = 64 + 18 * ratioStrat;
+
+  const fmt = (n: number) => n.toFixed(2);
+  const greyTop = fmt(topGrey);
+  const greyBottom = fmt(topGrey - 18 * ratioSelf);
+  const violetTop = fmt(topVioletEdge);
+  const violetBottom = fmt(topVioletEdge - 18 * ratioSelf);
+  const lightTopLeft = fmt(topVioletEdge);
+  const lightTopRight = fmt(topLightRight);
+  const lightBottomLeft = fmt(topVioletEdge - 18 * ratioSelf);
+  const lightBottomRight = fmt(topLightRight - 18 * ratioSelf);
 
   return (
     <section
       id="entregables"
-      className="relative -mt-6 scroll-mt-24 w-full overflow-x-clip overflow-y-visible pt-16 sm:-mt-8 sm:pt-20"
+      className="relative -mt-6 scroll-mt-24 w-full overflow-x-clip overflow-y-visible pt-16 pb-20 sm:-mt-8 sm:pt-20 sm:pb-28"
       style={{ backgroundColor: SECTION_BG }}
-      aria-label="Mesa de trabajo — evidencias"
+      aria-label="¿Por qué hacerlo conmigo?"
     >
+      {/* Fondo diagonal (desktop) — CONTINÚA la diagonal de StrategicProfile.
+          Arranca EXACTAMENTE en las X donde aquélla termina (mismas anchuras de panel)
+          y refleja la pendiente del hero hacia la izquierda. Sin degradados: las
+          diagonales siguen su curso hasta donde alcancen dentro de la sección.
+          inset-0 → arranca en el borde superior, pegado al strip (sin hueco). */}
+      <div
+        ref={bandRef}
+        className="pointer-events-none absolute inset-0 z-0 hidden overflow-hidden lg:block"
+        aria-hidden
+      >
+        <div
+          className="absolute inset-0 bg-[#12151f]"
+          style={{
+            clipPath: `polygon(${greyTop}% 0, 100% 0, 100% 100%, ${greyBottom}% 100%)`,
+          }}
+        />
+        <div
+          className="absolute inset-0 bg-[#251c49]"
+          style={{
+            clipPath: `polygon(${violetTop}% 0, 100% 0, 100% 100%, ${violetBottom}% 100%)`,
+          }}
+        />
+        <div
+          className="absolute inset-0 bg-[#3a2d6b]/55"
+          style={{
+            clipPath: `polygon(${lightTopLeft}% 0, ${lightTopRight}% 0, ${lightBottomRight}% 100%, ${lightBottomLeft}% 100%)`,
+          }}
+        />
+      </div>
+
       <DotPattern />
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl overflow-x-clip px-4 pb-12 sm:px-6 lg:px-10 sm:pb-16">
-        <div className="relative mx-auto w-full min-w-0 max-w-full overflow-x-clip">
-          <DraftingConnectors />
+      <div className="relative z-10 mx-auto w-full max-w-5xl px-5 sm:px-6 lg:px-8">
+        {/* CABECERA */}
+        <FadeIn className="mx-auto max-w-2xl text-center">
+          <h2 className="text-balance text-[clamp(1.7rem,5.2vw,2.9rem)] font-bold leading-[1.08] tracking-tight text-zinc-50">
+            <span className="text-violet-300">¿Por qué</span> hacerlo conmigo?
+          </h2>
+          <p className="mx-auto mt-5 max-w-[24ch] text-balance font-serif text-[clamp(1.05rem,3vw,1.45rem)] font-normal leading-snug text-zinc-300 sm:max-w-none">
+            Porque ya hay <span className="text-zinc-500">demasiadas webs</span>{" "}
+            diciendo exactamente lo mismo.
+          </p>
+          <div
+            className="mx-auto mt-8 h-px w-[clamp(120px,38%,300px)]"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent, rgba(167,139,250,0.5) 50%, transparent)",
+            }}
+            aria-hidden
+          />
+        </FadeIn>
 
-          <div className="grid grid-cols-1 gap-y-4 sm:gap-y-5 lg:grid-cols-12 lg:gap-x-6 lg:gap-y-3">
-            {/* Fila 1 — cafetería, centrada en el ancho del tablero */}
-            <div className="flex justify-center lg:col-span-12 lg:row-start-1">
-              <EvidencePiece
-                item={cafe}
-                index={0}
-                className="max-sm:translate-x-0 -translate-x-2 sm:-translate-x-3 lg:-translate-x-6"
-              />
-            </div>
+        {/* COMPARATIVA — línea vertical fina al centro, mucho aire */}
+        <motion.div
+          className="relative mt-14 grid grid-cols-1 gap-y-12 sm:mt-20 sm:grid-cols-2 sm:gap-x-12 lg:gap-x-20"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 } } }}
+        >
+          {/* Línea vertical central (solo desktop) */}
+          <div
+            className="pointer-events-none absolute inset-y-1 left-1/2 hidden w-px -translate-x-1/2 sm:block"
+            style={{
+              background:
+                "linear-gradient(180deg, transparent, rgba(255,255,255,0.14) 12%, rgba(255,255,255,0.14) 88%, transparent)",
+            }}
+            aria-hidden
+          />
 
-            {/* Fila 2 — local y factura: dos columnas en desktop, más separación horizontal */}
-            <div className="flex justify-center lg:col-span-5 lg:row-start-2 lg:justify-start lg:pl-2 xl:pl-6">
-              <EvidencePiece
-                item={local}
-                index={1}
-                className="sm:translate-x-0 lg:translate-x-2"
-              />
-            </div>
-            <div className="flex justify-center lg:col-span-5 lg:col-start-8 lg:row-start-2 lg:justify-end lg:pr-2 xl:pr-6">
-              <EvidencePiece
-                item={asesoria}
-                index={2}
-                className="sm:translate-x-0 lg:-translate-x-2"
-              />
-            </div>
+          {/* IZQUIERDA — lo que suelen prometer (apagado) */}
+          <motion.div variants={fadeUp} className="sm:pr-2 lg:pr-6">
+            <Eyebrow muted>Lo que suelen prometer</Eyebrow>
+            <ul className="space-y-3.5">
+              {PROMISES.map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <Check muted />
+                  <span className="text-[15px] leading-relaxed text-zinc-500 sm:text-base">
+                    {item}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-7 max-w-[34ch] text-[13.5px] italic leading-relaxed text-zinc-600">
+              Si has visitado varias webs antes de llegar aquí, probablemente ya
+              has leído la mitad de esta lista unas cuantas veces.
+            </p>
+          </motion.div>
 
-            {/* Fila 3 — eje (sin margen negativo: evita que las polaroids de arriba pisen este texto) */}
-            <div className="mt-4 flex justify-center sm:mt-6 lg:col-span-12 lg:row-start-3 lg:mt-10">
-              <EvidencePiece
-                item={ingenieria}
-                index={3}
-                className="max-sm:translate-x-0 translate-x-2 sm:translate-x-3 lg:translate-x-5"
-              />
-            </div>
+          {/* DERECHA — lo que realmente importa (hueso, más presencia) */}
+          <motion.div variants={fadeUp} className="sm:pl-2 lg:pl-6">
+            <Eyebrow>Lo que realmente importa</Eyebrow>
+            <ul className="space-y-4">
+              {REALITY.map((item, i) => {
+                const highlight = i === REALITY.length - 1;
+                return (
+                  <li
+                    key={item}
+                    className={`flex items-start gap-3 ${highlight ? "mt-1.5" : ""}`}
+                  >
+                    <Check />
+                    <span
+                      className={`font-medium leading-relaxed ${
+                        highlight
+                          ? "text-[19px] font-semibold sm:text-[23px]"
+                          : "text-[15.5px] sm:text-[17px]"
+                      }`}
+                      style={{ color: BONE }}
+                    >
+                      {item}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </motion.div>
+        </motion.div>
 
-            {/* Fila 4 — comercio, desplazado */}
-            <div className="flex justify-center lg:col-span-12 lg:row-start-4 lg:mt-3 lg:justify-end lg:pr-6 xl:pr-12">
-              <EvidencePiece
-                item={comercio}
-                index={4}
-                className="max-sm:translate-x-0 translate-x-3 sm:translate-x-5 lg:translate-x-7"
-              />
-            </div>
+        {/* STATEMENT EDITORIAL — banda negra casi absoluta a todo el ancho de la PÁGINA */}
+        <div className="relative left-1/2 mt-24 w-screen max-w-none -translate-x-1/2 sm:mt-32">
+          <div className="py-5 sm:py-12" style={{ backgroundColor: NEAR_BLACK }}>
+            <FadeIn className="mx-auto max-w-3xl px-5 text-center sm:px-6">
+              <div className="relative inline-block px-7 py-6 sm:px-10">
+                {/* Esquinas blancas discretas */}
+                <span aria-hidden className="pointer-events-none absolute left-0 top-0 h-4 w-4 border-l border-t border-white/25" />
+                <span aria-hidden className="pointer-events-none absolute right-0 top-0 h-4 w-4 border-r border-t border-white/25" />
+                <span aria-hidden className="pointer-events-none absolute bottom-0 left-0 h-4 w-4 border-b border-l border-white/25" />
+                <span aria-hidden className="pointer-events-none absolute bottom-0 right-0 h-4 w-4 border-b border-r border-white/25" />
+                <p className="font-serif text-[clamp(1.45rem,4.6vw,2.5rem)] font-normal leading-[1.22] tracking-[-0.02em] text-balance">
+                  <span className="block text-zinc-100">
+                    No te voy prometer multiplicar todas tus ventas por diez.
+                  </span>
+                  <span className="mt-7 block text-zinc-500">
+                    Tampoco hacerte millonario antes del viernes.
+                  </span>
+                  <span className="mt-7 block" style={{ color: BONE }}>
+                    Lo que sí puedo hacer es que dentro de unos meses te
+                    preguntes{" "}
+                    <span className="text-violet-300">
+                      por qué no lo hiciste antes
+                    </span>
+                  </span>
+                </p>
+              </div>
+            </FadeIn>
           </div>
         </div>
 
-        <motion.footer
-          className="mx-auto mt-12 max-w-lg px-1 text-center sm:mt-16"
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.35 }}
-          transition={{ duration: 0.75, ease: [0.22, 1, 0.32, 1] }}
-        >
-          <p className="font-serif text-[clamp(1.15rem,2.8vw,1.45rem)] font-normal leading-[1.35] tracking-[-0.02em] text-zinc-100">
-            Menos tiempo apagando fuegos.
-            <br />
-            Más tiempo haciendo crecer algo.
-          </p>
+        {/* CIERRE — calmado, sin presión */}
+        <FadeIn className="mx-auto mt-24 max-w-xl text-center sm:mt-32">
+          <div className="space-y-8">
+            <p className="text-[clamp(1.1rem,3.4vw,1.5rem)] leading-snug tracking-[-0.01em]">
+              <span className="text-zinc-100">¿Te he convencido?</span>{" "}
+              <span className="text-zinc-500">Perfecto.</span>
+            </p>
+            <p className="text-[clamp(1.1rem,3.4vw,1.5rem)] leading-snug tracking-[-0.01em]">
+              <span className="text-zinc-100">¿No te he convencido?</span>{" "}
+              <span className="text-zinc-500">También lo entiendo.</span>
+            </p>
+          </div>
 
-          <p className="mx-auto mt-8 max-w-md text-[13px] leading-relaxed text-zinc-500 sm:text-sm">
-            Tu tiempo vuelve a estar donde importa.
+          <div className="mx-auto mt-12 max-w-md space-y-5 text-[15px] leading-[1.75] text-zinc-400 sm:text-base">
+            <p>
+              Al final una web no se compra porque alguien escriba cuatro frases
+              bonitas.
+            </p>
+            <p>Se compra cuando ves claro que puede ayudarte.</p>
+          </div>
+
+          <p className="mx-auto mt-12 max-w-md text-[clamp(1rem,2.8vw,1.15rem)] leading-relaxed text-zinc-200">
+            No necesito decirte que hago “transformación digital”.
+            <br />
+            Necesito que dentro de seis meses sigas pensando:
+            <br />
+            <span className="font-semibold">“Menos mal que hice esto.”</span>
           </p>
-        </motion.footer>
+        </FadeIn>
       </div>
     </section>
   );
