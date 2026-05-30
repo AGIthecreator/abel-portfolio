@@ -207,6 +207,26 @@ export function WhatIBuild() {
 
       <DotPattern />
 
+      {/* Filtro "tinta desgastada" suave — solo en la lista de promesas corporativas */}
+      <svg className="pointer-events-none absolute h-0 w-0" aria-hidden focusable="false">
+        <filter id="worn-ink-soft" x="-8%" y="-8%" width="116%" height="116%">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.65"
+            numOctaves={1}
+            seed={6}
+            result="rough"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="rough"
+            scale={0.35}
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+      </svg>
+
       <div className="relative z-10 mx-auto w-full max-w-5xl px-5 sm:px-6 lg:px-8">
         {/* CABECERA */}
         <FadeIn className="mx-auto max-w-2xl text-center">
@@ -252,7 +272,10 @@ export function WhatIBuild() {
               {PROMISES.map((item) => (
                 <li key={item} className="flex items-start gap-3">
                   <Check muted />
-                  <span className="text-[15px] leading-relaxed text-zinc-500 sm:text-base">
+                  <span
+                    className="text-[15px] leading-relaxed text-zinc-500 sm:text-base"
+                    style={{ filter: "url(#worn-ink-soft)" }}
+                  >
                     {item}
                   </span>
                 </li>
@@ -345,11 +368,8 @@ export function WhatIBuild() {
           </div>
 
           <p className="mx-auto mt-12 max-w-md text-[clamp(1rem,2.8vw,1.15rem)] leading-relaxed text-zinc-200">
-            No necesito decirte que hago “transformación digital”.
-            <br />
-            Necesito que dentro de seis meses sigas pensando:
-            <br />
-            <span className="font-semibold">“Menos mal que hice esto.”</span>
+            Si has llegado hasta aquí, probablemente también seas de los que
+            leen los términos y condiciones.
           </p>
         </FadeIn>
       </div>

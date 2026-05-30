@@ -60,8 +60,15 @@ const AFTER: AfterItem[] = [
 const CHALK_GRAIN =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
 
-/** Borde irregular tipo tiza sobre las letras (escrito a mano). */
-const CHALK_FILTER = { filter: "url(#chalk-texture)" } as const;
+/** Estilo tiza sin filtro SVG — Firefox rasteriza el texto al aplicar feDisplacementMap
+ *  y pierde la webfont (Patrick Hand), cayendo a sans-serif del sistema. */
+const CHALK_TEXT_STYLE = {
+  textShadow: "0 0 4px rgba(255,255,255,0.06)",
+} as const;
+
+const CHALK_TITLE_STYLE = {
+  textShadow: "0 0 5px rgba(255,255,255,0.08)",
+} as const;
 
 const reveal = {
   hidden: { opacity: 0, y: 7 },
@@ -212,7 +219,7 @@ function BeforeColumn({ active }: { active: boolean }) {
             {item.correction ? (
               <motion.span
                 className={`mb-[0.1em] block text-white ${LINE}`}
-                style={{ textShadow: "0 0 6px rgba(255,255,255,0.12)", ...CHALK_FILTER }}
+                style={CHALK_TEXT_STYLE}
                 initial={{ opacity: 0, y: 4 }}
                 animate={active ? { opacity: 1, y: 0 } : { opacity: 0 }}
                 transition={{ delay: 0.6 + i * 0.08, duration: 0.45 }}
@@ -225,10 +232,8 @@ function BeforeColumn({ active }: { active: boolean }) {
               className={`relative inline-block ${LINE}`}
               style={{
                 color: item.correction ? "rgba(255,255,255,0.34)" : "rgba(255,255,255,0.86)",
-                textShadow: "0 0 5px rgba(255,255,255,0.08)",
-                filter: item.correction
-                  ? "url(#chalk-texture) blur(0.45px)"
-                  : "url(#chalk-texture)",
+                ...CHALK_TEXT_STYLE,
+                ...(item.correction ? { opacity: 0.85 } : {}),
               }}
             >
               <span className="relative z-0">{item.text}</span>
@@ -270,7 +275,7 @@ function AfterColumn({ active }: { active: boolean }) {
           <ChalkTick />
           <span
             className={`text-white/90 ${LINE}`}
-            style={{ textShadow: "0 0 6px rgba(255,255,255,0.12)", ...CHALK_FILTER }}
+            style={CHALK_TEXT_STYLE}
           >
             {item.text}
             {item.line2 ? <span className="block pl-[2.4em]">{item.line2}</span> : null}
@@ -290,8 +295,14 @@ function ChalkDivider({ active }: { active: boolean }) {
     >
       <svg className="h-full w-full" viewBox="0 0 48 400" preserveAspectRatio="none" fill="none">
         <defs>
-          <filter id="chalk-rough-board">
-            <feTurbulence type="fractalNoise" baseFrequency="0.012 0.04" numOctaves={2} seed={7} result="n" />
+          <filter id="chalk-rough-board" x="-10%" y="-10%" width="120%" height="120%">
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.012 0.04"
+              numOctaves={2}
+              seed={7}
+              result="n"
+            />
             <feDisplacementMap in="SourceGraphic" in2="n" scale={5} />
           </filter>
         </defs>
@@ -325,14 +336,11 @@ export function BeforeAfterBoard() {
   const inView = useInView(ref, { once: true, amount: 0.3 });
 
   return (
-    <div className={`${chalk.className} mx-auto w-full max-w-[540px]`} ref={ref}>
-      {/* Filtro de textura de tiza para las letras (bordes irregulares, escrito a mano) */}
-      <svg className="pointer-events-none absolute h-0 w-0" aria-hidden focusable="false">
-        <filter id="chalk-texture" x="-10%" y="-10%" width="120%" height="120%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.78 0.92" numOctaves={2} seed={11} result="n" />
-          <feDisplacementMap in="SourceGraphic" in2="n" scale={1.6} xChannelSelector="R" yChannelSelector="G" />
-        </filter>
-      </svg>
+    <div
+      className={`${chalk.className} mx-auto w-full max-w-[540px]`}
+      style={{ fontFamily: chalk.style.fontFamily }}
+      ref={ref}
+    >
       {/* Marco de madera — sensación de objeto físico real */}
       <div
         className="relative rounded-[12px] p-[9px] sm:p-[11px]"
@@ -383,7 +391,7 @@ export function BeforeAfterBoard() {
             <div className="mb-6 grid grid-cols-2 items-end gap-6 sm:mb-8">
               <motion.h3
                 className="text-[clamp(1.3rem,4.4vw,2rem)] font-medium leading-none tracking-wide text-white/95"
-                style={{ textShadow: "0 0 10px rgba(255,255,255,0.14)", rotate: "-1.6deg", ...CHALK_FILTER }}
+                style={{ rotate: "-1.6deg", ...CHALK_TITLE_STYLE }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5 }}
@@ -392,7 +400,7 @@ export function BeforeAfterBoard() {
               </motion.h3>
               <motion.h3
                 className="pl-3 text-[clamp(1.3rem,4.4vw,2rem)] font-medium leading-none tracking-wide text-white/95 sm:pl-5"
-                style={{ textShadow: "0 0 10px rgba(255,255,255,0.14)", rotate: "1.3deg", ...CHALK_FILTER }}
+                style={{ rotate: "1.3deg", ...CHALK_TITLE_STYLE }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.08 }}
