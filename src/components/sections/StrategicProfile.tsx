@@ -66,8 +66,8 @@ const WA_SCRIPT: WaBlock[] = [
 ];
 
 const WA_PUNCHLINE = {
-  line1: "No perdiste un cliente.",
-  line2: "Llegaste tarde.",
+  line1: "No fue tu culpa.",
+  line2: "Solo llegaste tarde.",
 } as const;
 
 const EDITORIAL_FACTS = [
@@ -247,17 +247,31 @@ function EditorialFactsColumn() {
       {EDITORIAL_FACTS.map((fact, i) => (
         <motion.article
           key={fact.title}
-          className={`max-w-60 border-white/8 sm:max-w-65 lg:ml-0 lg:mr-0 lg:max-w-none lg:border-l lg:border-r-0 lg:pr-0 lg:pl-5 lg:text-left ${
+          className={`relative max-w-60 sm:max-w-65 lg:ml-0 lg:mr-0 lg:max-w-none lg:pl-5 lg:pr-0 lg:text-left ${
             i % 2 === 1
-              ? "ml-auto border-r pr-4 text-right sm:pr-5"
-              : "mr-auto border-l pl-4 text-left sm:pl-5"
+              ? "ml-auto pr-4 text-right sm:pr-5 lg:translate-x-3"
+              : "mr-auto pl-4 text-left sm:pl-5 lg:-translate-x-3"
           }`}
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.32, 1] }}
         >
+          {/* Rectángulo fino violeta (sustituye la antigua línea vertical) */}
+          <span
+            aria-hidden
+            className={`absolute inset-y-1 w-[3px] rounded-full bg-violet-400/55 shadow-[0_0_8px_rgba(167,139,250,0.35)] ${
+              i % 2 === 1 ? "right-0 lg:left-0 lg:right-auto" : "left-0"
+            }`}
+          />
           <h4 className="text-[clamp(1.35rem,2.8vw,2rem)] font-semibold leading-[1.05] tracking-[-0.04em] text-zinc-50/95">
-            {fact.title}
+            {i === EDITORIAL_FACTS.length - 1 ? (
+              <>
+                Cuando todo
+                <br className="lg:hidden" /> depende de ti,
+              </>
+            ) : (
+              fact.title
+            )}
           </h4>
           {fact.lines.length > 0 ? (
             <div className="mt-3 space-y-0.5">
@@ -346,16 +360,25 @@ export function StrategicProfile() {
             />
           </div>
 
-          {/* Fondo para móvil/tablet (la diagonal solo existe en lg). Lavado violeta
-              suave en diagonal para que no quede un negro plano. */}
-          <div
-            className="pointer-events-none absolute inset-0 z-0 lg:hidden"
-            style={{
-              background:
-                "linear-gradient(158deg, #0a0e18 0%, #110d22 42%, #1c1540 68%, #0a0d16 100%)",
-            }}
-            aria-hidden
-          />
+          {/* Fondo para móvil/tablet (la banda diagonal medida solo existe en lg).
+              Reproducimos la MISMA estética en diagonal "\" con los 3 colores. */}
+          <div className="pointer-events-none absolute inset-0 z-0 lg:hidden" aria-hidden>
+            {/* Panel gris */}
+            <div
+              className="absolute inset-0 bg-[#12151f]"
+              style={{ clipPath: "polygon(26% 0, 100% 0, 100% 100%, 60% 100%)" }}
+            />
+            {/* Bloque violeta */}
+            <div
+              className="absolute inset-0 bg-[#251c49]"
+              style={{ clipPath: "polygon(50% 0, 100% 0, 100% 100%, 84% 100%)" }}
+            />
+            {/* Banda violeta clara (acento) */}
+            <div
+              className="absolute inset-0 bg-[#3a2d6b]/55"
+              style={{ clipPath: "polygon(50% 0, 56% 0, 90% 100%, 84% 100%)" }}
+            />
+          </div>
 
           <DotPattern />
 
@@ -395,7 +418,7 @@ export function StrategicProfile() {
                       Las reservas no saben
                     </span>
                     <span className="block translate-x-4 lg:translate-x-0">
-                      que hoy era tu día libre.
+                      que <span className="text-violet-300/95">hoy era tu día libre.</span>
                     </span>
                     <span className="block -translate-x-4 lg:translate-x-0">
                       Los mensajes tampoco.
