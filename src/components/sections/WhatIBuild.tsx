@@ -305,7 +305,7 @@ export function WhatIBuild() {
                 <span aria-hidden className="pointer-events-none absolute bottom-0 right-0 h-4 w-4 border-b border-r border-white/25" />
                 <p className="font-serif text-[clamp(1.45rem,4.6vw,2.5rem)] font-normal leading-[1.22] tracking-[-0.02em] text-balance">
                   <span className="block text-zinc-100">
-                    No te voy prometer multiplicar todas tus ventas por diez.
+                    No puedo prometer multiplicar todas tus ventas por diez.
                   </span>
                   <span className="mt-7 block text-zinc-500">
                     Tampoco hacerte millonario antes del viernes.
