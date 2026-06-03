@@ -17,6 +17,10 @@ const JOBS = [
   { in: "public/programador.png", out: "public/programador.webp", quality: 92 },
   { in: "public/tienda.png", out: "public/tienda.webp", quality: 92 },
   { in: "public/gestoria.png", out: "public/gestoria.webp", quality: 92 },
+  { in: "public/commerce.PNG", out: "public/templates/commerce.webp", quality: 88, width: 640, height: 400 },
+  { in: "public/clinic.PNG", out: "public/templates/clinic.webp", quality: 88, width: 640, height: 400 },
+  { in: "public/restaurant.PNG", out: "public/templates/restaurant.webp", quality: 88, width: 640, height: 400 },
+  { in: "public/legal.PNG", out: "public/templates/legal.webp", quality: 88, width: 640, height: 400 },
   {
     in: "public/logos/LogoAGItheCreator.png",
     out: "public/logos/LogoAGItheCreator.webp",
@@ -32,9 +36,10 @@ for (const job of JOBS) {
 
   let pipeline = sharp(input);
   if (job.width) {
-    pipeline = pipeline.resize(job.width, null, {
-      fit: "inside",
-      withoutEnlargement: true,
+    pipeline = pipeline.resize(job.width, job.height ?? null, {
+      fit: job.height ? "cover" : "inside",
+      position: job.height ? "top" : "center",
+      withoutEnlargement: !job.height,
     });
   }
 

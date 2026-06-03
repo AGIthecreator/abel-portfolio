@@ -54,6 +54,33 @@ const PRICING_TIERS = [
   },
 ] as const;
 
+const TEMPLATE_DEMOS = [
+  {
+    name: "Comercio Local",
+    description: "Plantilla preparada para comercios y negocios de proximidad.",
+    href: "https://commerce.agithecreator.com",
+    image: "/templates/commerce.webp",
+  },
+  {
+    name: "Clínica",
+    description: "Diseñada para consultas, clínicas y centros sanitarios.",
+    href: "https://clinic.agithecreator.com",
+    image: "/templates/clinic.webp",
+  },
+  {
+    name: "Restaurante",
+    description: "Pensada para restaurantes, cafeterías y hostelería.",
+    href: "https://restaurant.agithecreator.com",
+    image: "/templates/restaurant.webp",
+  },
+  {
+    name: "Legal",
+    description: "Creada para despachos y profesionales jurídicos.",
+    href: "https://legal.agithecreator.com",
+    image: "/templates/legal.webp",
+  },
+] as const;
+
 /** Barra bajo el titular del manifiesto: 80% del ancho del título; 80% casi negro + 20% hueso (como FAQ). */
 function ManifestoHeadlineAccentBar() {
   return (
@@ -178,6 +205,81 @@ function PricingTierBlock({
         ) : null}
       </AnimatePresence>
     </article>
+  );
+}
+
+/** Barra editorial bajo el titular de plantillas (violeta + blanco). */
+function TemplateHeadlineAccentBar() {
+  return (
+    <div
+      aria-hidden
+      className="mt-3 flex h-1.5 w-[80%] max-w-full overflow-hidden sm:mt-3.5 sm:h-2"
+    >
+      <span className="h-full w-[80%] shrink-0 bg-violet-400/80" />
+      <span className="h-full w-[20%] shrink-0 bg-[#F3F1EB]" />
+    </div>
+  );
+}
+
+function TemplateDemoCard({
+  name,
+  description,
+  href,
+  image,
+}: {
+  name: string;
+  description: string;
+  href: string;
+  image: string;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group relative flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#131b2a]"
+    >
+      <div className="relative aspect-16/10 overflow-hidden border border-white/8 bg-[#070b13] shadow-[0_18px_44px_-28px_rgba(0,0,0,0.9)] transition-[border-color,box-shadow] duration-400 ease-out group-hover:border-violet-400/20 group-hover:shadow-[0_22px_52px_-26px_rgba(80,50,200,0.22)]">
+        <Image
+          src={image}
+          alt={`Vista previa de la plantilla ${name}`}
+          fill
+          sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 25vw"
+          className="object-cover object-top saturate-[0.94] transition-[filter,transform] duration-500 ease-out group-hover:saturate-100"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#0c121c] via-[#0c121c]/25 to-transparent"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-400 group-hover:opacity-100"
+          style={{
+            background:
+              "radial-gradient(circle at 12% 18%, rgba(80, 50, 200, 0.12), transparent 48%), radial-gradient(circle at 88% 82%, rgba(0, 200, 255, 0.08), transparent 42%)",
+          }}
+        />
+        <span
+          aria-hidden
+          className="absolute top-0 left-0 h-full w-px bg-linear-to-b from-violet-300/50 via-violet-400/15 to-cyan-300/25 opacity-70"
+        />
+      </div>
+
+      <div className="mt-3.5 flex flex-1 flex-col gap-2 border-t border-white/6 pt-3.5 sm:mt-4 sm:pt-4">
+        <h3 className="font-serif text-[1.05rem] font-normal leading-snug tracking-[-0.02em] text-[#F3F1EB] sm:text-[1.12rem]">
+          {name}
+        </h3>
+        <p className="flex-1 text-[12px] leading-[1.65] text-zinc-500 sm:text-[13px] sm:leading-[1.7]">
+          {description}
+        </p>
+        <span className="inline-flex items-center gap-2 pt-0.5 font-mono text-[11px] leading-none text-violet-200/55 transition-colors duration-200 group-hover:text-violet-200/90 sm:text-[12px]">
+          <span aria-hidden className="text-zinc-600 transition-colors group-hover:text-violet-300/75">
+            &gt;
+          </span>
+          Ver demo
+        </span>
+      </div>
+    </a>
   );
 }
 
@@ -317,6 +419,55 @@ export function Pricing() {
               </FadeIn>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Plantillas — alternativa secundaria, mismo bloque visual que precios */}
+      <section
+        className="relative z-10 border-t border-white/5"
+        aria-labelledby="pricing-templates-heading"
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{ background: FAQ_SURFACE }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-80"
+          style={{
+            background:
+              "radial-gradient(circle at 18% 20%, rgba(80, 50, 200, 0.06), transparent 42%), radial-gradient(circle at 82% 78%, rgba(0, 200, 255, 0.04), transparent 40%)",
+          }}
+        />
+
+        <div className="relative mx-auto w-full max-w-6xl px-4 pt-10 pb-12 sm:px-6 sm:pt-12 sm:pb-14 lg:px-10 lg:pt-14 lg:pb-16">
+          <FadeIn>
+            <div className="w-fit max-w-full">
+              <h2
+                id="pricing-templates-heading"
+                className="font-serif text-[clamp(1.25rem,2.8vw,1.55rem)] font-normal leading-[1.14] tracking-[-0.03em] text-[#F3F1EB]"
+              >
+                ¿Necesitas algo más sencillo?
+              </h2>
+              <TemplateHeadlineAccentBar />
+            </div>
+            <p className="mt-5 max-w-[650px] text-[15px] leading-[1.8] sm:text-base sm:leading-[1.85]">
+              <span className="text-violet-200/75">
+                No todos los negocios necesitan una web hecha desde cero.
+              </span>{" "}
+              <span className="text-zinc-400">
+                Si buscas una solución más rápida y económica, también dispongo de plantillas
+                profesionales listas para adaptar a tu negocio.
+              </span>
+            </p>
+
+            <div className="mt-9 grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-9 lg:mt-11 lg:grid-cols-4 lg:gap-x-4">
+              {TEMPLATE_DEMOS.map((demo) => (
+                <TemplateDemoCard key={demo.name} {...demo} />
+              ))}
+            </div>
+          </FadeIn>
         </div>
       </section>
 
