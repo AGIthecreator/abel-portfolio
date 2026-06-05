@@ -81,6 +81,33 @@ const TEMPLATE_DEMOS = [
   },
 ] as const;
 
+/** Franjas diagonales con los 3 colores del hero de la página principal
+    (gris #12151f · morado #251c49 · banda violeta #3a2d6b/55), ancladas a la
+    derecha. `flip` invierte verticalmente el patrón para encadenar el espejo:
+    - flip=false → gris 63%(arriba) → 45%(abajo)  (como el hero principal)
+    - flip=true  → gris 45%(arriba) → 63%(abajo)  (reflejo que continúa el zig-zag)
+    Las costuras (45 / 63 · 61 / 79) coinciden de un bloque al siguiente aunque haya
+    bloques sin franjas en medio. */
+function DiagonalStripes({ flip = false }: { flip?: boolean }) {
+  const gray = flip
+    ? "polygon(45% 0, 100% 0, 100% 100%, 63% 100%)"
+    : "polygon(63% 0, 100% 0, 100% 100%, 45% 100%)";
+  const purple = flip
+    ? "polygon(61% 0, 100% 0, 100% 100%, 79% 100%)"
+    : "polygon(79% 0, 100% 0, 100% 100%, 61% 100%)";
+  const violet = flip
+    ? "polygon(61% 0, 64% 0, 82% 100%, 79% 100%)"
+    : "polygon(79% 0, 82% 0, 64% 100%, 61% 100%)";
+
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+      <div className="absolute inset-0 bg-[#12151f]" style={{ clipPath: gray }} />
+      <div className="absolute inset-0 bg-[#251c49]" style={{ clipPath: purple }} />
+      <div className="absolute inset-0 bg-[#3a2d6b]/55" style={{ clipPath: violet }} />
+    </div>
+  );
+}
+
 /** Barra bajo el titular del manifiesto: 80% del ancho del título; 80% casi negro + 20% hueso (como FAQ). */
 function ManifestoHeadlineAccentBar() {
   return (
@@ -303,10 +330,12 @@ export function Pricing() {
     <div className="relative min-h-screen bg-[#070b13] text-zinc-300">
       {/* Hero — dos columnas, compacto */}
       <section
-        className="relative z-10 bg-[#070b13] px-4 pb-8 pt-24 sm:px-6 sm:pb-10 sm:pt-28 lg:px-10 lg:pb-12 lg:pt-32"
+        className="relative z-10 overflow-hidden bg-[#070b13] px-4 pb-8 pt-24 sm:px-6 sm:pb-10 sm:pt-28 lg:px-10 lg:pb-12 lg:pt-32"
         aria-labelledby="pricing-hero-heading"
       >
-        <FadeIn className="relative mx-auto w-full max-w-6xl">
+        <DiagonalStripes />
+
+        <FadeIn className="relative z-10 mx-auto w-full max-w-6xl">
           <h1
             id="pricing-hero-heading"
             className="text-center font-serif text-[clamp(2.35rem,6.5vw,3.85rem)] font-normal leading-[1.04] tracking-[-0.038em] text-[#f2f0ec]"
@@ -352,9 +381,9 @@ export function Pricing() {
         </FadeIn>
       </section>
 
-      {/* Precios — fondo más claro, dos columnas */}
+      {/* Precios — fondo más claro, dos columnas (sin franjas) */}
       <section
-        className="relative z-10"
+        className="relative z-10 -mt-px"
         aria-labelledby="pricing-editorial-heading"
       >
         <div
@@ -422,13 +451,14 @@ export function Pricing() {
         </div>
       </section>
 
-      {/* Plantillas — texto en fondo oscuro, cards en superficie editorial */}
+      {/* Plantillas — texto en fondo oscuro (con franjas, espejo), cards en superficie editorial (sin franjas) */}
       <section
-        className="relative z-10 border-t border-white/5"
+        className="relative z-10 -mt-px"
         aria-labelledby="pricing-templates-heading"
       >
-        <div className="relative bg-[#070b13]">
-          <div className="relative mx-auto w-full max-w-6xl px-4 pt-10 pb-10 sm:px-6 sm:pt-12 sm:pb-12 lg:px-10 lg:pt-14 lg:pb-14">
+        <div className="relative overflow-hidden bg-[#070b13]">
+          <DiagonalStripes flip />
+          <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-10 pb-10 sm:px-6 sm:pt-12 sm:pb-12 lg:px-10 lg:pt-14 lg:pb-14">
             <FadeIn>
               <div className="w-fit max-w-full">
                 <h2
@@ -452,7 +482,7 @@ export function Pricing() {
           </div>
         </div>
 
-        <div className="relative">
+        <div className="relative -mt-px">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0"
@@ -479,12 +509,14 @@ export function Pricing() {
         </div>
       </section>
 
-      {/* Manifiesto — mismo fondo plano que el hero */}
+      {/* Manifiesto — fondo oscuro del hero (con franjas, continúa el espejo) */}
       <section
-        className="relative z-10 overflow-hidden bg-[#070b13]"
+        className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
         aria-labelledby="pricing-manifesto-heading"
       >
-        <FadeIn className="relative mx-auto w-full max-w-3xl px-4 py-20 sm:px-6 sm:py-24 lg:px-10 lg:py-28">
+        <DiagonalStripes />
+
+        <FadeIn className="relative z-10 mx-auto w-full max-w-3xl px-4 py-20 sm:px-6 sm:py-24 lg:px-10 lg:py-28">
           <div className="relative text-center">
             <div className="relative mx-auto w-fit max-w-full">
               <h2
@@ -527,18 +559,14 @@ export function Pricing() {
         </FadeIn>
       </section>
 
-      {/* Claridad */}
+      {/* Claridad — fondo oscuro del hero (con franjas, cierra el espejo) */}
       <section
-        className="relative z-10 overflow-x-clip border-t border-white/5"
+        className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
         aria-labelledby="pricing-clarity-heading"
       >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{ background: FAQ_SURFACE }}
-        />
+        <DiagonalStripes flip />
 
-        <FadeIn className="relative mx-auto w-full max-w-xl px-4 py-14 text-center sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+        <FadeIn className="relative z-10 mx-auto w-full max-w-xl px-4 py-14 text-center sm:px-6 sm:py-16 lg:px-10 lg:py-20">
           <h2
             id="pricing-clarity-heading"
             className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em]"

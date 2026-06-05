@@ -398,7 +398,7 @@ function FaqDisclosure({
 
 export function ComoTrabajamos() {
   const { openModal } = useContactModal();
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const handleCta = useCallback(
     (location: string) => {
