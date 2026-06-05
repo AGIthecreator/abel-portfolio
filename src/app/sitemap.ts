@@ -13,6 +13,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.85,
     },
     {
+      url: "https://agithecreator.com/como-trabajamos",
+      lastModified: new Date(),
+      priority: 0.85,
+    },
+    {
       url: "https://agithecreator.com/blog",
       lastModified: new Date(),
       priority: 0.8,

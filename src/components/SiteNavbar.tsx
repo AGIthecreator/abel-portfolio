@@ -11,7 +11,7 @@ import { handleSectionNavClick } from "@/lib/scroll-to-section";
 
 const NAV = [
   { href: "#entregables", label: "Por qué yo", section: true },
-  { href: "#perfil", label: "Cómo funciona", section: true },
+  { href: "/como-trabajamos", label: "Cómo funciona", section: false },
   { href: "/precios", label: "Precios", section: false },
   { label: "Contacto", opensContact: true },
 ] as const;
