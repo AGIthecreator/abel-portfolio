@@ -20,13 +20,13 @@ const navLinkClass =
   "pointer-events-auto group relative whitespace-nowrap py-1 text-[15px] font-medium tracking-[-0.015em] text-zinc-300 no-underline transition-colors duration-200 hover:text-zinc-100";
 
 const navLinkClassMobile =
-  "group relative py-0.5 text-[14px] font-medium tracking-[-0.01em] text-zinc-400 no-underline transition-colors hover:text-zinc-200";
+  "group relative min-h-9 inline-flex items-center py-1 text-[12.5px] font-medium tracking-[-0.01em] text-zinc-400 no-underline transition-colors hover:text-zinc-200 sm:text-[13px]";
 
 const navUnderlineClass =
   "pointer-events-none absolute -bottom-0.5 left-1/2 h-0.5 w-[2.35rem] max-w-[70%] -translate-x-1/2 origin-center scale-x-0 bg-emerald-500/90 transition-transform duration-300 ease-out motion-safe:group-hover:scale-x-100";
 
 const navUnderlineClassMobile =
-  "pointer-events-none absolute -bottom-px left-1/2 h-0.5 w-8 -translate-x-1/2 origin-center scale-x-0 bg-emerald-500/90 transition-transform duration-300 ease-out motion-safe:group-hover:scale-x-100";
+  "pointer-events-none absolute -bottom-px left-1/2 h-0.5 w-7 -translate-x-1/2 origin-center scale-x-0 bg-emerald-500/90 transition-transform duration-300 ease-out motion-safe:group-hover:scale-x-100";
 
 /** Estado en inicio — idéntico al navbar aprobado. */
 const NAV_BAR_BG_TOP: CSSProperties = {
@@ -43,7 +43,8 @@ const NAV_BAR_BG_SCROLLED: CSSProperties = {
 };
 
 /**
- * Altura de marca = fila `h-16`. Tamaño real: `#navbar-brand-link` / `#navbar-brand-logo-img` al final de globals.css (sin @layer).
+ * Altura de marca: `h-12` en móvil (compacto), `h-16` en desktop.
+ * Tamaño real del logo: `#navbar-brand-link` / `#navbar-brand-logo-img` en globals.css.
  */
 export function SiteNavbar() {
   const pathname = usePathname();
@@ -118,7 +119,7 @@ export function SiteNavbar() {
 
   return (
     <header
-      className="fixed inset-x-0 top-0 z-100 border-b border-white/5 transition-[border-color,background-color,backdrop-filter] duration-300 ease-out"
+      className="site-navbar fixed inset-x-0 top-0 z-100 border-b border-white/5 transition-[border-color,background-color,backdrop-filter] duration-300 ease-out"
       style={scrolled ? NAV_BAR_BG_SCROLLED : NAV_BAR_BG_TOP}
     >
       <nav
@@ -128,7 +129,7 @@ export function SiteNavbar() {
         {NAV.map((item) => renderNavItem(item, navLinkClass, navUnderlineClass))}
       </nav>
 
-      <div className="relative mx-auto grid h-16 min-h-16 max-h-16 w-full max-w-[1580px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 px-4 sm:gap-x-4 sm:px-8 lg:px-12">
+      <div className="relative mx-auto grid h-12 min-h-12 max-h-12 w-full max-w-[1580px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 px-3 sm:gap-x-4 sm:px-6 lg:h-16 lg:min-h-16 lg:max-h-16 lg:px-12">
         <div className="min-w-0">
           <Link
             id="navbar-brand-link"
@@ -146,7 +147,7 @@ export function SiteNavbar() {
               priority
               fetchPriority="high"
               quality={80}
-              sizes="(max-width: 1023px) 116px, 200px"
+              sizes="(max-width: 1023px) 100px, 200px"
             />
           </Link>
         </div>
@@ -155,7 +156,7 @@ export function SiteNavbar() {
         <div className="min-h-0 min-w-0" aria-hidden />
       </div>
 
-      <div className="site-navbar-mobile-row mx-auto flex max-w-[1580px] flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-white/5 px-5 pb-2.5 pt-2 sm:px-8 sm:gap-x-5 lg:hidden">
+      <div className="site-navbar-mobile-row mx-auto flex max-w-[1580px] flex-wrap items-center justify-center gap-x-3 gap-y-0 border-t border-white/5 px-3 pb-1.5 pt-1 sm:gap-x-4 sm:px-6 lg:hidden">
         {NAV.map((item) => renderNavItem(item, navLinkClassMobile, navUnderlineClassMobile))}
       </div>
     </header>

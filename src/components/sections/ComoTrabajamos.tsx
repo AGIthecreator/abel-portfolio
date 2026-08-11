@@ -12,9 +12,9 @@ import {
 } from "lucide-react";
 import { Manrope, Newsreader } from "next/font/google";
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useId, useState } from "react";
 import { FadeIn } from "@/components/motion/FadeIn";
-import { useContactModal } from "@/components/contact/ContactModalContext";
 import { trackEvent } from "@/lib/analytics";
 
 const display = Newsreader({
@@ -168,13 +168,15 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 
 function PrimaryCta({
   label,
+  href,
   onClick,
 }: {
   label: string;
-  onClick: () => void;
+  href: string;
+  onClick?: () => void;
 }) {
   return (
-    <button type="button" onClick={onClick} className={PRIMARY_CTA}>
+    <Link href={href} onClick={onClick} className={PRIMARY_CTA}>
       <span
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0))] opacity-80 transition-opacity duration-300 group-hover:opacity-100"
@@ -184,7 +186,7 @@ function PrimaryCta({
         className="pointer-events-none absolute inset-x-3 bottom-0 h-px bg-[linear-gradient(90deg,transparent,rgba(167,139,250,0.55),transparent)] opacity-60 transition-opacity duration-300 group-hover:opacity-100"
       />
       <span className="relative z-10">{label}</span>
-    </button>
+    </Link>
   );
 }
 
@@ -397,24 +399,19 @@ function FaqDisclosure({
 }
 
 export function ComoTrabajamos() {
-  const { openModal } = useContactModal();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  const handleCta = useCallback(
-    (location: string) => {
-      trackEvent("como_trabajamos_cta_click", { location });
-      openModal();
-    },
-    [openModal],
-  );
+  const handleCta = useCallback((location: string) => {
+    trackEvent("como_trabajamos_cta_click", { location });
+  }, []);
 
   return (
     <div
-      className={`${display.variable} ${ui.variable} relative bg-[#070b13] font-(family-name:--font-ct-ui) text-zinc-300`}
+      className={`${display.variable} ${ui.variable} relative overflow-x-clip bg-[#070b13] font-(family-name:--font-ct-ui) text-zinc-300`}
     >
       {/* ───────────────────────── HERO ───────────────────────── */}
       <section
-        className="relative isolate w-full overflow-hidden bg-[#070b13] pt-24 pb-0 sm:pt-28 lg:pt-20"
+        className="ct-hero relative isolate w-full overflow-x-clip overflow-y-hidden bg-[#070b13] pt-[5.25rem] pb-0 sm:pt-24 lg:pt-20"
         aria-labelledby="ct-hero-heading"
       >
         {/* Fondo como el hero principal: grano editorial + viñeta */}
@@ -438,13 +435,13 @@ export function ComoTrabajamos() {
         </div>
 
         <div className="relative z-10 mx-auto flex w-full max-w-[1320px] items-center px-5 sm:px-8 lg:min-h-[70vh] lg:px-10">
-          <div className="grid w-full items-center gap-8 lg:grid-cols-2">
-            <div className="max-w-136 py-12 sm:py-16 lg:py-20">
+          <div className="grid w-full items-center gap-6 lg:grid-cols-2 lg:gap-8">
+            <div className="ct-hero-copy max-w-136 py-8 sm:py-14 lg:py-20">
               <Eyebrow>Cómo trabajamos</Eyebrow>
 
               <h1
                 id="ct-hero-heading"
-                className="mt-5 font-(family-name:--font-ct-display) text-[clamp(1.75rem,4.6vw,2.85rem)] font-medium leading-[1.07] tracking-[-0.015em] text-neutral-50"
+                className="mt-4 font-(family-name:--font-ct-display) text-[clamp(1.65rem,4.6vw,2.85rem)] font-medium leading-[1.07] tracking-[-0.015em] text-neutral-50 sm:mt-5"
               >
                 <span className="block">No necesitas saber de webs.</span>
                 <span className="block text-zinc-400">
@@ -453,16 +450,20 @@ export function ComoTrabajamos() {
                 </span>
               </h1>
 
-              <div className="mt-6 max-w-[44ch] space-y-3.5 text-[15px] leading-[1.7] text-neutral-400/95">
+              <div className="mt-5 max-w-[44ch] space-y-3 text-[15px] leading-[1.7] text-neutral-400/95 sm:mt-6 sm:space-y-3.5">
                 <p>Diseñar una web no debería sentirse como contratar magia negra.</p>
-                <p>
+                <p className="ct-hero-extra-copy hidden lg:block">
                   Te explico el proceso desde el principio para que siempre sepas qué
                   estamos haciendo y por qué.
                 </p>
               </div>
 
-              <div className="mt-7">
-                <PrimaryCta label="Cuéntame tu proyecto" onClick={() => handleCta("hero")} />
+              <div className="mt-6 sm:mt-7">
+                <PrimaryCta
+                  label="Cuéntame tu proyecto"
+                  href="/presupuesto"
+                  onClick={() => handleCta("hero")}
+                />
               </div>
             </div>
 
@@ -471,7 +472,10 @@ export function ComoTrabajamos() {
         </div>
 
         {/* Imagen del setup a sangre (móvil, debajo del texto) */}
-        <div className="relative z-10 h-[280px] w-full sm:h-[360px] lg:hidden" aria-hidden>
+        <div
+          className="ct-hero-mobile-image relative z-10 h-[200px] w-full sm:h-[300px] lg:hidden"
+          aria-hidden
+        >
           <SetupDuotone />
         </div>
       </section>
@@ -732,7 +736,11 @@ export function ComoTrabajamos() {
           </div>
 
           <div className="mt-9 flex justify-center">
-            <PrimaryCta label="Cuéntame tu proyecto" onClick={() => handleCta("cierre")} />
+            <PrimaryCta
+              label="Cuéntame tu proyecto"
+              href="/presupuesto"
+              onClick={() => handleCta("cierre")}
+            />
           </div>
         </FadeIn>
       </section>

@@ -5,7 +5,7 @@ import { NotFoundMascot } from "@/components/not-found/NotFoundMascot";
 export const metadata: Metadata = {
   title: "Página no encontrada | AGI TheCreator",
   description:
-    "Esta ruta no existe. Vuelve al inicio o explora los proyectos de AGI TheCreator.",
+    "Esta ruta no existe. Vuelve al inicio o consulta precios y servicios de AGI TheCreator.",
   robots: {
     index: false,
     follow: false,
@@ -56,8 +56,8 @@ export default function NotFound() {
           <Link href="/" className={PRIMARY_BTN}>
             Volver al inicio
           </Link>
-          <Link href="/#proyectos" className={SECONDARY_LINK}>
-            Ver proyectos
+          <Link href="/precios" className={SECONDARY_LINK}>
+            Ver precios
           </Link>
         </div>
       </div>

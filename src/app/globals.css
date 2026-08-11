@@ -497,7 +497,7 @@ next-route-announcer,
 
 /*
  * SiteNavbar — logo (FUERA de @layer).
- * - Logo: alto visual calc(4rem - 18px) — más aire arriba/abajo dentro de la fila h-16.
+ * Desktop: fila h-16. Móvil: fila h-12 (navbar más compacta → más fold útil).
  */
 #navbar-brand-link {
   align-self: stretch !important;
@@ -521,18 +521,18 @@ next-route-announcer,
   object-position: left center !important;
 }
 
-/* Móvil / tablet: escala el logo por altura (ancho proporcional, sin recortar) */
+/* Móvil / tablet: logo proporcional a la fila h-12 */
 @media (max-width: 1023px) {
   #navbar-brand-link {
-    max-height: 2.75rem !important;
+    max-height: 3rem !important;
     min-width: 0 !important;
     flex-shrink: 1 !important;
   }
 
   #navbar-brand-logo-img {
-    height: calc(2.5rem - 1px) !important;
+    height: 1.85rem !important;
     min-height: 0 !important;
-    max-height: calc(2.5rem - 1px) !important;
+    max-height: 1.85rem !important;
     width: auto !important;
     max-width: none !important;
   }
@@ -666,15 +666,20 @@ next-route-announcer,
     }
   }
 
-  /* Portrait estrecho: el logo compite con nav + email — se oculta */
+  /* Portrait estrecho: logo más pequeño (sigue visible para identidad de marca) */
   @media (max-width: 480px) and (orientation: portrait) {
     #footer-brand-link {
-      display: none;
+      display: flex;
+    }
+
+    #footer-brand-logo-img {
+      height: 2.35rem;
+      max-height: 2.5rem;
     }
 
     .footer-anchor {
-      gap: 0;
-      padding-top: 0.75rem;
+      gap: 0.5rem;
+      padding-top: 0.5rem;
     }
   }
 
@@ -719,8 +724,8 @@ next-route-announcer,
   }
 
   #footer-brand-logo-img {
-    height: 11.55rem;
-    max-height: 12.75rem;
+    height: 2.5rem;
+    max-height: 2.75rem;
     width: auto;
     object-position: left center;
     transform: none;
@@ -736,9 +741,9 @@ next-route-announcer,
   }
 
   .site-navbar-mobile-row {
-    padding-top: 0.35rem;
-    padding-bottom: 0.35rem;
-    gap: 0.25rem 1rem;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    gap: 0.15rem 0.75rem;
   }
 
   .manifesto-line {
@@ -749,6 +754,108 @@ next-route-announcer,
 
   #perfil .wa-chaos-iphone {
     left: 62% !important;
+  }
+
+  /*
+   * Hero home — landscape móvil/tablet: composición en 2 columnas para que
+   * copy + CTAs queden en el primer viewport (antes el stack vertical ≈800px).
+   */
+  .hero-editorial {
+    padding-top: 3.75rem !important;
+    padding-bottom: 0.35rem !important;
+  }
+
+  .hero-editorial .hero-layout-grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) !important;
+    gap: 0.65rem 0.85rem !important;
+    align-items: center !important;
+  }
+
+  .hero-editorial .hero-copy-enter {
+    gap: 0.55rem !important;
+  }
+
+  .hero-editorial .hero-copy-enter > .hero-support-secondary {
+    display: none !important;
+  }
+
+  .hero-editorial .hero-cta-row {
+    padding-top: 0.15rem !important;
+    gap: 0.4rem !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .hero-editorial .hero-cta-row > button {
+    min-height: 2.25rem !important;
+    padding: 0.4rem 0.7rem !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+  }
+
+  .hero-editorial .hero-scene {
+    max-width: min(100%, 300px) !important;
+  }
+
+  /* Cómo trabajamos — landscape: copy compacto + imagen lateral baja */
+  .ct-hero {
+    padding-top: 3.5rem !important;
+  }
+
+  .ct-hero .ct-hero-copy {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  .ct-hero .ct-hero-copy h1 {
+    margin-top: 0.65rem !important;
+    font-size: clamp(1.35rem, 3.8vw, 1.85rem) !important;
+  }
+
+  .ct-hero .ct-hero-mobile-image {
+    height: 72px !important;
+  }
+
+  .ct-hero .ct-hero-extra-copy {
+    display: none !important;
+  }
+
+  /* Precios — landscape: hero más bajo; mascota oculta para acercar tiers */
+  .pricing-hero {
+    padding-top: 3.75rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  .pricing-hero .pricing-hero-mascot {
+    display: none !important;
+  }
+
+  .pricing-hero h1 {
+    font-size: clamp(1.45rem, 4.2vw, 2.1rem) !important;
+  }
+
+  .pricing-offer-copy {
+    position: static !important;
+    top: auto !important;
+  }
+}
+
+/* Hero home — portrait corto: menos aire, CTAs no pegados al borde */
+@media (max-width: 1023px) and (orientation: portrait) and (max-height: 740px) {
+  .hero-editorial {
+    padding-top: 5.25rem !important;
+    padding-bottom: 0.65rem !important;
+  }
+
+  .hero-editorial .hero-layout-grid {
+    gap: 0.85rem !important;
+  }
+
+  .hero-editorial .hero-copy-enter {
+    gap: 0.65rem !important;
+  }
+
+  .hero-editorial .hero-support-secondary {
+    display: none !important;
   }
 }
 

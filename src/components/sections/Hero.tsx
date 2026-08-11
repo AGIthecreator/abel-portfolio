@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { Manrope, Newsreader } from "next/font/google";
 import Image from "next/image";
+import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -19,7 +20,6 @@ import {
   type RefObject,
 } from "react";
 import { LuckyEasterEggModal } from "@/components/ui/LuckyEasterEggModal";
-import { useContactModal } from "@/components/contact/ContactModalContext";
 import { trackEvent } from "@/lib/analytics";
 
 const heroDisplay = Newsreader({
@@ -260,16 +260,12 @@ function WinControlsDecorative({ variant }: { variant: "light" | "dark" | "chrom
     variant === "dark" ? "border-white/20" : variant === "chrome" ? "border-neutral-400/65" : "border-white/30";
   const text = variant === "dark" ? "text-neutral-400" : "text-neutral-600";
   return (
-    <div className={`flex items-center ${text}`}>
-      <button type="button" tabIndex={-1} aria-hidden className="flex h-6 w-7 items-center justify-center text-sm leading-none">
-        -
-      </button>
-      <button type="button" tabIndex={-1} aria-hidden className="flex h-6 w-7 items-center justify-center">
+    <div className={`pointer-events-none flex items-center ${text}`} aria-hidden>
+      <span className="flex h-6 w-7 items-center justify-center text-sm leading-none">-</span>
+      <span className="flex h-6 w-7 items-center justify-center">
         <span className={`inline-block h-2 w-2 border ${line}`} />
-      </button>
-      <button type="button" tabIndex={-1} aria-hidden className="flex h-6 w-8 items-center justify-center text-xs leading-none">
-        ×
-      </button>
+      </span>
+      <span className="flex h-6 w-8 items-center justify-center text-xs leading-none">×</span>
     </div>
   );
 }
@@ -864,7 +860,6 @@ function scrollToPerfil() {
 }
 
 export function Hero() {
-  const { openModal } = useContactModal();
   const reduceMotion = usePrefersReducedMotion();
 
   const handlePrimaryCta = () => {
@@ -872,14 +867,13 @@ export function Hero() {
     scrollToPerfil();
   };
 
-  const handleSecondaryCta = () => {
+  const handleCommercialCta = () => {
     trackEvent("hero_cta_click", { location: "hero", action: "cuentame" });
-    openModal();
   };
 
   return (
     <section
-      className={`${heroDisplay.variable} ${heroUi.variable} hero-editorial relative isolate z-30 w-full overflow-hidden bg-[#070b13] pt-24 pb-5 sm:pt-28 sm:pb-7 lg:pt-20 lg:pb-8`}
+      className={`${heroDisplay.variable} ${heroUi.variable} hero-editorial relative isolate z-30 w-full overflow-x-clip overflow-y-hidden bg-[#070b13] pt-[5.25rem] pb-4 sm:pt-24 sm:pb-6 lg:pt-20 lg:pb-8`}
     >
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
         {/* Atmósfera izquierda: base oscura, limpia, editorial */}
@@ -929,37 +923,37 @@ export function Hero() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,transparent_56%,rgba(0,0,0,0.45)_100%)]" />
       </div>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1320px] min-h-0 items-center px-5 py-4 sm:px-8 sm:py-5 lg:max-h-[78vh] lg:px-10 lg:py-6">
-        <div className="grid w-full min-w-0 items-center gap-7 max-lg:gap-6 lg:grid-cols-[46%_54%] lg:gap-9 xl:gap-11">
-          <div className="hero-copy-enter relative z-20 max-w-[min(100%,540px)] space-y-4 lg:space-y-4.5">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1320px] min-h-0 items-center px-4 py-3 sm:px-8 sm:py-5 lg:max-h-[78vh] lg:px-10 lg:py-6">
+        <div className="hero-layout-grid grid w-full min-w-0 items-center gap-5 max-lg:gap-5 lg:grid-cols-[46%_54%] lg:gap-9 xl:gap-11">
+          <div className="hero-copy-enter relative z-20 flex max-w-[min(100%,540px)] flex-col gap-3.5 sm:gap-4 lg:gap-4.5">
             <p className="font-(family-name:--font-hero-ui) inline-flex w-fit border border-white/11 bg-white/3 px-2.5 py-1 text-[7.5px] font-semibold uppercase tracking-[0.16em] text-neutral-500 sm:text-[8px]">
               Diseño web y automatización para negocios en Valladolid
             </p>
 
-            <h1 className="m-0 font-(family-name:--font-hero-display) text-[clamp(1.95rem,5.4vw,3.05rem)] font-medium leading-[1.05] tracking-[-0.015em] text-neutral-50">
+            <h1 className="m-0 font-(family-name:--font-hero-display) text-[clamp(1.75rem,5.2vw,3.05rem)] font-medium leading-[1.05] tracking-[-0.015em] text-neutral-50">
               <span className="block">
                 <span className="text-zinc-500">Tu negocio</span> ya tiene
               </span>
               <span className="block">suficiente trabajo encima.</span>
             </h1>
 
-            <p className="max-w-136 pt-2.5 font-(family-name:--font-hero-ui) text-[clamp(0.92rem,1.4vw,1.02rem)] font-normal leading-[1.55] text-neutral-400/95">
+            <p className="hero-support-primary max-w-136 font-(family-name:--font-hero-ui) text-[clamp(0.88rem,1.4vw,1.02rem)] font-normal leading-[1.5] text-neutral-400/95">
               <span className="text-violet-300/95">Cinco</span> ventanas abiertas,{" "}
               <span className="text-violet-300/95">tres</span> cosas pendientes y{" "}
               <span className="text-violet-300/95">un</span> cliente llamando desde hace media hora.
             </p>
 
-            <p className="max-w-136 font-(family-name:--font-hero-ui) text-[clamp(0.92rem,1.4vw,1.02rem)] font-normal leading-[1.55] text-neutral-300/92">
+            <p className="hero-support-secondary max-w-136 font-(family-name:--font-hero-ui) text-[clamp(0.88rem,1.4vw,1.02rem)] font-normal leading-[1.5] text-neutral-300/92">
               Hay partes del negocio que deberían{" "}
               <span className="text-violet-300/95 italic">funcionar solas</span>. Y sí, bastante antes de
               que acabes sudando como el pavo de al lado.
             </p>
 
-            <div className="flex flex-wrap items-center gap-2.5 pt-1">
+            <div className="hero-cta-row flex flex-wrap items-center gap-2.5 pt-0.5">
               <button
                 type="button"
                 onClick={handlePrimaryCta}
-                className="group font-(family-name:--font-hero-ui) relative inline-flex min-h-10 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-[rgba(150,142,180,0.26)] bg-[linear-gradient(180deg,#34343b_0%,#1d1d22_44%,#141417_56%,#0b0b0d_100%)] px-4 py-2.5 text-[13px] font-semibold text-white/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.55),0_6px_18px_-9px_rgba(0,0,0,0.85)] transition-all duration-300 hover:border-violet-400/45 hover:text-white hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.24),inset_0_-1px_0_rgba(0,0,0,0.55),0_10px_26px_-10px_rgba(124,58,237,0.45)]"
+                className="group font-(family-name:--font-hero-ui) relative inline-flex min-h-11 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-[rgba(150,142,180,0.26)] bg-[linear-gradient(180deg,#34343b_0%,#1d1d22_44%,#141417_56%,#0b0b0d_100%)] px-4 py-2.5 text-[13px] font-semibold text-white/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.55),0_6px_18px_-9px_rgba(0,0,0,0.85)] transition-all duration-300 hover:border-violet-400/45 hover:text-white hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.24),inset_0_-1px_0_rgba(0,0,0,0.55),0_10px_26px_-10px_rgba(124,58,237,0.45)]"
               >
                 {/* Reflejo horizontal tipo titanio */}
                 <span
@@ -973,13 +967,13 @@ export function Hero() {
                 />
                 <span className="relative z-10">Ver qué podría mejorar en mi negocio</span>
               </button>
-              <button
-                type="button"
-                onClick={handleSecondaryCta}
-                className="font-(family-name:--font-hero-ui) inline-flex min-h-10 cursor-pointer items-center justify-center rounded-md border border-white/14 bg-white/4 px-4 py-2.5 text-[13px] font-medium text-neutral-200/90 transition-colors hover:border-white/24 hover:bg-white/7"
+              <Link
+                href="/presupuesto"
+                onClick={handleCommercialCta}
+                className="font-(family-name:--font-hero-ui) inline-flex min-h-11 cursor-pointer items-center justify-center rounded-md border border-white/14 bg-white/4 px-4 py-2.5 text-[13px] font-medium text-neutral-200/90 transition-colors hover:border-white/24 hover:bg-white/7"
               >
                 Cuéntame cómo trabajas hoy
-              </button>
+              </Link>
             </div>
           </div>
 
