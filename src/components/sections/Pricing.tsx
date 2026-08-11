@@ -675,7 +675,7 @@ export function Pricing() {
     <div className="relative min-h-screen overflow-x-clip bg-[#070b13] text-zinc-300">
       {/* 1. Hero: franja completa (sección corta) */}
       <section
-        className="pricing-hero relative z-10 overflow-x-clip overflow-y-hidden bg-[#070b13] px-4 pb-5 pt-[5.25rem] sm:px-6 sm:pb-8 sm:pt-24 lg:px-10 lg:pb-10 lg:pt-28"
+        className="pricing-hero relative z-10 overflow-x-clip overflow-y-hidden bg-[#070b13] px-4 pb-8 pt-[5.25rem] sm:px-6 sm:pb-10 sm:pt-24 lg:px-10 lg:pb-10 lg:pt-28"
         aria-labelledby="pricing-hero-heading"
       >
         <DiagonalStripes />
@@ -689,27 +689,41 @@ export function Pricing() {
             <span className="mt-1 block text-zinc-400">con alcance claro.</span>
           </h1>
 
-          <div className="mx-auto mt-2 w-full max-w-184 -translate-y-6 sm:mt-2.5 sm:-translate-y-8 lg:mt-3 lg:max-w-216 lg:-translate-y-10">
-            <div className="grid grid-cols-1 items-end gap-4 sm:gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-x-10">
-              <div className="min-w-0 self-end text-left lg:-translate-y-3 xl:-translate-y-4">
+          {/*
+            Móvil: título → texto → CTA → mascota (sin translates negativos).
+            Desktop: texto | mascota, CTA centrado debajo (composición editorial).
+          */}
+          <div className="mx-auto mt-6 w-full max-w-184 sm:mt-7 lg:mt-3 lg:max-w-216 lg:-translate-y-10">
+            <div className="grid grid-cols-1 items-center gap-5 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-x-10">
+              <div className="order-1 min-w-0 text-center lg:self-end lg:text-left lg:-translate-y-3 xl:-translate-y-4">
                 <p
-                  className="max-w-[44ch] text-[clamp(1rem,2.4vw,1.35rem)] font-medium leading-[1.32] tracking-[-0.02em] text-zinc-200"
+                  className="mx-auto max-w-[36ch] text-[clamp(1.02rem,2.6vw,1.35rem)] font-medium leading-[1.35] tracking-[-0.02em] text-zinc-200 lg:mx-0 lg:max-w-[44ch] lg:leading-[1.32]"
                   role="doc-subtitle"
                 >
                   Desde una web sencilla hasta automatizaciones que quitan trabajo repetido.
                 </p>
 
-                <p className="mt-3 hidden max-w-[48ch] text-[15px] leading-[1.8] text-zinc-400 sm:mt-4 sm:block sm:text-base sm:leading-[1.85]">
+                <p className="mx-auto mt-3 hidden max-w-[48ch] text-[15px] leading-[1.8] text-zinc-400 sm:mt-4 sm:block sm:text-base sm:leading-[1.85] lg:mx-0">
                   Trabajo desde Valladolid con negocios de toda España. Los precios son
                   orientativos: el presupuesto se cierra cuando el alcance está claro.
                 </p>
 
-                <p className="mt-3 max-w-[48ch] text-sm italic leading-relaxed text-zinc-500 sm:mt-4 sm:text-[15px]">
+                <p className="mx-auto mt-3 max-w-[36ch] text-sm italic leading-relaxed text-zinc-500 sm:mt-4 sm:max-w-[48ch] sm:text-[15px] lg:mx-0">
                   Sin humo. Sin “todo incluido” eterno.
                 </p>
               </div>
 
-              <div className="flex w-fit shrink-0 items-end justify-center justify-self-center self-end lg:justify-end lg:justify-self-end">
+              <div className="order-2 mt-2 flex justify-center sm:mt-3 lg:col-span-2 lg:order-3 lg:mt-12">
+                <Link
+                  href="/presupuesto"
+                  onClick={handlePrimaryCta}
+                  className={ctaButtonClass}
+                >
+                  Configurar mi proyecto
+                </Link>
+              </div>
+
+              <div className="order-3 flex w-full shrink-0 items-end justify-center lg:order-2 lg:col-start-2 lg:row-start-1 lg:w-fit lg:justify-self-end lg:self-end">
                 <Image
                   src="/logos/mascot-pricing.webp"
                   alt=""
@@ -717,20 +731,10 @@ export function Pricing() {
                   height={560}
                   quality={85}
                   priority
-                  sizes="(max-width: 639px) 220px, (max-width: 1023px) 320px, 448px"
-                  className="pricing-hero-mascot h-auto w-[min(100%,13.5rem)] max-w-full translate-y-2 object-contain object-bottom sm:w-[min(100%,20rem)] sm:translate-y-3 lg:w-92 lg:translate-y-4"
+                  sizes="(max-width: 639px) 168px, (max-width: 1023px) 240px, 448px"
+                  className="pricing-hero-mascot h-auto w-[min(100%,10.5rem)] max-w-full object-contain object-bottom sm:w-[min(100%,14rem)] lg:w-92 lg:translate-y-4"
                 />
               </div>
-            </div>
-
-            <div className="mt-9 flex justify-center sm:mt-11 lg:mt-12">
-              <Link
-                href="/presupuesto"
-                onClick={handlePrimaryCta}
-                className={ctaButtonClass}
-              >
-                Configurar mi proyecto
-              </Link>
             </div>
           </div>
         </FadeIn>
