@@ -59,71 +59,54 @@ const TEMPLATE_DEMOS = [
 
 /**
  * Franjas diagonales a altura completa.
- * Espejo = invertir pendiente (63→45 / 45→63), siempre al mismo lado.
- * Desktop: la carrera escala con la altura de la sección.
- * Móvil: carrera fija como el hero (18%), para que el espejo se vea
- * sin que el corte se vaya a la izquierda y pinte todo de morado.
+ *
+ * Desktop: espejo por pendiente (63→45 / 45→63), mismo lado.
+ * Móvil: el espejo (`flip`) pasa al lado izquierdo. Si todas van a la
+ * derecha en la misma dirección, al bajar el corte se pierde y solo queda
+ * el morado ocupando todo.
  */
 function DiagonalStripes({ flip = false }: { flip?: boolean }) {
-  const bandRef = useRef<HTMLDivElement | null>(null);
-  const [bandHeight, setBandHeight] = useState(0);
-  const [heroHeight, setHeroHeight] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
+  // —— Desktop: espejo por pendiente (como antes) ——
+  const deskGray = flip
+    ? "polygon(45% 0, 100% 0, 100% 100%, 63% 100%)"
+    : "polygon(63% 0, 100% 0, 100% 100%, 45% 100%)";
+  const deskPurple = flip
+    ? "polygon(61% 0, 100% 0, 100% 100%, 79% 100%)"
+    : "polygon(79% 0, 100% 0, 100% 100%, 61% 100%)";
+  const deskViolet = flip
+    ? "polygon(61% 0, 64% 0, 82% 100%, 79% 100%)"
+    : "polygon(79% 0, 82% 0, 64% 100%, 61% 100%)";
 
-  useLayoutEffect(() => {
-    const hero = document.querySelector(".pricing-hero");
-    if (!hero) return;
-    const measure = () => setHeroHeight((hero as HTMLElement).offsetHeight);
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(hero);
-    return () => ro.disconnect();
-  }, []);
-
-  useLayoutEffect(() => {
-    const el = bandRef.current;
-    if (!el) return;
-    const measure = () => setBandHeight(el.clientHeight);
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 1023px)");
-    const sync = () => setIsMobile(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
-
-  const ratio =
-    heroHeight > 0 && bandHeight > 0 ? bandHeight / heroHeight : 1;
-  const run = isMobile ? 18 : 18 * ratio;
-  const clamp = (n: number) => Math.max(-5, Math.min(105, n));
-  const fmt = (n: number) => clamp(n).toFixed(2);
-
-  const gray = flip
-    ? `polygon(${fmt(45)}% 0, 100% 0, 100% 100%, ${fmt(45 + run)}% 100%)`
-    : `polygon(${fmt(63)}% 0, 100% 0, 100% 100%, ${fmt(63 - run)}% 100%)`;
-  const purple = flip
-    ? `polygon(${fmt(61)}% 0, 100% 0, 100% 100%, ${fmt(61 + run)}% 100%)`
-    : `polygon(${fmt(79)}% 0, 100% 0, 100% 100%, ${fmt(79 - run)}% 100%)`;
-  const violet = flip
-    ? `polygon(${fmt(61)}% 0, ${fmt(64)}% 0, ${fmt(64 + run)}% 100%, ${fmt(61 + run)}% 100%)`
-    : `polygon(${fmt(79)}% 0, ${fmt(82)}% 0, ${fmt(82 - run)}% 100%, ${fmt(79 - run)}% 100%)`;
+  // —— Móvil: normal = derecha (hero); flip = izquierda (espejo real) ——
+  const mobGray = flip
+    ? "polygon(0 0, 37% 0, 55% 100%, 0 100%)"
+    : "polygon(63% 0, 100% 0, 100% 100%, 45% 100%)";
+  const mobPurple = flip
+    ? "polygon(0 0, 21% 0, 39% 100%, 0 100%)"
+    : "polygon(79% 0, 100% 0, 100% 100%, 61% 100%)";
+  const mobViolet = flip
+    ? "polygon(18% 0, 21% 0, 39% 100%, 36% 100%)"
+    : "polygon(79% 0, 82% 0, 64% 100%, 61% 100%)";
 
   return (
-    <div
-      ref={bandRef}
-      aria-hidden
-      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
-    >
-      <div className="absolute inset-0 bg-[#12151f]" style={{ clipPath: gray }} />
-      <div className="absolute inset-0 bg-[#251c49]" style={{ clipPath: purple }} />
-      <div className="absolute inset-0 bg-[#3a2d6b]/55" style={{ clipPath: violet }} />
-    </div>
+    <>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0 hidden overflow-hidden lg:block"
+      >
+        <div className="absolute inset-0 bg-[#12151f]" style={{ clipPath: deskGray }} />
+        <div className="absolute inset-0 bg-[#251c49]" style={{ clipPath: deskPurple }} />
+        <div className="absolute inset-0 bg-[#3a2d6b]/55" style={{ clipPath: deskViolet }} />
+      </div>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden lg:hidden"
+      >
+        <div className="absolute inset-0 bg-[#12151f]" style={{ clipPath: mobGray }} />
+        <div className="absolute inset-0 bg-[#251c49]" style={{ clipPath: mobPurple }} />
+        <div className="absolute inset-0 bg-[#3a2d6b]/55" style={{ clipPath: mobViolet }} />
+      </div>
+    </>
   );
 }
 
