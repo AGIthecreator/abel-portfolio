@@ -27,6 +27,9 @@ const TIER_PANEL = "#EDEBE6";
 const PLAN_NAME = "#2a2438";
 const INK = "#070b13";
 
+const FAQ_SURFACE =
+  "linear-gradient(180deg, #0c121c 0%, #131b2a 52%, #0c121c 100%)";
+
 const TEMPLATE_DEMOS = [
   {
     name: "Comercio local",
@@ -56,24 +59,64 @@ const TEMPLATE_DEMOS = [
 
 /**
  * Franjas diagonales a altura completa.
- * - Normal: misma composición que el hero (derecha, 63→45).
- * - Flip: espejo horizontal (izquierda). Así el zigzag se lee de verdad
- *   y no queda una columna morada continua hacia abajo.
+ * Espejo = invertir pendiente (63→45 / 45→63), siempre al mismo lado.
+ * Desktop: la carrera escala con la altura de la sección.
+ * Móvil: carrera fija como el hero (18%), para que el espejo se vea
+ * sin que el corte se vaya a la izquierda y pinte todo de morado.
  */
 function DiagonalStripes({ flip = false }: { flip?: boolean }) {
-  // Hero derecha. Flip = reflejo en X (100 - x).
+  const bandRef = useRef<HTMLDivElement | null>(null);
+  const [bandHeight, setBandHeight] = useState(0);
+  const [heroHeight, setHeroHeight] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useLayoutEffect(() => {
+    const hero = document.querySelector(".pricing-hero");
+    if (!hero) return;
+    const measure = () => setHeroHeight((hero as HTMLElement).offsetHeight);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(hero);
+    return () => ro.disconnect();
+  }, []);
+
+  useLayoutEffect(() => {
+    const el = bandRef.current;
+    if (!el) return;
+    const measure = () => setBandHeight(el.clientHeight);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px)");
+    const sync = () => setIsMobile(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  const ratio =
+    heroHeight > 0 && bandHeight > 0 ? bandHeight / heroHeight : 1;
+  const run = isMobile ? 18 : 18 * ratio;
+  const clamp = (n: number) => Math.max(-5, Math.min(105, n));
+  const fmt = (n: number) => clamp(n).toFixed(2);
+
   const gray = flip
-    ? "polygon(0 0, 37% 0, 55% 100%, 0 100%)"
-    : "polygon(63% 0, 100% 0, 100% 100%, 45% 100%)";
+    ? `polygon(${fmt(45)}% 0, 100% 0, 100% 100%, ${fmt(45 + run)}% 100%)`
+    : `polygon(${fmt(63)}% 0, 100% 0, 100% 100%, ${fmt(63 - run)}% 100%)`;
   const purple = flip
-    ? "polygon(0 0, 21% 0, 39% 100%, 0 100%)"
-    : "polygon(79% 0, 100% 0, 100% 100%, 61% 100%)";
+    ? `polygon(${fmt(61)}% 0, 100% 0, 100% 100%, ${fmt(61 + run)}% 100%)`
+    : `polygon(${fmt(79)}% 0, 100% 0, 100% 100%, ${fmt(79 - run)}% 100%)`;
   const violet = flip
-    ? "polygon(18% 0, 21% 0, 39% 100%, 36% 100%)"
-    : "polygon(79% 0, 82% 0, 64% 100%, 61% 100%)";
+    ? `polygon(${fmt(61)}% 0, ${fmt(64)}% 0, ${fmt(64 + run)}% 100%, ${fmt(61 + run)}% 100%)`
+    : `polygon(${fmt(79)}% 0, ${fmt(82)}% 0, ${fmt(82 - run)}% 100%, ${fmt(79 - run)}% 100%)`;
 
   return (
     <div
+      ref={bandRef}
       aria-hidden
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
     >
@@ -81,6 +124,26 @@ function DiagonalStripes({ flip = false }: { flip?: boolean }) {
       <div className="absolute inset-0 bg-[#251c49]" style={{ clipPath: purple }} />
       <div className="absolute inset-0 bg-[#3a2d6b]/55" style={{ clipPath: violet }} />
     </div>
+  );
+}
+
+function SectionGradient() {
+  return (
+    <>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{ background: FAQ_SURFACE }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-70"
+        style={{
+          background:
+            "radial-gradient(circle at 18% 18%, rgba(80, 50, 200, 0.05), transparent 40%), radial-gradient(circle at 82% 82%, rgba(0, 200, 255, 0.03), transparent 38%)",
+        }}
+      />
+    </>
   );
 }
 
@@ -446,7 +509,7 @@ function MaintenanceSection() {
       className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
       aria-labelledby="pricing-maintenance-heading"
     >
-      <DiagonalStripes />
+      <DiagonalStripes flip />
       <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
         <FadeIn>
           <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_1.15fr] lg:gap-10 xl:gap-12">
@@ -705,14 +768,14 @@ export function Pricing() {
         </FadeIn>
       </section>
 
-      {/* 2. Oferta: espejo inmediato del hero (franjas a la izquierda) */}
+      {/* 2. Oferta: gradiente, sin franja; copy sticky */}
       <section
-        className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
+        className="relative z-10 -mt-px"
         aria-labelledby="pricing-offer-heading"
       >
-        <DiagonalStripes flip />
+        <SectionGradient />
 
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-10">
+        <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-10">
           <div className="relative py-10 sm:py-14 lg:py-16">
             <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[40fr_60fr] lg:gap-x-10 xl:gap-x-12">
               <FadeIn className="order-2 min-w-0 lg:order-1">
@@ -759,13 +822,13 @@ export function Pricing() {
 
       <MaintenanceSection />
 
-      {/* 4. Alcance: espejo (izquierda) */}
+      {/* 4. Alcance: gradiente */}
       <section
-        className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
+        className="relative z-10 -mt-px"
         aria-labelledby="pricing-scope-heading"
       >
-        <DiagonalStripes flip />
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
+        <SectionGradient />
+        <div className="relative mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
           <FadeIn>
             <h2
               id="pricing-scope-heading"
