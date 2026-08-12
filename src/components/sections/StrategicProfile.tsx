@@ -361,31 +361,24 @@ export function StrategicProfile() {
             />
           </div>
 
-          {/* Fondo móvil/tablet: ESPEJO vertical de la banda inferior del hero.
-              El hero pone una banda diagonal (casi horizontal, sube a la derecha) en
-              su parte baja; aquí la reflejamos arriba para que ambas conecten en la
-              costura y mantengan el mismo ángulo. Altura = 60% del hero (misma que su
-              banda) → mismo ángulo exacto. Incluye el 3.er color (acento) como en
-              escritorio. La mitad inferior queda con el fondo normal. */}
+          {/* Fondo móvil/tablet: franjas a altura completa, ancladas a la derecha
+              (como desktop). Geometría fija: la extrapolación por ratio en móvil
+              acababa con % > 100 y tapaba todo el bloque. */}
           <div
-            className="pointer-events-none absolute inset-x-0 top-0 z-0 lg:hidden"
-            style={{ height: heroHeight ? Math.round(heroHeight * 0.6) : 420 }}
+            className="pointer-events-none absolute inset-0 z-0 lg:hidden"
             aria-hidden
           >
-            {/* Panel gris (espejo del gris del hero) */}
             <div
               className="absolute inset-0 bg-[#12151f]"
-              style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 84%)" }}
+              style={{ clipPath: "polygon(55% 0, 100% 0, 100% 100%, 28% 100%)" }}
             />
-            {/* Bloque violeta (espejo del violeta del hero) */}
             <div
               className="absolute inset-0 bg-[#251c49]"
-              style={{ clipPath: "polygon(0 0, 100% 0, 100% 74%, 0 52%)" }}
+              style={{ clipPath: "polygon(70% 0, 100% 0, 100% 100%, 43% 100%)" }}
             />
-            {/* Banda violeta clara (acento, mismo diseño que escritorio) */}
             <div
               className="absolute inset-0 bg-[#3a2d6b]/55"
-              style={{ clipPath: "polygon(0 52%, 100% 74%, 100% 80%, 0 58%)" }}
+              style={{ clipPath: "polygon(70% 0, 73% 0, 46% 100%, 43% 100%)" }}
             />
           </div>
 

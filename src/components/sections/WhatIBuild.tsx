@@ -205,6 +205,25 @@ export function WhatIBuild() {
         />
       </div>
 
+      {/* Móvil/tablet: franjas a altura completa, lado derecho, geometría fija. */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden lg:hidden"
+        aria-hidden
+      >
+        <div
+          className="absolute inset-0 bg-[#12151f]"
+          style={{ clipPath: "polygon(28% 0, 100% 0, 100% 100%, 55% 100%)" }}
+        />
+        <div
+          className="absolute inset-0 bg-[#251c49]"
+          style={{ clipPath: "polygon(43% 0, 100% 0, 100% 100%, 70% 100%)" }}
+        />
+        <div
+          className="absolute inset-0 bg-[#3a2d6b]/55"
+          style={{ clipPath: "polygon(43% 0, 46% 0, 73% 100%, 70% 100%)" }}
+        />
+      </div>
+
       <DotPattern />
 
       {/* Filtro "tinta desgastada" suave — solo en la lista de promesas corporativas */}
