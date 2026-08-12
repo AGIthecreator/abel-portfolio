@@ -59,56 +59,24 @@ const TEMPLATE_DEMOS = [
 
 /**
  * Franjas diagonales a altura completa.
- * Misma familia que el hero: 63→45 (normal) o espejo 45→63 (`flip`).
- * La pendiente escala con altoSección/altoHero, con tope para que en
- * secciones altas sigan viéndose las 3 bandas (no un bloque sólido).
+ * Misma geometría fija que el hero (63→45) o espejo (45→63).
+ * No escalamos por altura de sección: en móvil las secciones son altas y
+ * al extrapolar la pendiente el corte se iba a la izquierda y quedaba
+ * un bloque morado sólido en lugar de las 3 bandas.
  */
 function DiagonalStripes({ flip = false }: { flip?: boolean }) {
-  const bandRef = useRef<HTMLDivElement | null>(null);
-  const [bandHeight, setBandHeight] = useState(0);
-  const [heroHeight, setHeroHeight] = useState(0);
-
-  useLayoutEffect(() => {
-    const hero = document.querySelector(".pricing-hero");
-    if (!hero) return;
-    const measure = () => setHeroHeight((hero as HTMLElement).offsetHeight);
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(hero);
-    return () => ro.disconnect();
-  }, []);
-
-  useLayoutEffect(() => {
-    const el = bandRef.current;
-    if (!el) return;
-    const measure = () => setBandHeight(el.clientHeight);
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  const ratio =
-    heroHeight > 0 && bandHeight > 0 ? bandHeight / heroHeight : 1;
-  // Tope: evita que el corte se salga y pinte toda la sección de morado.
-  const run = Math.min(18 * ratio, 28);
-  const clamp = (n: number) => Math.max(8, Math.min(92, n));
-  const fmt = (n: number) => clamp(n).toFixed(2);
-
-  // Hero: 63→45, 79→61, 79–82→64–61. Flip: espejo 45→63, etc.
   const gray = flip
-    ? `polygon(${fmt(45)}% 0, 100% 0, 100% 100%, ${fmt(45 + run)}% 100%)`
-    : `polygon(${fmt(63)}% 0, 100% 0, 100% 100%, ${fmt(63 - run)}% 100%)`;
+    ? "polygon(45% 0, 100% 0, 100% 100%, 63% 100%)"
+    : "polygon(63% 0, 100% 0, 100% 100%, 45% 100%)";
   const purple = flip
-    ? `polygon(${fmt(61)}% 0, 100% 0, 100% 100%, ${fmt(61 + run)}% 100%)`
-    : `polygon(${fmt(79)}% 0, 100% 0, 100% 100%, ${fmt(79 - run)}% 100%)`;
+    ? "polygon(61% 0, 100% 0, 100% 100%, 79% 100%)"
+    : "polygon(79% 0, 100% 0, 100% 100%, 61% 100%)";
   const violet = flip
-    ? `polygon(${fmt(61)}% 0, ${fmt(64)}% 0, ${fmt(64 + run)}% 100%, ${fmt(61 + run)}% 100%)`
-    : `polygon(${fmt(79)}% 0, ${fmt(82)}% 0, ${fmt(82 - run)}% 100%, ${fmt(79 - run)}% 100%)`;
+    ? "polygon(61% 0, 64% 0, 82% 100%, 79% 100%)"
+    : "polygon(79% 0, 82% 0, 64% 100%, 61% 100%)";
 
   return (
     <div
-      ref={bandRef}
       aria-hidden
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
     >
