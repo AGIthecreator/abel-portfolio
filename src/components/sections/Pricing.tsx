@@ -27,9 +27,6 @@ const TIER_PANEL = "#EDEBE6";
 const PLAN_NAME = "#2a2438";
 const INK = "#070b13";
 
-const FAQ_SURFACE =
-  "linear-gradient(180deg, #0c121c 0%, #131b2a 52%, #0c121c 100%)";
-
 const TEMPLATE_DEMOS = [
   {
     name: "Comercio local",
@@ -59,20 +56,20 @@ const TEMPLATE_DEMOS = [
 
 /**
  * Franjas diagonales a altura completa.
- * Misma geometría fija que el hero (63→45) o espejo (45→63).
- * No escalamos por altura de sección: en móvil las secciones son altas y
- * al extrapolar la pendiente el corte se iba a la izquierda y quedaba
- * un bloque morado sólido en lugar de las 3 bandas.
+ * - Normal: misma composición que el hero (derecha, 63→45).
+ * - Flip: espejo horizontal (izquierda). Así el zigzag se lee de verdad
+ *   y no queda una columna morada continua hacia abajo.
  */
 function DiagonalStripes({ flip = false }: { flip?: boolean }) {
+  // Hero derecha. Flip = reflejo en X (100 - x).
   const gray = flip
-    ? "polygon(45% 0, 100% 0, 100% 100%, 63% 100%)"
+    ? "polygon(0 0, 37% 0, 55% 100%, 0 100%)"
     : "polygon(63% 0, 100% 0, 100% 100%, 45% 100%)";
   const purple = flip
-    ? "polygon(61% 0, 100% 0, 100% 100%, 79% 100%)"
+    ? "polygon(0 0, 21% 0, 39% 100%, 0 100%)"
     : "polygon(79% 0, 100% 0, 100% 100%, 61% 100%)";
   const violet = flip
-    ? "polygon(61% 0, 64% 0, 82% 100%, 79% 100%)"
+    ? "polygon(18% 0, 21% 0, 39% 100%, 36% 100%)"
     : "polygon(79% 0, 82% 0, 64% 100%, 61% 100%)";
 
   return (
@@ -84,26 +81,6 @@ function DiagonalStripes({ flip = false }: { flip?: boolean }) {
       <div className="absolute inset-0 bg-[#251c49]" style={{ clipPath: purple }} />
       <div className="absolute inset-0 bg-[#3a2d6b]/55" style={{ clipPath: violet }} />
     </div>
-  );
-}
-
-function SectionGradient() {
-  return (
-    <>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{ background: FAQ_SURFACE }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-70"
-        style={{
-          background:
-            "radial-gradient(circle at 18% 18%, rgba(80, 50, 200, 0.05), transparent 40%), radial-gradient(circle at 82% 82%, rgba(0, 200, 255, 0.03), transparent 38%)",
-        }}
-      />
-    </>
   );
 }
 
@@ -469,7 +446,7 @@ function MaintenanceSection() {
       className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
       aria-labelledby="pricing-maintenance-heading"
     >
-      <DiagonalStripes flip />
+      <DiagonalStripes />
       <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
         <FadeIn>
           <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_1.15fr] lg:gap-10 xl:gap-12">
@@ -728,14 +705,14 @@ export function Pricing() {
         </FadeIn>
       </section>
 
-      {/* 2. Oferta: gradiente, sin franja; copy sticky */}
+      {/* 2. Oferta: espejo inmediato del hero (franjas a la izquierda) */}
       <section
-        className="relative z-10 -mt-px"
+        className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
         aria-labelledby="pricing-offer-heading"
       >
-        <SectionGradient />
+        <DiagonalStripes flip />
 
-        <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-10">
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-10">
           <div className="relative py-10 sm:py-14 lg:py-16">
             <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[40fr_60fr] lg:gap-x-10 xl:gap-x-12">
               <FadeIn className="order-2 min-w-0 lg:order-1">
@@ -782,13 +759,13 @@ export function Pricing() {
 
       <MaintenanceSection />
 
-      {/* 4. Alcance: gradiente */}
+      {/* 4. Alcance: espejo (izquierda) */}
       <section
-        className="relative z-10 -mt-px"
+        className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
         aria-labelledby="pricing-scope-heading"
       >
-        <SectionGradient />
-        <div className="relative mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
+        <DiagonalStripes flip />
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
           <FadeIn>
             <h2
               id="pricing-scope-heading"
