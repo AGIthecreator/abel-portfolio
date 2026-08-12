@@ -58,55 +58,140 @@ const TEMPLATE_DEMOS = [
 ] as const;
 
 /**
- * Franjas diagonales a altura completa.
+ * Franjas al patrón del home:
+ * - hero: 63→45 (misma pendiente que el hero de precios)
+ * - mirror: arranca en 45 (costura del hero) y sube a la derecha — como StrategicProfile
+ * - continue: arranca donde terminó el mirror y baja a la izquierda — como WhatIBuild
  *
- * Desktop: espejo por pendiente (63→45 / 45→63), mismo lado.
- * Móvil: el espejo (`flip`) pasa al lado izquierdo. Si todas van a la
- * derecha en la misma dirección, al bajar el corte se pierde y solo queda
- * el morado ocupando todo.
+ * La pendiente es 18% de ancho por cada alto de hero. En pantallas estrechas
+ * limitamos el recorrido para que no se salga y pinte la sección de morado.
  */
-function DiagonalStripes({ flip = false }: { flip?: boolean }) {
-  // —— Desktop: espejo por pendiente (como antes) ——
-  const deskGray = flip
-    ? "polygon(45% 0, 100% 0, 100% 100%, 63% 100%)"
-    : "polygon(63% 0, 100% 0, 100% 100%, 45% 100%)";
-  const deskPurple = flip
-    ? "polygon(61% 0, 100% 0, 100% 100%, 79% 100%)"
-    : "polygon(79% 0, 100% 0, 100% 100%, 61% 100%)";
-  const deskViolet = flip
-    ? "polygon(61% 0, 64% 0, 82% 100%, 79% 100%)"
-    : "polygon(79% 0, 82% 0, 64% 100%, 61% 100%)";
+function DiagonalStripes({
+  variant,
+}: {
+  variant: "hero" | "mirror" | "continue";
+}) {
+  const bandRef = useRef<HTMLDivElement | null>(null);
+  const [heroH, setHeroH] = useState(0);
+  const [bandH, setBandH] = useState(0);
+  const [mirrorH, setMirrorH] = useState(0);
+  const [continueH, setContinueH] = useState(0);
 
-  // —— Móvil: normal = derecha (hero); flip = izquierda (espejo real) ——
-  const mobGray = flip
-    ? "polygon(0 0, 37% 0, 55% 100%, 0 100%)"
-    : "polygon(63% 0, 100% 0, 100% 100%, 45% 100%)";
-  const mobPurple = flip
-    ? "polygon(0 0, 21% 0, 39% 100%, 0 100%)"
-    : "polygon(79% 0, 100% 0, 100% 100%, 61% 100%)";
-  const mobViolet = flip
-    ? "polygon(18% 0, 21% 0, 39% 100%, 36% 100%)"
-    : "polygon(79% 0, 82% 0, 64% 100%, 61% 100%)";
+  useLayoutEffect(() => {
+    const hero = document.querySelector(".pricing-hero");
+    if (!hero) return;
+    const measure = () => setHeroH((hero as HTMLElement).offsetHeight);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(hero);
+    return () => ro.disconnect();
+  }, []);
+
+  useLayoutEffect(() => {
+    const el = bandRef.current;
+    if (!el) return;
+    const measure = () => setBandH(el.clientHeight);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // Encadenar con la banda anterior (mismo criterio que home Strategic → WhatIBuild).
+  useLayoutEffect(() => {
+    if (variant === "hero") return;
+
+    const measurePrev = () => {
+      const self = bandRef.current;
+      const all = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-pricing-stripe]"),
+      );
+      const before = self
+        ? all.filter(
+            (el) =>
+              el !== self &&
+              !!(el.compareDocumentPosition(self) & Node.DOCUMENT_POSITION_FOLLOWING),
+          )
+        : all;
+
+      const prevMirror = [...before]
+        .reverse()
+        .find((el) => el.dataset.pricingStripe === "mirror");
+      const prevContinue = [...before]
+        .reverse()
+        .find((el) => el.dataset.pricingStripe === "continue");
+
+      setMirrorH(prevMirror?.offsetHeight ?? 0);
+      setContinueH(
+        variant === "mirror" ? prevContinue?.offsetHeight ?? 0 : 0,
+      );
+    };
+
+    measurePrev();
+    const ro = new ResizeObserver(measurePrev);
+    document
+      .querySelectorAll("[data-pricing-stripe]")
+      .forEach((el) => ro.observe(el));
+    const page = document.querySelector(".pricing-hero")?.parentElement;
+    if (page) ro.observe(page);
+    window.addEventListener("resize", measurePrev);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measurePrev);
+    };
+  }, [variant]);
+
+  const hHero = Math.max(heroH, 1);
+  const ratio = bandH > 0 ? bandH / hHero : 1;
+  const ratioMirror = mirrorH > 0 ? mirrorH / hHero : 1;
+  const ratioContinue = continueH > 0 ? continueH / hHero : 0;
+  // Tope de recorrido: evita % fuera de pantalla en secciones altas (móvil).
+  const run = Math.min(18 * ratio, 26);
+  const runMirror = Math.min(18 * ratioMirror, 26);
+  const runContinue = Math.min(18 * ratioContinue, 26);
+
+  const clamp = (n: number) => Math.max(10, Math.min(90, n));
+  const fmt = (n: number) => clamp(n).toFixed(2);
+
+  let g0: number;
+  let g1: number;
+  if (variant === "hero") {
+    g0 = 63;
+    g1 = 63 - run;
+  } else if (variant === "mirror") {
+    // Tras hero: 45. Tras continue: salida del continue (= entrada del mirror − recorrido continue).
+    g0 = continueH > 0 ? 45 + runMirror - runContinue : 45;
+    g1 = g0 + run;
+  } else {
+    // continue: sale del mirror (45 + recorrido mirror)
+    g0 = 45 + runMirror;
+    g1 = g0 - run;
+  }
+
+  const shift = 16; // gris → morado
+  const thin = 3; // ancho banda violeta clara
+  const p0 = g0 + shift;
+  const p1 = g1 + shift;
+  const v0a = g0 + shift;
+  const v0b = g0 + shift + thin;
+  const v1a = g1 + shift;
+  const v1b = g1 + shift + thin;
+
+  const gray = `polygon(${fmt(g0)}% 0, 100% 0, 100% 100%, ${fmt(g1)}% 100%)`;
+  const purple = `polygon(${fmt(p0)}% 0, 100% 0, 100% 100%, ${fmt(p1)}% 100%)`;
+  const violet = `polygon(${fmt(v0a)}% 0, ${fmt(v0b)}% 0, ${fmt(v1b)}% 100%, ${fmt(v1a)}% 100%)`;
 
   return (
-    <>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-0 hidden overflow-hidden lg:block"
-      >
-        <div className="absolute inset-0 bg-[#12151f]" style={{ clipPath: deskGray }} />
-        <div className="absolute inset-0 bg-[#251c49]" style={{ clipPath: deskPurple }} />
-        <div className="absolute inset-0 bg-[#3a2d6b]/55" style={{ clipPath: deskViolet }} />
-      </div>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-0 overflow-hidden lg:hidden"
-      >
-        <div className="absolute inset-0 bg-[#12151f]" style={{ clipPath: mobGray }} />
-        <div className="absolute inset-0 bg-[#251c49]" style={{ clipPath: mobPurple }} />
-        <div className="absolute inset-0 bg-[#3a2d6b]/55" style={{ clipPath: mobViolet }} />
-      </div>
-    </>
+    <div
+      ref={bandRef}
+      data-pricing-stripe={variant}
+      aria-hidden
+      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+    >
+      <div className="absolute inset-0 bg-[#12151f]" style={{ clipPath: gray }} />
+      <div className="absolute inset-0 bg-[#251c49]" style={{ clipPath: purple }} />
+      <div className="absolute inset-0 bg-[#3a2d6b]/55" style={{ clipPath: violet }} />
+    </div>
   );
 }
 
@@ -492,7 +577,7 @@ function MaintenanceSection() {
       className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
       aria-labelledby="pricing-maintenance-heading"
     >
-      <DiagonalStripes flip />
+      <DiagonalStripes variant="mirror" />
       <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
         <FadeIn>
           <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_1.15fr] lg:gap-10 xl:gap-12">
@@ -689,7 +774,7 @@ export function Pricing() {
         className="pricing-hero relative z-10 overflow-x-clip bg-[#070b13] px-5 pb-7 pt-[6.75rem] sm:px-6 sm:pb-10 sm:pt-28 lg:overflow-y-hidden lg:px-10 lg:pb-10 lg:pt-28"
         aria-labelledby="pricing-hero-heading"
       >
-        <DiagonalStripes />
+        <DiagonalStripes variant="hero" />
 
         <FadeIn className="relative z-10 mx-auto w-full max-w-6xl">
           <h1
@@ -851,7 +936,7 @@ export function Pricing() {
         className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
         aria-labelledby="pricing-templates-heading"
       >
-        <DiagonalStripes />
+        <DiagonalStripes variant="continue" />
         <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
           <FadeIn>
             <div className="w-fit max-w-full">
@@ -927,7 +1012,7 @@ export function Pricing() {
         className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
         aria-labelledby="pricing-cta-heading"
       >
-        <DiagonalStripes flip />
+        <DiagonalStripes variant="mirror" />
         <FadeIn className="relative z-10 mx-auto w-full max-w-2xl px-4 py-14 text-center sm:px-6 sm:py-16 lg:px-10 lg:py-20">
           <h2
             id="pricing-cta-heading"
