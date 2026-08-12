@@ -59,64 +59,52 @@ const TEMPLATE_DEMOS = [
 
 /**
  * Franjas diagonales a altura completa.
- * Pendiente constante (18% de ancho por cada alto de hero), anclada a la
- * posición vertical respecto al hero, para que secciones consecutivas
- * reenganchen sin saltos aunque haya bloques intermedios sin franja.
- * `flip` solo para reenganches espejo (p. ej. CTA tras el corte del FAQ).
+ * Misma familia que el hero: 63→45 (normal) o espejo 45→63 (`flip`).
+ * La pendiente escala con altoSección/altoHero, con tope para que en
+ * secciones altas sigan viéndose las 3 bandas (no un bloque sólido).
  */
 function DiagonalStripes({ flip = false }: { flip?: boolean }) {
   const bandRef = useRef<HTMLDivElement | null>(null);
-  const [geom, setGeom] = useState({ heroH: 1, y0: 0, h: 0 });
+  const [bandHeight, setBandHeight] = useState(0);
+  const [heroHeight, setHeroHeight] = useState(0);
 
   useLayoutEffect(() => {
-    const measure = () => {
-      const hero = document.querySelector(".pricing-hero") as HTMLElement | null;
-      const el = bandRef.current;
-      if (!hero || !el) return;
-      const heroH = Math.max(hero.offsetHeight, 1);
-      // Offset vertical respecto al hero (estable al hacer scroll).
-      const y0 =
-        el.getBoundingClientRect().top - hero.getBoundingClientRect().top;
-      setGeom({ heroH, y0, h: el.clientHeight });
-    };
-
-    measure();
-    const el = bandRef.current;
     const hero = document.querySelector(".pricing-hero");
-    const page = hero?.parentElement ?? null;
+    if (!hero) return;
+    const measure = () => setHeroHeight((hero as HTMLElement).offsetHeight);
+    measure();
     const ro = new ResizeObserver(measure);
-    if (el) ro.observe(el);
-    if (hero) ro.observe(hero);
-    // Si una sección intermedia cambia de alto (p. ej. mantenimiento),
-    // hay que recalcular el anclaje de las franjas de abajo.
-    if (page) ro.observe(page);
-    window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
+    ro.observe(hero);
+    return () => ro.disconnect();
   }, []);
 
-  const clamp = (n: number) => Math.max(-8, Math.min(108, n));
+  useLayoutEffect(() => {
+    const el = bandRef.current;
+    if (!el) return;
+    const measure = () => setBandHeight(el.clientHeight);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const ratio =
+    heroHeight > 0 && bandHeight > 0 ? bandHeight / heroHeight : 1;
+  // Tope: evita que el corte se salga y pinte toda la sección de morado.
+  const run = Math.min(18 * ratio, 28);
+  const clamp = (n: number) => Math.max(8, Math.min(92, n));
   const fmt = (n: number) => clamp(n).toFixed(2);
-  const pct = (dy: number) => (18 * dy) / geom.heroH;
 
-  // Columna gris: en y=0 del hero empieza al 63%. Misma pendiente global;
-  // flip solo invierte el avance dentro de la sección (CTA tras FAQ).
-  const grayTop = 63 - pct(geom.y0);
-  const grayBot = flip
-    ? grayTop + pct(geom.h)
-    : grayTop - pct(geom.h);
-  const purpleTop = grayTop + 16;
-  const purpleBot = grayBot + 16;
-  const violetLTop = grayTop + 16;
-  const violetRTop = grayTop + 19;
-  const violetLBot = grayBot + 16;
-  const violetRBot = grayBot + 19;
-
-  const gray = `polygon(${fmt(grayTop)}% 0, 100% 0, 100% 100%, ${fmt(grayBot)}% 100%)`;
-  const purple = `polygon(${fmt(purpleTop)}% 0, 100% 0, 100% 100%, ${fmt(purpleBot)}% 100%)`;
-  const violet = `polygon(${fmt(violetLTop)}% 0, ${fmt(violetRTop)}% 0, ${fmt(violetRBot)}% 100%, ${fmt(violetLBot)}% 100%)`;
+  // Hero: 63→45, 79→61, 79–82→64–61. Flip: espejo 45→63, etc.
+  const gray = flip
+    ? `polygon(${fmt(45)}% 0, 100% 0, 100% 100%, ${fmt(45 + run)}% 100%)`
+    : `polygon(${fmt(63)}% 0, 100% 0, 100% 100%, ${fmt(63 - run)}% 100%)`;
+  const purple = flip
+    ? `polygon(${fmt(61)}% 0, 100% 0, 100% 100%, ${fmt(61 + run)}% 100%)`
+    : `polygon(${fmt(79)}% 0, 100% 0, 100% 100%, ${fmt(79 - run)}% 100%)`;
+  const violet = flip
+    ? `polygon(${fmt(61)}% 0, ${fmt(64)}% 0, ${fmt(64 + run)}% 100%, ${fmt(61 + run)}% 100%)`
+    : `polygon(${fmt(79)}% 0, ${fmt(82)}% 0, ${fmt(82 - run)}% 100%, ${fmt(79 - run)}% 100%)`;
 
   return (
     <div
@@ -513,7 +501,7 @@ function MaintenanceSection() {
       className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
       aria-labelledby="pricing-maintenance-heading"
     >
-      <DiagonalStripes />
+      <DiagonalStripes flip />
       <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
         <FadeIn>
           <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_1.15fr] lg:gap-10 xl:gap-12">
