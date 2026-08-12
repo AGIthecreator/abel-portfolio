@@ -436,24 +436,38 @@ function MaintenanceCardGhost() {
 }
 
 /**
- * Desplegable normal. La columna derecha reserva el alto exacto de la tarjeta
- * abierta (réplica fantasma + calibración) para que la sección no se mueva.
+ * Desplegable de mantenimiento.
+ * En desktop (lg+) reserva el alto de la tarjeta abierta para no mover las franjas.
+ * En móvil el alto es natural: crece al abrir el acordeón.
  */
 function MaintenanceSection() {
   const slotRef = useRef<HTMLDivElement | null>(null);
   const ghostRef = useRef<HTMLDivElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [cardSlotMinH, setCardSlotMinH] = useState<number | undefined>(undefined);
+  const [reserveSlotHeight, setReserveSlotHeight] = useState(false);
 
-  const measureSlot = useCallback(() => {
-    const ghost = ghostRef.current;
-    if (!ghost) return;
-    // +2: subpíxeles y posible redondeo de height:auto en framer-motion
-    const next = Math.ceil(ghost.getBoundingClientRect().height) + 2;
-    setCardSlotMinH((prev) => (prev != null && Math.abs(prev - next) < 1 ? prev : next));
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const sync = () => setReserveSlotHeight(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
   }, []);
 
+  const measureSlot = useCallback(() => {
+    if (!reserveSlotHeight) return;
+    const ghost = ghostRef.current;
+    if (!ghost) return;
+    const next = Math.ceil(ghost.getBoundingClientRect().height) + 2;
+    setCardSlotMinH((prev) => (prev != null && Math.abs(prev - next) < 1 ? prev : next));
+  }, [reserveSlotHeight]);
+
   useLayoutEffect(() => {
+    if (!reserveSlotHeight) {
+      setCardSlotMinH(undefined);
+      return;
+    }
     measureSlot();
     const ghost = ghostRef.current;
     if (!ghost) return;
@@ -464,11 +478,10 @@ function MaintenanceSection() {
       ro.disconnect();
       window.removeEventListener("resize", measureSlot);
     };
-  }, [measureSlot]);
+  }, [measureSlot, reserveSlotHeight]);
 
-  // Al abrir, tomar el alto real de la tarjeta cuando la animación termina.
   useLayoutEffect(() => {
-    if (!isOpen) return;
+    if (!reserveSlotHeight || !isOpen) return;
     const calibrate = () => {
       const card = slotRef.current?.querySelector(
         "[data-maint-card]",
@@ -480,7 +493,7 @@ function MaintenanceSection() {
     calibrate();
     const t = window.setTimeout(calibrate, 320);
     return () => window.clearTimeout(t);
-  }, [isOpen]);
+  }, [isOpen, reserveSlotHeight]);
 
   return (
     <section
@@ -518,19 +531,25 @@ function MaintenanceSection() {
             <div
               ref={slotRef}
               className="relative min-h-0 min-w-0 self-start overflow-hidden"
-              style={cardSlotMinH != null ? { height: cardSlotMinH } : undefined}
+              style={
+                reserveSlotHeight && cardSlotMinH != null
+                  ? { height: cardSlotMinH }
+                  : undefined
+              }
             >
               <MaintenanceCard
                 isOpen={isOpen}
                 onToggle={() => setIsOpen((v) => !v)}
               />
-              <div
-                ref={ghostRef}
-                className="pointer-events-none invisible absolute left-0 top-0 -z-10 w-full"
-                aria-hidden
-              >
-                <MaintenanceCardGhost />
-              </div>
+              {reserveSlotHeight ? (
+                <div
+                  ref={ghostRef}
+                  className="pointer-events-none invisible absolute left-0 top-0 -z-10 w-full"
+                  aria-hidden
+                >
+                  <MaintenanceCardGhost />
+                </div>
+              ) : null}
             </div>
           </div>
         </FadeIn>
@@ -675,7 +694,7 @@ export function Pricing() {
     <div className="relative min-h-screen overflow-x-clip bg-[#070b13] text-zinc-300">
       {/* 1. Hero: franja completa (sección corta) */}
       <section
-        className="pricing-hero relative z-10 overflow-x-clip overflow-y-hidden bg-[#070b13] px-4 pb-8 pt-[5.25rem] sm:px-6 sm:pb-10 sm:pt-24 lg:px-10 lg:pb-10 lg:pt-28"
+        className="pricing-hero relative z-10 overflow-x-clip bg-[#070b13] px-4 pb-7 pt-[6.75rem] sm:px-6 sm:pb-10 sm:pt-28 lg:overflow-y-hidden lg:px-10 lg:pb-10 lg:pt-28"
         aria-labelledby="pricing-hero-heading"
       >
         <DiagonalStripes />
@@ -683,47 +702,37 @@ export function Pricing() {
         <FadeIn className="relative z-10 mx-auto w-full max-w-6xl">
           <h1
             id="pricing-hero-heading"
-            className="text-center font-serif text-[clamp(1.85rem,5.5vw,3.85rem)] font-normal leading-[1.04] tracking-[-0.038em] text-[#f2f0ec]"
+            className="text-center font-serif text-[clamp(1.75rem,5.2vw,3.85rem)] font-normal leading-[1.08] tracking-[-0.038em] text-[#f2f0ec]"
           >
             <span className="block">Webs y sistemas{" "}</span>
             <span className="mt-1 block text-zinc-400">con alcance claro.</span>
           </h1>
 
           {/*
-            Móvil: título → texto → CTA → mascota (sin translates negativos).
-            Desktop: texto | mascota, CTA centrado debajo (composición editorial).
+            Móvil/tablet: texto izquierda + pavo derecha, CTA debajo.
+            Desktop: misma estructura con anclaje editorial.
           */}
-          <div className="mx-auto mt-6 w-full max-w-184 sm:mt-7 lg:mt-3 lg:max-w-216 lg:-translate-y-10">
-            <div className="grid grid-cols-1 items-center gap-5 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-x-10">
-              <div className="order-1 min-w-0 text-center lg:self-end lg:text-left lg:-translate-y-3 xl:-translate-y-4">
+          <div className="mx-auto mt-5 w-full max-w-184 sm:mt-6 lg:mt-3 lg:max-w-216 lg:-translate-y-8">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-3 gap-y-0 sm:gap-x-5 lg:gap-x-10">
+              <div className="min-w-0 self-center text-left sm:self-end lg:-translate-y-2 xl:-translate-y-3">
                 <p
-                  className="mx-auto max-w-[36ch] text-[clamp(1.02rem,2.6vw,1.35rem)] font-medium leading-[1.35] tracking-[-0.02em] text-zinc-200 lg:mx-0 lg:max-w-[44ch] lg:leading-[1.32]"
+                  className="max-w-[22ch] text-[clamp(0.95rem,2.8vw,1.35rem)] font-medium leading-[1.35] tracking-[-0.02em] text-zinc-200 sm:max-w-[36ch] lg:max-w-[44ch] lg:leading-[1.32]"
                   role="doc-subtitle"
                 >
                   Desde una web sencilla hasta automatizaciones que quitan trabajo repetido.
                 </p>
 
-                <p className="mx-auto mt-3 hidden max-w-[48ch] text-[15px] leading-[1.8] text-zinc-400 sm:mt-4 sm:block sm:text-base sm:leading-[1.85] lg:mx-0">
+                <p className="mt-3 hidden max-w-[48ch] text-[15px] leading-[1.8] text-zinc-400 sm:mt-4 sm:block sm:text-base sm:leading-[1.85]">
                   Trabajo desde Valladolid con negocios de toda España. Los precios son
                   orientativos: el presupuesto se cierra cuando el alcance está claro.
                 </p>
 
-                <p className="mx-auto mt-3 max-w-[36ch] text-sm italic leading-relaxed text-zinc-500 sm:mt-4 sm:max-w-[48ch] sm:text-[15px] lg:mx-0">
+                <p className="mt-2.5 max-w-[22ch] text-[12.5px] italic leading-relaxed text-zinc-500 sm:mt-4 sm:max-w-[48ch] sm:text-[15px]">
                   Sin humo. Sin “todo incluido” eterno.
                 </p>
               </div>
 
-              <div className="order-2 mt-2 flex justify-center sm:mt-3 lg:col-span-2 lg:order-3 lg:mt-12">
-                <Link
-                  href="/presupuesto"
-                  onClick={handlePrimaryCta}
-                  className={ctaButtonClass}
-                >
-                  Configurar mi proyecto
-                </Link>
-              </div>
-
-              <div className="order-3 flex w-full shrink-0 items-end justify-center lg:order-2 lg:col-start-2 lg:row-start-1 lg:w-fit lg:justify-self-end lg:self-end">
+              <div className="flex w-fit shrink-0 items-end justify-end self-end">
                 <Image
                   src="/logos/mascot-pricing.webp"
                   alt=""
@@ -731,9 +740,19 @@ export function Pricing() {
                   height={560}
                   quality={85}
                   priority
-                  sizes="(max-width: 639px) 168px, (max-width: 1023px) 240px, 448px"
-                  className="pricing-hero-mascot h-auto w-[min(100%,10.5rem)] max-w-full object-contain object-bottom sm:w-[min(100%,14rem)] lg:w-92 lg:translate-y-4"
+                  sizes="(max-width: 639px) 132px, (max-width: 1023px) 200px, 448px"
+                  className="pricing-hero-mascot h-auto w-[7.75rem] max-w-full object-contain object-bottom sm:w-[12.5rem] lg:w-92 lg:translate-y-4"
                 />
+              </div>
+
+              <div className="col-span-2 mt-6 flex justify-center sm:mt-8 lg:mt-12">
+                <Link
+                  href="/presupuesto"
+                  onClick={handlePrimaryCta}
+                  className={ctaButtonClass}
+                >
+                  Configurar mi proyecto
+                </Link>
               </div>
             </div>
           </div>
