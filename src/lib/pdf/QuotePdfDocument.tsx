@@ -3,7 +3,6 @@ import type { QuotePdfModel } from "@/lib/commerce/buildQuotePdfModel";
 import {
   formatDatePdf,
   formatEurPdf,
-  formatEurPdfWithTaxNote,
   formatPercentPdf,
 } from "@/lib/pdf/format";
 
@@ -166,14 +165,9 @@ const styles = StyleSheet.create({
   },
 });
 
-function Money({
-  value,
-  withVat,
-}: {
-  value: number | null | undefined;
-  withVat?: boolean;
-}) {
-  return <Text style={styles.rowPrice}>{formatEurPdfWithTaxNote(value, { withVat })}</Text>;
+function Money({ value }: { value: number | null | undefined }) {
+  // Partidas en neto: el IVA se aplica una sola vez en el resumen.
+  return <Text style={styles.rowPrice}>{formatEurPdf(value)}</Text>;
 }
 
 function SectionTitle({ children }: { children: string }) {
@@ -294,8 +288,7 @@ export function QuotePdfDocument({ model }: { model: QuotePdfModel }) {
             {model.bundleValueEur > 0 ? (
               <Text style={styles.note}>
                 Valor de referencia de las partidas:{" "}
-                {formatEurPdfWithTaxNote(model.bundleValueEur)}.{" "}
-                {model.packValueNote}
+                {formatEurPdf(model.bundleValueEur)}. {model.packValueNote}
               </Text>
             ) : null}
           </>

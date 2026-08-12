@@ -9,15 +9,6 @@ export function formatEurPdf(value: number | null | undefined): string {
   }).format(value);
 }
 
-export function formatEurPdfWithTaxNote(
-  value: number | null | undefined,
-  opts?: { withVat?: boolean },
-): string {
-  const base = formatEurPdf(value);
-  if (value == null) return base;
-  return opts?.withVat ? `${base} (con IVA)` : `${base} + IVA`;
-}
-
 export function formatDatePdf(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;

@@ -59,51 +59,64 @@ const TEMPLATE_DEMOS = [
 
 /**
  * Franjas diagonales a altura completa.
- * Misma pendiente que el hero (recorrido 18% de ancho por cada “alto de hero”),
- * para que secciones altas/bajas no cambien la inclinación visual.
- * `flip` espeja el corte para reenganchar con la sección anterior/siguiente.
+ * Pendiente constante (18% de ancho por cada alto de hero), anclada a la
+ * posición vertical respecto al hero, para que secciones consecutivas
+ * reenganchen sin saltos aunque haya bloques intermedios sin franja.
+ * `flip` solo para reenganches espejo (p. ej. CTA tras el corte del FAQ).
  */
 function DiagonalStripes({ flip = false }: { flip?: boolean }) {
   const bandRef = useRef<HTMLDivElement | null>(null);
-  const [bandHeight, setBandHeight] = useState(0);
-  const [heroHeight, setHeroHeight] = useState(0);
+  const [geom, setGeom] = useState({ heroH: 1, y0: 0, h: 0 });
 
-  useEffect(() => {
-    const hero = document.querySelector(".pricing-hero");
-    if (!hero) return;
-    const measure = () => setHeroHeight((hero as HTMLElement).offsetHeight);
+  useLayoutEffect(() => {
+    const measure = () => {
+      const hero = document.querySelector(".pricing-hero") as HTMLElement | null;
+      const el = bandRef.current;
+      if (!hero || !el) return;
+      const heroH = Math.max(hero.offsetHeight, 1);
+      // Offset vertical respecto al hero (estable al hacer scroll).
+      const y0 =
+        el.getBoundingClientRect().top - hero.getBoundingClientRect().top;
+      setGeom({ heroH, y0, h: el.clientHeight });
+    };
+
     measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(hero);
-    return () => ro.disconnect();
-  }, []);
-
-  useEffect(() => {
     const el = bandRef.current;
-    if (!el) return;
-    const measure = () => setBandHeight(el.clientHeight);
-    measure();
+    const hero = document.querySelector(".pricing-hero");
+    const page = hero?.parentElement ?? null;
     const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
+    if (el) ro.observe(el);
+    if (hero) ro.observe(hero);
+    // Si una sección intermedia cambia de alto (p. ej. mantenimiento),
+    // hay que recalcular el anclaje de las franjas de abajo.
+    if (page) ro.observe(page);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
   }, []);
 
-  const ratio =
-    heroHeight > 0 && bandHeight > 0 ? bandHeight / heroHeight : 1;
-  const run = 18 * ratio;
-  const clamp = (n: number) => Math.max(-5, Math.min(105, n));
+  const clamp = (n: number) => Math.max(-8, Math.min(108, n));
   const fmt = (n: number) => clamp(n).toFixed(2);
+  const pct = (dy: number) => (18 * dy) / geom.heroH;
 
-  // Hero: 63→45, 79→61, 79–82→64–61. Flip: espejo 45→63, etc.
-  const gray = flip
-    ? `polygon(${fmt(45)}% 0, 100% 0, 100% 100%, ${fmt(45 + run)}% 100%)`
-    : `polygon(${fmt(63)}% 0, 100% 0, 100% 100%, ${fmt(63 - run)}% 100%)`;
-  const purple = flip
-    ? `polygon(${fmt(61)}% 0, 100% 0, 100% 100%, ${fmt(61 + run)}% 100%)`
-    : `polygon(${fmt(79)}% 0, 100% 0, 100% 100%, ${fmt(79 - run)}% 100%)`;
-  const violet = flip
-    ? `polygon(${fmt(61)}% 0, ${fmt(64)}% 0, ${fmt(64 + run)}% 100%, ${fmt(61 + run)}% 100%)`
-    : `polygon(${fmt(79)}% 0, ${fmt(82)}% 0, ${fmt(82 - run)}% 100%, ${fmt(79 - run)}% 100%)`;
+  // Columna gris: en y=0 del hero empieza al 63%. Misma pendiente global;
+  // flip solo invierte el avance dentro de la sección (CTA tras FAQ).
+  const grayTop = 63 - pct(geom.y0);
+  const grayBot = flip
+    ? grayTop + pct(geom.h)
+    : grayTop - pct(geom.h);
+  const purpleTop = grayTop + 16;
+  const purpleBot = grayBot + 16;
+  const violetLTop = grayTop + 16;
+  const violetRTop = grayTop + 19;
+  const violetLBot = grayBot + 16;
+  const violetRBot = grayBot + 19;
+
+  const gray = `polygon(${fmt(grayTop)}% 0, 100% 0, 100% 100%, ${fmt(grayBot)}% 100%)`;
+  const purple = `polygon(${fmt(purpleTop)}% 0, 100% 0, 100% 100%, ${fmt(purpleBot)}% 100%)`;
+  const violet = `polygon(${fmt(violetLTop)}% 0, ${fmt(violetRTop)}% 0, ${fmt(violetRBot)}% 100%, ${fmt(violetLBot)}% 100%)`;
 
   return (
     <div
@@ -500,7 +513,7 @@ function MaintenanceSection() {
       className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
       aria-labelledby="pricing-maintenance-heading"
     >
-      <DiagonalStripes flip />
+      <DiagonalStripes />
       <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
         <FadeIn>
           <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_1.15fr] lg:gap-10 xl:gap-12">
@@ -694,7 +707,7 @@ export function Pricing() {
     <div className="relative min-h-screen overflow-x-clip bg-[#070b13] text-zinc-300">
       {/* 1. Hero: franja completa (sección corta) */}
       <section
-        className="pricing-hero relative z-10 overflow-x-clip bg-[#070b13] px-4 pb-7 pt-[6.75rem] sm:px-6 sm:pb-10 sm:pt-28 lg:overflow-y-hidden lg:px-10 lg:pb-10 lg:pt-28"
+        className="pricing-hero relative z-10 overflow-x-clip bg-[#070b13] px-5 pb-7 pt-[6.75rem] sm:px-6 sm:pb-10 sm:pt-28 lg:overflow-y-hidden lg:px-10 lg:pb-10 lg:pt-28"
         aria-labelledby="pricing-hero-heading"
       >
         <DiagonalStripes />
@@ -713,10 +726,10 @@ export function Pricing() {
             Desktop: misma estructura con anclaje editorial.
           */}
           <div className="mx-auto mt-5 w-full max-w-184 sm:mt-6 lg:mt-3 lg:max-w-216 lg:-translate-y-8">
-            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-3 gap-y-0 sm:gap-x-5 lg:gap-x-10">
+            <div className="mx-auto grid w-fit max-w-full grid-cols-[minmax(0,1fr)_auto] items-end gap-x-2 sm:gap-x-5 lg:gap-x-10">
               <div className="min-w-0 self-center text-left sm:self-end lg:-translate-y-2 xl:-translate-y-3">
                 <p
-                  className="max-w-[22ch] text-[clamp(0.95rem,2.8vw,1.35rem)] font-medium leading-[1.35] tracking-[-0.02em] text-zinc-200 sm:max-w-[36ch] lg:max-w-[44ch] lg:leading-[1.32]"
+                  className="max-w-[18ch] text-[clamp(0.95rem,2.8vw,1.35rem)] font-medium leading-[1.35] tracking-[-0.02em] text-zinc-200 sm:max-w-[36ch] lg:max-w-[44ch] lg:leading-[1.32]"
                   role="doc-subtitle"
                 >
                   Desde una web sencilla hasta automatizaciones que quitan trabajo repetido.
@@ -727,7 +740,7 @@ export function Pricing() {
                   orientativos: el presupuesto se cierra cuando el alcance está claro.
                 </p>
 
-                <p className="mt-2.5 max-w-[22ch] text-[12.5px] italic leading-relaxed text-zinc-500 sm:mt-4 sm:max-w-[48ch] sm:text-[15px]">
+                <p className="mt-2.5 max-w-[18ch] text-[12.5px] italic leading-relaxed text-zinc-500 sm:mt-4 sm:max-w-[48ch] sm:text-[15px]">
                   Sin humo. Sin “todo incluido” eterno.
                 </p>
               </div>
@@ -740,8 +753,8 @@ export function Pricing() {
                   height={560}
                   quality={85}
                   priority
-                  sizes="(max-width: 639px) 132px, (max-width: 1023px) 200px, 448px"
-                  className="pricing-hero-mascot h-auto w-[7.75rem] max-w-full object-contain object-bottom sm:w-[12.5rem] lg:w-92 lg:translate-y-4"
+                  sizes="(max-width: 639px) 160px, (max-width: 1023px) 200px, 448px"
+                  className="pricing-hero-mascot h-auto w-[9.3rem] max-w-full object-contain object-bottom sm:w-[12.5rem] lg:w-92 lg:translate-y-4"
                 />
               </div>
 
