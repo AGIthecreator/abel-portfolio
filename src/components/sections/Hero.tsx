@@ -950,30 +950,28 @@ export function Hero() {
             </p>
 
             <div className="hero-cta-row flex flex-wrap items-center gap-2.5 pt-0.5">
-              <button
-                type="button"
-                onClick={handlePrimaryCta}
+              <Link
+                href="/presupuesto"
+                onClick={handleCommercialCta}
                 className="group font-(family-name:--font-hero-ui) relative inline-flex min-h-11 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-[rgba(150,142,180,0.26)] bg-[linear-gradient(180deg,#34343b_0%,#1d1d22_44%,#141417_56%,#0b0b0d_100%)] px-4 py-2.5 text-[13px] font-semibold text-white/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.55),0_6px_18px_-9px_rgba(0,0,0,0.85)] transition-all duration-300 hover:border-violet-400/45 hover:text-white hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.24),inset_0_-1px_0_rgba(0,0,0,0.55),0_10px_26px_-10px_rgba(124,58,237,0.45)]"
               >
-                {/* Reflejo horizontal tipo titanio */}
                 <span
                   aria-hidden
                   className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0))] opacity-80 transition-opacity duration-300 group-hover:opacity-100"
                 />
-                {/* Acento violeta inferior muy fino */}
                 <span
                   aria-hidden
                   className="pointer-events-none absolute inset-x-3 bottom-0 h-px bg-[linear-gradient(90deg,transparent,rgba(167,139,250,0.55),transparent)] opacity-60 transition-opacity duration-300 group-hover:opacity-100"
                 />
-                <span className="relative z-10">Ver qué podría mejorar en mi negocio</span>
-              </button>
-              <Link
-                href="/presupuesto"
-                onClick={handleCommercialCta}
+                <span className="relative z-10">Cuéntame cómo trabajas hoy</span>
+              </Link>
+              <button
+                type="button"
+                onClick={handlePrimaryCta}
                 className="font-(family-name:--font-hero-ui) inline-flex min-h-11 cursor-pointer items-center justify-center rounded-md border border-white/14 bg-white/4 px-4 py-2.5 text-[13px] font-medium text-neutral-200/90 transition-colors hover:border-white/24 hover:bg-white/7"
               >
-                Cuéntame cómo trabajas hoy
-              </Link>
+                Ver qué podría mejorar en mi negocio
+              </button>
             </div>
           </div>
 

@@ -785,6 +785,7 @@ next-route-announcer,
     flex-wrap: nowrap !important;
   }
 
+  .hero-editorial .hero-cta-row > a,
   .hero-editorial .hero-cta-row > button {
     min-height: 2.25rem !important;
     padding: 0.4rem 0.7rem !important;
