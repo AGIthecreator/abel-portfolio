@@ -87,7 +87,8 @@ export function SiteNavbar() {
     }
 
     if ("section" in item && item.section) {
-      const href = isHome ? item.href : `/${item.href}`;
+      // En Home: scroll in-place. Fuera: /#id (HomeSectionScroll resuelve el destino).
+      const href = isHome ? item.href : `/#${item.href.replace(/^#/, "")}`;
       if (isHome) {
         return (
           <a
@@ -102,10 +103,15 @@ export function SiteNavbar() {
         );
       }
       return (
-        <Link key={item.href} href={href} className={linkClass}>
+        <a
+          key={item.href}
+          href={href}
+          className={linkClass}
+          onClick={(e) => handleSectionNavClick(e, item.href)}
+        >
           {item.label}
           <span className={underlineClass} aria-hidden />
-        </Link>
+        </a>
       );
     }
 

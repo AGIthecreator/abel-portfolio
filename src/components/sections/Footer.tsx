@@ -16,8 +16,8 @@ const FOOTER_SURFACE: CSSProperties = {
 };
 
 const NAV_LINKS = [
-  { href: "#entregables", label: "Por qué yo" },
-  { href: "#perfil", label: "Cómo funciona" },
+  { href: "#entregables", label: "Por qué yo", homeSection: true },
+  { href: "/como-trabajamos", label: "Cómo funciona" },
   { label: "Contacto", opensContact: true },
 ] as const;
 
@@ -88,7 +88,15 @@ export function Footer() {
                         |
                       </span>
                     ) : null}
-                    {"href" in item ? (
+                    {"opensContact" in item ? (
+                      <button
+                        type="button"
+                        onClick={openModal}
+                        className={`${navLinkClass} cursor-pointer border-0 bg-transparent p-0 font-inherit uppercase`}
+                      >
+                        {item.label}
+                      </button>
+                    ) : "homeSection" in item && item.homeSection ? (
                       <a
                         href={item.href}
                         className={navLinkClass}
@@ -97,13 +105,9 @@ export function Footer() {
                         {item.label}
                       </a>
                     ) : (
-                      <button
-                        type="button"
-                        onClick={openModal}
-                        className={`${navLinkClass} cursor-pointer border-0 bg-transparent p-0 font-inherit uppercase`}
-                      >
+                      <Link href={item.href} className={navLinkClass}>
                         {item.label}
-                      </button>
+                      </Link>
                     )}
                   </Fragment>
                 ))}

@@ -13,6 +13,24 @@ export const metadata: Metadata = {
     description:
       "No necesitas saber de webs. Necesitas saber qué va a pasar. Te explico el proceso desde el principio, sin tecnicismos ni sorpresas.",
     url: "https://agithecreator.com/como-trabajamos",
+    siteName: "AGI TheCreator",
+    locale: "es_ES",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "AGI TheCreator: cómo trabajamos",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cómo trabajamos | AGI TheCreator",
+    description:
+      "El proceso de principio a fin, sin tecnicismos ni sorpresas. Valladolid y toda España.",
+    images: ["/og-image.png"],
   },
 };
 

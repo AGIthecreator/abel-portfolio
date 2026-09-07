@@ -10,7 +10,7 @@ import { trackEvent } from "@/lib/analytics";
 import { MAX_MESSAGE_LENGTH } from "@/lib/contact/schema";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const FALLBACK_EMAIL = "hola@agithecreator.com";
+const FALLBACK_EMAIL = "contacto@agithecreator.com";
 
 const TEXTAREA_PLACEHOLDER = `Pierdo mucho tiempo gestionando reservas
 

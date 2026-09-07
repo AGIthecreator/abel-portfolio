@@ -28,7 +28,19 @@ const jsonLd = {
   url: "https://agithecreator.com",
   email: "contacto@agithecreator.com",
   description: "Webs y sistemas para negocios",
-  areaServed: "España",
+  areaServed: {
+    "@type": "Country",
+    name: "España",
+  },
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Valladolid",
+    addressCountry: "ES",
+  },
+  founder: {
+    "@type": "Person",
+    name: "Abel",
+  },
 };
 
 export const metadata: Metadata = {

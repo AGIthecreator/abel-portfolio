@@ -84,8 +84,6 @@ const OUTLOOK_CYCLE_MS = 1500;
 
 const SHADOW_GOOGLE =
   "shadow-[0_18px_48px_-20px_rgba(15,23,42,0.28),0_8px_20px_-12px_rgba(15,23,42,0.14)]";
-const SHADOW_SERVICES =
-  "shadow-[0_20px_52px_-18px_rgba(15,23,42,0.32),0_10px_24px_-14px_rgba(15,23,42,0.18)]";
 const SHADOW_CMD =
   "shadow-[0_24px_56px_-16px_rgba(0,0,0,0.5),0_12px_28px_-12px_rgba(0,0,0,0.35)]";
 const SHADOW_LIGHT =
@@ -932,9 +930,9 @@ export function Hero() {
 
             <h1 className="m-0 font-(family-name:--font-hero-display) text-[clamp(1.75rem,5.2vw,3.05rem)] font-medium leading-[1.05] tracking-[-0.015em] text-neutral-50">
               <span className="block">
-                <span className="text-zinc-500">Tu negocio</span> ya tiene
+                <span className="text-zinc-500">Webs y sistemas</span> para negocios
               </span>
-              <span className="block">suficiente trabajo encima.</span>
+              <span className="block">que ya tienen suficiente trabajo encima.</span>
             </h1>
 
             <p className="hero-support-primary max-w-136 font-(family-name:--font-hero-ui) text-[clamp(0.88rem,1.4vw,1.02rem)] font-normal leading-[1.5] text-neutral-400/95">
