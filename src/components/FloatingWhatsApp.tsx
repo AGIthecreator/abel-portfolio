@@ -2,34 +2,14 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { useContactModal } from "@/components/contact/ContactModalContext";
 import { trackEvent } from "@/lib/analytics";
+import { getWhatsAppHref, getWhatsAppNumber } from "@/lib/contact/info";
 
 const BONE_WHITE = "rgba(243, 241, 235, 0.92)";
 const INK = "#070b13";
 
-const WHATSAPP_MESSAGE = encodeURIComponent(
-  "Hola Abel, quería comentarte una idea que tengo para mi negocio."
-);
-
-/** España: 34 + 9 dígitos (ej. 711206230 → 34711206230) */
-function normalizeWhatsAppNumber(raw: string): string {
-  const digits = raw.replace(/\D/g, "");
-  if (!digits) return "";
-  if (digits.length === 9 && /^[679]/.test(digits)) {
-    return `34${digits}`;
-  }
-  if (digits.length === 11 && digits.startsWith("34")) {
-    return digits;
-  }
-  return digits;
-}
-
-const WHATSAPP_NUMBER = normalizeWhatsAppNumber(
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "711206230"
-);
-
-const WHATSAPP_HREF = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`;
+const WHATSAPP_NUMBER = getWhatsAppNumber();
+const WHATSAPP_HREF = getWhatsAppHref();
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -47,14 +27,17 @@ function WhatsAppIcon({ className }: { className?: string }) {
 export function FloatingWhatsApp() {
   const reduceMotion = useReducedMotion();
   const pathname = usePathname();
-  const { isOpen: contactModalOpen } = useContactModal();
 
-  if (!WHATSAPP_NUMBER || contactModalOpen) {
+  if (!WHATSAPP_NUMBER || !WHATSAPP_HREF) {
+    return null;
+  }
+
+  // En /contacto el contacto directo ya está en página: ocultamos el FAB.
+  if (pathname === "/contacto") {
     return null;
   }
 
   // En /presupuesto: sticky CTA (z-40) visible hasta lg en configurador y lead.
-  // Elevamos el FAB solo bajo lg para no tapar Continuar / Enviar.
   const onQuoteFlow =
     pathname === "/presupuesto" || pathname.startsWith("/presupuesto/");
   const positionClass = onQuoteFlow

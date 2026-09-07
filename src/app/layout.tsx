@@ -4,7 +4,6 @@ import { ContactChrome } from "@/components/contact/ContactChrome";
 import { CookieConsentBanner } from "@/components/cookies/CookieConsentBanner";
 import { CookieConsentProvider } from "@/components/cookies/CookieConsentContext";
 import { DeferredAnalytics } from "@/components/DeferredAnalytics";
-import { ContactModalProvider } from "@/components/contact/ContactModalContext";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -163,10 +162,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#070b13]`}
       >
         <CookieConsentProvider>
-          <ContactModalProvider>
-            {children}
-            <ContactChrome />
-          </ContactModalProvider>
+          {children}
+          <ContactChrome />
           <CookieConsentBanner />
           <DeferredAnalytics />
         </CookieConsentProvider>

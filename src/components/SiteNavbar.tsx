@@ -5,15 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { useContactModal } from "@/components/contact/ContactModalContext";
-import { trackEvent } from "@/lib/analytics";
 import { handleSectionNavClick } from "@/lib/scroll-to-section";
+import { trackEvent } from "@/lib/analytics";
 
 const NAV = [
   { href: "#entregables", label: "Por qué yo", section: true },
   { href: "/como-trabajamos", label: "Cómo funciona", section: false },
   { href: "/precios", label: "Precios", section: false },
-  { label: "Contacto", opensContact: true },
+  { href: "/contacto", label: "Contacto", section: false },
 ] as const;
 
 const navLinkClass =
@@ -49,13 +48,7 @@ const NAV_BAR_BG_SCROLLED: CSSProperties = {
 export function SiteNavbar() {
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const { openModal } = useContactModal();
   const [scrolled, setScrolled] = useState(false);
-
-  const handleNavbarContactClick = useCallback(() => {
-    trackEvent("navbar_contact_click", { location: "navbar" });
-    openModal();
-  }, [openModal]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -72,20 +65,6 @@ export function SiteNavbar() {
   }, []);
 
   const renderNavItem = (item: (typeof NAV)[number], linkClass: string, underlineClass: string) => {
-    if ("opensContact" in item) {
-      return (
-        <button
-          key={item.label}
-          type="button"
-          onClick={handleNavbarContactClick}
-          className={`${linkClass} cursor-pointer border-0 bg-transparent p-0 font-inherit`}
-        >
-          {item.label}
-          <span className={underlineClass} aria-hidden />
-        </button>
-      );
-    }
-
     if ("section" in item && item.section) {
       // En Home: scroll in-place. Fuera: /#id (HomeSectionScroll resuelve el destino).
       const href = isHome ? item.href : `/#${item.href.replace(/^#/, "")}`;
@@ -116,7 +95,16 @@ export function SiteNavbar() {
     }
 
     return (
-      <Link key={item.href} href={item.href} className={linkClass}>
+      <Link
+        key={item.href}
+        href={item.href}
+        className={linkClass}
+        onClick={
+          item.href === "/contacto"
+            ? () => trackEvent("navbar_contact_click", { location: "navbar" })
+            : undefined
+        }
+      >
         {item.label}
         <span className={underlineClass} aria-hidden />
       </Link>

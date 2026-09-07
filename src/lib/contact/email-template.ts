@@ -3,15 +3,23 @@ import { escapeHtml, escapeHtmlWithBreaks } from "@/lib/contact/sanitize";
 type ContactEmailFields = {
   safeName: string;
   safeEmail: string;
+  safeCompany: string;
   safeMessageHtml: string;
 };
 
 export function buildContactEmailHtml({
   safeName,
   safeEmail,
+  safeCompany,
   safeMessageHtml,
 }: ContactEmailFields): string {
   const displayName = safeName || "Sin nombre";
+  const companyBlock = safeCompany
+    ? `<p>
+<strong>Negocio:</strong><br>
+${safeCompany}
+</p>`
+    : "";
 
   return `
 <div style="
@@ -78,6 +86,8 @@ line-height:1.7;
 ${safeEmail}
 </p>
 
+${companyBlock}
+
 </div>
 
 <div style="
@@ -114,10 +124,16 @@ AGItheCreator · Mensaje recibido desde la web
 `;
 }
 
-export function sanitizeContactFields(name: string, email: string, message: string) {
+export function sanitizeContactFields(
+  name: string,
+  email: string,
+  message: string,
+  company = "",
+) {
   return {
     safeName: escapeHtml(name),
     safeEmail: escapeHtml(email),
+    safeCompany: escapeHtml(company),
     safeMessageHtml: escapeHtmlWithBreaks(message),
   };
 }

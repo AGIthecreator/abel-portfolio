@@ -2,15 +2,6 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { useContactModal } from "@/components/contact/ContactModalContext";
-
-const ContactModal = dynamic(
-  () =>
-    import("@/components/contact/ContactModal").then((m) => ({
-      default: m.ContactModal,
-    })),
-  { ssr: false },
-);
 
 const FloatingWhatsApp = dynamic(
   () =>
@@ -20,9 +11,8 @@ const FloatingWhatsApp = dynamic(
   { ssr: false },
 );
 
-/** Modal y WhatsApp fuera del bundle inicial (framer-motion + portal). */
+/** WhatsApp flotante fuera del bundle inicial. */
 export function ContactChrome() {
-  const { isOpen } = useContactModal();
   const [showChrome, setShowChrome] = useState(false);
 
   useEffect(() => {
@@ -36,10 +26,5 @@ export function ContactChrome() {
     return () => clearTimeout(t);
   }, []);
 
-  return (
-    <>
-      {isOpen ? <ContactModal /> : null}
-      {showChrome ? <FloatingWhatsApp /> : null}
-    </>
-  );
+  return showChrome ? <FloatingWhatsApp /> : null;
 }

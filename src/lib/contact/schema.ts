@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const MAX_MESSAGE_LENGTH = 2000;
 export const MAX_NAME_LENGTH = 120;
+export const MAX_COMPANY_LENGTH = 120;
 
 export const contactFormSchema = z.object({
   name: z
@@ -15,6 +16,11 @@ export const contactFormSchema = z.object({
     .min(1, "Email requerido")
     .max(254)
     .email("Email inválido"),
+  company: z
+    .string()
+    .max(MAX_COMPANY_LENGTH)
+    .optional()
+    .transform((v) => (v ?? "").trim()),
   message: z
     .string()
     .trim()

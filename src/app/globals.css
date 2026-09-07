@@ -867,3 +867,259 @@ next-route-announcer,
   }
 }
 
+/*
+ * Tres franjas editoriales (gris · morado · violeta).
+ * Misma geometría y colores que el hero de home, reutilizable en otras páginas.
+ */
+.site-stripes {
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.site-stripes__gray,
+.site-stripes__purple,
+.site-stripes__accent {
+  position: absolute;
+  inset: 0;
+}
+
+.site-stripes__gray {
+  background: #12151f;
+}
+
+.site-stripes__purple {
+  background: #251c49;
+}
+
+.site-stripes__accent {
+  background: rgb(58 45 107 / 0.55);
+}
+
+/* Desktop: diagonal a la derecha, ~18% de desfase (hero home). */
+.site-stripes--from-hero .site-stripes__gray {
+  clip-path: polygon(63% 0, 100% 0, 100% 100%, 45% 100%);
+}
+
+.site-stripes--from-hero .site-stripes__purple {
+  clip-path: polygon(79% 0, 100% 0, 100% 100%, 61% 100%);
+}
+
+.site-stripes--from-hero .site-stripes__accent {
+  clip-path: polygon(79% 0, 82% 0, 64% 100%, 61% 100%);
+}
+
+.contact-hero-seam {
+  position: relative;
+  z-index: 2;
+  height: 8px;
+  margin-bottom: -8px;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      #070b13 0%,
+      #070b13 38%,
+      #12151f 58%,
+      #251c49 76%,
+      rgb(58 45 107 / 0.95) 88%,
+      #251c49 100%
+    )
+      0 0 / 100% 1px no-repeat,
+    linear-gradient(
+      180deg,
+      rgb(37 28 73 / 0.28) 0%,
+      transparent 100%
+    );
+}
+
+.contact-hero-wash {
+  background:
+    radial-gradient(ellipse 72% 58% at 16% 22%, rgba(124, 58, 237, 0.18), transparent 64%),
+    radial-gradient(ellipse 48% 42% at 58% 48%, rgba(139, 92, 246, 0.08), transparent 70%),
+    radial-gradient(ellipse 62% 52% at 84% 82%, rgba(34, 211, 238, 0.06), transparent 60%);
+}
+
+.contact-hero-sheen {
+  background:
+    linear-gradient(
+      122deg,
+      transparent 0%,
+      transparent 34%,
+      rgba(243, 241, 235, 0.03) 44%,
+      rgba(255, 255, 255, 0.08) 49.5%,
+      rgba(243, 241, 235, 0.035) 54%,
+      transparent 66%,
+      transparent 100%
+    );
+  mix-blend-mode: soft-light;
+  opacity: 0.85;
+}
+
+.contact-hero-crops {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.contact-hero-crop {
+  position: absolute;
+  width: 0.72rem;
+  height: 0.72rem;
+  border-color: rgb(243 241 235 / 0.16);
+  border-style: solid;
+  border-width: 0;
+}
+
+.contact-hero-crop--tl {
+  top: 6.5rem;
+  left: 1.1rem;
+  border-top-width: 1px;
+  border-left-width: 1px;
+}
+
+.contact-hero-crop--tr {
+  top: 6.5rem;
+  right: 1.1rem;
+  border-top-width: 1px;
+  border-right-width: 1px;
+}
+
+.contact-hero-crop--bl {
+  bottom: 1.1rem;
+  left: 1.1rem;
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+}
+
+.contact-hero-crop--br {
+  bottom: 1.1rem;
+  right: 1.1rem;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+}
+
+@media (min-width: 640px) {
+  .contact-hero-crop {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  .contact-hero-crop--tl,
+  .contact-hero-crop--tr {
+    top: 5.75rem;
+  }
+
+  .contact-hero-crop--tl,
+  .contact-hero-crop--bl {
+    left: 1.4rem;
+  }
+
+  .contact-hero-crop--tr,
+  .contact-hero-crop--br {
+    right: 1.4rem;
+  }
+
+  .contact-hero-crop--bl,
+  .contact-hero-crop--br {
+    bottom: 1.35rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .contact-hero-crop {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+
+  .contact-hero-crop--tl,
+  .contact-hero-crop--tr {
+    top: 5.5rem;
+  }
+
+  .contact-hero-crop--tl,
+  .contact-hero-crop--bl {
+    left: 1.6rem;
+  }
+
+  .contact-hero-crop--tr,
+  .contact-hero-crop--br {
+    right: 1.6rem;
+  }
+}
+
+.contact-hero-floor {
+  background: radial-gradient(
+    ellipse 58% 42% at 50% 100%,
+    rgba(124, 58, 237, 0.1),
+    transparent 72%
+  );
+}
+
+.contact-body-wash {
+  background: linear-gradient(
+    90deg,
+    #070b13 0%,
+    #070b13 42%,
+    rgba(7, 11, 19, 0.55) 62%,
+    transparent 100%
+  );
+}
+
+.contact-word-drift {
+  animation: contactWordDrift 22s ease-in-out infinite;
+}
+
+@keyframes contactWordDrift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, 10px, 0);
+  }
+}
+
+@media (max-width: 1023px) and (orientation: landscape) and (max-height: 520px) {
+  .contact-hero {
+    padding-top: 5.25rem;
+    padding-bottom: 1rem;
+  }
+
+  .contact-hero-copy {
+    padding-top: 0.35rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .contact-hero-mark {
+    font-size: clamp(2.4rem, 12vw, 5.5rem);
+  }
+}
+
+@media (max-width: 374px) {
+  .contact-hero-mark {
+    font-size: clamp(2.45rem, 18vw, 3.4rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-word-drift {
+    animation: none;
+  }
+}
+
+/* Móvil: franjas en la zona inferior, como el hero. */
+@media (max-width: 1023px) {
+  .site-stripes--from-hero-mobile .site-stripes__gray {
+    clip-path: polygon(0 16%, 100% 0, 100% 100%, 0 100%);
+  }
+
+  .site-stripes--from-hero-mobile .site-stripes__purple {
+    clip-path: polygon(0 48%, 100% 26%, 100% 100%, 0 100%);
+  }
+
+  .site-stripes--from-hero-mobile .site-stripes__accent {
+    clip-path: polygon(0 42%, 100% 20%, 100% 26%, 0 48%);
+  }
+}
+

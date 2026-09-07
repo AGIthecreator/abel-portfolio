@@ -55,7 +55,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
     }
 
-    const { name, email, message, website } = parsed.data;
+    const { name, email, message, website, company } = parsed.data;
 
     // Honeypot: bots que rellenan el campo oculto
     if (website) {
@@ -64,11 +64,9 @@ export async function POST(req: Request) {
 
     const cleanName = stripHeaderInjection(name);
     const cleanEmail = stripHeaderInjection(email);
-    const { safeName, safeEmail, safeMessageHtml } = sanitizeContactFields(
-      cleanName,
-      cleanEmail,
-      message,
-    );
+    const cleanCompany = stripHeaderInjection(company ?? "");
+    const { safeName, safeEmail, safeCompany, safeMessageHtml } =
+      sanitizeContactFields(cleanName, cleanEmail, message, cleanCompany);
 
     const resend = new Resend(config.apiKey);
     const subjectName = cleanName || "Sin nombre";
@@ -79,7 +77,12 @@ export async function POST(req: Request) {
         to: config.contactEmail,
         subject: `Nuevo contacto · ${subjectName}`,
         replyTo: cleanEmail,
-        html: buildContactEmailHtml({ safeName, safeEmail, safeMessageHtml }),
+        html: buildContactEmailHtml({
+          safeName,
+          safeEmail,
+          safeCompany,
+          safeMessageHtml,
+        }),
       }),
       resend.emails.send({
         from: RESEND_FROM_CLIENT,

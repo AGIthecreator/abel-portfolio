@@ -22,5 +22,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       priority: 0.85,
     },
+    {
+      url: "https://agithecreator.com/contacto",
+      lastModified: new Date(),
+      priority: 0.75,
+    },
   ];
 }

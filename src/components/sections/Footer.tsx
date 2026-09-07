@@ -3,11 +3,11 @@
 import { Fragment, type CSSProperties, type MouseEvent, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useContactModal } from "@/components/contact/ContactModalContext";
 import { handleSectionNavClick } from "@/lib/scroll-to-section";
+import { CONTACT_EMAIL, CONTACT_MAILTO } from "@/lib/contact/info";
 
-const EMAIL = "contacto@agithecreator.com";
-const MAILTO = `mailto:${EMAIL}`;
+const EMAIL = CONTACT_EMAIL;
+const MAILTO = CONTACT_MAILTO;
 
 const FOOTER_BG = "#070b13";
 
@@ -18,7 +18,7 @@ const FOOTER_SURFACE: CSSProperties = {
 const NAV_LINKS = [
   { href: "#entregables", label: "Por qué yo", homeSection: true },
   { href: "/como-trabajamos", label: "Cómo funciona" },
-  { label: "Contacto", opensContact: true },
+  { href: "/contacto", label: "Contacto" },
 ] as const;
 
 const LEGAL_LINKS = [
@@ -31,8 +31,6 @@ const navLinkClass =
   "whitespace-nowrap font-mono text-[11px] uppercase tracking-widest text-zinc-500 no-underline transition-colors duration-200 hover:text-zinc-200";
 
 export function Footer() {
-  const { openModal } = useContactModal();
-
   const scrollToTopCleanUrl = useCallback((e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -42,7 +40,6 @@ export function Footer() {
 
   return (
     <footer
-      id="contacto"
       className="relative w-full scroll-mt-24 overflow-hidden border-t border-white/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]"
       style={FOOTER_SURFACE}
     >
@@ -79,7 +76,7 @@ export function Footer() {
                 aria-label="Enlaces del sitio"
               >
                 {NAV_LINKS.map((item, index) => (
-                  <Fragment key={"href" in item ? item.href : item.label}>
+                  <Fragment key={item.href}>
                     {index > 0 ? (
                       <span
                         className="select-none font-mono text-[11px] text-white/10"
@@ -88,15 +85,7 @@ export function Footer() {
                         |
                       </span>
                     ) : null}
-                    {"opensContact" in item ? (
-                      <button
-                        type="button"
-                        onClick={openModal}
-                        className={`${navLinkClass} cursor-pointer border-0 bg-transparent p-0 font-inherit uppercase`}
-                      >
-                        {item.label}
-                      </button>
-                    ) : "homeSection" in item && item.homeSection ? (
+                    {"homeSection" in item && item.homeSection ? (
                       <a
                         href={item.href}
                         className={navLinkClass}
