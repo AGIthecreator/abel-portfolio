@@ -962,6 +962,71 @@ next-route-announcer,
   z-index: 2;
 }
 
+/* Marco L del hero de contacto — responsive sin transforms */
+.contact-hero-frame {
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+  top: 7.5rem;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  left: 1.25rem;
+  mix-blend-mode: soft-light;
+}
+
+.contact-hero-frame__tr,
+.contact-hero-frame__bl {
+  position: absolute;
+  box-sizing: border-box;
+  width: 50%;
+  height: 50%;
+  border-color: rgb(255 255 255 / 0.09);
+  border-style: solid;
+  border-width: 0;
+}
+
+.contact-hero-frame__tr {
+  top: 0;
+  right: 0;
+  border-top-width: 1px;
+  border-right-width: 1px;
+}
+
+.contact-hero-frame__bl {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+}
+
+@media (min-width: 640px) {
+  .contact-hero-frame {
+    top: 8rem;
+    right: 2rem;
+    bottom: 2rem;
+    left: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .contact-hero-frame {
+    top: 7rem;
+    /* ~80% de ancho útil, centrado */
+    right: 10%;
+    bottom: 2.5rem;
+    left: 10%;
+  }
+}
+
+@media (max-width: 1023px) and (orientation: landscape) and (max-height: 520px) {
+  .contact-hero-frame {
+    top: 5.25rem;
+    right: 1rem;
+    bottom: 0.75rem;
+    left: 1rem;
+  }
+}
+
 .contact-hero-crop {
   position: absolute;
   width: 0.72rem;

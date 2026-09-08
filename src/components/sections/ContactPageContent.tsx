@@ -165,23 +165,11 @@ export function ContactPageContent() {
           <div className="contact-hero-floor absolute inset-x-0 bottom-0 h-[42%]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,transparent_58%,rgba(0,0,0,0.38)_100%)]" />
 
-          {/* Marco incompleto: L arriba-derecha + L abajo-izquierda.
-              Sin scale-x (aplastaba las líneas verticales a <1px). */}
-          <div
-            className="absolute left-[8vw] right-[8vw] bottom-[8vw] top-[calc(7.5rem+8vw)] flex justify-center sm:top-[calc(8rem+8vw)] lg:top-[calc(7rem+8vw)]"
-          >
-            <div className="relative h-full w-[80%] origin-center -translate-y-[10%] scale-y-[1.8] mix-blend-soft-light">
-              {/* Esquina superior derecha: mitad superior del lado der. + mitad der. del borde sup. */}
-              <span
-                aria-hidden
-                className="absolute top-0 right-0 box-border h-1/2 w-1/2 border-t border-r border-white/[0.09]"
-              />
-              {/* Esquina inferior izquierda: mitad inferior del lado izq. + mitad izq. del borde inf. */}
-              <span
-                aria-hidden
-                className="absolute bottom-0 left-0 box-border h-1/2 w-1/2 border-b border-l border-white/[0.09]"
-              />
-            </div>
+          {/* Marco editorial: L arriba-derecha + L abajo-izquierda.
+              Insets por breakpoint (sin scale/translate: en móvil descuadraban). */}
+          <div className="contact-hero-frame" aria-hidden>
+            <span className="contact-hero-frame__tr" />
+            <span className="contact-hero-frame__bl" />
           </div>
         </div>
 
