@@ -959,7 +959,7 @@ next-route-announcer,
   pointer-events: none;
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
 }
 
 .contact-hero-crop {

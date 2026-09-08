@@ -149,25 +149,43 @@ export function ContactPageContent() {
     >
       {/* 1. Hero: aire extra para que Contacto/Directo no se cubran con el titular y el pavo */}
       <section className="contact-hero relative isolate pt-[7.5rem] pb-8 sm:pt-32 sm:pb-12 lg:pt-28 lg:pb-14">
-        <div
-          className="pointer-events-none absolute inset-0 z-0 opacity-[0.32]"
-          aria-hidden
-          style={{
-            backgroundImage:
-              "radial-gradient(rgba(255,255,255,0.5) 0.4px, transparent 0.4px)",
-            backgroundSize: "2px 2px",
-            mixBlendMode: "soft-light",
-          }}
-        />
-        <div className="contact-hero-wash pointer-events-none absolute inset-0 z-0" aria-hidden />
-        <div className="contact-hero-sheen pointer-events-none absolute inset-0 z-0" aria-hidden />
-        <div className="contact-hero-floor pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[42%]" aria-hidden />
-        <div
-          className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,transparent_58%,rgba(0,0,0,0.38)_100%)]"
-          aria-hidden
-        />
+        {/* Fondo + marco: una sola capa inferior; marcas y copy van por encima */}
+        <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
+          <div
+            className="absolute inset-0 opacity-[0.32]"
+            style={{
+              backgroundImage:
+                "radial-gradient(rgba(255,255,255,0.5) 0.4px, transparent 0.4px)",
+              backgroundSize: "2px 2px",
+              mixBlendMode: "soft-light",
+            }}
+          />
+          <div className="contact-hero-wash absolute inset-0" />
+          <div className="contact-hero-sheen absolute inset-0" />
+          <div className="contact-hero-floor absolute inset-x-0 bottom-0 h-[42%]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,transparent_58%,rgba(0,0,0,0.38)_100%)]" />
 
-        <div className="contact-hero-crops" aria-hidden>
+          {/* Marco incompleto: L arriba-derecha + L abajo-izquierda.
+              Sin scale-x (aplastaba las líneas verticales a <1px). */}
+          <div
+            className="absolute left-[8vw] right-[8vw] bottom-[8vw] top-[calc(7.5rem+8vw)] flex justify-center sm:top-[calc(8rem+8vw)] lg:top-[calc(7rem+8vw)]"
+          >
+            <div className="relative h-full w-[80%] origin-center -translate-y-[10%] scale-y-[1.8] mix-blend-soft-light">
+              {/* Esquina superior derecha: mitad superior del lado der. + mitad der. del borde sup. */}
+              <span
+                aria-hidden
+                className="absolute top-0 right-0 box-border h-1/2 w-1/2 border-t border-r border-white/[0.09]"
+              />
+              {/* Esquina inferior izquierda: mitad inferior del lado izq. + mitad izq. del borde inf. */}
+              <span
+                aria-hidden
+                className="absolute bottom-0 left-0 box-border h-1/2 w-1/2 border-b border-l border-white/[0.09]"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="contact-hero-crops z-[2]" aria-hidden>
           <span className="contact-hero-crop contact-hero-crop--tl" />
           <span className="contact-hero-crop contact-hero-crop--tr" />
           <span className="contact-hero-crop contact-hero-crop--bl" />
@@ -176,18 +194,18 @@ export function ContactPageContent() {
 
         <p
           aria-hidden
-          className="contact-hero-mark pointer-events-none absolute left-[4%] top-[6.75rem] z-0 w-max max-w-[92vw] select-none font-(family-name:--font-contact-display) text-[clamp(3.15rem,17vw,13.5rem)] font-medium italic leading-[0.8] tracking-[-0.06em] text-violet-200/9 sm:left-[5%] sm:top-28 lg:top-24"
+          className="contact-hero-mark pointer-events-none absolute left-[4%] top-[6.75rem] z-20 w-max max-w-[92vw] select-none font-(family-name:--font-contact-display) text-[clamp(3.15rem,17vw,13.5rem)] font-medium italic leading-[0.8] tracking-[-0.06em] text-violet-200/9 sm:left-[5%] sm:top-28 lg:top-24"
         >
           Contacto
         </p>
         <p
           aria-hidden
-          className="contact-hero-mark pointer-events-none absolute right-[8%] bottom-3 z-0 w-max max-w-[92vw] select-none text-right font-(family-name:--font-contact-display) text-[clamp(3.15rem,17vw,13.5rem)] font-medium italic leading-[0.8] tracking-[-0.06em] text-cyan-100/8 sm:right-[12%] sm:bottom-6 lg:bottom-8"
+          className="contact-hero-mark pointer-events-none absolute right-[8%] bottom-3 z-20 w-max max-w-[92vw] select-none text-right font-(family-name:--font-contact-display) text-[clamp(3.15rem,17vw,13.5rem)] font-medium italic leading-[0.8] tracking-[-0.06em] text-cyan-100/8 sm:right-[12%] sm:bottom-6 lg:bottom-8"
         >
           Directo
         </p>
 
-        <div className="contact-hero-copy relative z-10 mx-auto flex w-full max-w-5xl items-end justify-center px-5 pt-8 pb-10 sm:px-8 sm:pt-16 sm:pb-20 lg:px-10 lg:pt-20 lg:pb-28">
+        <div className="contact-hero-copy relative z-20 mx-auto flex w-full max-w-5xl items-end justify-center px-5 pt-8 pb-10 sm:px-8 sm:pt-16 sm:pb-20 lg:px-10 lg:pt-20 lg:pb-28">
           <FadeIn className="flex w-full flex-col items-center lg:flex-row lg:items-end lg:justify-center lg:gap-10 xl:gap-14">
             <div className="max-w-xl text-center lg:text-left">
               <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-300/80">
