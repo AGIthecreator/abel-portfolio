@@ -218,8 +218,8 @@ export function ContactPageContent() {
           <ContactHeroDuotonePlane />
         </div>
 
-        {/* Marco editorial L — solo desktop (en móvil descuadra) */}
-        <div className="contact-hero-frame z-1 hidden lg:block" aria-hidden>
+        {/* Marco editorial L (arriba-derecha + abajo-izquierda) */}
+        <div className="contact-hero-frame z-1" aria-hidden>
           <span className="contact-hero-frame__tr" />
           <span className="contact-hero-frame__bl" />
         </div>
