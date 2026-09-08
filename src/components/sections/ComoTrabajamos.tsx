@@ -414,7 +414,7 @@ export function ComoTrabajamos() {
         className="ct-hero relative isolate w-full overflow-x-clip overflow-y-hidden bg-[#070b13] pt-21 pb-0 sm:pt-24 lg:pt-20"
         aria-labelledby="ct-hero-heading"
       >
-        {/* Fondo como el hero principal: grano editorial + viñeta */}
+        {/* Fondo base */}
         <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
           <div className="absolute inset-0 bg-[#070b13]" />
           <div
@@ -429,7 +429,16 @@ export function ComoTrabajamos() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,transparent_56%,rgba(0,0,0,0.45)_100%)]" />
         </div>
 
-        {/* Imagen del setup a sangre (derecha, desktop) */}
+        {/* Móvil: duotono a sangre en todo el hero */}
+        <div
+          className="pointer-events-none absolute inset-0 z-0 lg:hidden"
+          aria-hidden
+        >
+          <SetupDuotone />
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(7,11,19,0.88)_0%,rgba(7,11,19,0.62)_38%,rgba(7,11,19,0.28)_68%,transparent_100%)]" />
+        </div>
+
+        {/* Desktop: imagen a sangre (derecha) */}
         <div className="absolute inset-y-0 right-0 z-0 hidden w-[50%] lg:block" aria-hidden>
           <SetupDuotone />
         </div>
@@ -469,14 +478,6 @@ export function ComoTrabajamos() {
 
             <div aria-hidden className="hidden lg:block" />
           </div>
-        </div>
-
-        {/* Imagen del setup a sangre (móvil, debajo del texto) */}
-        <div
-          className="ct-hero-mobile-image relative z-10 h-50 w-full sm:h-75 lg:hidden"
-          aria-hidden
-        >
-          <SetupDuotone />
         </div>
       </section>
 

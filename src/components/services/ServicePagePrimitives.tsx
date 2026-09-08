@@ -280,6 +280,20 @@ export function ServiceHero({
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,transparent_56%,rgba(0,0,0,0.45)_100%)]" />
       </div>
 
+      {/* Móvil: duotono (+ imagen) a sangre en todo el hero */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 lg:hidden"
+        aria-hidden
+      >
+        <HeroDuotoneImage
+          src={image?.src}
+          alt={image?.alt}
+          fit={imageFit}
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(7,11,19,0.88)_0%,rgba(7,11,19,0.62)_38%,rgba(7,11,19,0.28)_68%,transparent_100%)]" />
+      </div>
+
+      {/* Desktop: panel derecho */}
       <div
         className="absolute inset-y-0 right-0 z-0 hidden w-[50%] lg:block"
         aria-hidden
@@ -322,28 +336,6 @@ export function ServiceHero({
           <div aria-hidden className="hidden lg:block" />
         </div>
       </div>
-
-      {image ? (
-        <div
-          className={`ct-hero-mobile-image relative z-10 w-full lg:hidden ${
-            imageFit === "cover"
-              ? "h-65 sm:h-80"
-              : imageFit === "padded"
-                ? "h-70 sm:h-85"
-                : "h-55 sm:h-70"
-          }`}
-          aria-hidden
-        >
-          <HeroDuotoneImage src={image.src} alt="" fit={imageFit} />
-        </div>
-      ) : (
-        <div
-          className="ct-hero-mobile-image relative z-10 h-35 w-full sm:h-45 lg:hidden"
-          aria-hidden
-        >
-          <HeroDuotoneImage />
-        </div>
-      )}
     </section>
     <div className="page-hero-seam" aria-hidden />
     </>

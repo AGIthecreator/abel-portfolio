@@ -184,9 +184,9 @@ export function ContactPageContent() {
     <div
       className={`${display.variable} relative min-h-screen overflow-x-clip bg-[#070b13] text-zinc-300`}
     >
-      {/* 1. Hero: aire extra para que Contacto/Directo no se cubran con el titular y el pavo */}
-      <section className="contact-hero relative isolate overflow-hidden bg-[#070b13] pt-30 pb-8 sm:pt-32 sm:pb-12 lg:pt-28 lg:pb-14">
-        {/* Fondo como el hero de Cómo trabajamos: oscuro + corte gris/violeta a la derecha (sin foto). */}
+      {/* 1. Hero */}
+      <section className="contact-hero relative isolate overflow-hidden bg-[#070b13] pt-24 pb-10 sm:pt-28 sm:pb-12 lg:pt-28 lg:pb-14">
+        {/* Base oscura + grano */}
         <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
           <div className="absolute inset-0 bg-[#070b13]" />
           <div
@@ -201,7 +201,16 @@ export function ContactPageContent() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,transparent_56%,rgba(0,0,0,0.45)_100%)]" />
         </div>
 
-        {/* Panel derecho: mismos colores y corte vertical que SetupDuotone, sin la foto */}
+        {/* Móvil: duotono a sangre en todo el hero */}
+        <div
+          className="pointer-events-none absolute inset-0 z-0 lg:hidden"
+          aria-hidden
+        >
+          <ContactHeroDuotonePlane />
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(7,11,19,0.82)_0%,rgba(7,11,19,0.55)_45%,rgba(7,11,19,0.25)_72%,transparent_100%)]" />
+        </div>
+
+        {/* Desktop: panel derecho */}
         <div
           className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[50%] lg:block"
           aria-hidden
@@ -209,13 +218,13 @@ export function ContactPageContent() {
           <ContactHeroDuotonePlane />
         </div>
 
-        {/* Marco editorial L (arriba-derecha + abajo-izquierda) */}
-        <div className="contact-hero-frame z-1" aria-hidden>
+        {/* Marco editorial L — solo desktop (en móvil descuadra) */}
+        <div className="contact-hero-frame z-1 hidden lg:block" aria-hidden>
           <span className="contact-hero-frame__tr" />
           <span className="contact-hero-frame__bl" />
         </div>
 
-        <div className="contact-hero-crops z-2" aria-hidden>
+        <div className="contact-hero-crops z-2 hidden lg:block" aria-hidden>
           <span className="contact-hero-crop contact-hero-crop--tl" />
           <span className="contact-hero-crop contact-hero-crop--tr" />
           <span className="contact-hero-crop contact-hero-crop--bl" />
@@ -224,28 +233,28 @@ export function ContactPageContent() {
 
         <p
           aria-hidden
-          className="contact-hero-mark pointer-events-none absolute left-[4%] top-27 z-20 w-max max-w-[92vw] select-none font-(family-name:--font-contact-display) text-[clamp(3.15rem,17vw,13.5rem)] font-medium italic leading-[0.8] tracking-[-0.06em] text-violet-200/9 sm:left-[5%] sm:top-28 lg:top-24"
+          className="contact-hero-mark pointer-events-none absolute left-[4%] top-24 z-20 hidden w-max max-w-[92vw] select-none font-(family-name:--font-contact-display) text-[clamp(3.15rem,17vw,13.5rem)] font-medium italic leading-[0.8] tracking-[-0.06em] text-violet-200/9 lg:block lg:top-24"
         >
           Contacto
         </p>
         <p
           aria-hidden
-          className="contact-hero-mark pointer-events-none absolute right-[8%] bottom-3 z-20 w-max max-w-[92vw] select-none text-right font-(family-name:--font-contact-display) text-[clamp(3.15rem,17vw,13.5rem)] font-medium italic leading-[0.8] tracking-[-0.06em] text-cyan-100/8 sm:right-[12%] sm:bottom-6 lg:bottom-8"
+          className="contact-hero-mark pointer-events-none absolute right-[8%] bottom-6 z-20 hidden w-max max-w-[92vw] select-none text-right font-(family-name:--font-contact-display) text-[clamp(3.15rem,17vw,13.5rem)] font-medium italic leading-[0.8] tracking-[-0.06em] text-cyan-100/8 lg:block"
         >
           Directo
         </p>
 
-        <div className="contact-hero-copy relative z-20 mx-auto flex w-full max-w-5xl items-end justify-center px-5 pt-8 pb-10 sm:px-8 sm:pt-16 sm:pb-20 lg:px-10 lg:pt-20 lg:pb-28">
+        <div className="contact-hero-copy relative z-20 mx-auto flex w-full max-w-5xl items-center justify-center px-5 py-8 sm:px-8 sm:py-12 lg:items-end lg:px-10 lg:pt-20 lg:pb-28">
           <div className="flex w-full flex-col items-center lg:flex-row lg:items-end lg:justify-center lg:gap-10 xl:gap-14">
             <div className="max-w-xl text-center lg:text-left">
               <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-300/80">
                 Contacto
               </p>
-              <h1 className="mt-5 font-(family-name:--font-contact-display) text-[clamp(2.05rem,7.2vw,4.5rem)] font-medium leading-[0.98] tracking-[-0.035em] text-[#F3F1EB]">
+              <h1 className="mt-4 font-(family-name:--font-contact-display) text-[clamp(2.05rem,7.2vw,4.5rem)] font-medium leading-[0.98] tracking-[-0.035em] text-[#F3F1EB] sm:mt-5">
                 <span className="block">¿Hablamos?</span>
                 <span className="mt-1 block italic text-violet-300/95">Te respondo yo.</span>
               </h1>
-              <p className="mx-auto mt-6 max-w-[40ch] text-[16px] leading-[1.75] text-zinc-400 lg:mx-0 sm:text-[17px] sm:leading-[1.8]">
+              <p className="mx-auto mt-5 max-w-[40ch] text-[16px] leading-[1.75] text-zinc-400 lg:mx-0 sm:mt-6 sm:text-[17px] sm:leading-[1.8]">
                 Si quieres plantear una idea, resolver una duda o hablar de una web o un
                 sistema para tu negocio, escríbeme directamente.
               </p>
@@ -263,14 +272,6 @@ export function ContactPageContent() {
               />
             </div>
           </div>
-        </div>
-
-        {/* Móvil: franja de color en flujo bajo el copy (sin foto) */}
-        <div
-          className="relative z-0 h-40 w-full sm:h-55 lg:hidden"
-          aria-hidden
-        >
-          <ContactHeroDuotonePlane />
         </div>
       </section>
 
