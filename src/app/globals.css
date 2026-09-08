@@ -908,7 +908,8 @@ next-route-announcer,
   clip-path: polygon(79% 0, 82% 0, 64% 100%, 61% 100%);
 }
 
-.contact-hero-seam {
+.contact-hero-seam,
+.page-hero-seam {
   position: relative;
   z-index: 2;
   height: 8px;
@@ -932,29 +933,6 @@ next-route-announcer,
     );
 }
 
-.contact-hero-wash {
-  background:
-    radial-gradient(ellipse 72% 58% at 16% 22%, rgba(124, 58, 237, 0.18), transparent 64%),
-    radial-gradient(ellipse 48% 42% at 58% 48%, rgba(139, 92, 246, 0.08), transparent 70%),
-    radial-gradient(ellipse 62% 52% at 84% 82%, rgba(34, 211, 238, 0.06), transparent 60%);
-}
-
-.contact-hero-sheen {
-  background:
-    linear-gradient(
-      122deg,
-      transparent 0%,
-      transparent 34%,
-      rgba(243, 241, 235, 0.03) 44%,
-      rgba(255, 255, 255, 0.08) 49.5%,
-      rgba(243, 241, 235, 0.035) 54%,
-      transparent 66%,
-      transparent 100%
-    );
-  mix-blend-mode: soft-light;
-  opacity: 0.85;
-}
-
 .contact-hero-crops {
   pointer-events: none;
   position: absolute;
@@ -967,12 +945,11 @@ next-route-announcer,
 .contact-hero-frame {
   pointer-events: none;
   position: absolute;
-  z-index: 0;
+  z-index: 1;
   top: 7.5rem;
   right: 10%;
   bottom: 2.5rem;
   left: 10%;
-  mix-blend-mode: soft-light;
 }
 
 .contact-hero-frame__tr,
@@ -981,7 +958,7 @@ next-route-announcer,
   box-sizing: border-box;
   width: 50%;
   height: 50%;
-  border-color: rgb(255 255 255 / 0.09);
+  border-color: rgb(243 241 235 / 0.28);
   border-style: solid;
   border-width: 0;
 }
@@ -1111,14 +1088,6 @@ next-route-announcer,
   .contact-hero-crop--br {
     right: 1.6rem;
   }
-}
-
-.contact-hero-floor {
-  background: radial-gradient(
-    ellipse 58% 42% at 50% 100%,
-    rgba(124, 58, 237, 0.1),
-    transparent 72%
-  );
 }
 
 .contact-body-wash {

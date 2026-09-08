@@ -17,8 +17,14 @@ const FOOTER_SURFACE: CSSProperties = {
 
 const NAV_LINKS = [
   { href: "#entregables", label: "Por qué yo", homeSection: true },
-  { href: "/como-trabajamos", label: "Cómo funciona" },
+  { href: "/como-trabajamos", label: "Cómo trabajamos" },
   { href: "/contacto", label: "Contacto" },
+] as const;
+
+const SERVICE_LINKS = [
+  { href: "/desarrollo-web", label: "Desarrollo web" },
+  { href: "/automatizacion-de-procesos", label: "Automatización" },
+  { href: "/desarrollo-web-valladolid", label: "Valladolid" },
 ] as const;
 
 const LEGAL_LINKS = [
@@ -114,6 +120,26 @@ export function Footer() {
             </div>
 
             <div className="flex flex-col items-center gap-2.5 pb-3 pt-0.5">
+              <nav
+                className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5"
+                aria-label="Servicios"
+              >
+                {SERVICE_LINKS.map((item, index) => (
+                  <Fragment key={item.href}>
+                    {index > 0 ? (
+                      <span
+                        className="select-none font-mono text-[11px] text-white/10"
+                        aria-hidden
+                      >
+                        |
+                      </span>
+                    ) : null}
+                    <Link href={item.href} className={navLinkClass}>
+                      {item.label}
+                    </Link>
+                  </Fragment>
+                ))}
+              </nav>
               <nav
                 className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5"
                 aria-label="Enlaces legales"

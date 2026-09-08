@@ -138,6 +138,43 @@ function WhatsAppGlyph({ className }: { className?: string }) {
   );
 }
 
+/** Mismos colores y corte vertical del hero de Cómo trabajamos, sin la foto del setup. */
+function ContactHeroDuotonePlane() {
+  return (
+    <div className="relative h-full w-full overflow-hidden">
+      {/* Base gris (sustituye la foto en escala de grises) */}
+      <div className="absolute inset-0 bg-[#7a808c]" />
+      <div className="absolute inset-0 bg-[#5c6370]/70" />
+      {/* Tinte duotono (multiply): corte vertical en seco, 30% gris / 70% violeta */}
+      <div
+        className="absolute inset-0 mix-blend-multiply"
+        style={{
+          background:
+            "linear-gradient(90deg, #aab2c0 0%, #aab2c0 30%, #5b3bc4 30%, #5b3bc4 100%)",
+        }}
+      />
+      {/* Realce violeta en luces (screen) */}
+      <div
+        className="absolute inset-0 mix-blend-screen"
+        style={{
+          background:
+            "linear-gradient(90deg, rgba(120,130,150,0.10) 0%, rgba(120,130,150,0.10) 30%, rgba(124,92,255,0.28) 30%, rgba(124,92,255,0.28) 100%)",
+        }}
+      />
+      {/* Fundido con el fondo oscuro */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to right, #070b13 0%, rgba(7,11,19,0.45) 13%, transparent 32%)",
+        }}
+      />
+      <div className="absolute inset-0 lg:bg-[linear-gradient(to_bottom,#070b13_0%,transparent_14%,transparent_100%)]" />
+      <div className="pricing-hero-grain absolute inset-0 opacity-[0.06] mix-blend-soft-light" />
+    </div>
+  );
+}
+
 export function ContactPageContent() {
   const whatsappNumber = getWhatsAppNumber();
   const whatsappHref = getWhatsAppHref();
@@ -148,11 +185,12 @@ export function ContactPageContent() {
       className={`${display.variable} relative min-h-screen overflow-x-clip bg-[#070b13] text-zinc-300`}
     >
       {/* 1. Hero: aire extra para que Contacto/Directo no se cubran con el titular y el pavo */}
-      <section className="contact-hero relative isolate pt-[7.5rem] pb-8 sm:pt-32 sm:pb-12 lg:pt-28 lg:pb-14">
-        {/* Fondo + marco: una sola capa inferior; marcas y copy van por encima */}
+      <section className="contact-hero relative isolate overflow-hidden bg-[#070b13] pt-30 pb-8 sm:pt-32 sm:pb-12 lg:pt-28 lg:pb-14">
+        {/* Fondo como el hero de Cómo trabajamos: oscuro + corte gris/violeta a la derecha (sin foto). */}
         <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
+          <div className="absolute inset-0 bg-[#070b13]" />
           <div
-            className="absolute inset-0 opacity-[0.32]"
+            className="hero-editorial-grain absolute inset-0 opacity-[0.26]"
             style={{
               backgroundImage:
                 "radial-gradient(rgba(255,255,255,0.5) 0.4px, transparent 0.4px)",
@@ -160,20 +198,24 @@ export function ContactPageContent() {
               mixBlendMode: "soft-light",
             }}
           />
-          <div className="contact-hero-wash absolute inset-0" />
-          <div className="contact-hero-sheen absolute inset-0" />
-          <div className="contact-hero-floor absolute inset-x-0 bottom-0 h-[42%]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,transparent_58%,rgba(0,0,0,0.38)_100%)]" />
-
-          {/* Marco editorial: L arriba-derecha + L abajo-izquierda.
-              Insets por breakpoint (sin scale/translate: en móvil descuadraban). */}
-          <div className="contact-hero-frame" aria-hidden>
-            <span className="contact-hero-frame__tr" />
-            <span className="contact-hero-frame__bl" />
-          </div>
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,transparent_56%,rgba(0,0,0,0.45)_100%)]" />
         </div>
 
-        <div className="contact-hero-crops z-[2]" aria-hidden>
+        {/* Panel derecho: mismos colores y corte vertical que SetupDuotone, sin la foto */}
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[50%] lg:block"
+          aria-hidden
+        >
+          <ContactHeroDuotonePlane />
+        </div>
+
+        {/* Marco editorial L (arriba-derecha + abajo-izquierda) */}
+        <div className="contact-hero-frame z-1" aria-hidden>
+          <span className="contact-hero-frame__tr" />
+          <span className="contact-hero-frame__bl" />
+        </div>
+
+        <div className="contact-hero-crops z-2" aria-hidden>
           <span className="contact-hero-crop contact-hero-crop--tl" />
           <span className="contact-hero-crop contact-hero-crop--tr" />
           <span className="contact-hero-crop contact-hero-crop--bl" />
@@ -182,7 +224,7 @@ export function ContactPageContent() {
 
         <p
           aria-hidden
-          className="contact-hero-mark pointer-events-none absolute left-[4%] top-[6.75rem] z-20 w-max max-w-[92vw] select-none font-(family-name:--font-contact-display) text-[clamp(3.15rem,17vw,13.5rem)] font-medium italic leading-[0.8] tracking-[-0.06em] text-violet-200/9 sm:left-[5%] sm:top-28 lg:top-24"
+          className="contact-hero-mark pointer-events-none absolute left-[4%] top-27 z-20 w-max max-w-[92vw] select-none font-(family-name:--font-contact-display) text-[clamp(3.15rem,17vw,13.5rem)] font-medium italic leading-[0.8] tracking-[-0.06em] text-violet-200/9 sm:left-[5%] sm:top-28 lg:top-24"
         >
           Contacto
         </p>
@@ -194,7 +236,7 @@ export function ContactPageContent() {
         </p>
 
         <div className="contact-hero-copy relative z-20 mx-auto flex w-full max-w-5xl items-end justify-center px-5 pt-8 pb-10 sm:px-8 sm:pt-16 sm:pb-20 lg:px-10 lg:pt-20 lg:pb-28">
-          <FadeIn className="flex w-full flex-col items-center lg:flex-row lg:items-end lg:justify-center lg:gap-10 xl:gap-14">
+          <div className="flex w-full flex-col items-center lg:flex-row lg:items-end lg:justify-center lg:gap-10 xl:gap-14">
             <div className="max-w-xl text-center lg:text-left">
               <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-300/80">
                 Contacto
@@ -209,10 +251,6 @@ export function ContactPageContent() {
               </p>
             </div>
             <div className="relative mt-8 hidden shrink-0 lg:mt-0 lg:block">
-              <div
-                aria-hidden
-                className="pointer-events-none absolute top-[58%] left-1/2 h-40 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-500/16 blur-3xl"
-              />
               <Image
                 src="/logos/mascot-modal-hero.webp"
                 alt=""
@@ -224,7 +262,15 @@ export function ContactPageContent() {
                 className="relative h-auto w-52 object-contain object-bottom"
               />
             </div>
-          </FadeIn>
+          </div>
+        </div>
+
+        {/* Móvil: franja de color en flujo bajo el copy (sin foto) */}
+        <div
+          className="relative z-0 h-40 w-full sm:h-55 lg:hidden"
+          aria-hidden
+        >
+          <ContactHeroDuotonePlane />
         </div>
       </section>
 
@@ -269,7 +315,7 @@ export function ContactPageContent() {
           className="relative z-10 px-5 pt-14 sm:px-8 sm:pt-16 lg:px-10"
           aria-labelledby="contact-direct-heading"
         >
-          <FadeIn className="mx-auto w-full max-w-3xl">
+          <div className="mx-auto w-full max-w-3xl">
             <h2 id="contact-direct-heading" className="sr-only">
               Formas de contacto directo
             </h2>
@@ -320,7 +366,7 @@ export function ContactPageContent() {
               Normalmente respondo en menos de 24 horas laborables. Sin formularios
               interminables ni intermediarios.
             </p>
-          </FadeIn>
+          </div>
         </section>
 
         {/* 3. Formulario */}
@@ -378,7 +424,7 @@ export function ContactPageContent() {
             <div className="mt-10 space-y-12">
               <PersonBlock name={OPERATOR.firstName} role={OPERATOR.role}>
                 <p>{OPERATOR.note}</p>
-                <p className="w-full text-[10px] italic leading-[1.5] text-white/25 sm:text-[11px]">
+                <p className="w-full text-[10px] italic leading-normal text-white/25 sm:text-[11px]">
                   {OPERATOR.tools}
                 </p>
               </PersonBlock>

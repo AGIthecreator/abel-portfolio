@@ -866,6 +866,23 @@ export function Pricing() {
                     <p className="text-zinc-400">
                       Si crece el trabajo, crece el presupuesto, y se habla antes de hacerlo.
                     </p>
+                    <p className="text-[14px] leading-[1.7] text-zinc-500">
+                      Más detalle del servicio:{" "}
+                      <Link
+                        href="/desarrollo-web"
+                        className="text-zinc-300 underline decoration-violet-400/30 underline-offset-[3px] transition-colors hover:text-zinc-100"
+                      >
+                        desarrollo web
+                      </Link>
+                      {" · "}
+                      <Link
+                        href="/automatizacion-de-procesos"
+                        className="text-zinc-300 underline decoration-violet-400/30 underline-offset-[3px] transition-colors hover:text-zinc-100"
+                      >
+                        automatización
+                      </Link>
+                      .
+                    </p>
                   </div>
                 </div>
               </FadeIn>

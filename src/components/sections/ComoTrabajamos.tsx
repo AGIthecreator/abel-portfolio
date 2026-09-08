@@ -159,8 +159,7 @@ const PRIMARY_CTA =
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="inline-flex items-center gap-2 font-(family-name:--font-ct-ui) text-[10px] font-semibold uppercase tracking-[0.18em] text-violet-300/80">
-      <span aria-hidden className="h-px w-6 bg-violet-300/40" />
+    <p className="font-(family-name:--font-ct-ui) text-[10px] font-semibold uppercase tracking-[0.18em] text-violet-300/80">
       {children}
     </p>
   );
@@ -203,7 +202,7 @@ function SetupDuotone() {
         priority
         className="object-cover object-center grayscale brightness-[0.92] contrast-[1.05]"
       />
-      {/* Tinte duotono (multiply): corte vertical en seco — primer 30% gris (claro), resto violeta */}
+      {/* Tinte duotono (multiply): corte vertical en seco, primer 30% gris (claro), resto violeta */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 mix-blend-multiply"
@@ -221,7 +220,7 @@ function SetupDuotone() {
             "linear-gradient(90deg, rgba(120,130,150,0.10) 0%, rgba(120,130,150,0.10) 30%, rgba(124,92,255,0.28) 30%, rgba(124,92,255,0.28) 100%)",
         }}
       />
-      {/* Fundido con el fondo oscuro en el borde izquierdo y arriba/abajo */}
+      {/* Fundido con el fondo oscuro en el borde izquierdo */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
@@ -230,9 +229,10 @@ function SetupDuotone() {
             "linear-gradient(to right, #070b13 0%, rgba(7,11,19,0.45) 13%, transparent 32%)",
         }}
       />
+      {/* Solo fundido superior: los colores llegan hasta la franja */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 lg:bg-[linear-gradient(to_bottom,#070b13_0%,transparent_12%,transparent_88%,#070b13_100%)]"
+        className="pointer-events-none absolute inset-0 lg:bg-[linear-gradient(to_bottom,#070b13_0%,transparent_14%,transparent_100%)]"
       />
       {/* Grano sutil */}
       <div
@@ -263,7 +263,7 @@ const TIMELINE_STEPS = [
 function ProcessTimeline() {
   return (
     <div
-      className="relative mx-auto aspect-234/324 w-full max-w-[540px]"
+      className="relative mx-auto aspect-234/324 w-full max-w-135"
       aria-hidden
     >
       <svg
@@ -370,7 +370,7 @@ function FaqDisclosure({
             isOpen ? "rotate-180" : "rotate-0"
           }`}
         >
-          <ChevronDown className="size-4 sm:size-[18px]" strokeWidth={2} />
+          <ChevronDown className="size-4 sm:size-4.5" strokeWidth={2} />
         </span>
       </button>
 
@@ -409,9 +409,9 @@ export function ComoTrabajamos() {
     <div
       className={`${display.variable} ${ui.variable} relative overflow-x-clip bg-[#070b13] font-(family-name:--font-ct-ui) text-zinc-300`}
     >
-      {/* ───────────────────────── HERO ───────────────────────── */}
+      {/* HERO */}
       <section
-        className="ct-hero relative isolate w-full overflow-x-clip overflow-y-hidden bg-[#070b13] pt-[5.25rem] pb-0 sm:pt-24 lg:pt-20"
+        className="ct-hero relative isolate w-full overflow-x-clip overflow-y-hidden bg-[#070b13] pt-21 pb-0 sm:pt-24 lg:pt-20"
         aria-labelledby="ct-hero-heading"
       >
         {/* Fondo como el hero principal: grano editorial + viñeta */}
@@ -434,7 +434,7 @@ export function ComoTrabajamos() {
           <SetupDuotone />
         </div>
 
-        <div className="relative z-10 mx-auto flex w-full max-w-[1320px] items-center px-5 sm:px-8 lg:min-h-[70vh] lg:px-10">
+        <div className="relative z-10 mx-auto flex w-full max-w-330 items-center px-5 sm:px-8 lg:min-h-[70vh] lg:px-10">
           <div className="grid w-full items-center gap-6 lg:grid-cols-2 lg:gap-8">
             <div className="ct-hero-copy max-w-136 py-8 sm:py-14 lg:py-20">
               <Eyebrow>Cómo trabajamos</Eyebrow>
@@ -473,14 +473,16 @@ export function ComoTrabajamos() {
 
         {/* Imagen del setup a sangre (móvil, debajo del texto) */}
         <div
-          className="ct-hero-mobile-image relative z-10 h-[200px] w-full sm:h-[300px] lg:hidden"
+          className="ct-hero-mobile-image relative z-10 h-50 w-full sm:h-75 lg:hidden"
           aria-hidden
         >
           <SetupDuotone />
         </div>
       </section>
 
-      {/* ─────────── SECCIÓN 2 · Dónde empiezan los problemas (3 franjas) ─────────── */}
+      <div className="page-hero-seam" aria-hidden />
+
+      {/* SECCIÓN 2: Dónde empiezan los problemas (3 franjas) */}
       <section
         className="relative overflow-hidden bg-[#070b13]"
         aria-labelledby="ct-problems-heading"
@@ -488,7 +490,7 @@ export function ComoTrabajamos() {
 
         {/* Misma composición que el hero principal, espejada hacia la izquierda y
             descendiendo a la derecha. Colores y proporciones EXACTOS del hero:
-            de izq. a der. → morado (#251c49) · violeta fina (#3a2d6b/55) · gris (#12151f). */}
+            de izq. a der.: morado (#251c49), violeta fina (#3a2d6b/55), gris (#12151f). */}
         <div aria-hidden className="pointer-events-none absolute inset-0">
           {/* Panel gris (base, el más ancho) */}
           <div
@@ -556,7 +558,7 @@ export function ComoTrabajamos() {
         </div>
       </section>
 
-      {/* ───────── SECCIÓN PRINCIPAL · El proceso (imagen a sangre izq. + texto der.) ───────── */}
+      {/* SECCIÓN PRINCIPAL: El proceso (imagen a sangre izq. + texto der.) */}
       {/* -mt-px: solapa 1px sobre la sección anterior para eliminar el hueco de
           subpíxel que dejaba ver el fondo oscuro como una línea horizontal. */}
       <section
@@ -568,9 +570,9 @@ export function ComoTrabajamos() {
 
         {/* Franjas en ESPEJO vertical respecto a la sección 2 (mismo recurso que la
             página principal en la costura): donde cada color de la sección anterior
-            termina en su borde inferior (gris 65%, morado 49%, violeta 46–49%), aquí
+            termina en su borde inferior (gris 65%, morado 49%, violeta 46-49%), aquí
             empieza en el borde superior y desciende en sentido opuesto hasta el borde
-            inferior (gris 37%, morado 21%, violeta 18–21%), que enlaza con la sección
+            inferior (gris 37%, morado 21%, violeta 18-21%), que enlaza con la sección
             de cierre. Mismos colores y proporciones del hero principal. */}
         <div aria-hidden className="pointer-events-none absolute inset-0">
           {/* Panel gris (base) */}
@@ -600,7 +602,7 @@ export function ComoTrabajamos() {
           <ProcessTimeline />
         </div>
 
-        <div className="relative z-10 mx-auto w-full max-w-[1320px] px-4 sm:px-6 lg:px-10">
+        <div className="relative z-10 mx-auto w-full max-w-330 px-4 sm:px-6 lg:px-10">
           <div className="grid grid-cols-1 lg:grid-cols-[38%_1fr]">
             <div aria-hidden className="hidden lg:block" />
 
@@ -633,7 +635,7 @@ export function ComoTrabajamos() {
                       <div className="relative mt-3 ml-5 overflow-hidden rounded-md bg-[#5b3bc4]/12 py-3.5 pl-6 pr-4 sm:ml-6 sm:py-4 sm:pl-7">
                         <span
                           aria-hidden
-                          className="absolute inset-y-0 left-0 w-[3px] bg-[#7c5cff]"
+                          className="absolute inset-y-0 left-0 w-0.75 bg-[#7c5cff]"
                         />
                         <p className="max-w-[52ch] text-[14.5px] leading-[1.7] text-zinc-300 sm:text-[15px]">
                           {step.body}
@@ -648,7 +650,7 @@ export function ComoTrabajamos() {
         </div>
       </section>
 
-      {/* ───────────────────────── PREGUNTAS FRECUENTES ───────────────────────── */}
+      {/* PREGUNTAS FRECUENTES */}
       <section
         className="relative overflow-hidden"
         aria-labelledby="ct-faq-heading"
@@ -663,7 +665,7 @@ export function ComoTrabajamos() {
           }}
         />
 
-        <div className="relative z-10 mx-auto w-full max-w-[960px] px-5 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-32">
+        <div className="relative z-10 mx-auto w-full max-w-240 px-5 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-32">
           <FadeIn>
             <Eyebrow>Antes de empezar</Eyebrow>
             <h2
@@ -693,14 +695,14 @@ export function ComoTrabajamos() {
         </div>
       </section>
 
-      {/* ───────────────────────── CIERRE ───────────────────────── */}
+      {/* CIERRE */}
       <section
         className="relative overflow-hidden border-t border-white/5 bg-[#070b13]"
         aria-labelledby="ct-close-heading"
       >
         {/* Mismas franjas que la sección 2, continuando el espejo desde el borde
-            inferior de «Así construimos cada proyecto» (gris 37% · morado 21% ·
-            violeta 18–21%) y descendiendo. Mismos colores y proporciones exactos. */}
+            inferior de «Así construimos cada proyecto» (gris 37%, morado 21%,
+            violeta 18-21%) y descendiendo. Mismos colores y proporciones exactos. */}
         <div aria-hidden className="pointer-events-none absolute inset-0">
           {/* Panel gris (base, el más ancho) */}
           <div

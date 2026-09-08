@@ -8,6 +8,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      url: "https://agithecreator.com/desarrollo-web",
+      lastModified: new Date(),
+      priority: 0.9,
+    },
+    {
+      url: "https://agithecreator.com/automatizacion-de-procesos",
+      lastModified: new Date(),
+      priority: 0.88,
+    },
+    {
+      url: "https://agithecreator.com/desarrollo-web-valladolid",
+      lastModified: new Date(),
+      priority: 0.82,
+    },
+    {
       url: "https://agithecreator.com/precios",
       lastModified: new Date(),
       priority: 0.85,
