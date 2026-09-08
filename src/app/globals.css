@@ -962,15 +962,16 @@ next-route-announcer,
   z-index: 2;
 }
 
-/* Marco L del hero de contacto — responsive sin transforms */
+/* Marco L del hero de contacto — mismo aire interior en todos los anchos.
+   Las crop marks van ~1.1rem del borde; el marco queda claramente más dentro. */
 .contact-hero-frame {
   pointer-events: none;
   position: absolute;
   z-index: 0;
   top: 7.5rem;
-  right: 1.25rem;
-  bottom: 1.25rem;
-  left: 1.25rem;
+  right: 10%;
+  bottom: 2.5rem;
+  left: 10%;
   mix-blend-mode: soft-light;
 }
 
@@ -1002,16 +1003,15 @@ next-route-announcer,
 @media (min-width: 640px) {
   .contact-hero-frame {
     top: 8rem;
-    right: 2rem;
-    bottom: 2rem;
-    left: 2rem;
+    right: 10%;
+    bottom: 2.5rem;
+    left: 10%;
   }
 }
 
 @media (min-width: 1024px) {
   .contact-hero-frame {
     top: 7rem;
-    /* ~80% de ancho útil, centrado */
     right: 10%;
     bottom: 2.5rem;
     left: 10%;
@@ -1021,9 +1021,9 @@ next-route-announcer,
 @media (max-width: 1023px) and (orientation: landscape) and (max-height: 520px) {
   .contact-hero-frame {
     top: 5.25rem;
-    right: 1rem;
-    bottom: 0.75rem;
-    left: 1rem;
+    right: 10%;
+    bottom: 1.25rem;
+    left: 10%;
   }
 }
 
