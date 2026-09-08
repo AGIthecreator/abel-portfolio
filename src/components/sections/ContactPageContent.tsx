@@ -185,7 +185,7 @@ export function ContactPageContent() {
       className={`${display.variable} relative min-h-screen overflow-x-clip bg-[#070b13] text-zinc-300`}
     >
       {/* 1. Hero */}
-      <section className="contact-hero relative isolate overflow-hidden bg-[#070b13] pt-24 pb-10 sm:pt-28 sm:pb-12 lg:pt-28 lg:pb-14">
+      <section className="contact-hero relative isolate overflow-hidden bg-[#070b13] pt-32 pb-10 sm:pt-36 sm:pb-12 lg:pt-28 lg:pb-14">
         {/* Base oscura + grano */}
         <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
           <div className="absolute inset-0 bg-[#070b13]" />

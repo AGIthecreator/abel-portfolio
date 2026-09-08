@@ -936,13 +936,14 @@ next-route-announcer,
 /* Contacto hero: crop marks fuera + marco L dentro.
    Variables por breakpoint para respetar aire en móvil. */
 .contact-hero {
+  /* Por debajo del navbar móvil (fila logo + links ~5.6–6rem) */
   --contact-crop-x: 0.7rem;
   --contact-crop-y-bottom: 0.7rem;
-  --contact-crop-y-top: 4.85rem;
+  --contact-crop-y-top: 6.85rem;
   --contact-frame-x: 1.7rem;
   --contact-frame-y-bottom: 1.7rem;
-  --contact-frame-y-top: 5.75rem;
-  --contact-l-arm: 2.85rem;
+  --contact-frame-y-top: 7.85rem;
+  --contact-l-arm: 50%;
   --contact-frame-line: rgb(243 241 235 / 0.42);
   --contact-crop-line: rgb(243 241 235 / 0.34);
 }
@@ -951,11 +952,11 @@ next-route-announcer,
   .contact-hero {
     --contact-crop-x: 1.15rem;
     --contact-crop-y-bottom: 1.15rem;
-    --contact-crop-y-top: 5.5rem;
+    --contact-crop-y-top: 7.15rem;
     --contact-frame-x: 2.35rem;
     --contact-frame-y-bottom: 2.35rem;
-    --contact-frame-y-top: 6.5rem;
-    --contact-l-arm: 3.5rem;
+    --contact-frame-y-top: 8.25rem;
+    --contact-l-arm: 50%;
   }
 }
 
@@ -1069,11 +1070,11 @@ next-route-announcer,
 
 @media (max-width: 1023px) and (orientation: landscape) and (max-height: 520px) {
   .contact-hero {
-    --contact-crop-y-top: 4.25rem;
+    --contact-crop-y-top: 5.5rem;
     --contact-crop-y-bottom: 0.55rem;
-    --contact-frame-y-top: 5rem;
+    --contact-frame-y-top: 6.35rem;
     --contact-frame-y-bottom: 1.15rem;
-    --contact-l-arm: 2.25rem;
+    --contact-l-arm: 50%;
   }
 }
 
