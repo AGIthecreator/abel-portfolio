@@ -933,32 +933,122 @@ next-route-announcer,
     );
 }
 
+/* Contacto hero: crop marks fuera + marco L dentro.
+   Variables por breakpoint para respetar aire en móvil. */
+.contact-hero {
+  --contact-crop-x: 0.7rem;
+  --contact-crop-y-bottom: 0.7rem;
+  --contact-crop-y-top: 4.85rem;
+  --contact-frame-x: 1.7rem;
+  --contact-frame-y-bottom: 1.7rem;
+  --contact-frame-y-top: 5.75rem;
+  --contact-l-arm: 2.85rem;
+  --contact-frame-line: rgb(243 241 235 / 0.42);
+  --contact-crop-line: rgb(243 241 235 / 0.34);
+}
+
+@media (min-width: 640px) {
+  .contact-hero {
+    --contact-crop-x: 1.15rem;
+    --contact-crop-y-bottom: 1.15rem;
+    --contact-crop-y-top: 5.5rem;
+    --contact-frame-x: 2.35rem;
+    --contact-frame-y-bottom: 2.35rem;
+    --contact-frame-y-top: 6.5rem;
+    --contact-l-arm: 3.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .contact-hero {
+    --contact-crop-x: 1.6rem;
+    --contact-crop-y-bottom: 1.6rem;
+    --contact-crop-y-top: 5.5rem;
+    --contact-frame-x: 10%;
+    --contact-frame-y-bottom: 2.5rem;
+    --contact-frame-y-top: 7rem;
+    --contact-l-arm: 50%;
+    --contact-frame-line: rgb(243 241 235 / 0.28);
+    --contact-crop-line: rgb(243 241 235 / 0.16);
+  }
+}
+
 .contact-hero-crops {
   pointer-events: none;
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 4;
 }
 
-/* Marco L del hero de contacto — mismo aire interior en todos los anchos.
-   Las crop marks van ~1.1rem del borde; el marco queda claramente más dentro. */
+.contact-hero-crop {
+  position: absolute;
+  box-sizing: border-box;
+  width: 0.78rem;
+  height: 0.78rem;
+  border-color: var(--contact-crop-line);
+  border-style: solid;
+  border-width: 0;
+}
+
+.contact-hero-crop--tl {
+  top: var(--contact-crop-y-top);
+  left: var(--contact-crop-x);
+  border-top-width: 1px;
+  border-left-width: 1px;
+}
+
+.contact-hero-crop--tr {
+  top: var(--contact-crop-y-top);
+  right: var(--contact-crop-x);
+  border-top-width: 1px;
+  border-right-width: 1px;
+}
+
+.contact-hero-crop--bl {
+  bottom: var(--contact-crop-y-bottom);
+  left: var(--contact-crop-x);
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+}
+
+.contact-hero-crop--br {
+  bottom: var(--contact-crop-y-bottom);
+  right: var(--contact-crop-x);
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+}
+
+@media (min-width: 640px) {
+  .contact-hero-crop {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .contact-hero-crop {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+}
+
 .contact-hero-frame {
   pointer-events: none;
   position: absolute;
-  z-index: 1;
-  top: 5.5rem;
-  right: 1.25rem;
-  bottom: 1.5rem;
-  left: 1.25rem;
+  z-index: 3;
+  top: var(--contact-frame-y-top);
+  right: var(--contact-frame-x);
+  bottom: var(--contact-frame-y-bottom);
+  left: var(--contact-frame-x);
 }
 
 .contact-hero-frame__tr,
 .contact-hero-frame__bl {
   position: absolute;
   box-sizing: border-box;
-  width: 50%;
-  height: 50%;
-  border-color: rgb(243 241 235 / 0.28);
+  width: var(--contact-l-arm);
+  height: var(--contact-l-arm);
+  border-color: var(--contact-frame-line);
   border-style: solid;
   border-width: 0;
 }
@@ -977,116 +1067,13 @@ next-route-announcer,
   border-left-width: 1px;
 }
 
-@media (min-width: 640px) {
-  .contact-hero-frame {
-    top: 6.5rem;
-    right: 8%;
-    bottom: 2rem;
-    left: 8%;
-  }
-}
-
-@media (min-width: 1024px) {
-  .contact-hero-frame {
-    top: 7rem;
-    right: 10%;
-    bottom: 2.5rem;
-    left: 10%;
-  }
-}
-
 @media (max-width: 1023px) and (orientation: landscape) and (max-height: 520px) {
-  .contact-hero-frame {
-    top: 5.25rem;
-    right: 10%;
-    bottom: 1.25rem;
-    left: 10%;
-  }
-}
-
-.contact-hero-crop {
-  position: absolute;
-  width: 0.72rem;
-  height: 0.72rem;
-  border-color: rgb(243 241 235 / 0.16);
-  border-style: solid;
-  border-width: 0;
-}
-
-.contact-hero-crop--tl {
-  top: 6.5rem;
-  left: 1.1rem;
-  border-top-width: 1px;
-  border-left-width: 1px;
-}
-
-.contact-hero-crop--tr {
-  top: 6.5rem;
-  right: 1.1rem;
-  border-top-width: 1px;
-  border-right-width: 1px;
-}
-
-.contact-hero-crop--bl {
-  bottom: 1.1rem;
-  left: 1.1rem;
-  border-bottom-width: 1px;
-  border-left-width: 1px;
-}
-
-.contact-hero-crop--br {
-  bottom: 1.1rem;
-  right: 1.1rem;
-  border-bottom-width: 1px;
-  border-right-width: 1px;
-}
-
-@media (min-width: 640px) {
-  .contact-hero-crop {
-    width: 0.95rem;
-    height: 0.95rem;
-  }
-
-  .contact-hero-crop--tl,
-  .contact-hero-crop--tr {
-    top: 5.75rem;
-  }
-
-  .contact-hero-crop--tl,
-  .contact-hero-crop--bl {
-    left: 1.4rem;
-  }
-
-  .contact-hero-crop--tr,
-  .contact-hero-crop--br {
-    right: 1.4rem;
-  }
-
-  .contact-hero-crop--bl,
-  .contact-hero-crop--br {
-    bottom: 1.35rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .contact-hero-crop {
-    width: 1.15rem;
-    height: 1.15rem;
-  }
-
-  .contact-hero-crop--tl,
-  .contact-hero-crop--tr {
-    top: 5.5rem;
-  }
-
-  .contact-hero-crop--tl,
-  .contact-hero-crop--bl {
-    left: 1.6rem;
-  }
-
-  .contact-hero-crop--tr,
-  .contact-hero-crop--br {
-    right: 1.6rem;
+  .contact-hero {
+    --contact-crop-y-top: 4.25rem;
+    --contact-crop-y-bottom: 0.55rem;
+    --contact-frame-y-top: 5rem;
+    --contact-frame-y-bottom: 1.15rem;
+    --contact-l-arm: 2.25rem;
   }
 }
 

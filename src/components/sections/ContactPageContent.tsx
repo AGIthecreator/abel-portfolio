@@ -218,17 +218,17 @@ export function ContactPageContent() {
           <ContactHeroDuotonePlane />
         </div>
 
-        {/* Marco editorial L (arriba-derecha + abajo-izquierda) */}
-        <div className="contact-hero-frame z-1" aria-hidden>
-          <span className="contact-hero-frame__tr" />
-          <span className="contact-hero-frame__bl" />
-        </div>
-
-        <div className="contact-hero-crops z-2 hidden lg:block" aria-hidden>
+        {/* Crop marks (fuera) + marco L (dentro) */}
+        <div className="contact-hero-crops" aria-hidden>
           <span className="contact-hero-crop contact-hero-crop--tl" />
           <span className="contact-hero-crop contact-hero-crop--tr" />
           <span className="contact-hero-crop contact-hero-crop--bl" />
           <span className="contact-hero-crop contact-hero-crop--br" />
+        </div>
+
+        <div className="contact-hero-frame" aria-hidden>
+          <span className="contact-hero-frame__tr" />
+          <span className="contact-hero-frame__bl" />
         </div>
 
         <p
