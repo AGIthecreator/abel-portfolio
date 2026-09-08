@@ -138,14 +138,28 @@ function WhatsAppGlyph({ className }: { className?: string }) {
   );
 }
 
-/** Mismos colores y corte vertical del hero de Cómo trabajamos, sin la foto del setup. */
-function ContactHeroDuotonePlane() {
+/** Duotono del hero de contacto. En móvil puede llevar foto; en desktop solo color. */
+function ContactHeroDuotonePlane({
+  image,
+}: {
+  image?: { src: string; alt?: string };
+}) {
   return (
     <div className="relative h-full w-full overflow-hidden">
-      {/* Base gris (sustituye la foto en escala de grises) */}
-      <div className="absolute inset-0 bg-[#7a808c]" />
-      <div className="absolute inset-0 bg-[#5c6370]/70" />
-      {/* Tinte duotono (multiply): corte vertical en seco, 30% gris / 70% violeta */}
+      <div className="absolute inset-0 bg-[#6e7480]" />
+      {image ? (
+        <Image
+          src={image.src}
+          alt={image.alt ?? ""}
+          fill
+          priority
+          sizes="(max-width: 1023px) 100vw, 50vw"
+          quality={85}
+          className="object-cover object-center grayscale brightness-[0.92] contrast-[1.05]"
+        />
+      ) : (
+        <div className="absolute inset-0 bg-[#5c6370]/70" />
+      )}
       <div
         className="absolute inset-0 mix-blend-multiply"
         style={{
@@ -153,7 +167,6 @@ function ContactHeroDuotonePlane() {
             "linear-gradient(90deg, #aab2c0 0%, #aab2c0 30%, #5b3bc4 30%, #5b3bc4 100%)",
         }}
       />
-      {/* Realce violeta en luces (screen) */}
       <div
         className="absolute inset-0 mix-blend-screen"
         style={{
@@ -161,7 +174,6 @@ function ContactHeroDuotonePlane() {
             "linear-gradient(90deg, rgba(120,130,150,0.10) 0%, rgba(120,130,150,0.10) 30%, rgba(124,92,255,0.28) 30%, rgba(124,92,255,0.28) 100%)",
         }}
       />
-      {/* Fundido con el fondo oscuro */}
       <div
         className="absolute inset-0"
         style={{
@@ -201,16 +213,21 @@ export function ContactPageContent() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,transparent_56%,rgba(0,0,0,0.45)_100%)]" />
         </div>
 
-        {/* Móvil: duotono a sangre en todo el hero */}
+        {/* Móvil / tablet: foto + duotono a sangre (como los otros heroes de servicio) */}
         <div
           className="pointer-events-none absolute inset-0 z-0 lg:hidden"
           aria-hidden
         >
-          <ContactHeroDuotonePlane />
-          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(7,11,19,0.82)_0%,rgba(7,11,19,0.55)_45%,rgba(7,11,19,0.25)_72%,transparent_100%)]" />
+          <ContactHeroDuotonePlane
+            image={{
+              src: "/ContactoHeroMovil.webp",
+              alt: "Contacto AGI TheCreator",
+            }}
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(7,11,19,0.88)_0%,rgba(7,11,19,0.62)_38%,rgba(7,11,19,0.28)_68%,transparent_100%)]" />
         </div>
 
-        {/* Desktop: panel derecho */}
+        {/* Desktop: solo panel de color a la derecha (sin esta foto) */}
         <div
           className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[50%] lg:block"
           aria-hidden
