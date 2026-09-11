@@ -1,6 +1,5 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
 import { LabButton } from "./LabUi";
 
 export function LabIntro({
@@ -12,20 +11,13 @@ export function LabIntro({
   onResume: () => void;
   canResume: boolean;
 }) {
-  const reduceMotion = useReducedMotion();
-
   return (
-    <motion.div
-      initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, ease: "easeOut" }}
-      className="flex flex-col justify-start py-2 sm:min-h-[min(58vh,36rem)] sm:justify-center sm:py-10"
-    >
+    <div className="flex flex-col py-2 sm:py-8">
       <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-violet-300">
         Laboratorio de automatización
       </p>
 
-      <h1 className="mt-4 max-w-3xl font-(family-name:--font-svc-display) text-[clamp(1.75rem,6.2vw,3.4rem)] leading-[1.12] font-medium text-zinc-50 sm:mt-5">
+      <h1 className="mt-4 max-w-3xl font-(family-name:--font-svc-display) text-[clamp(1.75rem,6.2vw,3.4rem)] leading-[1.15] font-medium text-zinc-50 sm:mt-5">
         ¿Qué pasaría si tu negocio trabajara un poco distinto?
       </h1>
 
@@ -51,6 +43,6 @@ export function LabIntro({
           Tu flujo sigue aquí. No se ha ejecutado nada mientras no estabas.
         </p>
       ) : null}
-    </motion.div>
+    </div>
   );
 }

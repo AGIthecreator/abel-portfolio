@@ -197,21 +197,21 @@ export function LaboratorioShell() {
           </div>
         ) : null}
 
+        {state.act === 0 ? (
+          <LabIntro
+            onStart={start}
+            onResume={resume}
+            canResume={restorable}
+          />
+        ) : (
         <AnimatePresence mode="wait">
           <motion.section
             key={state.act}
-            initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={false}
+            animate={{ opacity: 1 }}
             exit={reduceMotion ? undefined : { opacity: 0 }}
-            transition={{ duration: 0.32, ease: "easeOut" }}
+            transition={{ duration: 0.24, ease: "easeOut" }}
           >
-            {state.act === 0 ? (
-              <LabIntro
-                onStart={start}
-                onResume={resume}
-                canResume={restorable}
-              />
-            ) : null}
 
             {state.act === 1 ? (
               <ActActivate
@@ -259,6 +259,7 @@ export function LaboratorioShell() {
             ) : null}
           </motion.section>
         </AnimatePresence>
+        )}
       </div>
     </ServicePageRoot>
   );
