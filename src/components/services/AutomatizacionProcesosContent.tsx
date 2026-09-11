@@ -140,9 +140,9 @@ export function AutomatizacionProcesosContent() {
           onClick: () => track("hero", "presupuesto"),
         }}
         secondary={{
-          label: "Ver cómo trabajamos",
-          href: "/como-trabajamos",
-          onClick: () => track("hero", "como-trabajamos"),
+          label: "Probar el laboratorio",
+          href: "/laboratorio",
+          onClick: () => track("hero", "laboratorio"),
         }}
       />
 

@@ -165,7 +165,7 @@ export function CookieConsentBanner() {
                     <PreferenceSwitch
                       id={`${analyticsToggleId}-essential`}
                       label="Necesarias"
-                      description="Imprescindibles para que la web funcione."
+                      description="Imprescindibles para que la web funcione, incluida la sesión técnica del laboratorio."
                       checked
                       disabled
                     />

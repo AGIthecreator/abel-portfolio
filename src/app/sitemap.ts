@@ -38,6 +38,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.85,
     },
     {
+      url: "https://agithecreator.com/laboratorio",
+      lastModified: new Date(),
+      priority: 0.78,
+    },
+    {
       url: "https://agithecreator.com/contacto",
       lastModified: new Date(),
       priority: 0.75,

@@ -26,3 +26,29 @@ Este es mi ecosistema digital profesional, construido como una Single Page Appli
 │   ├── lib/            # Configuraciones de API (Supabase, Stripe, Airtable)
 │   └── assets/         # Recursos estáticos (incluyendo CV_2026)
 └── public/             # Archivos públicos de acceso directo
+
+## Laboratorio (`/laboratorio`)
+
+Demostración pública de automatización. Las acciones reales de email usan
+credenciales **propias**, distintas de las del formulario de contacto.
+
+Variables de entorno (solo servidor, nunca con prefijo `NEXT_PUBLIC_`):
+
+| Variable | Uso |
+| --- | --- |
+| `LAB_RESEND_API_KEY` | Clave de Resend exclusiva del laboratorio. Si falta, el laboratorio sigue funcionando en modo `SIMULACIÓN` y **no** recurre a `RESEND_API_KEY`. |
+| `LAB_CONTACT_EMAIL` | Destinatario del aviso interno de la demo. Si falta, mismo comportamiento: simulación, sin fallback a `CONTACT_EMAIL`. |
+| `LAB_EMAIL_FROM` | Opcional. Remitente. Debe pertenecer a un dominio verificado en Resend. |
+| `LAB_DAILY_EMAIL_BUDGET` | Opcional. Tope global de emails reales del laboratorio por día (por defecto 40). |
+| `LAB_SUPABASE_URL` | URL del proyecto de persistencia **solo del laboratorio**. Si falta, el laboratorio usa memoria de proceso (válido en local; frágil en serverless). |
+| `LAB_SUPABASE_SERVICE_ROLE_KEY` | Service role, **solo servidor**. Nunca `NEXT_PUBLIC_`. Sin esta clave no se usa Supabase. No hay fallback a variables genéricas `SUPABASE_*`. |
+
+Aplicar el esquema en el SQL Editor de Supabase o con `npm run lab:apply-sql`: `supabase/lab.sql`. RLS queda activo y `anon`/`authenticated` no tienen privilegios.
+
+El presupuesto diario se reserva con `lab_try_consume_email_budget` (incremento atómico). El PII de reentrada se anula al caducar (`lab_scrub_expired`, llamado en cada lectura/alta; TTL 2 h). No hay `pg_cron` en esta fase.
+
+Pruebas: `npm run test:lab` (requiere el servidor en marcha).
+
+El contacto (`/api/contact`) y el presupuesto (`/api/quote`) continúan usando
+exclusivamente `RESEND_API_KEY` y `CONTACT_EMAIL`. El laboratorio no comparte
+persistencia ni credenciales con el resto del sitio.

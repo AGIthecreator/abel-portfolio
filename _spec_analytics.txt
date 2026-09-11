@@ -1,0 +1,84 @@
+analytics, APIs y patrones existentes cuando tenga sentido.
+* No dupliques lógica innecesariamente.
+* No modifiques `/precios`, `/presupuesto`, el quote engine, diagnóstico, PDF, APIs comerciales, precios públicos, mantenimiento ni el flujo comercial existente salvo que sea estrictamente necesario para enlazar el nuevo laboratorio.
+* No publiques ni reutilices Aguarrás ni PucelaTicketing.
+* Sonata Gastronomica tampoco debe convertirse automáticamente en contenido público del laboratorio.
+* No inventes integraciones reales que no existan.
+* Si una acción no puede ejecutarse realmente, debe aparecer claramente como `SIMULACIÓN`.
+* Todo lo relacionado con secretos, email, DB, rate limiting, etc. debe permanecer server-side cuando corresponda.
+* Antes de implementar, detecta qué infraestructura existente puede reutilizarse.
+
+==================================================
+OBJETIVO
+========
+
+Crear una experiencia interactiva premium para demostrar cómo funciona una automatización real.
+
+NO debe parecer:
+
+* una página de servicios tradicional
+* un tutorial
+* un dashboard empresarial
+* una infografía
+* una presentación de diapositivas
+* un videojuego infantil
+* una demo tecnológica genérica
+* una landing llena de texto
+
+Debe sentirse como una pequeña herramienta/producto interactivo de AGI TheCreator.
+
+Concepto central:
+
+"Una automatización no es simplemente hacer algo automáticamente.
+Es conseguir que un proceso sepa qué hacer en cada situación."
+
+Idea secundaria:
+
+"Primero el proceso. Después la herramienta."
+
+La experiencia debe demostrar:
+
+ENTRADA → DECISIÓN → ACCIÓN → SEGUIMIENTO → RESULTADO
+
+Y también:
+
+AUTOMATIZACIÓN → EXCEPCIÓN → ¿SE PUEDE RESOLVER? → ACCIÓN / PERSONA
+
+La interacción es más importante que la explicación.
+
+==================================================
+DIRECCIÓN VISUAL
+================
+
+Mantener la estética actual de AGI:
+
+* fondo oscuro aproximadamente `#070b13`
+* hueso / blanco cálido para superficies
+* violetas utilizados como acento
+* bordes suaves
+* sombras muy ligeras
+* tipografía elegante
+* mucho espacio vacío
+* estética premium tipo producto SaaS moderno
+* referencias visuales: Linear / Vercel / interfaces de producto modernas
+
+Evitar:
+
+* exceso de violetas
+* gradientes metálicos
+* neones
+* círculos gigantes
+* SVG enormes
+* glassmorphism excesivo
+* cards gigantes
+* demasiados bordes
+* exceso de texto
+* exceso de animaciones
+* confetti
+* puntos
+* monedas
+* XP
+* rankings
+* gamificación infantil
+
+Las animaciones deben ser sutil

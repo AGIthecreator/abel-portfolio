@@ -15,8 +15,23 @@ export default function LegalPage() {
         , especializado en desarrollo web y sistemas para negocios.
       </p>
       <p>
-        La finalidad de esta web es ofrecer información y facilitar el contacto con personas o
-        negocios interesados.
+        La finalidad de esta web es ofrecer información, facilitar el contacto
+        con personas o negocios interesados y, en{" "}
+        <a
+          href="/laboratorio"
+          className="text-zinc-300 underline decoration-white/20 underline-offset-4 transition-colors hover:text-zinc-100"
+        >
+          /laboratorio
+        </a>
+        , permitir probar una experiencia interactiva de automatización. El
+        detalle del tratamiento de datos de esa experiencia está en la{" "}
+        <a
+          href="/privacy"
+          className="text-zinc-300 underline decoration-white/20 underline-offset-4 transition-colors hover:text-zinc-100"
+        >
+          política de privacidad
+        </a>
+        .
       </p>
       <p>
         Para cualquier consulta relacionada con este sitio puedes escribir a{" "}

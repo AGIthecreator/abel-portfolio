@@ -76,10 +76,12 @@ export function ServicePageStripes({
   );
 }
 
-const PRIMARY_CTA =
+/** Clases del CTA principal. Exportadas para reutilizarlas en `<button>`. */
+export const PRIMARY_CTA =
   "group relative inline-flex min-h-11 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-[rgba(150,142,180,0.26)] bg-[linear-gradient(180deg,#34343b_0%,#1d1d22_44%,#141417_56%,#0b0b0d_100%)] px-5 py-2.5 text-[13px] font-semibold text-white/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.55),0_6px_18px_-9px_rgba(0,0,0,0.85)] transition-all duration-300 hover:border-violet-400/45 hover:text-white hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.24),inset_0_-1px_0_rgba(0,0,0,0.55),0_10px_26px_-10px_rgba(124,58,237,0.45)]";
 
-const SECONDARY_CTA =
+/** Clases del CTA secundario. Exportadas para reutilizarlas en `<button>`. */
+export const SECONDARY_CTA =
   "inline-flex min-h-11 items-center justify-center rounded-md border border-white/12 bg-transparent px-5 py-2.5 text-[13px] font-semibold text-zinc-300 transition-[border-color,color,background-color] duration-300 hover:border-white/22 hover:bg-white/3 hover:text-zinc-100";
 
 export function ServicePageRoot({ children }: { children: ReactNode }) {
