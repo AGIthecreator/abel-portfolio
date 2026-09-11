@@ -25,6 +25,8 @@ const ui = Manrope({
 export const SECTION_SURFACE =
   "linear-gradient(180deg, #0c121c 0%, #131b2a 48%, #0c121c 100%)";
 
+export const SERVICE_FONT_VARS = `${display.variable} ${ui.variable}`;
+
 /** Franjas editoriales de `/como-trabajamos` (gris · morado · violeta). */
 export type ServiceStripeVariant = "down" | "up" | "close";
 
