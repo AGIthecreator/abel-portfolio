@@ -125,13 +125,15 @@ export function LaboratorioShell() {
       trackEvent("demo_started", { resumed: true });
     }
     setRestorable(false);
-    const target: LabAct = state.builder.status === "executed"
-      ? 4
-      : state.builder.flow.length
-        ? 3
-        : Object.keys(state.decisions).length
-          ? 2
-          : 1;
+    const target: LabAct = state.visitedActs.includes(4)
+      ? 1
+      : state.builder.status === "executed"
+        ? 4
+        : state.builder.flow.length
+          ? 3
+          : Object.keys(state.decisions).length
+            ? 2
+            : 1;
     goToAct(target);
   };
 
