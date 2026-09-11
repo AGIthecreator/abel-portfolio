@@ -131,7 +131,11 @@ export function ActResult({
       >
         <div className="flex min-h-[100svh] w-full flex-col items-center justify-center pt-[max(1.5rem,env(safe-area-inset-top,0px))] pr-[max(1.25rem,env(safe-area-inset-right,0px))] pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] pl-[max(1.25rem,env(safe-area-inset-left,0px))] sm:px-8">
           <div className="flex w-full max-w-[40rem] flex-col items-center lg:max-w-3xl">
-            <ProcessSignature activation={activation} onComplete={reveal} />
+            <ProcessSignature
+              variant="scene"
+              activation={activation}
+              onComplete={reveal}
+            />
             <h2 id="lab-finale-title" className="sr-only">
               Ejecutando el proceso
             </h2>
@@ -144,7 +148,7 @@ export function ActResult({
 
   return (
     <div className="flex w-full flex-col items-center">
-      <ProcessSignature activation={activation} />
+      <ProcessSignature variant="summary" activation={activation} />
       {copy}
     </div>
   );

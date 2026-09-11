@@ -29,46 +29,53 @@ import { LabIntro } from "./LabIntro";
 export function LaboratorioShell() {
   const reduceMotion = useReducedMotion();
   const [state, setState] = useState<LabSessionState>(createLabSession);
-  const [hydrated, setHydrated] = useState(false);
   const [restorable, setRestorable] = useState(false);
   const startTracked = useRef(false);
 
+  useEffect(() => {
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+  }, []);
+
   // Rehidratar nunca ejecuta acciones: solo recupera lo que el visitante hizo.
+  // La intro se pinta ya; la API no bloquea el botón Empezar.
   useEffect(() => {
     let cancelled = false;
 
-    async function hydrate() {
-      let next: LabSessionState = createLabSession();
-      try {
-        const stored = loadLabSession();
-        next =
-          stored && hasLabProgress(stored)
-            ? { ...stored, act: 0 }
-            : stored ?? createLabSession();
+    const stored = loadLabSession();
+    const next: LabSessionState =
+      stored && hasLabProgress(stored)
+        ? { ...stored, act: 0 }
+        : stored ?? createLabSession();
 
-        const res = await labFetch("/api/laboratorio/sesion");
-        if (res.ok) {
-          const data = (await res.json()) as LabSessionResponse;
-          if (data.ok && data.found && data.activation) {
-            next = {
-              ...next,
-              act: 0,
-              activation: data.activation,
-            };
-          }
-        }
-      } catch {
-        /* sin red o sesión ilegible: se muestra la intro */
-      }
-
-      if (cancelled) return;
+    if (!startTracked.current) {
       saveLabSession(next);
       setState(next);
       setRestorable(hasLabProgress(next));
-      setHydrated(true);
     }
 
-    void hydrate();
+    void (async () => {
+      try {
+        const res = await labFetch("/api/laboratorio/sesion", {
+          signal: AbortSignal.timeout(4000),
+        });
+        if (!res.ok) return;
+        const data = (await res.json()) as LabSessionResponse;
+        const activation = data.activation;
+        if (!data.ok || !data.found || !activation) return;
+        if (cancelled || startTracked.current) return;
+        setState((prev) => {
+          if (prev.act !== 0) return prev;
+          const merged: LabSessionState = { ...prev, act: 0, activation };
+          saveLabSession(merged);
+          return merged;
+        });
+        setRestorable(true);
+      } catch {
+        /* sin red o sesión lenta: la intro ya está en pantalla */
+      }
+    })();
+
     return () => {
       cancelled = true;
     };
@@ -170,27 +177,9 @@ export function LaboratorioShell() {
 
   const stats = useMemo(() => computeLabStats(state), [state]);
 
-  if (!hydrated) {
-    return (
-      <ServicePageRoot>
-        <div
-          className="relative mx-auto w-full max-w-5xl px-5 pt-32 pb-24 sm:px-8 sm:pt-36 lg:px-10 lg:pt-32 lg:pb-32"
-          aria-busy="true"
-        >
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-violet-300">
-            Laboratorio de automatización
-          </p>
-          <h1 className="mt-5 max-w-3xl font-(family-name:--font-svc-display) text-[clamp(2rem,5.4vw,3.4rem)] leading-[1.08] font-medium text-zinc-50">
-            ¿Qué pasaría si tu negocio trabajara un poco distinto?
-          </h1>
-        </div>
-      </ServicePageRoot>
-    );
-  }
-
   return (
     <ServicePageRoot>
-      <div className="relative mx-auto w-full max-w-5xl px-5 pt-32 pb-24 sm:px-8 sm:pt-36 lg:px-10 lg:pt-32 lg:pb-32">
+      <div className="relative mx-auto w-full max-w-5xl px-5 pt-28 pb-20 sm:px-8 sm:pt-36 sm:pb-24 lg:px-10 lg:pt-32 lg:pb-32">
         {state.act > 0 ? (
           <div className="mb-9 flex flex-wrap items-center justify-between gap-4 border-b border-white/8 pb-4">
             <DemoProgress

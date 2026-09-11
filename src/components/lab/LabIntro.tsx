@@ -19,22 +19,22 @@ export function LabIntro({
       initial={reduceMotion ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: "easeOut" }}
-      className="flex min-h-[58vh] flex-col justify-center py-6 sm:py-10"
+      className="flex flex-col justify-start py-2 sm:min-h-[min(58vh,36rem)] sm:justify-center sm:py-10"
     >
       <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-violet-300">
         Laboratorio de automatización
       </p>
 
-      <h1 className="mt-5 max-w-3xl font-(family-name:--font-svc-display) text-[clamp(2rem,5.4vw,3.4rem)] leading-[1.08] font-medium text-zinc-50">
+      <h1 className="mt-4 max-w-3xl font-(family-name:--font-svc-display) text-[clamp(1.75rem,6.2vw,3.4rem)] leading-[1.12] font-medium text-zinc-50 sm:mt-5">
         ¿Qué pasaría si tu negocio trabajara un poco distinto?
       </h1>
 
-      <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-zinc-300">
+      <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-zinc-300 sm:mt-5">
         Prueba tres situaciones reales y descubre qué ocurre cuando un proceso
         deja de depender de alguien delante del ordenador.
       </p>
 
-      <div className="mt-9 flex flex-wrap items-center gap-4">
+      <div className="mt-7 flex flex-wrap items-center gap-3 sm:mt-9 sm:gap-4">
         <LabButton onClick={onStart}>Empezar</LabButton>
         {canResume ? (
           <LabButton variant="secondary" onClick={onResume}>
