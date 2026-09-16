@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ServicePageRoot } from "@/components/services/ServicePagePrimitives";
 import { trackEvent } from "@/lib/analytics";
@@ -20,6 +19,7 @@ import {
 } from "@/lib/lab/session";
 import type { LabDecisionOption, LabSessionResponse } from "@/lib/lab/types";
 import { ActActivate } from "./ActActivate";
+import { ActBridge } from "./ActBridge";
 import { ActBuilder } from "./ActBuilder";
 import { ActDecisions } from "./ActDecisions";
 import { ActResult } from "./ActResult";
@@ -27,9 +27,9 @@ import { DemoProgress } from "./DemoProgress";
 import { LabIntro } from "./LabIntro";
 
 export function LaboratorioShell() {
-  const reduceMotion = useReducedMotion();
   const [state, setState] = useState<LabSessionState>(createLabSession);
   const [restorable, setRestorable] = useState(false);
+  const [bridge, setBridge] = useState<null | "1-2" | "2-3">(null);
   const startTracked = useRef(false);
 
   useEffect(() => {
@@ -95,6 +95,7 @@ export function LaboratorioShell() {
 
   const goToAct = useCallback(
     (act: LabAct) => {
+      setBridge(null);
       update((prev) => ({
         ...prev,
         act,
@@ -103,10 +104,10 @@ export function LaboratorioShell() {
           : [...prev.visitedActs, act],
       }));
       if (typeof window !== "undefined") {
-        window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+        window.scrollTo({ top: 0, behavior: "auto" });
       }
     },
-    [reduceMotion, update],
+    [update],
   );
 
   const start = () => {
@@ -204,25 +205,30 @@ export function LaboratorioShell() {
             canResume={restorable}
           />
         ) : (
-        <AnimatePresence mode="wait">
-          <motion.section
-            key={state.act}
-            initial={false}
-            animate={{ opacity: 1 }}
-            exit={reduceMotion ? undefined : { opacity: 0 }}
-            transition={{ duration: 0.24, ease: "easeOut" }}
-          >
-
-            {state.act === 1 ? (
+          <section>
+            {state.act === 1 && bridge !== "1-2" ? (
               <ActActivate
                 activation={state.activation}
                 onActivated={handleActivated}
                 onActivationChange={handleActivationChange}
-                onContinue={() => goToAct(2)}
+                onContinue={() => setBridge("1-2")}
               />
             ) : null}
 
-            {state.act === 2 ? (
+            {bridge === "1-2" ? (
+              <ActBridge
+                lines={[
+                  "Ya has visto cómo entra y se clasifica una solicitud.",
+                  "Ahora decide qué ocurre cuando las circunstancias cambian.",
+                ]}
+                onDone={() => {
+                  setBridge(null);
+                  goToAct(2);
+                }}
+              />
+            ) : null}
+
+            {state.act === 2 && bridge !== "2-3" ? (
               <ActDecisions
                 answers={state.decisions}
                 onAnswer={handleAnswer}
@@ -231,6 +237,19 @@ export function LaboratorioShell() {
                     event: "experience",
                     experience: "decisions",
                   });
+                  setBridge("2-3");
+                }}
+              />
+            ) : null}
+
+            {bridge === "2-3" ? (
+              <ActBridge
+                lines={[
+                  "Ya has visto que automatizar también significa gestionar excepciones.",
+                  "Ahora vas a construir un proceso.",
+                ]}
+                onDone={() => {
+                  setBridge(null);
                   goToAct(3);
                 }}
               />
@@ -254,11 +273,11 @@ export function LaboratorioShell() {
               <ActResult
                 stats={stats}
                 activation={state.activation}
+                flow={state.builder.flow}
                 onRestart={restart}
               />
             ) : null}
-          </motion.section>
-        </AnimatePresence>
+          </section>
         )}
       </div>
     </ServicePageRoot>

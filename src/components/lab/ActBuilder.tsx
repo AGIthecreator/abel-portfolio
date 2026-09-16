@@ -5,19 +5,29 @@ import { ArrowDown, ArrowUp, Plus, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 import {
-  LAB_BLOCKS,
-  LAB_MINIMAL_FLOW,
+  LAB_ENTRY_BLOCKS,
   getLabBlock,
+  isLabEntryBlock,
+  labMinimalFlow,
   validateLabFlow,
 } from "@/lib/lab/blocks";
+import {
+  LAB_CHANNELS,
+  channelFromEntryBlock,
+  type LabChannel,
+  type LabChannelId,
+} from "@/lib/lab/channels";
+import { getLabFeaturedScenarios } from "@/lib/lab/scenarios";
 import type { LabBuilderState, LabFlowStatus } from "@/lib/lab/session";
 import type { LabBlockId, LabStepStatus } from "@/lib/lab/types";
+import { AutomationStrip } from "./AutomationStrip";
 import {
   ExecutionBadge,
   LabButton,
   LabEyebrow,
   LabHeading,
   LabPanel,
+  ProcessRail,
 } from "./LabUi";
 import { useManagedTimers } from "./useManagedTimers";
 
@@ -37,13 +47,73 @@ const STATUS_TEXT: Record<LabStepStatus, string> = {
   exception: "Excepción",
 };
 
-/** Estado del flujo en texto, visible antes de pulsar nada. */
 const FLOW_STATUS_COPY: Record<LabFlowStatus, string> = {
   idle: "Sin ejecutar",
   running: "Ejecutando",
   executed: "Ejecutado",
   invalid: "Incompleto",
 };
+
+const CORE_BLOCKS: readonly LabBlockId[] = [
+  "datos",
+  "db",
+  "decision",
+  "aviso",
+  "email",
+  "seguimiento",
+];
+
+const EXTRA_BLOCKS: readonly LabBlockId[] = ["ia", "whatsapp", "crm"];
+
+const DEFAULT_GOAL = ["Recibir", "Guardar", "Decidir", "Avisar", "Seguir"] as const;
+
+const GUIDE = [
+  {
+    prompt: "¿Qué inicia el proceso?",
+    hint: "El canal cambia. El proceso puede ser el mismo.",
+    highlight: LAB_ENTRY_BLOCKS,
+    done: "Solicitud recibida",
+  },
+  {
+    prompt: "Ahora necesitamos registrar lo que ha llegado.",
+    hint: "Si no queda registrado, el proceso no puede continuar solo.",
+    highlight: ["datos", "db"] as const,
+    done: "Datos registrados",
+  },
+  {
+    prompt: "El sistema necesita decidir qué hacer.",
+    hint: "Sin esta pieza, haría siempre lo mismo.",
+    highlight: ["decision"] as const,
+    done: "El sistema puede decidir",
+  },
+  {
+    prompt: "Alguien debe enterarse.",
+    hint: "La solicitud tiene que llegar a una persona.",
+    highlight: ["aviso", "email"] as const,
+    done: "El equipo se entera",
+  },
+  {
+    prompt: "La solicitud no debería quedar olvidada.",
+    hint: "Si nadie responde, el proceso tiene que volver.",
+    highlight: ["seguimiento"] as const,
+    done: "Hay seguimiento",
+  },
+] as const;
+
+function guideIndex(flow: readonly LabBlockId[]): number {
+  const found = GUIDE.findIndex(
+    (step) => !step.highlight.some((id) => flow.includes(id)),
+  );
+  return found === -1 ? GUIDE.length : found;
+}
+
+type BuilderPhase = "channel" | "scenario" | "build" | "examples";
+
+function initialPhase(builder: LabBuilderState): BuilderPhase {
+  if (builder.status === "executed") return "build";
+  if (builder.flow.length > 0) return "build";
+  return "channel";
+}
 
 interface ActBuilderProps {
   builder: LabBuilderState;
@@ -59,12 +129,14 @@ export function ActBuilder({
   const reduceMotion = useReducedMotion();
   const { schedule, clear, isMounted } = useManagedTimers();
   const { flow, status } = builder;
+  const featured = getLabFeaturedScenarios();
 
-  /**
-   * Los estados por bloque viven en la sesión, no en estado local: volver al
-   * Acto 3 después de haberlo ejecutado tiene que mostrar el flujo tal y como
-   * quedó, no en reposo. El estado local solo se usa mientras se anima.
-   */
+  const [phase, setPhase] = useState<BuilderPhase>(() => initialPhase(builder));
+  const [channelId, setChannelId] = useState<LabChannelId>(() =>
+    flow[0] ? channelFromEntryBlock(flow[0]).id : "formulario",
+  );
+  const [scenarioId, setScenarioId] = useState(featured[0]?.id ?? "");
+
   const [liveStatuses, setLiveStatuses] = useState<LabStepStatus[] | null>(null);
   const [showValidation, setShowValidation] = useState(
     builder.status === "executed" || builder.status === "invalid",
@@ -76,8 +148,10 @@ export function ActBuilder({
 
   const validation = useMemo(() => validateLabFlow(flow), [flow]);
   const running = liveStatuses !== null;
+  const channel = LAB_CHANNELS.find((item) => item.id === channelId) ?? LAB_CHANNELS[0];
+  const scenario =
+    featured.find((item) => item.id === scenarioId) ?? featured[0];
 
-  /** Cualquier cambio en el flujo invalida la ejecución anterior. */
   const updateFlow = useCallback(
     (next: LabBlockId[]) => {
       clear();
@@ -92,7 +166,16 @@ export function ActBuilder({
     [clear, onBuilderChange],
   );
 
-  const addBlock = (id: LabBlockId) => updateFlow([...flow, id]);
+  const addBlock = (id: LabBlockId) => {
+    if (isLabEntryBlock(id)) {
+      const rest = flow.filter((blockId) => !isLabEntryBlock(blockId));
+      updateFlow([id, ...rest]);
+      setChannelId(channelFromEntryBlock(id).id);
+      return;
+    }
+    updateFlow([...flow, id]);
+  };
+
   const removeBlock = (index: number) =>
     updateFlow(flow.filter((_, i) => i !== index));
 
@@ -118,7 +201,6 @@ export function ActBuilder({
       onBuilderChange({
         status: "executed",
         executedStatuses: executedFlow.map(() => "done" as const),
-        // El constructor no ejecuta nada hacia fuera: todo cuenta como simulado.
         simulatedActions: actionBlocks,
         decisions: decisionBlocks,
       });
@@ -140,9 +222,6 @@ export function ActBuilder({
     clear();
 
     const snapshot = [...flow];
-    // La ejecución del constructor es instantánea a efectos de sesión: el
-    // escalonado solo es visual. Si el visitante se va a mitad de la animación,
-    // al volver el flujo sigue marcado como ejecutado.
     finish(snapshot);
 
     if (reduceMotion || snapshot.length === 0) return;
@@ -170,42 +249,257 @@ export function ActBuilder({
   const statusAt = (index: number): LabStepStatus =>
     liveStatuses?.[index] ?? builder.executedStatuses[index] ?? "pending";
 
+  const currentGuide = guideIndex(flow);
+  const guideComplete = currentGuide >= GUIDE.length;
+  const guideStep = GUIDE[currentGuide];
+  const highlighted = new Set<string>(
+    guideStep ? [...guideStep.highlight] : [],
+  );
+  const goalRail = scenario?.rail ?? DEFAULT_GOAL;
+
+  const confirmChannel = (next: LabChannel) => {
+    setChannelId(next.id);
+    const rest = flow.filter((id) => !isLabEntryBlock(id));
+    updateFlow([next.entryBlock, ...rest]);
+  };
+
+  const renderBlockButton = (id: LabBlockId) => {
+    const block = getLabBlock(id);
+    const active = highlighted.has(id);
+    return (
+      <button
+        key={block.id}
+        type="button"
+        onClick={() => addBlock(block.id)}
+        title={block.description}
+        className={`inline-flex cursor-pointer items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[12.5px] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400/70 ${
+          active
+            ? "border-violet-400/50 bg-violet-400/10 text-zinc-50"
+            : "border-white/12 bg-white/2 text-zinc-300 hover:border-violet-400/40 hover:bg-white/5 hover:text-zinc-100"
+        }`}
+      >
+        <Plus className="size-3 text-violet-300" aria-hidden />
+        {block.label}
+      </button>
+    );
+  };
+
+  if (phase === "channel") {
+    return (
+      <div>
+        <LabEyebrow>03 · Lo construyes</LabEyebrow>
+        <LabHeading className="mt-3 max-w-2xl">
+          ¿Desde dónde puede empezar un proceso?
+        </LabHeading>
+        <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-zinc-400">
+          El canal cambia. El proceso puede ser el mismo.
+        </p>
+
+        <div className="mt-6 grid gap-2 sm:grid-cols-2">
+          {LAB_CHANNELS.map((item) => {
+            const selected = item.id === channel.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => confirmChannel(item)}
+                className={`cursor-pointer rounded-xl border px-4 py-3.5 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400/70 ${
+                  selected
+                    ? "border-violet-400/50 bg-violet-400/10"
+                    : "border-white/10 bg-white/2 hover:border-white/20"
+                }`}
+              >
+                <span className="flex items-center justify-between gap-3">
+                  <span className="text-[15px] text-zinc-100">{item.label}</span>
+                  <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-zinc-500">
+                    {item.badge}
+                  </span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <LabPanel className="mt-5 max-w-xl">
+          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+            Así llega
+          </p>
+          <p className="mt-2 text-[15px] leading-relaxed text-zinc-100">
+            {channel.label}
+          </p>
+          <p className="mt-2 text-[14px] leading-relaxed text-zinc-300">
+            «{channel.inbound}»
+          </p>
+          <p className="mt-4 text-[13px] leading-relaxed text-zinc-400">
+            El canal cambia. El proceso puede ser el mismo.
+          </p>
+        </LabPanel>
+
+        <div className="mt-6">
+          <LabButton
+            onClick={() => {
+              confirmChannel(channel);
+              setPhase("scenario");
+            }}
+          >
+            Continuar
+          </LabButton>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === "scenario") {
+    return (
+      <div>
+        <LabEyebrow>03 · Lo construyes</LabEyebrow>
+        <LabHeading className="mt-3 max-w-2xl">
+          Elige un proceso para construir
+        </LabHeading>
+        <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-zinc-400">
+          Misma lógica. Distinto trabajo.
+        </p>
+
+        <div className="mt-5 flex flex-wrap gap-2">
+          {featured.map((item) => {
+            const selected = item.id === scenario?.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setScenarioId(item.id)}
+                className={`cursor-pointer rounded-md border px-2.5 py-1.5 text-[12.5px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400/70 ${
+                  selected
+                    ? "border-violet-400/50 bg-violet-400/10 text-zinc-50"
+                    : "border-white/12 bg-white/2 text-zinc-300 hover:border-white/20"
+                }`}
+              >
+                {item.intent}
+              </button>
+            );
+          })}
+        </div>
+
+        {scenario ? (
+          <LabPanel className="mt-5 max-w-xl">
+            <p className="text-[15px] text-zinc-100">{scenario.intent}</p>
+            <p className="mt-1.5 text-[13px] leading-relaxed text-zinc-400">
+              {scenario.scenario.intro}
+            </p>
+            <ProcessRail steps={scenario.rail} className="mt-4" />
+          </LabPanel>
+        ) : null}
+
+        <div className="mt-6 flex flex-wrap gap-3">
+          <LabButton onClick={() => setPhase("build")}>Construir este proceso</LabButton>
+          <LabButton variant="ghost" onClick={() => setPhase("channel")}>
+            Cambiar canal
+          </LabButton>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === "examples") {
+    return (
+      <div>
+        <LabEyebrow>03 · Lo construyes</LabEyebrow>
+        <LabHeading className="mt-3 max-w-2xl">
+          La misma idea, en otros procesos
+        </LabHeading>
+        <div className="mt-6">
+          <AutomationStrip
+            eyebrow="Ejemplos"
+            intro="Esto se puede aplicar a muchos procesos diferentes."
+          />
+        </div>
+        <div className="mt-6">
+          <LabButton onClick={onContinue}>Continuar</LabButton>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <LabEyebrow>Acto 03 · Construye el flujo</LabEyebrow>
+      <LabEyebrow>03 · Lo construyes</LabEyebrow>
       <LabHeading className="mt-3 max-w-2xl">
-        Haz que nadie tenga que perseguir la solicitud
+        {scenario?.intent ?? "Haz que la solicitud llegue y no se olvide"}
       </LabHeading>
       <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-zinc-300">
-        Una persona pide información sobre un servicio. Monta el proceso para
-        que llegue al equipo correcto y no dependa de que alguien se acuerde.
-        Aquí se construye y se recorre: no se ejecuta nada hacia fuera.
+        Empieza en {channel.label}. El canal ya está elegido: ahora conecta el
+        proceso.
       </p>
 
-      <div className="mt-7 grid gap-6 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)] lg:gap-8">
+      <div className="mt-5 max-w-xl">
+        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+          Tu objetivo
+        </p>
+        <ProcessRail
+          steps={goalRail}
+          activeIndex={Math.min(currentGuide, goalRail.length - 1)}
+          className="mt-2"
+        />
+      </div>
+
+      <div className="mt-7 grid gap-6 lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)] lg:gap-8">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-400">
-            Bloques
+          {guideComplete || !guideStep ? (
+            <p className="text-[14px] leading-relaxed text-zinc-100">
+              Proceso listo. Recórrelo para ver cómo se conecta.
+            </p>
+          ) : (
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-violet-300/90">
+                Paso {String(currentGuide + 1).padStart(2, "0")}
+              </p>
+              <p className="mt-2 text-[15px] leading-relaxed text-zinc-100">
+                {guideStep.prompt}
+              </p>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-zinc-400">
+                {guideStep.hint}
+              </p>
+            </div>
+          )}
+
+          {currentGuide > 0 ? (
+            <ul className="mt-4 flex list-none flex-col gap-1 p-0 text-[12.5px] text-zinc-400">
+              {GUIDE.slice(0, currentGuide).map((step) => (
+                <li key={step.done}>{step.done}</li>
+              ))}
+            </ul>
+          ) : null}
+
+          <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+            Qué inicia el proceso
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {LAB_BLOCKS.map((block) => (
-              <button
-                key={block.id}
-                type="button"
-                onClick={() => addBlock(block.id)}
-                title={block.description}
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-white/12 bg-white/2 px-2.5 py-1.5 text-[12.5px] text-zinc-300 transition-colors duration-200 hover:border-violet-400/40 hover:bg-white/5 hover:text-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400/70"
-              >
-                <Plus className="size-3 text-violet-300" aria-hidden />
-                {block.label}
-              </button>
-            ))}
+            {LAB_ENTRY_BLOCKS.map(renderBlockButton)}
           </div>
+          <p className="mt-1.5 text-[11px] leading-relaxed text-zinc-500">
+            WhatsApp, email y chat son simulaciones. No hay integración real.
+          </p>
+
+          <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+            Piezas del proceso
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {CORE_BLOCKS.map(renderBlockButton)}
+          </div>
+
+          <details className="mt-4">
+            <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500 transition-colors hover:text-zinc-300">
+              Más acciones
+            </summary>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {EXTRA_BLOCKS.map(renderBlockButton)}
+            </div>
+          </details>
 
           <div className="mt-5 flex flex-wrap gap-2">
             <LabButton
               variant="ghost"
-              onClick={() => updateFlow([...LAB_MINIMAL_FLOW])}
+              onClick={() => updateFlow(labMinimalFlow(channel.entryBlock))}
             >
               Ver un flujo que funciona
             </LabButton>
@@ -239,8 +533,8 @@ export function ActBuilder({
             {flow.length === 0 ? (
               <div className="flex min-h-40 items-center justify-center text-center">
                 <p className="max-w-xs text-[13.5px] leading-relaxed text-zinc-300">
-                  Añade bloques para montar el proceso. Empieza por lo que lo
-                  activa.
+                  Empieza por la pieza que inicia el proceso. El sistema te
+                  indica cuál toca ahora.
                 </p>
               </div>
             ) : (
@@ -302,7 +596,10 @@ export function ActBuilder({
                           </span>
                         </div>
                         <div className="mt-1.5 flex items-center gap-2">
-                          <ExecutionBadge mode={block.executionMode} />
+                          <ExecutionBadge
+                            mode={block.executionMode}
+                            className="opacity-70"
+                          />
                           <span className="font-mono text-[9.5px] uppercase tracking-[0.12em] text-zinc-400">
                             {STATUS_TEXT[blockStatus]}
                           </span>
@@ -369,10 +666,10 @@ export function ActBuilder({
                 ? "Ejecutando…"
                 : status === "executed"
                   ? "Volver a recorrer"
-                  : "Ejecutar flujo"}
+                  : "Recorrer el proceso"}
             </LabButton>
             {status === "executed" ? (
-              <LabButton onClick={onContinue}>Continuar</LabButton>
+              <LabButton onClick={() => setPhase("examples")}>Continuar</LabButton>
             ) : null}
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { CLINIC_DECISIONS } from "./decisions";
+import { isLabBlockId } from "./blocks";
 import type {
   LabAction,
   LabBlockId,
@@ -137,7 +138,9 @@ function parseBuilder(value: unknown): LabBuilderState {
       : "idle";
 
   return {
-    flow: Array.isArray(value.flow) ? (value.flow as LabBlockId[]) : [],
+    flow: Array.isArray(value.flow)
+      ? value.flow.filter(isLabBlockId)
+      : [],
     // Un flujo restaurado nunca vuelve como "running": esa ejecución terminó.
     status: safeStatus === "running" ? "idle" : safeStatus,
     executedStatuses: Array.isArray(value.executedStatuses)

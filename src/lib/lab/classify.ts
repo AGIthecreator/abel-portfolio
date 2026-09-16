@@ -93,6 +93,15 @@ const RULES: readonly Rule[] = [
   },
 ];
 
+/**
+ * Prioridad: independiente del tipo. El tipo/ruta salen de RULES; la
+ * prioridad sale de estas tres capas, en este orden:
+ *
+ * Alta  — URGENT_KEYWORDS (urgencia explícita). También fuerza la ruta `urgente`.
+ * Media — VOLUME_KEYWORDS (carga repetida) o ATTENTION_KEYWORDS (incidencia).
+ * Baja  — ninguna de las anteriores. Un tipo conocido sin esas señales sigue
+ *         siendo Baja: "presupuesto" no es más urgente que una consulta.
+ */
 const URGENT_KEYWORDS = [
   "urgente",
   "hoy",
@@ -113,6 +122,59 @@ const VOLUME_KEYWORDS = [
   "todas las semanas",
   "constantemente",
   "a diario",
+] as const;
+
+/** Señales que piden más atención, sin ser todavía una urgencia. */
+const ATTENTION_KEYWORDS = [
+  "incidencia",
+  "no funciona",
+  "error",
+  "fallo",
+  "problema",
+  "reclama",
+  "reclamacion",
+  "reclamación",
+  "queja",
+  "critico",
+  "crítico",
+] as const;
+
+/** Etiquetas de ruta para mostrar el mismo resultado en cliente y servidor. */
+export const LAB_ROUTE_LABELS: Record<LabRouteId, string> = {
+  reserva: "Ruta de reserva",
+  presupuesto: "Ruta de presupuesto",
+  urgente: "Ruta urgente",
+  soporte: "Ruta de soporte",
+  documentacion: "Ruta documental",
+  integracion: "Ruta técnica",
+  general: "Ruta general",
+};
+
+/**
+ * Mensajes de ejemplo para el Acto 1. Cada uno activa un perfil distinto
+ * del clasificador real: no son una simulación paralela.
+ */
+export const LAB_CLASSIFY_SAMPLES = [
+  {
+    id: "general",
+    label: "Consulta general",
+    text: "Hola, quería información sobre cómo trabajáis.",
+  },
+  {
+    id: "presupuesto",
+    label: "Presupuesto",
+    text: "¿Cuánto costaría una web para mi negocio?",
+  },
+  {
+    id: "volumen",
+    label: "Muchas reservas",
+    text: "Tengo muchas reservas que gestiono cada día por WhatsApp.",
+  },
+  {
+    id: "urgente",
+    label: "Urgente",
+    text: "El sistema no funciona y es urgente, lo necesito hoy.",
+  },
 ] as const;
 
 function normalize(value: string): string {
@@ -156,10 +218,11 @@ export function classifyLabMessage(message: string): LabClassificationResult {
 
   const urgent = matches(haystack, URGENT_KEYWORDS);
   const recurring = matches(haystack, VOLUME_KEYWORDS);
+  const attention = matches(haystack, ATTENTION_KEYWORDS);
 
   const priority: LabClassification["priority"] = urgent
     ? "Alta"
-    : recurring || matchedKeyword
+    : recurring || attention
       ? "Media"
       : "Baja";
 
@@ -169,11 +232,13 @@ export function classifyLabMessage(message: string): LabClassificationResult {
   const signals: string[] = [];
   if (matchedKeyword) signals.push(matchedKeyword);
   if (recurring) signals.push(recurring);
+  if (attention) signals.push(attention);
   if (urgent) signals.push(urgent);
 
   const reasonParts: string[] = [];
   if (matchedKeyword) reasonParts.push(`detecta «${matchedKeyword}»`);
   if (recurring) reasonParts.push(`detecta repetición («${recurring}»)`);
+  if (attention) reasonParts.push(`detecta atención («${attention}»)`);
   if (urgent) reasonParts.push(`detecta urgencia («${urgent}»)`);
 
   const reason = reasonParts.length
@@ -190,5 +255,20 @@ export function classifyLabMessage(message: string): LabClassificationResult {
       executionMode: "real",
     },
     routeId,
+  };
+}
+
+/** Vista lista para la UI: misma función, mismas reglas, etiquetas de ruta. */
+export function presentLabClassification(message: string) {
+  const { classification, routeId } = classifyLabMessage(message);
+  return {
+    type: classification.type,
+    priority: classification.priority,
+    area: classification.area,
+    routeId,
+    routeLabel: LAB_ROUTE_LABELS[routeId],
+    reason: classification.reason,
+    signals: classification.signals,
+    executionMode: classification.executionMode,
   };
 }

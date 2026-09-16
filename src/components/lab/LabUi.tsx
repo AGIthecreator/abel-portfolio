@@ -217,6 +217,45 @@ export function LabButton({
 }
 
 /** Separador fino con numeración editorial. */
+export function ProcessRail({
+  steps,
+  activeIndex,
+  className = "",
+}: {
+  steps: readonly string[];
+  activeIndex?: number;
+  className?: string;
+}) {
+  return (
+    <ol
+      className={`m-0 flex list-none flex-wrap items-center gap-x-2 gap-y-1 p-0 font-mono text-[10px] uppercase tracking-[0.14em] ${className}`}
+    >
+      {steps.map((step, index) => (
+        <li key={`${step}-${index}`} className="flex items-center gap-2">
+          <span
+            className={
+              activeIndex === undefined
+                ? "text-zinc-300"
+                : index < activeIndex
+                  ? "text-zinc-300"
+                  : index === activeIndex
+                    ? "text-violet-200"
+                    : "text-zinc-600"
+            }
+          >
+            {step}
+          </span>
+          {index < steps.length - 1 ? (
+            <span aria-hidden className="text-zinc-700">
+              →
+            </span>
+          ) : null}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 export function LabActMarker({ index, label }: { index: string; label: string }) {
   return (
     <div className="flex items-center gap-3">

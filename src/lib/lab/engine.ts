@@ -17,6 +17,9 @@ import type {
 
 const BLOCK_STEP_TYPE: Record<LabBlockId, LabStepType> = {
   formulario: "input",
+  entrada_whatsapp: "input",
+  entrada_email: "input",
+  entrada_chat: "input",
   datos: "record",
   db: "record",
   decision: "decision",

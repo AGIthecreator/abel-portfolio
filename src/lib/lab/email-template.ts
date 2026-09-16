@@ -9,59 +9,76 @@ const LOGO_URL = "https://agithecreator.com/logos/NavbarAGI.png";
  * Hay una plantilla por ruta. La ruta la decide el servidor a partir de la
  * clasificación, así que dos mensajes distintos producen literalmente dos
  * emails distintos: distinto asunto, distinta apertura y distinto compromiso.
+ * El correo al visitante nombra el proceso, lo ya ejecutado y lo que sigue.
  */
 
 interface RouteCopy {
   /** Asunto del email que recibe el visitante. */
   visitorSubject: string;
-  /** Primera frase del cuerpo, específica de la ruta. */
+  /** Qué ha reconocido el proceso en este mensaje. */
   opening: string;
-  /** Qué va a pasar a continuación en esta ruta. */
+  /** Qué sigue haciendo esta ruta con el caso ya ordenado. */
   next: string;
+  /** Por qué esto importa en un negocio de verdad. */
+  business: string;
 }
 
 const ROUTE_COPY: Record<LabRouteId, RouteCopy> = {
   reserva: {
-    visitorSubject: "Tu solicitud de reserva está en cola",
+    visitorSubject: "El proceso de reservas ya ha recibido tu solicitud",
     opening:
-      "El proceso ha leído tu mensaje, ha visto que pides disponibilidad y lo ha enviado a la cola de reservas.",
-    next: "El siguiente paso sería comprobar el hueco y confirmártelo.",
+      "Ha identificado que pides disponibilidad o una cita y ha abierto el proceso de reservas.",
+    next: "Comprobar el hueco y confirmártelo, sin que la petición se quede en un chat.",
+    business:
+      "En un negocio real, esto es lo que deja de depender de que alguien esté mirando el WhatsApp para no perder una mesa o una cita.",
   },
   presupuesto: {
-    visitorSubject: "Tu petición de presupuesto está registrada",
+    visitorSubject: "El proceso comercial ya ha registrado tu petición",
     opening:
-      "El proceso ha detectado que preguntas por condiciones económicas y ha dirigido tu mensaje a la cola comercial.",
-    next: "El siguiente paso sería preparar una propuesta con alcance y precio.",
+      "Ha visto que preguntas por condiciones económicas y ha abierto el proceso de presupuesto.",
+    next: "Preparar una propuesta con alcance y precio, con el caso ya ordenado para el equipo comercial.",
+    business:
+      "En un negocio real, esto es lo que evita que un pedido de precio se pierda entre mensajes y se conteste tarde o dos veces.",
   },
   urgente: {
-    visitorSubject: "Tu mensaje se ha marcado como urgente",
+    visitorSubject: "Tu caso ha entrado por la ruta urgente",
     opening:
-      "El proceso ha encontrado señales de urgencia en tu texto y ha adelantado tu mensaje en la cola.",
-    next: "El siguiente paso sería avisar a la persona de guardia antes que al resto.",
+      "Ha encontrado señales de urgencia y ha adelantado tu mensaje: no entra en la cola normal.",
+    next: "Avisar a quien está de guardia antes que al resto.",
+    business:
+      "En un negocio real, esto es lo que separa una cola normal de lo que no puede esperar.",
   },
   soporte: {
-    visitorSubject: "Tu incidencia está registrada",
+    visitorSubject: "El proceso de soporte ya ha registrado tu incidencia",
     opening:
-      "El proceso ha interpretado tu mensaje como una incidencia y lo ha dirigido a la cola de soporte.",
-    next: "El siguiente paso sería reproducir el fallo y darte un diagnóstico.",
+      "Ha interpretado tu mensaje como un fallo o una incidencia y ha abierto el proceso de soporte.",
+    next: "Reproducir el fallo y darte un diagnóstico, con el caso ya clasificado.",
+    business:
+      "En un negocio real, esto es lo que evita que una incidencia viva solo en la memoria de quien pilló el mensaje.",
   },
   documentacion: {
-    visitorSubject: "Tu petición documental está registrada",
+    visitorSubject: "El proceso documental ya ha registrado tu petición",
     opening:
-      "El proceso ha visto que tu mensaje trata de documentos y lo ha dirigido a administración.",
-    next: "El siguiente paso sería localizar el documento y enviártelo.",
+      "Ha visto que tu mensaje trata de documentos o facturación y lo ha dirigido a administración.",
+    next: "Localizar el documento y enviártelo, con la petición ya registrada.",
+    business:
+      "En un negocio real, esto es lo que impide que una factura o un contrato dependan de un mensaje que nadie llegó a registrar.",
   },
   integracion: {
-    visitorSubject: "Tu consulta técnica está registrada",
+    visitorSubject: "El proceso técnico ya ha registrado tu consulta",
     opening:
-      "El proceso ha detectado que hablas de conectar herramientas y lo ha dirigido a la cola técnica.",
-    next: "El siguiente paso sería acotar qué sistemas hay que unir.",
+      "Ha detectado que hablas de conectar herramientas y ha abierto la ruta técnica.",
+    next: "Acotar qué sistemas hay que unir, separado ya de una consulta general.",
+    business:
+      "En un negocio real, esto es lo que evita tratar una integración como un mensaje más de la bandeja.",
   },
   general: {
-    visitorSubject: "Tu mensaje está registrado",
+    visitorSubject: "El proceso ya ha recibido tu mensaje",
     opening:
-      "El proceso ha leído tu mensaje y, al no encontrar señales claras, lo ha dejado en la cola general.",
-    next: "El siguiente paso sería leerlo en persona y clasificarlo a mano.",
+      "No ha encontrado una señal lo bastante clara para especializar la ruta, así que lo ha dejado en la cola general. Mejor eso que clasificar mal.",
+    next: "Leerlo con el contexto que el proceso ya ha reunido, no desde cero.",
+    business:
+      "En un negocio real, esto es lo que hace un sistema cuando no está seguro: no inventa, deja el caso preparado para alguien.",
   },
 };
 
@@ -139,16 +156,32 @@ export function buildLabInternalEmailHtml({
 `;
 }
 
-/** Confirmación al visitante, con el texto de la ruta que se ha elegido. */
-export function buildLabVisitorEmailHtml(name: string, route: LabRoute): string {
+function followupLine(route: LabRoute): string {
+  const minutes = route.followupDelayMinutes;
+  if (minutes <= 5) {
+    return "Si en unos minutos nadie ha reaccionado, el proceso insiste solo.";
+  }
+  return `Si en ${minutes} minutos nadie ha reaccionado, el proceso insiste solo.`;
+}
+
+/** Confirmación al visitante: proceso elegido, lo ya ejecutado y lo que sigue. */
+export function buildLabVisitorEmailHtml(
+  name: string,
+  route: LabRoute,
+  classification: LabClassification,
+): string {
   const copy = ROUTE_COPY[route.id];
   const safeName = escapeHtml(name);
   const greeting = safeName ? `Hola ${safeName},` : "Hola,";
   const safeRoute = escapeHtml(route.label);
   const safeTeam = escapeHtml(route.team);
   const safeSla = escapeHtml(route.sla);
+  const safeReason = escapeHtml(route.reason);
+  const safePriority = escapeHtml(classification.priority);
   const safeOpening = escapeHtml(copy.opening);
   const safeNext = escapeHtml(copy.next);
+  const safeBusiness = escapeHtml(copy.business);
+  const safeFollowup = escapeHtml(followupLine(route));
 
   return `
 <div style="margin:0;padding:32px 20px;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif;">
@@ -159,19 +192,41 @@ export function buildLabVisitorEmailHtml(name: string, route: LabRoute): string 
     <div style="font-size:15px;line-height:1.75;color:#1a1a1a;">
       <p style="margin:0 0 18px;">${greeting}</p>
       <p style="margin:0 0 18px;">
-        Este email no lo he escrito yo ahora mismo: lo ha disparado el proceso que acabas de activar en el laboratorio.
+        Este correo no lo he escrito yo ahora. Lo ha disparado el proceso que acabas de activar en el laboratorio.
       </p>
       <p style="margin:0 0 18px;">${safeOpening}</p>
       <div style="margin:0 0 18px;padding:16px 18px;background:#F3F1EB;border-radius:10px;">
         <p style="margin:0 0 6px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#5a5f6b;">
-          Ruta seleccionada
+          Proceso elegido
         </p>
-        <p style="margin:0 0 10px;font-size:16px;color:#070b13;">${safeRoute} → ${safeTeam}</p>
-        <p style="margin:0;font-size:14px;color:#2c3038;">${safeSla}</p>
+        <p style="margin:0 0 8px;font-size:16px;color:#070b13;">${safeRoute}</p>
+        <p style="margin:0 0 4px;font-size:14px;color:#2c3038;">Equipo: ${safeTeam}</p>
+        <p style="margin:0 0 4px;font-size:14px;color:#2c3038;">Prioridad: ${safePriority}</p>
+        <p style="margin:0 0 8px;font-size:14px;color:#2c3038;">${safeSla}</p>
+        <p style="margin:0;font-size:13px;color:#5a5f6b;">${safeReason}</p>
       </div>
-      <p style="margin:0 0 18px;">${safeNext}</p>
-      <p style="margin:0 0 18px;">Tu mensaje me ha llegado. Lo leo yo, en persona, y te respondo.</p>
-      <p style="margin:0;">Abel — AGI theCreator</p>
+      <p style="margin:0 0 8px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#5a5f6b;">
+        Lo que ya ha hecho
+      </p>
+      <ul style="margin:0 0 18px;padding:0 0 0 18px;color:#2c3038;">
+        <li style="margin:0 0 6px;">Ha recibido la solicitud.</li>
+        <li style="margin:0 0 6px;">La ha clasificado con reglas, no con IA.</li>
+        <li style="margin:0 0 6px;">Ha avisado al equipo responsable.</li>
+        <li style="margin:0;">Te ha enviado esta confirmación.</li>
+      </ul>
+      <p style="margin:0 0 8px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#5a5f6b;">
+        Lo que lleva a partir de aquí
+      </p>
+      <p style="margin:0 0 10px;">${safeNext}</p>
+      <p style="margin:0 0 18px;">${safeFollowup}</p>
+      <p style="margin:0 0 18px;">${safeBusiness}</p>
+      <p style="margin:0 0 18px;">
+        Eso es automatizar: la parte repetible ocurre sola. Una persona interviene cuando hace falta criterio, no para copiar el mensaje de un sitio a otro.
+      </p>
+      <p style="margin:0 0 18px;">
+        Cuando lo lea, te respondo yo. El proceso ya ha hecho la parte que no debería esperar a que yo esté delante.
+      </p>
+      <p style="margin:0;">Abel. AGI theCreator</p>
     </div>
     <div style="margin-top:32px;padding-top:20px;border-top:1px solid rgba(0,0,0,0.08);">
       <p style="margin:0;font-family:ui-monospace,'Courier New',monospace;font-size:10px;line-height:1.5;letter-spacing:0.04em;color:#888;opacity:0.55;">

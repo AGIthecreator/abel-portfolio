@@ -770,4 +770,56 @@ export function getScenarioById(id: string): LabScenario | undefined {
   return LAB_SCENARIOS.find((scenario) => scenario.id === id);
 }
 
+/**
+ * Recorte compacto para el Acto 3 y la tira previa al cierre.
+ * No son motores distintos: apuntan a escenarios ya existentes.
+ */
+export const LAB_FEATURED_SCENARIOS = [
+  {
+    id: "comercial-nuevo-lead",
+    shortTitle: "Leads",
+    intent: "Captar un posible cliente",
+    rail: ["Solicitud", "Datos", "Clasificación", "Aviso", "Seguimiento"],
+  },
+  {
+    id: "reservas-nueva",
+    shortTitle: "Reservas",
+    intent: "Gestionar una reserva",
+    rail: ["Solicitud", "Disponibilidad", "Confirmación", "Aviso"],
+  },
+  {
+    id: "comercial-presupuesto",
+    shortTitle: "Presupuestos",
+    intent: "Preparar un presupuesto",
+    rail: ["Solicitud", "Datos", "Cálculo", "Envío", "Seguimiento"],
+  },
+  {
+    id: "restaurantes-incidencia",
+    shortTitle: "Incidencias",
+    intent: "Gestionar una incidencia",
+    rail: ["Solicitud", "Datos", "Decisión", "Aviso"],
+  },
+  {
+    id: "documentos-formulario",
+    shortTitle: "Documentación",
+    intent: "Solicitar documentación",
+    rail: ["Solicitud", "Datos", "Documento", "Envío"],
+  },
+  {
+    id: "comercial-seguimiento-propuesta",
+    shortTitle: "Seguimientos",
+    intent: "Hacer seguimiento de una petición",
+    rail: ["Estado", "Decisión", "Aviso", "Seguir"],
+  },
+] as const;
+
+export function getLabFeaturedScenarios() {
+  return LAB_FEATURED_SCENARIOS.map((item) => ({
+    ...item,
+    scenario: getScenarioById(item.id),
+  })).filter((item): item is typeof item & { scenario: LabScenario } =>
+    Boolean(item.scenario),
+  );
+}
+
 export const LAB_SCENARIO_COUNT = LAB_SCENARIOS.length;

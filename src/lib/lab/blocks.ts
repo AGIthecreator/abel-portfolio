@@ -10,6 +10,27 @@ export const LAB_BLOCKS: readonly LabBlockDefinition[] = [
     executionMode: "real",
   },
   {
+    id: "entrada_whatsapp",
+    label: "WhatsApp",
+    role: "entrada",
+    description: "La solicitud llega como mensaje. Simulación: no hay integración real.",
+    executionMode: "simulated",
+  },
+  {
+    id: "entrada_email",
+    label: "Email recibido",
+    role: "entrada",
+    description: "La solicitud llega a una bandeja. Simulación: no se lee un buzón real.",
+    executionMode: "simulated",
+  },
+  {
+    id: "entrada_chat",
+    label: "Web / Chat",
+    role: "entrada",
+    description: "Alguien escribe desde la web. Simulación: no hay widget real.",
+    executionMode: "simulated",
+  },
+  {
     id: "datos",
     label: "Datos",
     role: "proceso",
@@ -84,6 +105,18 @@ export function getLabBlock(id: LabBlockId): LabBlockDefinition {
   return block;
 }
 
+export function isLabBlockId(value: unknown): value is LabBlockId {
+  return typeof value === "string" && BLOCK_MAP.has(value as LabBlockId);
+}
+
+export const LAB_ENTRY_BLOCKS: readonly LabBlockId[] = LAB_BLOCKS.filter(
+  (block) => block.role === "entrada",
+).map((block) => block.id);
+
+export function isLabEntryBlock(id: LabBlockId): boolean {
+  return getLabBlock(id).role === "entrada";
+}
+
 export type LabFlowSeverity = "valid" | "incomplete" | "invalid";
 
 export interface LabFlowIssue {
@@ -127,7 +160,7 @@ export function validateLabFlow(flow: readonly LabBlockId[]): LabFlowValidation 
   const indexOf = (id: LabBlockId) => flow.indexOf(id);
   const has = (id: LabBlockId) => indexOf(id) !== -1;
 
-  if (flow[0] !== "formulario") {
+  if (!isLabEntryBlock(flow[0])) {
     issues.push({
       title: "Falta la entrada",
       detail:
@@ -197,3 +230,9 @@ export const LAB_MINIMAL_FLOW: readonly LabBlockId[] = [
   "aviso",
   "seguimiento",
 ] as const;
+
+/** Flujo mínimo válido partiendo de cualquier canal de entrada. */
+export function labMinimalFlow(entry: LabBlockId = "formulario"): LabBlockId[] {
+  const start = isLabEntryBlock(entry) ? entry : "formulario";
+  return [start, "datos", "decision", "aviso", "seguimiento"];
+}

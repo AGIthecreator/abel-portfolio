@@ -1,40 +1,49 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
-import { CLINIC_DECISIONS, CLINIC_EXCEPTIONS } from "@/lib/lab/decisions";
+import { CLINIC_DECISIONS, EXCEPTION_FLOW } from "@/lib/lab/decisions";
 import type { LabDecision, LabDecisionOption } from "@/lib/lab/types";
-import { LabButton, LabEyebrow, LabHeading, LabPanel } from "./LabUi";
+import { LabButton, LabEyebrow, LabHeading, LabPanel, ProcessRail } from "./LabUi";
 
 const OPTION_LETTERS = ["A", "B", "C", "D"] as const;
 
-/**
- * Grupo de opciones con el patrón radiogroup completo.
- *
- * Un solo elemento del grupo es tabulable (tabindex roving): el foco entra una
- * vez y las flechas mueven la selección, que es lo que espera un lector de
- * pantalla. La opción elegida se marca además con un indicador visible y con
- * texto, no solo con color de borde.
- */
+const STAGE_MARKS = [
+  "Solicitud",
+  "Hora ocupada",
+  "Dato",
+  "Sin categoría",
+  "Persona",
+] as const;
+
+function initialStage(answers: Record<string, string>): number {
+  let index = 0;
+  for (const decision of CLINIC_DECISIONS) {
+    if (!answers[decision.id]) break;
+    index += 1;
+  }
+  return Math.min(index, CLINIC_DECISIONS.length - 1);
+}
+
 function DecisionBlock({
   decision,
-  index,
   selectedId,
   onSelect,
+  showExceptionFlow,
 }: {
   decision: LabDecision;
-  index: number;
   selectedId: string | undefined;
   onSelect: (option: LabDecisionOption) => void;
+  showExceptionFlow?: boolean;
 }) {
   const reduceMotion = useReducedMotion();
   const selected = decision.options.find((o) => o.id === selectedId);
   const optionRefs = useRef<(HTMLButtonElement | null)[]>([]);
-
   const selectedIndex = decision.options.findIndex((o) => o.id === selectedId);
-  // Sin selección, el primero es la única parada de tabulación del grupo.
   const focusIndex = selectedIndex >= 0 ? selectedIndex : 0;
+  const selectedLetter =
+    selectedIndex >= 0 ? OPTION_LETTERS[selectedIndex] : undefined;
 
   const move = (from: number, delta: number) => {
     const total = decision.options.length;
@@ -83,23 +92,19 @@ function DecisionBlock({
   const groupId = `lab-decision-${decision.id}`;
 
   return (
-    <LabPanel>
-      <div className="flex items-center gap-3">
-        <span className="font-mono text-[11px] tracking-[0.16em] text-violet-300">
-          {String(index + 1).padStart(2, "0")}
-        </span>
-        <span className="h-px flex-1 bg-white/8" aria-hidden />
-      </div>
-
+    <div>
+      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+        Situación
+      </p>
       <p
         id={`${groupId}-context`}
-        className="mt-4 text-[15px] leading-relaxed text-zinc-200"
+        className="mt-2 text-[16px] leading-relaxed text-zinc-100"
       >
         {decision.context}
       </p>
       <p
         id={`${groupId}-label`}
-        className="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-400"
+        className="mt-5 font-mono text-[10px] uppercase tracking-[0.16em] text-violet-300/90"
       >
         {decision.question}
       </p>
@@ -130,7 +135,6 @@ function DecisionBlock({
                   : "border-white/10 bg-white/2 text-zinc-300 hover:border-white/20 hover:bg-white/5"
               }`}
             >
-              {/* Marca de selección: la elección no depende solo del color. */}
               <span
                 aria-hidden
                 className={`mt-0.5 grid size-3.5 shrink-0 place-items-center rounded-full border ${
@@ -160,68 +164,38 @@ function DecisionBlock({
             animate={{ opacity: 1, y: 0 }}
             exit={reduceMotion ? undefined : { opacity: 0 }}
             transition={{ duration: 0.28, ease: "easeOut" }}
-            className="mt-4 border-t border-white/8 pt-4"
+            className="mt-5 border-t border-white/8 pt-4"
           >
-            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-violet-300">
-              Lo que ocurre entonces
+            <p className="text-[14px] leading-relaxed text-zinc-100">
+              Has elegido {selectedLetter}.
             </p>
-            <p className="mt-2 text-[13.5px] leading-relaxed text-zinc-300">
+            <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+              Esto significa que
+            </p>
+            <p className="mt-1.5 text-[13.5px] leading-relaxed text-zinc-300">
               {selected.consequence}
             </p>
-            <p className="mt-2.5 text-[12.5px] leading-relaxed text-zinc-400">
-              {decision.reading}
-            </p>
             {selected.handsOff ? (
-              <p className="mt-2.5 text-[12.5px] leading-relaxed text-amber-200">
-                Este camino devuelve el caso a una persona.
+              <p className="mt-2.5 text-[12.5px] leading-relaxed text-zinc-400">
+                En este camino el proceso espera a una persona.
               </p>
+            ) : null}
+            {showExceptionFlow ? (
+              <div className="mt-5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+                  Cuando el proceso necesita criterio
+                </p>
+                <ProcessRail steps={EXCEPTION_FLOW} className="mt-2" />
+                <p className="mt-3 text-[13px] leading-relaxed text-zinc-400">
+                  Automatizar también significa saber cuándo parar. Cuando el
+                  proceso necesita criterio, interviene una persona.
+                </p>
+              </div>
             ) : null}
           </motion.div>
         ) : null}
       </AnimatePresence>
-    </LabPanel>
-  );
-}
-
-function ExceptionModel() {
-  return (
-    <LabPanel>
-      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-400">
-        Cuando algo no sale como esperaba
-      </p>
-
-      <div className="mt-4 flex flex-col gap-2 font-mono text-[11.5px] tracking-[0.06em] text-zinc-300">
-        <span>Automatización</span>
-        <span aria-hidden className="text-zinc-400">
-          ↓
-        </span>
-        <span className="text-amber-200">Excepción</span>
-        <span aria-hidden className="text-zinc-400">
-          ↓
-        </span>
-        <span>¿Se puede resolver?</span>
-        <div className="mt-1 grid gap-2 sm:grid-cols-2">
-          <span className="rounded-md border border-emerald-400/20 bg-emerald-400/5 px-3 py-2 text-emerald-200">
-            Sí → Acción
-          </span>
-          <span className="rounded-md border border-white/10 bg-white/2 px-3 py-2 text-zinc-300">
-            No → Persona
-          </span>
-        </div>
-      </div>
-
-      <ul className="mt-5 flex list-none flex-col gap-2.5 border-t border-white/8 p-0 pt-4">
-        {CLINIC_EXCEPTIONS.map((exception) => (
-          <li key={exception.id} className="flex flex-col gap-0.5">
-            <span className="text-[13px] text-zinc-200">{exception.trigger}</span>
-            <span className="text-[12px] leading-relaxed text-zinc-400">
-              {exception.resolvable ? "Se resuelve sola · " : "Pasa a persona · "}
-              {exception.resolution}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </LabPanel>
+    </div>
   );
 }
 
@@ -237,79 +211,64 @@ export function ActDecisions({
   onContinue,
 }: ActDecisionsProps) {
   const reduceMotion = useReducedMotion();
-  const answeredCount = CLINIC_DECISIONS.filter((d) => answers[d.id]).length;
-  const complete = answeredCount === CLINIC_DECISIONS.length;
+  const [stage, setStage] = useState(() => initialStage(answers));
+  const lastIndex = CLINIC_DECISIONS.length - 1;
+  const decision = CLINIC_DECISIONS[stage];
+  const answeredCurrent = Boolean(decision && answers[decision.id]);
+  const allAnswered = CLINIC_DECISIONS.every((item) => Boolean(answers[item.id]));
+  const chainComplete = allAnswered && stage >= lastIndex;
 
   useEffect(() => {
     trackEvent("decision_started");
   }, []);
 
   useEffect(() => {
-    if (complete) trackEvent("decision_completed");
-  }, [complete]);
+    if (allAnswered) trackEvent("decision_completed");
+  }, [allAnswered]);
+
+  const goNext = () => setStage((current) => Math.min(current + 1, lastIndex));
 
   return (
     <div>
-      <LabEyebrow>Acto 02 · Entiende las decisiones</LabEyebrow>
+      <LabEyebrow>02 · Lo decides</LabEyebrow>
       <LabHeading className="mt-3 max-w-2xl">
-        Automatizar no es hacer siempre lo mismo
+        Decide qué ocurre cuando cambian las circunstancias
       </LabHeading>
-      <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-zinc-300">
-        Una clínica recibe solicitudes de cita. No hay respuesta correcta: hay
-        consecuencias distintas. Este acto no ejecuta nada: sirve para entender
-        de qué depende cada camino.
-      </p>
 
-      <div className="mt-7 grid gap-5 lg:grid-cols-2 lg:gap-6">
-        <div className="flex flex-col gap-5">
-          <DecisionBlock
-            decision={CLINIC_DECISIONS[0]}
-            index={0}
-            selectedId={answers[CLINIC_DECISIONS[0].id]}
-            onSelect={(option) => onAnswer(CLINIC_DECISIONS[0].id, option)}
-          />
+      <ProcessRail
+        steps={STAGE_MARKS}
+        activeIndex={stage}
+        className="mt-5"
+      />
 
-          <AnimatePresence>
-            {answers[CLINIC_DECISIONS[0].id] ? (
-              <motion.div
-                initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-              >
-                <DecisionBlock
-                  decision={CLINIC_DECISIONS[1]}
-                  index={1}
-                  selectedId={answers[CLINIC_DECISIONS[1].id]}
-                  onSelect={(option) => onAnswer(CLINIC_DECISIONS[1].id, option)}
-                />
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
-        </div>
-
-        <div className="flex flex-col gap-5">
-          <ExceptionModel />
-
-          <div className="flex flex-col gap-3 rounded-xl border border-white/8 bg-white/2 p-5 sm:p-6">
-            <p className="font-(family-name:--font-svc-display) text-[17px] leading-snug text-zinc-100">
-              Automatizar también significa saber cuándo parar.
+      <LabPanel className="mt-6 max-w-2xl">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={decision.id}
+            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0 }}
+            transition={{ duration: 0.28, ease: "easeOut" }}
+          >
+            <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+              Decisión {String(stage + 1).padStart(2, "0")}
             </p>
-            <p className="text-[13.5px] leading-relaxed text-zinc-300">
-              Automatizar no significa quitar a las personas del proceso.
-              Significa reservarlas para lo que realmente necesita criterio.
-            </p>
-          </div>
-        </div>
-      </div>
+            <DecisionBlock
+              decision={decision}
+              selectedId={answers[decision.id]}
+              onSelect={(option) => onAnswer(decision.id, option)}
+              showExceptionFlow={stage === lastIndex}
+            />
+          </motion.div>
+        </AnimatePresence>
+      </LabPanel>
 
-      <div className="mt-7 flex flex-wrap items-center gap-3">
-        <LabButton onClick={onContinue} disabled={!complete}>
-          Continuar
-        </LabButton>
-        {!complete ? (
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-zinc-400">
-            {answeredCount} / {CLINIC_DECISIONS.length} decisiones
-          </span>
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        {answeredCurrent && stage < lastIndex ? (
+          <LabButton onClick={goNext}>Siguiente situación</LabButton>
+        ) : null}
+        {chainComplete ? (
+          <LabButton onClick={onContinue}>Continuar</LabButton>
         ) : null}
       </div>
     </div>

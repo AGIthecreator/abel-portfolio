@@ -3,10 +3,10 @@
 import type { LabAct } from "@/lib/lab/session";
 
 const ACTS: readonly { act: LabAct; label: string }[] = [
-  { act: 1, label: "Activa" },
-  { act: 2, label: "Decide" },
-  { act: 3, label: "Construye" },
-  { act: 4, label: "Resultado" },
+  { act: 1, label: "Lo ves" },
+  { act: 2, label: "Lo decides" },
+  { act: 3, label: "Lo construyes" },
+  { act: 4, label: "Lo has entendido" },
 ];
 
 export function DemoProgress({

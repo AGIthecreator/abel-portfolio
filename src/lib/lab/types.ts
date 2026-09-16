@@ -146,6 +146,9 @@ export interface LabAction {
 /** Bloques disponibles en el constructor de flujos y en la biblioteca. */
 export type LabBlockId =
   | "formulario"
+  | "entrada_whatsapp"
+  | "entrada_email"
+  | "entrada_chat"
   | "datos"
   | "db"
   | "decision"

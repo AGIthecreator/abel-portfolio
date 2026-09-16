@@ -1,8 +1,12 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
+import {
+  LAB_CLASSIFY_SAMPLES,
+  presentLabClassification,
+} from "@/lib/lab/classify";
 import { labFetch } from "@/lib/lab/client";
 import { LAB_MAX_MESSAGE_LENGTH } from "@/lib/lab/schema";
 import type { LabActivationState } from "@/lib/lab/session";
@@ -105,9 +109,9 @@ export function ActActivate({
   onContinue,
 }: ActActivateProps) {
   const reduceMotion = useReducedMotion();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+  const [name, setName] = useState(activation?.input.name ?? "");
+  const [email, setEmail] = useState(activation?.input.email ?? "");
+  const [message, setMessage] = useState(activation?.input.message ?? "");
   const [website, setWebsite] = useState("");
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -433,18 +437,28 @@ export function ActActivate({
     Boolean(activation.followup.scheduledAt);
   const followupCanceled = activation?.followup?.status === "canceled";
 
+  const understood = useMemo(
+    () => presentLabClassification(message),
+    [message],
+  );
+  const messageChanged =
+    Boolean(activation) &&
+    message.trim() !== (activation?.input.message.trim() ?? "");
+
+  const applySample = (text: string) => {
+    setMessage(text);
+    trackEvent("classify_sample_applied");
+  };
+
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-12">
       <div>
-        <LabEyebrow>Acto 01 · Activa un proceso</LabEyebrow>
+        <LabEyebrow>01 · Lo ves</LabEyebrow>
         <LabHeading className="mt-3">
-          Rellena esto y mira qué ocurre por dentro
+          Manda una solicitud y mira qué hace el sistema
         </LabHeading>
-        <p className="mt-3 max-w-md text-[14px] leading-relaxed text-zinc-300">
-          Lo que ejecute de verdad llevará la etiqueta{" "}
-          <ExecutionBadge mode="real" className="align-middle" /> y lo que solo
-          represente algo posible llevará{" "}
-          <ExecutionBadge mode="simulated" className="align-middle" />.
+        <p className="mt-3 max-w-md text-[13.5px] leading-relaxed text-zinc-400">
+          El contenido del mensaje cambia lo que el sistema decide.
         </p>
 
         <form
@@ -573,18 +587,90 @@ export function ActActivate({
               transition={{ duration: 0.32, ease: "easeOut" }}
               className="mt-4 flex flex-col gap-4"
             >
-              {chips.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {chips.map((chip) => (
-                    <ActionChip
-                      key={chip.id}
-                      mode={chip.mode}
-                      label={chip.label}
-                      failed={chip.failed}
-                    />
+              <LabPanel>
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-violet-300/90">
+                  Qué ha entendido el sistema
+                </p>
+                <p className="mt-2 text-[14px] leading-relaxed text-zinc-100">
+                  Esto es lo que el sistema ha decidido.
+                </p>
+                <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  {[
+                    ["Prioridad", understood.priority],
+                    ["Tipo", understood.type],
+                    ["Ruta", understood.routeLabel],
+                    ["Área", understood.area],
+                  ].map(([label, value]) => (
+                    <div key={label}>
+                      <dt className="font-mono text-[9.5px] uppercase tracking-[0.14em] text-zinc-500">
+                        {label}
+                      </dt>
+                      <dd className="mt-1 text-[13.5px] text-zinc-100">
+                        {value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+                <p className="mt-3 text-[12.5px] leading-relaxed text-zinc-400">
+                  {understood.reason}
+                </p>
+                {messageChanged ? (
+                  <p className="mt-2 text-[12.5px] leading-relaxed text-violet-200/90">
+                    Este resultado cambia porque el mensaje ha cambiado. Son las
+                    mismas reglas que la ejecución real. Volver a activar
+                    ejecutaría el proceso de verdad.
+                  </p>
+                ) : (
+                  <p className="mt-2 text-[12px] leading-relaxed text-zinc-500">
+                    {activation.classification.executionMode === "real"
+                      ? "Esto fue real: las reglas se ejecutaron sobre tu mensaje."
+                      : "Esto está simulado."}{" "}
+                    {activation.actions.some((a) => a.executionMode === "simulated")
+                      ? "Algunas acciones posteriores están simuladas."
+                      : null}
+                  </p>
+                )}
+              </LabPanel>
+
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+                  Prueba otro mensaje
+                </p>
+                <p className="mt-1.5 text-[12.5px] leading-relaxed text-zinc-400">
+                  Elige un ejemplo. El clasificador real recalcula tipo,
+                  prioridad y ruta.
+                </p>
+                <div className="mt-2.5 flex flex-wrap gap-2">
+                  {LAB_CLASSIFY_SAMPLES.map((sample) => (
+                    <button
+                      key={sample.id}
+                      type="button"
+                      onClick={() => applySample(sample.text)}
+                      className="cursor-pointer rounded-md border border-white/12 bg-white/2 px-2.5 py-1.5 text-[12.5px] text-zinc-300 transition-colors hover:border-violet-400/40 hover:bg-white/5 hover:text-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400/70"
+                    >
+                      {sample.label}
+                    </button>
                   ))}
                 </div>
-              ) : null}
+              </div>
+
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+                  Qué acaba de ocurrir
+                </p>
+                {chips.length > 0 ? (
+                  <div className="mt-2.5 flex flex-wrap gap-2">
+                    {chips.map((chip) => (
+                      <ActionChip
+                        key={chip.id}
+                        mode={chip.mode}
+                        label={chip.label}
+                        failed={chip.failed}
+                      />
+                    ))}
+                  </div>
+                ) : null}
+              </div>
 
               {activation.duplicate ? (
                 <LabPanel className="border-amber-300/20 bg-amber-400/5">
@@ -598,52 +684,12 @@ export function ActActivate({
                 </LabPanel>
               ) : null}
 
-              {!activation.duplicate || activation.capabilities.pdf ? (
-                <LabPanel>
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-400">
-                      Clasificación y ruta
-                    </p>
-                    <ExecutionBadge
-                      mode={activation.classification.executionMode}
-                    />
-                  </div>
-                  <dl className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                    {[
-                      ["Tipo", activation.classification.type],
-                      ["Prioridad", activation.classification.priority],
-                      ["Ruta", activation.route.label],
-                      ["Área", activation.route.team],
-                    ].map(([label, value]) => (
-                      <div key={label}>
-                        <dt className="font-mono text-[9.5px] uppercase tracking-[0.14em] text-zinc-400">
-                          {label}
-                        </dt>
-                        <dd className="mt-1 text-[13.5px] text-zinc-100">
-                          {value}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                  <p className="mt-3 text-[12px] leading-relaxed text-zinc-400">
-                    {activation.classification.reason} {activation.route.reason}{" "}
-                    No hay ningún modelo de IA detrás: son reglas sobre el texto,
-                    y la ruta que eligen decide qué plantilla sale.
-                  </p>
-                </LabPanel>
-              ) : null}
-
               {activation.capabilities.emailStatus ||
               activation.capabilities.pdf ||
               activation.capabilities.followup ? (
                 <LabPanel>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-400">
-                    Sigue el proceso
-                  </p>
-                  <p className="mt-2 text-[12.5px] leading-relaxed text-zinc-300">
-                    Estas acciones se ejecutan en el servidor cuando las pulsas.
-                    Lo que devuelva el proveedor es lo que aparece en el
-                    timeline.
+                  <p className="text-[13.5px] leading-relaxed text-zinc-200">
+                    El proceso ya ha actuado. Si quieres, puedes seguirlo.
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2.5">
                     {activation.capabilities.emailStatus ? (
@@ -711,29 +757,71 @@ export function ActActivate({
                 </LabPanel>
               ) : null}
 
-              <LabPanel>
-                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-400">
-                  Acciones
-                </p>
-                <ul className="mt-3 flex list-none flex-col gap-3 p-0">
-                  {activation.actions.map((action) => (
-                    <li key={action.id} className="flex flex-col gap-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[13px] text-zinc-100">
-                          {action.label}
-                        </span>
-                        <ExecutionBadge mode={action.executionMode} />
-                        <span className="ml-auto">
-                          <ActionStatusLabel status={action.status} />
-                        </span>
+              <details className="rounded-xl border border-white/8 bg-white/2 p-5 sm:p-6">
+                <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-400 transition-colors hover:text-zinc-200">
+                  Si quieres verlo por dentro
+                </summary>
+                <div className="mt-4 flex flex-col gap-4">
+                  {!activation.duplicate || activation.capabilities.pdf ? (
+                    <div>
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+                          Clasificación y ruta
+                        </p>
+                        <ExecutionBadge
+                          mode={activation.classification.executionMode}
+                        />
                       </div>
-                      <p className="text-[12px] leading-relaxed text-zinc-400">
-                        {action.detail}
+                      <dl className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        {[
+                          ["Tipo", activation.classification.type],
+                          ["Prioridad", activation.classification.priority],
+                          ["Ruta", activation.route.label],
+                          ["Área", activation.route.team],
+                        ].map(([label, value]) => (
+                          <div key={label}>
+                            <dt className="font-mono text-[9.5px] uppercase tracking-[0.14em] text-zinc-500">
+                              {label}
+                            </dt>
+                            <dd className="mt-1 text-[13.5px] text-zinc-100">
+                              {value}
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
+                      <p className="mt-3 text-[12px] leading-relaxed text-zinc-400">
+                        {activation.classification.reason} {activation.route.reason}{" "}
+                        No hay ningún modelo de IA detrás: son reglas sobre el
+                        texto, y la ruta que eligen decide qué plantilla sale.
                       </p>
-                    </li>
-                  ))}
-                </ul>
-              </LabPanel>
+                    </div>
+                  ) : null}
+
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+                      Acciones
+                    </p>
+                    <ul className="mt-3 flex list-none flex-col gap-3 p-0">
+                      {activation.actions.map((action) => (
+                        <li key={action.id} className="flex flex-col gap-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-[13px] text-zinc-100">
+                              {action.label}
+                            </span>
+                            <ExecutionBadge mode={action.executionMode} />
+                            <span className="ml-auto">
+                              <ActionStatusLabel status={action.status} />
+                            </span>
+                          </div>
+                          <p className="text-[12px] leading-relaxed text-zinc-400">
+                            {action.detail}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </details>
 
               {activation.degradedReason ? (
                 <p className="text-[12.5px] leading-relaxed text-amber-200">

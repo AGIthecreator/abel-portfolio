@@ -101,7 +101,7 @@ export async function sendLabRouteEmails({
         from,
         to: email,
         subject: buildLabVisitorSubject(route),
-        html: buildLabVisitorEmailHtml(name, route),
+        html: buildLabVisitorEmailHtml(name, route, classification),
         tags: [
           { name: "source", value: "laboratorio" },
           { name: "route", value: route.id },
