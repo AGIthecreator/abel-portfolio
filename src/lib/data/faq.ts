@@ -11,7 +11,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "¿Cuánto tarda una web?",
     answer:
-      "Depende del proyecto, aunque no me gusta alargar procesos innecesarios. Lo normal suele estar entre una y tres semanas.",
+      "Depende del alcance y del material disponible. Los plazos se acuerdan al cerrar el presupuesto, no hay una cifra única.",
   },
   {
     question: "¿Solo trabajas en Valladolid?",
@@ -26,11 +26,12 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "¿Puedo pedir cambios después?",
     answer:
-      "Sí. La idea es construir algo que pueda crecer contigo y adaptarse con el tiempo.",
+      "Sí. Los ajustes pequeños se pueden ver después de publicar. Si el alcance crece, se presupuesta aparte.",
   },
   {
     question: "¿Incluyes dominio y hosting?",
-    answer: "Puedo ayudarte con toda la configuración y dejarlo listo para funcionar.",
+    answer:
+      "Ayudo con la configuración. El coste de dominio e infraestructura va en el presupuesto; no se asume gratis.",
   },
   {
     question: "¿También haces automatizaciones?",

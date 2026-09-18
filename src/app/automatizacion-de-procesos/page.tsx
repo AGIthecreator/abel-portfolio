@@ -9,7 +9,7 @@ const faqEntities = [
     name: "¿Qué procesos se pueden automatizar?",
     acceptedAnswer: {
       "@type": "Answer",
-      text: "Los que se repiten con reglas claras: formularios, reservas, avisos, sincronización entre herramientas o tareas administrativas.",
+      text: "Los que se repiten con reglas claras: formularios, reservas, avisos, sincronización entre herramientas o tareas administrativas. Si cada caso es distinto y depende de criterio humano, a veces conviene simplificar antes de automatizar.",
     },
   },
   {
@@ -33,7 +33,7 @@ const faqEntities = [
     name: "¿Se pueden automatizar reservas?",
     acceptedAnswer: {
       "@type": "Answer",
-      text: "Sí, cuando el flujo de reserva, confirmación y aviso está bien definido.",
+      text: "Sí, cuando el flujo de reserva, confirmación y aviso está bien definido. Puede vivir junto a la web o conectarse a un sistema existente.",
     },
   },
   {
@@ -49,7 +49,7 @@ const faqEntities = [
     name: "¿Cómo sé si merece la pena automatizar algo?",
     acceptedAnswer: {
       "@type": "Answer",
-      text: "Si el proceso se repite, consume tiempo y se puede describir con pasos claros, suele merecer mirarlo.",
+      text: "Si el proceso se repite, consume tiempo y se puede describir con pasos claros, suele merecer mirarlo. Si ocurre rara vez o cada caso es distinto, a veces es mejor dejarlo manual.",
     },
   },
 ];
@@ -71,12 +71,6 @@ const jsonLd = {
       areaServed: {
         "@type": "Country",
         name: "España",
-      },
-      offers: {
-        "@type": "Offer",
-        priceCurrency: "EUR",
-        description: "Según proyecto",
-        availability: "https://schema.org/InStock",
       },
     },
     {

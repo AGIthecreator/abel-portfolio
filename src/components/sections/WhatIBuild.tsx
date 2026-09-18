@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { FadeIn } from "@/components/motion/FadeIn";
 
 const SECTION_BG = "#070b13";
@@ -171,7 +172,7 @@ export function WhatIBuild() {
   return (
     <section
       id="entregables"
-      className="relative -mt-6 scroll-mt-24 w-full overflow-x-clip overflow-y-visible pt-16 pb-20 sm:-mt-8 sm:pt-20 sm:pb-28"
+      className="relative scroll-mt-24 w-full overflow-x-clip overflow-y-visible pt-16 pb-20 sm:pt-20 sm:pb-28"
       style={{ backgroundColor: SECTION_BG }}
       aria-label="¿Por qué hacerlo conmigo?"
     >
@@ -384,6 +385,16 @@ export function WhatIBuild() {
               bonitas.
             </p>
             <p>Se compra cuando ves claro que puede ayudarte.</p>
+            <p>
+              Si quieres ver cómo construyo una web, empieza por{" "}
+              <Link
+                href="/desarrollo-web"
+                className="text-zinc-300 underline decoration-violet-400/30 underline-offset-[3px] transition-colors hover:text-zinc-100"
+              >
+                desarrollo web
+              </Link>
+              .
+            </p>
           </div>
 
           <p className="mx-auto mt-12 max-w-md text-[clamp(1rem,2.8vw,1.15rem)] leading-relaxed text-zinc-200">

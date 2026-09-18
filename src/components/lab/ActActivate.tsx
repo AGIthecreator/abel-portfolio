@@ -557,8 +557,16 @@ export function ActActivate({
           </div>
 
           <p className="text-[11.5px] leading-relaxed text-zinc-400">
-            Tus datos se usan solo para ejecutar este proceso y para que pueda
-            responderte. La demo tiene un límite de ejecuciones reales.
+            El nombre y el email sirven para ejecutar esta demo: aviso,
+            confirmación, informe o seguimiento si lo pides. No es
+            consentimiento de marketing.{" "}
+            <a
+              href="/privacy"
+              className="text-zinc-300 underline decoration-white/15 underline-offset-2 hover:text-zinc-200"
+            >
+              Privacidad
+            </a>
+            . La demo tiene un límite de ejecuciones reales.
           </p>
         </form>
       </div>

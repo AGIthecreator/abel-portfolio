@@ -6,7 +6,6 @@ import { useEffect, useId, useState } from "react";
 import { useCookieConsent } from "@/components/cookies/CookieConsentContext";
 import {
   OPTIONAL_COOKIES,
-  createDefaultOptionalPreferences,
   createEssentialOnlyPreferences,
   hasOptionalConsent,
   type OptionalCookieId,
@@ -82,14 +81,14 @@ export function CookieConsentBanner() {
     savePreferences,
   } = useCookieConsent();
   const [optionalPreferences, setOptionalPreferences] = useState(
-    createDefaultOptionalPreferences,
+    createEssentialOnlyPreferences,
   );
 
   const visible = ready && consent === null;
 
   useEffect(() => {
     if (showPreferences) {
-      setOptionalPreferences(createDefaultOptionalPreferences());
+      setOptionalPreferences(createEssentialOnlyPreferences());
     }
   }, [showPreferences]);
 
@@ -137,8 +136,16 @@ export function CookieConsentBanner() {
                 id="cookie-consent-description"
                 className="mt-2.5 text-sm leading-relaxed text-zinc-400"
               >
-                Uso cookies para estadísticas y mejorar la experiencia de la web.
-                Puedes cambiar tus preferencias cuando quieras.
+                Uso cookies técnicas necesarias para que el sitio funcione.
+                Las de estadísticas (Google Analytics) solo se cargan si las
+                aceptas. No hay cookies de marketing ni newsletter.{" "}
+                <Link
+                  href="/cookies"
+                  className="text-zinc-300 underline decoration-white/15 underline-offset-2 transition-colors hover:text-zinc-200"
+                >
+                  Más detalle
+                </Link>
+                .
               </p>
             ) : (
               <p id="cookie-consent-description" className="sr-only">
@@ -186,12 +193,20 @@ export function CookieConsentBanner() {
                         );
                       },
                     )}
-                    <Link
-                      href="/privacy"
-                      className="inline-block pt-0.5 text-xs text-zinc-500 transition-colors duration-200 hover:text-zinc-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(10,15,24,0.92)]"
-                    >
-                      Ver política de privacidad
-                    </Link>
+                    <p className="flex flex-wrap gap-x-3 gap-y-1 pt-0.5">
+                      <Link
+                        href="/cookies"
+                        className="text-xs text-zinc-500 transition-colors duration-200 hover:text-zinc-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(10,15,24,0.92)]"
+                      >
+                        Cookies
+                      </Link>
+                      <Link
+                        href="/privacy"
+                        className="text-xs text-zinc-500 transition-colors duration-200 hover:text-zinc-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(10,15,24,0.92)]"
+                      >
+                        Privacidad
+                      </Link>
+                    </p>
                   </motion.div>
                 </motion.div>
               ) : null}

@@ -240,8 +240,15 @@ export function ContactForm({ source = "page_form" }: ContactFormProps) {
       >
         {loading ? "Enviando…" : "Enviar mensaje"}
       </button>
-      <p className="text-center text-[11px] tracking-wide text-zinc-500">
-        Respuesta directa · Sin intermediarios
+      <p className="text-center text-[11px] leading-relaxed tracking-wide text-zinc-500">
+        Al enviar, usaré estos datos para responderte. No es una suscripción.{" "}
+        <a
+          href="/privacy"
+          className="text-zinc-400 underline decoration-white/15 underline-offset-2 hover:text-zinc-300"
+        >
+          Privacidad
+        </a>
+        .
       </p>
     </form>
   );

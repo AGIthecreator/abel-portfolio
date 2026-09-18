@@ -17,7 +17,7 @@ export const QUOTE_PDF_DOCUMENT = {
   contextHeading: "Contexto del proyecto",
   /** Usar packValueNoteFor() en el modelo; este string es fallback. */
   packValueNote:
-    "Valores de referencia del catálogo. El precio del pack es el punto de partida de este conjunto.",
+    "Valores de referencia de las partidas. El precio del pack es el punto de partida de este conjunto.",
   orientativeNote:
     "Este presupuesto es orientativo hasta confirmar el alcance final del proyecto.",
 } as const;

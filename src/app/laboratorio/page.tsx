@@ -4,14 +4,18 @@ import { LaboratorioShell } from "@/components/lab/LaboratorioShell";
 import { Footer } from "@/components/sections/Footer";
 
 export const metadata: Metadata = {
-  title: "Laboratorio de automatización | AGI TheCreator",
+  title: "Laboratorio de automatizaciones para negocios | AGI TheCreator",
   description:
-    "Una demo interactiva: activa un proceso real, decide qué debe hacer el sistema y construye tu propio flujo. Automatizar no es hacer algo automáticamente.",
+    "Demostración interactiva de automatización de procesos: entra una solicitud, el sistema decide y ves un proceso de negocio ejecutarse solo.",
   alternates: { canonical: "/laboratorio" },
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
-    title: "Laboratorio de automatización | AGI TheCreator",
+    title: "Laboratorio de automatizaciones para negocios | AGI TheCreator",
     description:
-      "Prueba tres situaciones reales y descubre qué ocurre cuando un proceso deja de depender de alguien delante del ordenador.",
+      "Prueba una automatización para negocios: una demostración paso a paso de un proceso automatizado.",
     url: "https://agithecreator.com/laboratorio",
     siteName: "AGI TheCreator",
     locale: "es_ES",
@@ -21,15 +25,15 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Laboratorio de automatización de AGI TheCreator",
+        alt: "Laboratorio de automatizaciones para negocios | AGI TheCreator",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Laboratorio de automatización | AGI TheCreator",
+    title: "Laboratorio de automatizaciones para negocios | AGI TheCreator",
     description:
-      "Activa un proceso, decide qué debe hacer el sistema y construye tu propio flujo.",
+      "Entra al laboratorio y prueba una automatización de procesos en marcha.",
     images: ["/og-image.png"],
   },
 };
@@ -38,20 +42,18 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "WebApplication",
-      name: "Laboratorio de automatización",
+      "@type": "WebPage",
+      name: "Laboratorio de automatizaciones para negocios",
       url: "https://agithecreator.com/laboratorio",
-      applicationCategory: "BusinessApplication",
-      operatingSystem: "Web",
+      inLanguage: "es-ES",
       description:
-        "Demo interactiva que muestra cómo funciona una automatización por dentro: entrada, decisión, acción, seguimiento y excepciones.",
-      isAccessibleForFree: true,
-      offers: {
-        "@type": "Offer",
-        price: "0",
-        priceCurrency: "EUR",
+        "Laboratorio de automatizaciones: demostración interactiva de procesos automatizados para negocios.",
+      isPartOf: {
+        "@type": "WebSite",
+        name: "AGI TheCreator",
+        url: "https://agithecreator.com",
       },
-      publisher: {
+      about: {
         "@type": "ProfessionalService",
         name: "AGI TheCreator",
         url: "https://agithecreator.com",
@@ -69,7 +71,7 @@ const jsonLd = {
         {
           "@type": "ListItem",
           position: 2,
-          name: "Laboratorio de automatización",
+          name: "Laboratorio",
           item: "https://agithecreator.com/laboratorio",
         },
       ],

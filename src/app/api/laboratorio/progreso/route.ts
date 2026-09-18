@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { readLabAccessToken } from "@/lib/lab/db/cookie";
 import { hashLabAccessToken } from "@/lib/lab/db/crypto";
 import { getLabRepository } from "@/lib/lab/db";
-import { toLabContactPublic } from "@/lib/lab/db/contact-logic";
+import { labContactOriginFromRequest, toLabContactPublic } from "@/lib/lab/db/contact-logic";
 import { rememberLabContact } from "@/lib/lab/db/remember-contact";
 import {
   experiencesFromProgress,
@@ -36,6 +36,7 @@ async function contactForRequest(req: Request) {
       name: run.visitor.name,
       classification: run.classification,
       routeId: run.routeId,
+      origin: labContactOriginFromRequest(req),
       runId: run.runId,
     });
   }

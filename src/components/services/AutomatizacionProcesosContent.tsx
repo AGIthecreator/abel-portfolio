@@ -140,7 +140,7 @@ export function AutomatizacionProcesosContent() {
           onClick: () => track("hero", "presupuesto"),
         }}
         secondary={{
-          label: "Probar el laboratorio",
+          label: "Ver el Laboratorio",
           href: "/laboratorio",
           onClick: () => track("hero", "laboratorio"),
         }}
@@ -209,7 +209,9 @@ export function AutomatizacionProcesosContent() {
         <p className="mt-6 max-w-[52ch] text-center text-[14px] leading-[1.7] text-zinc-500">
           Ejemplo: llega una solicitud, se ordena la información, el sistema
           aplica la regla, se dispara la acción y alguien puede hacer
-          seguimiento sin rebuscarlo a mano.
+          seguimiento sin rebuscarlo a mano. Puedes ver un flujo así en el{" "}
+          <TextLink href="/laboratorio">Laboratorio</TextLink>, una demostración
+          de automatización de procesos.
         </p>
       </ServiceSection>
 
@@ -287,7 +289,7 @@ export function AutomatizacionProcesosContent() {
           <>
             <p>
               Algunos procesos caben en un flujo ligero. Otros necesitan bases
-              de datos, paneles, APIs, lógica personalizada o herramientas
+              de datos, paneles internos, APIs, lógica personalizada o herramientas
               internas.
             </p>
             <p>

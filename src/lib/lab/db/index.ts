@@ -1,5 +1,5 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { getLabDbConfig } from "../config";
+import { getLabContactRetentionDays, getLabDbConfig } from "../config";
 import { LAB_STORE_LIMITS, type LabLogEntry, type LabRunRecord } from "../store";
 import type { LabAction, LabClassification } from "../types";
 import { createMemoryLabRepository } from "./memory-repo";
@@ -42,40 +42,54 @@ interface ContactRow {
   email: string;
   email_hash: string;
   name: string | null;
-  business_type: string | null;
-  goal: string | null;
-  current_method: string | null;
-  blocker: string | null;
-  timeframe: string | null;
   route: string | null;
+  classification: string | null;
+  goal?: string | null;
+  origin: string | null;
   experiences_completed: number;
   demo_completed: boolean;
   cta_clicked: boolean;
+  report_generated: boolean | null;
+  followup_scheduled: boolean | null;
   source: string;
+  created_at: string | null;
+  updated_at: string | null;
+  last_activity_at: string | null;
   first_seen_at: string;
   last_seen_at: string;
+  retention_until: string | null;
   test_count: number;
   last_run_id: string | null;
 }
 
 function fromContactRow(row: ContactRow): LabContactRecord {
+  const createdAt = new Date(row.created_at ?? row.first_seen_at).getTime();
+  const lastActivityAt = new Date(
+    row.last_activity_at ?? row.last_seen_at,
+  ).getTime();
+  const updatedAt = new Date(row.updated_at ?? row.last_seen_at).getTime();
+  const retentionUntil = row.retention_until
+    ? new Date(row.retention_until).getTime()
+    : lastActivityAt + getLabContactRetentionDays() * 24 * 60 * 60 * 1000;
   return {
     id: row.id,
     email: row.email,
     emailHash: row.email_hash,
     name: row.name,
-    businessType: row.business_type,
-    goal: row.goal,
-    currentMethod: row.current_method,
-    blocker: row.blocker,
-    timeframe: row.timeframe,
+    classification: row.classification ?? row.goal ?? null,
     route: row.route,
+    origin: row.origin,
     experiencesCompleted: row.experiences_completed,
     demoCompleted: row.demo_completed,
     ctaClicked: row.cta_clicked,
+    reportGenerated: Boolean(row.report_generated),
+    followupScheduled: Boolean(row.followup_scheduled),
     source: LAB_CONTACT_SOURCE,
-    firstSeenAt: new Date(row.first_seen_at).getTime(),
+    createdAt,
+    updatedAt,
     lastSeenAt: new Date(row.last_seen_at).getTime(),
+    lastActivityAt,
+    retentionUntil,
     testCount: row.test_count,
     lastRunId: row.last_run_id,
   };
@@ -371,32 +385,58 @@ export function createSupabaseLabRepository(
     },
 
     async upsertLabContact(input) {
-      const { data, error } = await client.rpc("lab_upsert_contact", {
+      const next = await client.rpc("lab_upsert_contact", {
         p_email: input.email,
         p_email_hash: input.emailHash,
         p_name: input.name ?? null,
-        p_goal: input.goal ?? null,
+        p_classification: input.classification ?? null,
         p_route: input.route ?? null,
+        p_origin: input.origin ?? null,
         p_last_run_id: input.lastRunId ?? null,
+        p_retention_days: getLabContactRetentionDays(),
       });
-      if (error) throw error;
-      const row = firstContactRow(data);
+      // Compatibilidad hasta aplicar supabase/lab.sql (RPC nueva).
+      const legacy =
+        next.error
+          ? await client.rpc("lab_upsert_contact", {
+              p_email: input.email,
+              p_email_hash: input.emailHash,
+              p_name: input.name ?? null,
+              p_goal: input.classification ?? null,
+              p_route: input.route ?? null,
+              p_last_run_id: input.lastRunId ?? null,
+            })
+          : next;
+      if (legacy.error) throw legacy.error;
+      const row = firstContactRow(legacy.data);
       if (!row) throw new Error("lab_upsert_contact empty");
       return fromContactRow(row);
     },
 
     async updateLabContactProgress(emailHash, patch) {
-      const { data, error } = await client.rpc("lab_update_contact_progress", {
+      const next = await client.rpc("lab_update_contact_progress", {
         p_email_hash: emailHash,
         p_experiences: patch.experiencesCompleted ?? null,
         p_demo: patch.demoCompleted ?? null,
         p_cta: patch.ctaClicked ?? null,
+        p_report: patch.reportGenerated ?? null,
+        p_followup: patch.followupScheduled ?? null,
+        p_retention_days: getLabContactRetentionDays(),
       });
-      if (error) {
-        console.error("[lab] contact progress", error.message);
+      const legacy =
+        next.error
+          ? await client.rpc("lab_update_contact_progress", {
+              p_email_hash: emailHash,
+              p_experiences: patch.experiencesCompleted ?? null,
+              p_demo: patch.demoCompleted ?? null,
+              p_cta: patch.ctaClicked ?? null,
+            })
+          : next;
+      if (legacy.error) {
+        console.error("[lab] contact progress", legacy.error.message);
         return null;
       }
-      const row = firstContactRow(data);
+      const row = firstContactRow(legacy.data);
       return row ? fromContactRow(row) : null;
     },
 
@@ -412,7 +452,7 @@ export function createSupabaseLabRepository(
   };
 }
 
-const REPO_KEY = "__agiLabRepositoryV3" as const;
+const REPO_KEY = "__agiLabRepositoryV5" as const;
 
 type GlobalWithRepo = typeof globalThis & { [REPO_KEY]?: LabRepository };
 

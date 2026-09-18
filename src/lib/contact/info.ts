@@ -10,7 +10,7 @@ export const OPERATOR = {
   role: "Desarrollo",
   note: "Webs, automatizaciones y sistemas a medida para negocios de toda España.",
   toolsIntro:
-    "Cada encargo pide un montaje distinto: webs y apps, datos, automatización, ecommerce y cobros online.",
+    "Cada encargo pide un montaje distinto: webs, datos, automatización y, si el proyecto lo necesita, un catálogo o un cobro online.",
   tools:
     "Next.js, React, Vue, Angular, React Native, TypeScript, Java, Node, Python, PostgreSQL, Supabase, n8n, Make, Airtable, Stripe, Vercel, Cloudflare.",
 } as const;

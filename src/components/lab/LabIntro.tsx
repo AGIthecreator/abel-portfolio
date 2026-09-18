@@ -22,8 +22,9 @@ export function LabIntro({
       </h1>
 
       <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-zinc-300 sm:mt-5">
-        Tres momentos: lo ves, lo decides y lo construyes. No hace falta saber
-        de automatización de antemano.
+        Es una demostración interactiva, no un producto aparte. Tres momentos:
+        lo ves, lo decides y lo construyes. No hace falta saber de
+        automatización de antemano.
       </p>
 
       <div className="mt-7 flex flex-wrap items-center gap-3 sm:mt-9 sm:gap-4">

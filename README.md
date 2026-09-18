@@ -7,7 +7,7 @@ Este es mi ecosistema digital profesional, construido como una Single Page Appli
 * **Frontend:** Next.js 15 (App Router), TypeScript, Tailwind CSS.
 * **Backend & DB:** Supabase (PostgreSQL) para gestión de datos y cifrado.
 * **Automatización:** Integración con Airtable API para gestión dinámica de contenidos (Eventos/Cursos).
-* **Pagos:** Stripe API para futuras integraciones comerciales.
+* **Pagos:** Stripe se puede integrar en proyectos de clientes. Este sitio no tiene tienda ni checkout propio.
 * **Despliegue:** Vercel (CI/CD).
 
 ## 🌟 Características Destacadas

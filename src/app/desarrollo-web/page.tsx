@@ -9,7 +9,7 @@ const faqEntities = [
     name: "¿Podéis trabajar sobre una web que ya existe?",
     acceptedAnswer: {
       "@type": "Answer",
-      text: "Sí. Se puede revisar qué sirve, qué sobra y qué conviene reconstruir. A veces merece migrar; a veces conviene partir de cero.",
+      text: "Sí. Se puede revisar qué sirve, qué sobra y qué conviene reconstruir. A veces merece migrar; a veces conviene partir de cero. Eso se decide con el alcance encima de la mesa.",
     },
   },
   {
@@ -25,7 +25,7 @@ const faqEntities = [
     name: "¿Qué pasa si el proyecto necesita funcionalidades propias?",
     acceptedAnswer: {
       "@type": "Answer",
-      text: "Se plantea como desarrollo a medida o como parte de un sistema mayor: lógica propia, bases de datos, áreas privadas o automatizaciones cuando hacen falta.",
+      text: "Se plantea como desarrollo a medida o como parte de un sistema mayor: lógica propia, bases de datos, un área privada sencilla para tus clientes o equipo, o automatizaciones cuando hacen falta. El detalle comercial está en precios; el alcance se cierra en el presupuesto.",
     },
   },
   {
@@ -41,7 +41,7 @@ const faqEntities = [
     name: "¿Una web puede conectarse después con automatizaciones o sistemas?",
     acceptedAnswer: {
       "@type": "Answer",
-      text: "Sí. Muchas webs empiezan como presencia y, más adelante, se conectan a flujos, avisos o herramientas internas.",
+      text: "Sí. Muchas webs empiezan como presencia y, más adelante, se conectan a flujos, avisos o herramientas internas. Si eso es lo que buscas ahora, también puedes mirar automatización de procesos.",
     },
   },
 ];
@@ -115,7 +115,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Desarrollo web para negocios | AGI TheCreator",
     description:
-      "Criterio, claridad y base técnica. Sin catálogo disfrazado de contenido.",
+      "Criterio, claridad y base técnica. Sin relleno disfrazado de contenido.",
     images: ["/og-image.png"],
   },
 };

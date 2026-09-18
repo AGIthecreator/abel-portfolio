@@ -16,6 +16,7 @@ import {
   hashLabAccessToken,
 } from "@/lib/lab/db/crypto";
 import { getLabRepository } from "@/lib/lab/db";
+import { labContactOriginFromRequest } from "@/lib/lab/db/contact-logic";
 import { rememberLabContact } from "@/lib/lab/db/remember-contact";
 import { activationFromRun } from "@/lib/lab/present";
 import { isLabRateLimited } from "@/lib/lab/rate-limit";
@@ -82,6 +83,7 @@ export async function POST(req: Request) {
     const { classification, routeId } = classifyLabMessage(message);
     const route = resolveLabRoute(routeId);
     const repo = getLabRepository();
+    const origin = labContactOriginFromRequest(req);
 
     // Honeypot: respuesta plausible sin persistir ni cookie.
     if (website) {
@@ -156,6 +158,7 @@ export async function POST(req: Request) {
         name: cleanName,
         classification: previous.classification ?? classification,
         routeId: previous.routeId ?? route.id,
+        origin,
         runId: previous.runId,
       });
 
@@ -251,6 +254,7 @@ export async function POST(req: Request) {
       name: cleanName,
       classification,
       routeId: route.id,
+      origin,
       runId,
     });
 

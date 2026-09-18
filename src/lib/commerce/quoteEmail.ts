@@ -34,7 +34,7 @@ export function buildQuoteLeadEmailHtml(args: {
   const company = args.contact.company?.trim() || "No indicada";
   const phone = args.contact.phone.trim() || "-";
   const email = args.contact.email.trim();
-  const product = args.result.productName ?? "Sin producto";
+  const product = args.result.productName ?? "Sin pack";
   const total = `${formatEur(args.result.subtotalEur)} + IVA`;
   const maintenance =
     args.result.maintenanceMonthlyEur != null
@@ -60,7 +60,7 @@ export function buildQuoteLeadEmailHtml(args: {
       <div style="height:1px;background:rgba(0,0,0,0.08);margin:20px 0;"></div>
 
       <h3 style="margin:0 0 12px;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;color:#3a2d6b;">Proyecto</h3>
-      ${row("Producto", product)}
+      ${row("Pack", product)}
       ${row("Total orientativo", total)}
       ${row("Mantenimiento", maintenance)}
 

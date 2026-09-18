@@ -82,7 +82,7 @@ function QuoteSummaryPanel({
         Resumen orientativo
       </p>
       <p className="mt-3 font-serif text-[1.2rem] text-[#F3F1EB]">
-        {productName ?? "Elige un producto"}
+        {productName ?? "Elige un pack"}
       </p>
       {result.packPriceEur != null ? (
         <p className="mt-2 text-[13px] text-zinc-400">
@@ -299,8 +299,16 @@ export function QuoteConfigurator() {
   if (!hydrated) {
     return (
       <div className="relative min-h-screen bg-[#070b13] text-zinc-300">
-        <div className="mx-auto w-full max-w-6xl px-4 pb-28 pt-[5.25rem] sm:px-6 sm:pt-24">
-          <p className="font-mono text-[10px] text-zinc-600">Cargando…</p>
+        <div className="mx-auto w-full max-w-6xl px-4 pb-28 pt-[5.25rem] sm:px-6 sm:pt-24 lg:px-10 lg:pt-28">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-300/75">
+            Configurador
+          </p>
+          <h1 className="mt-3 font-serif text-[clamp(1.75rem,4vw,2.75rem)] font-normal leading-[1.08] tracking-[-0.03em] text-[#F3F1EB]">
+            {QUOTE_PAGE.hero}
+          </h1>
+          <p className="mt-4 max-w-[48ch] text-[15px] leading-[1.75] text-zinc-400">
+            {QUOTE_PAGE.subtitle}
+          </p>
         </div>
       </div>
     );
@@ -524,7 +532,7 @@ export function QuoteConfigurator() {
                                 setStepIndex(0);
                               }}
                             >
-                              Cambiar producto
+                              Cambiar pack
                             </button>
                           </>
                         ) : null}
@@ -571,7 +579,7 @@ export function QuoteConfigurator() {
                     </h2>
                     <div className="mt-5 space-y-4 rounded-xl border border-white/10 bg-white/[0.03] p-5">
                       <p className="text-[15px] text-zinc-200">
-                        <span className="text-zinc-500">Producto: </span>
+                        <span className="text-zinc-500">Pack: </span>
                         {result.productName}
                       </p>
                       {result.packPriceEur != null ? (

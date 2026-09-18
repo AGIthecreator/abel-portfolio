@@ -43,69 +43,14 @@ const jsonLd = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://agithecreator.com"),
   title: "AGI TheCreator | Páginas web y sistemas para negocios",
-
   description:
     "Creo páginas web y herramientas para negocios que quieren trabajar mejor, atender más rápido y dejar de perder tiempo con tareas que se repiten.",
-
-  keywords: [
-    // Servicios principales
-    "diseño web para negocios",
-    "crear página web negocio",
-    "crear web empresa",
-    "desarrollo web profesional",
-    "página web para tienda",
-    "página web para clínica",
-    "página web para restaurante",
-    "programador web",
-
-    // Automatización
-    "automatización de negocios",
-    "automatizar tareas",
-    "automatización de procesos",
-    "eliminar trabajo manual",
-    "ahorrar tiempo negocio",
-    "sistema para reservas",
-    "automatizar citas",
-    "automatizar formularios",
-    "automatizar clientes",
-    "software para negocios",
-
-    // Casos reales
-    "software para clínicas",
-    "software para restaurantes",
-    "software para gestorías",
-    "software para tiendas",
-    "software a medida",
-
-    // Intención de búsqueda real
-    "cómo conseguir más clientes",
-    "cómo ahorrar tiempo negocio",
-    "cómo automatizar un negocio",
-    "cómo conseguir reservas online",
-    "cómo digitalizar una empresa",
-    "negocio online",
-
-    // Local
-    "programador Valladolid",
-    "desarrollo web Valladolid",
-    "automatización Valladolid",
-    "diseño web Valladolid",
-    "software Valladolid",
-
-    // España
-    "programador España",
-    "automatización España",
-    "desarrollo software España",
-    "web para empresas España",
-  ],
-
   openGraph: {
-    title: "AGI TheCreator | Webs y sistemas para negocios",
-    description:
-      "Desarrollo webs y sistemas que eliminan trabajo manual y ahorran tiempo a negocios.",
-    url: "https://agithecreator.com",
     siteName: "AGI TheCreator",
+    locale: "es_ES",
+    type: "website",
     images: [
       {
         url: "/og-image.png",
@@ -114,17 +59,11 @@ export const metadata: Metadata = {
         alt: "AGI TheCreator",
       },
     ],
-    locale: "es_ES",
-    type: "website",
   },
-
   twitter: {
     card: "summary_large_image",
-    title: "AGI TheCreator",
-    description: "Webs y sistemas para negocios",
     images: ["/og-image.png"],
   },
-
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "32x32" },
@@ -134,13 +73,6 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
-
-  metadataBase: new URL("https://agithecreator.com"),
-
-  alternates: {
-    canonical: "/",
-  },
-
   robots: {
     index: true,
     follow: true,

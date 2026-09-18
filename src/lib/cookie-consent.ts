@@ -24,3 +24,11 @@ export function storeConsent(consent: CookieConsent): void {
     // localStorage puede estar bloqueado; el banner volverá a mostrarse.
   }
 }
+
+export function clearStoredConsent(): void {
+  try {
+    localStorage.removeItem(COOKIE_CONSENT_KEY);
+  } catch {
+    /* almacenamiento bloqueado */
+  }
+}

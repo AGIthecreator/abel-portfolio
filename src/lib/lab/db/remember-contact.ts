@@ -1,9 +1,9 @@
 import type { LabClassification, LabRouteId } from "../types";
 import type { LabRepository } from "./repository";
-import type { LabContactRecord } from "./contact-logic";
+import type { LabContactRecord, LabContactProgressPatch } from "./contact-logic";
 
 /**
- * Alta o actualización del participante. No sustituye lab_runs.
+ * Alta o actualización del participante comercial. No sustituye lab_runs.
  * El fallo no debe tumbar la ejecución de la demo.
  */
 export async function rememberLabContact(
@@ -14,6 +14,7 @@ export async function rememberLabContact(
     name: string | null;
     classification?: LabClassification | null;
     routeId?: LabRouteId | string | null;
+    origin?: string | null;
     runId?: string | null;
   },
 ): Promise<LabContactRecord | null> {
@@ -22,8 +23,9 @@ export async function rememberLabContact(
       email: input.email,
       emailHash: input.emailHash,
       name: input.name,
-      goal: input.classification?.type ?? null,
+      classification: input.classification?.type ?? null,
       route: input.routeId ?? null,
+      origin: input.origin ?? null,
       lastRunId: input.runId ?? null,
     });
   } catch (error) {
@@ -32,5 +34,21 @@ export async function rememberLabContact(
       error instanceof Error ? error.message : "error",
     );
     return null;
+  }
+}
+
+/** Marca de progreso interno. Nunca rompe PDF, seguimiento ni la demo. */
+export async function markLabContactProgress(
+  repo: LabRepository,
+  emailHash: string,
+  patch: LabContactProgressPatch,
+): Promise<void> {
+  try {
+    await repo.updateLabContactProgress(emailHash, patch);
+  } catch (error) {
+    console.error(
+      "[lab] contact progress",
+      error instanceof Error ? error.message : "error",
+    );
   }
 }

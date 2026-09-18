@@ -442,6 +442,7 @@ export function ContactPageContent() {
             <div className="mt-10 space-y-12">
               <PersonBlock name={OPERATOR.firstName} role={OPERATOR.role}>
                 <p>{OPERATOR.note}</p>
+                <p>{OPERATOR.toolsIntro}</p>
                 <p className="w-full text-[10px] italic leading-normal text-white/25 sm:text-[11px]">
                   {OPERATOR.tools}
                 </p>

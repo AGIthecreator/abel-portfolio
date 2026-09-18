@@ -222,7 +222,8 @@ export const LINE_ITEMS: Record<string, LineItem> = {
   catalog_light: {
     id: "catalog_light",
     name: "Catálogo ligero",
-    description: "Listado o catálogo acotado (referencia aproximada: hasta ~10 ítems).",
+    description:
+      "Listado o catálogo acotado de lo que ofrece tu negocio (referencia: hasta ~10 ítems).",
     priceEur: 180,
     unit: "ud",
     category: "development",
@@ -232,7 +233,7 @@ export const LINE_ITEMS: Record<string, LineItem> = {
     id: "catalog_bulk",
     name: "Carga masiva de productos",
     description:
-      "Carga de catálogo por volumen. Mínimo facturable 120 € (aprox. 10 elementos).",
+      "Carga del catálogo de tu negocio por volumen. Mínimo facturable 120 € (aprox. 10 elementos).",
     priceEur: 12,
     unit: "elemento",
     category: "development",
@@ -242,7 +243,7 @@ export const LINE_ITEMS: Record<string, LineItem> = {
   private_area: {
     id: "private_area",
     name: "Área privada básica",
-    description: "Zona privada sencilla para clientes o equipo.",
+    description: "Acceso restringido en tu web, para clientes o equipo.",
     priceEur: 480,
     unit: "ud",
     category: "development",

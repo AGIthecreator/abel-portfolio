@@ -7,7 +7,7 @@ declare global {
   }
 }
 
-const ONCE_STORAGE_KEY = "agi_analytics_once_v1";
+export const ONCE_STORAGE_KEY = "agi_analytics_once_v1";
 
 function readOnceKeys(): Set<string> {
   if (typeof window === "undefined") return new Set();

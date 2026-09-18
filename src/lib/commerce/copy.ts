@@ -19,7 +19,7 @@ export const OFFER_EXTRAS_LABELS = [
   "SEO profesional (estrategia y seguimiento)",
   "Consultoría creativa o de presentación del negocio",
   "Nuevas funcionalidades e integraciones fuera de alcance",
-  "Carga masiva de productos o catálogo",
+  "Carga masiva del catálogo de tu negocio",
 ] as const;
 
 /** Cuando la suma de partidas supera el precio del pack. */
@@ -28,7 +28,7 @@ export const PACK_VALUE_NOTE_SAVINGS =
 
 /** Cuando no hay ahorro de pack (o no aplica): solo anclaje de referencia. */
 export const PACK_VALUE_NOTE_REFERENCE =
-  "Valores de referencia del catálogo. El precio del pack es el punto de partida de este conjunto; el alcance final se confirma al estudiar el proyecto.";
+  "Valores de referencia de las partidas. El precio del pack es el punto de partida de este conjunto; el alcance final se confirma al estudiar el proyecto.";
 
 /** @deprecated Preferir packValueNoteFor() */
 export const PACK_VALUE_NOTE = PACK_VALUE_NOTE_SAVINGS;
@@ -66,7 +66,7 @@ export {
 export const PRICING_FAQ_GROUPS = [
   {
     id: "producto",
-    title: "Producto y alcance",
+    title: "Packs y alcance",
     items: [
       {
         q: "¿Qué diferencia hay entre Web de entrada y Web profesional?",
@@ -74,11 +74,11 @@ export const PRICING_FAQ_GROUPS = [
       },
       {
         q: "¿Cuándo necesito un Proyecto a medida?",
-        a: "Cuando hace falta más lógica, reservas, áreas privadas, integraciones o automatizaciones que se salen de una web profesional estándar.",
+        a: "Cuando hace falta más lógica, reservas, un área privada para tus clientes, integraciones o automatizaciones que se salen de una web profesional estándar.",
       },
       {
         q: "¿Qué incluye realmente el precio?",
-        a: "Lo descrito en el producto y lo cerrado en el presupuesto. No incluye trabajos fuera de alcance, SEO mensual ni servicios de terceros sin acuerdo.",
+        a: "Lo descrito en el pack y lo cerrado en el presupuesto. No incluye trabajos fuera de alcance, SEO mensual ni servicios de terceros sin acuerdo.",
       },
       {
         q: "¿Cómo se calcula un Proyecto a medida?",

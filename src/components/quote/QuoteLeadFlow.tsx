@@ -694,7 +694,9 @@ export function QuoteLeadFlow({
                     className="mt-1 size-4 shrink-0 rounded border-white/20 bg-[#0c121c] accent-violet-400"
                   />
                   <span>
-                    Acepto que me contactéis sobre este proyecto. Más info en la{" "}
+                    Acepto que me contactéis sobre este presupuesto. No es una
+                    suscripción ni un consentimiento de marketing. Más info en
+                    la{" "}
                     <Link
                       href="/privacy"
                       className="text-zinc-300 underline-offset-2 hover:underline"
@@ -729,7 +731,7 @@ export function QuoteLeadFlow({
                     Proyecto
                   </p>
                   <ReviewRow
-                    label="Producto"
+                    label="Pack"
                     value={snapshot.result.productName ?? "-"}
                   />
                   {extraLines.length > 0 ? (

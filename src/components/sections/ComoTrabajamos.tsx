@@ -89,7 +89,7 @@ const FAQ_ITEMS = [
     answer: [
       "En la mayoría de los casos, tu web es el primer contacto real que alguien tiene con tu negocio. Y esa primera impresión se forma en cuestión de segundos, mucho antes de que lean una sola línea.",
       "Una web cuidada transmite confianza y credibilidad de forma inmediata. Comunica que detrás hay un proyecto serio, que se preocupa por los detalles y por la experiencia de quien lo visita.",
-      "Además, una web bien construida mejora tu visibilidad: se entiende mejor en el móvil, aparece mejor en los buscadores y guía a quien llega hacia lo que de verdad importa.",
+      "Además, una web bien construida se entiende mejor en el móvil, queda lista para que los buscadores la lean y guía a quien llega hacia lo que de verdad importa.",
       "Por eso una web profesional no es un simple escaparate bonito. Es una herramienta comercial que trabaja por ti todos los días, también cuando tú no estás delante.",
     ],
   },
@@ -97,9 +97,9 @@ const FAQ_ITEMS = [
     question:
       "¿Qué diferencia hay entre una web profesional y una hecha por tu cuenta?",
     answer: [
-      "Hoy es relativamente fácil montar una web por tu cuenta. La diferencia no está en conseguir publicar algo, sino en que ese algo funcione de verdad y genere resultados.",
+      "Hoy es relativamente fácil montar una web por tu cuenta. La diferencia no está en conseguir publicar algo, sino en que ese algo se entienda, cargue bien y ayude a dar el siguiente paso.",
       "Una web profesional cuida el diseño para que transmita la imagen adecuada, ordena la información para que se entienda a la primera y carga rápido para que nadie se marche antes de tiempo.",
-      "También se construye pensando en el móvil desde el principio, donde hoy ocurre la mayor parte de las visitas, y se prepara para que los buscadores la entiendan y la muestren.",
+      "También se construye pensando en el móvil desde el principio y se prepara para que los buscadores puedan leerla. Eso no es lo mismo que garantizar una posición en Google.",
       "Al final, la diferencia se nota justo donde importa: una proyecta sensación de improvisación y la otra transmite confianza.",
     ],
   },
@@ -109,7 +109,7 @@ const FAQ_ITEMS = [
       "Depende del alcance del proyecto y de la información disponible desde el principio.",
       "Una web corporativa suele completarse en pocas semanas, mientras que los proyectos con más funcionalidades requieren algo más de tiempo de planificación y desarrollo.",
       "Lo que más suele influir no es la parte técnica, sino tener listos los textos, las imágenes y las decisiones necesarias para avanzar sin bloqueos.",
-      "Nuestro objetivo siempre es trabajar de forma ágil, manteniendo la calidad y evitando retrasos innecesarios.",
+      "El objetivo es avanzar con claridad, sin alargar el proceso ni bajar la calidad.",
     ],
   },
   {
@@ -117,7 +117,7 @@ const FAQ_ITEMS = [
     answer: [
       "Sí. Desde el primer momento trabajamos los aspectos que sientan las bases del posicionamiento: una estructura SEO correcta, una buena velocidad de carga y una indexación adecuada para que Google pueda leer y entender la web.",
       "Eso sí, conviene aclarar una cosa: estar preparado para el SEO y aparecer en primera posición no son lo mismo.",
-      "El posicionamiento depende de muchos factores, varios de ellos fuera de la propia web, y es un trabajo que se construye con el tiempo. Lo que sí dejamos hecho es una base sólida y bien planteada, lista para competir.",
+      "El posicionamiento depende de muchos factores, varios de ellos fuera de la propia web, y es un trabajo que se construye con el tiempo. Lo que sí queda hecho es SEO técnico de base: estructura, velocidad e indexación. Estrategia mensual o aparecer el primero no van incluidos.",
     ],
   },
   {

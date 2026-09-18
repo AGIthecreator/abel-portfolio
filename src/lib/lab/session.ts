@@ -17,7 +17,8 @@ import type {
  * Volver a la página nunca dispara acciones reales.
  */
 
-const STORAGE_KEY = "agi_lab_session_v2";
+export const LAB_SESSION_STORAGE_KEY = "agi_lab_session_v2";
+const STORAGE_KEY = LAB_SESSION_STORAGE_KEY;
 
 export type LabAct = 0 | 1 | 2 | 3 | 4;
 

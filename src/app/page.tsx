@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { SiteNavbar } from "@/components/SiteNavbar";
 import { HomeSectionScroll } from "@/components/HomeSectionScroll";
 import { Hero } from "@/components/sections/Hero";
@@ -7,8 +8,27 @@ import {
   DeferredStrategicProfile,
   DeferredWhatIBuild,
 } from "@/components/sections/DeferredSections";
+import { LabInvite } from "@/components/sections/LabInvite";
 import StripSystemStatus from "@/components/sections/Strips/StripSystemStatus";
 import StripExecution from "@/components/sections/Strips/StripExecution";
+
+export const metadata: Metadata = {
+  title: "AGI TheCreator | Páginas web y sistemas para negocios",
+  description:
+    "Creo páginas web y herramientas para negocios que quieren trabajar mejor, atender más rápido y dejar de perder tiempo con tareas que se repiten.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "AGI TheCreator | Webs y sistemas para negocios",
+    description:
+      "Desarrollo webs y sistemas que eliminan trabajo manual y ahorran tiempo a negocios.",
+    url: "https://agithecreator.com",
+  },
+  twitter: {
+    title: "AGI TheCreator | Páginas web y sistemas para negocios",
+    description:
+      "Webs y sistemas para negocios que quieren atender más rápido y dejar de repetir las mismas tareas.",
+  },
+};
 
 export default function Page() {
   return (
@@ -28,6 +48,7 @@ export default function Page() {
 
       <SiteNavbar />
 
+      <main>
       {/* 1. HERO */}
       <Hero />
 
@@ -37,21 +58,22 @@ export default function Page() {
       </div>
 
       {/* BLOQUE 1: Narrativa Estratégica (z por debajo de la franja para no ocultarla) */}
-      <main className="relative z-10 mx-auto max-w-300 overflow-visible px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-300 overflow-visible px-4 sm:px-6 lg:px-8">
         <section className="relative overflow-visible pt-0 pb-0">
           <DeferredStrategicProfile />
         </section>
-      </main>
+      </div>
 
       {/* FRANJA 2: sin margen superior para pegar al bloque estratégico */}
-      <div className="mb-6 sm:mb-8">
-        <StripSystemStatus />
-      </div>
+      <StripSystemStatus />
+
+      <LabInvite />
 
       {/* Mesa de evidencias — entrega de resultados */}
       <DeferredWhatIBuild />
 
       <DeferredFaq />
+      </main>
 
       <Footer />
       </div>

@@ -13,6 +13,8 @@
  *   LAB_DAILY_EMAIL_BUDGET — opcional. Tope global de emails reales por día.
  *   LAB_SUPABASE_URL       — URL del proyecto de persistencia del laboratorio.
  *   LAB_SUPABASE_SERVICE_ROLE_KEY — service role, SOLO servidor. Nunca NEXT_PUBLIC_.
+ *   LAB_CONTACT_RETENTION_DAYS — tope operativo de lab_contacts (días).
+ *     Por defecto 365. NO es un plazo legal; queda para revisión.
  */
 
 const DEFAULT_FROM = "AGI Laboratorio <contacto@agithecreator.com>";
@@ -84,4 +86,16 @@ export function getLabDbConfig(): LabDbConfig | null {
 
 export function isLabDbConfigured(): boolean {
   return getLabDbConfig() !== null;
+}
+
+/**
+ * Tope operativo de conservación de lab_contacts, en días.
+ * NO es un plazo legal: queda para revisión. Por defecto 365.
+ */
+export const LAB_CONTACT_RETENTION_DEFAULT_DAYS = 365;
+
+export function getLabContactRetentionDays(): number {
+  const raw = Number(process.env.LAB_CONTACT_RETENTION_DAYS);
+  if (Number.isFinite(raw) && raw > 0) return Math.trunc(raw);
+  return LAB_CONTACT_RETENTION_DEFAULT_DAYS;
 }

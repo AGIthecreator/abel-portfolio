@@ -6,6 +6,7 @@ import {
 } from "@/lib/lab/actions/followup";
 import { LAB_LIMITS } from "@/lib/lab/budget";
 import { getLabRepository } from "@/lib/lab/db";
+import { markLabContactProgress } from "@/lib/lab/db/remember-contact";
 import { guardLabAction, guardLabUsage, labError } from "@/lib/lab/guard";
 import {
   followupFromRun,
@@ -88,6 +89,9 @@ export async function POST(req: Request) {
         scheduledAt: outcome.data.scheduledAt,
         cancelled: false,
         reschedules: current.usage.reschedules,
+      });
+      await markLabContactProgress(repo, run.emailHash, {
+        followupScheduled: true,
       });
     }
 

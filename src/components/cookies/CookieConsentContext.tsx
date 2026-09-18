@@ -12,6 +12,7 @@ import {
 import {
   getStoredConsent,
   storeConsent,
+  clearStoredConsent,
   type CookieConsent,
 } from "@/lib/cookie-consent";
 
@@ -22,6 +23,7 @@ type CookieConsentContextValue = {
   setShowPreferences: (open: boolean) => void;
   acceptAll: () => void;
   savePreferences: (analyticsEnabled: boolean) => void;
+  resetConsent: () => void;
 };
 
 const CookieConsentContext = createContext<CookieConsentContextValue | null>(
@@ -55,6 +57,12 @@ export function CookieConsentProvider({ children }: PropsWithChildren) {
     [persistConsent],
   );
 
+  const resetConsent = useCallback(() => {
+    clearStoredConsent();
+    setConsentState(null);
+    setShowPreferences(false);
+  }, []);
+
   const value = useMemo(
     () => ({
       consent,
@@ -63,8 +71,9 @@ export function CookieConsentProvider({ children }: PropsWithChildren) {
       setShowPreferences,
       acceptAll,
       savePreferences,
+      resetConsent,
     }),
-    [consent, ready, showPreferences, acceptAll, savePreferences],
+    [consent, ready, showPreferences, acceptAll, savePreferences, resetConsent],
   );
 
   return (

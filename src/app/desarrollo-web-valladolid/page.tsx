@@ -25,7 +25,7 @@ const faqEntities = [
     name: "¿Trabajáis con empresas de otras ciudades?",
     acceptedAnswer: {
       "@type": "Answer",
-      text: "Sí. El proceso está pensado para funcionar en remoto.",
+      text: "Sí. El proceso está pensado para funcionar en remoto: diagnóstico, alcance, desarrollo y revisión.",
     },
   },
   {
@@ -33,7 +33,7 @@ const faqEntities = [
     name: "¿Cuánto cuesta una web en Valladolid?",
     acceptedAnswer: {
       "@type": "Answer",
-      text: "Lo mismo que en el resto de España. No hay tarifa local distinta.",
+      text: "Lo mismo que en el resto de España. No hay tarifa local distinta. Las referencias públicas están en precios.",
     },
   },
   {

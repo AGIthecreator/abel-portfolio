@@ -118,6 +118,10 @@ async function main() {
     firstSeen &&
     firstContact.json.email === undefined &&
     firstContact.json.consentMarketing === undefined &&
+    firstContact.json.name === undefined &&
+    firstContact.json.origin === undefined &&
+    firstContact.json.classification === undefined &&
+    firstContact.json.reportGenerated === undefined &&
     firstContact.json.source === "laboratorio"
   ) {
     pass("Q primer participante", `testCount=${firstCount}`);
@@ -351,9 +355,19 @@ async function main() {
     fail("V progreso sin sesión", `${noSession.res.status} ${noSessionGet.res.status}`);
   }
 
-  const leaked = await fetch(`${BASE}/api/laboratorio/contacts`);
-  if (leaked.status === 404) pass("W lab_contacts no es público", "404");
-  else fail("W lab_contacts expuesto", String(leaked.status));
+  const leakedPaths = [
+    "/api/laboratorio/contacts",
+    "/api/laboratorio/contactos",
+    "/api/lab_contacts",
+  ];
+  for (const path of leakedPaths) {
+    const leaked = await fetch(`${BASE}${path}`);
+    if (leaked.status === 404 || leaked.status === 405) {
+      pass(`W ${path} no es público`, String(leaked.status));
+    } else {
+      fail(`W ${path} expuesto`, String(leaked.status));
+    }
+  }
 
   const sesion2 = await jsonRequest("/api/laboratorio/sesion", { cookie });
   if (sesion2.json?.found === true && sesion2.json.activation?.runId === runId) {

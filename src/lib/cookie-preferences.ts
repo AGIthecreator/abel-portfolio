@@ -1,7 +1,7 @@
 export const OPTIONAL_COOKIES = {
   analytics: {
     label: "Estadísticas",
-    description: "Google Analytics para entender el uso general de la web.",
+    description: "Google Analytics para el uso general de la web. No es marketing.",
   },
 } as const;
 

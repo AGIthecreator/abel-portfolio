@@ -148,7 +148,7 @@ export function DesarrolloWebValladolidContent() {
         title="Qué tipo de proyectos"
         lead={
           <p>
-            Sin repetir el catálogo. Si quieres el detalle de cada servicio, las
+            Sin repetir la lista de servicios. Si quieres el detalle de cada uno, las
             páginas específicas están a un clic.
           </p>
         }

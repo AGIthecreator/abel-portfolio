@@ -134,7 +134,7 @@ function buildWarnings(
         severity: "suggest_upgrade",
         suggestedProductId: "a-medida",
         message:
-          "Esta combinación se acerca a un Proyecto a medida. Puedes seguir o cambiar de producto.",
+          "Esta combinación se acerca a un Proyecto a medida. Puedes seguir o cambiar de pack.",
       });
     }
   }

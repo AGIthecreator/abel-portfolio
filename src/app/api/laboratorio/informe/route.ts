@@ -4,6 +4,7 @@ import { emailLabReport, renderLabReportBuffer } from "@/lib/lab/actions/pdf";
 import { succeeded } from "@/lib/lab/actions/provider";
 import { LAB_LIMITS } from "@/lib/lab/budget";
 import { getLabRepository } from "@/lib/lab/db";
+import { markLabContactProgress } from "@/lib/lab/db/remember-contact";
 import { guardLabAction, guardLabUsage, labError } from "@/lib/lab/guard";
 import { mergeLabTrace, persistLabTrace } from "@/lib/lab/present";
 import { rebuildRunState } from "@/lib/lab/rebuild";
@@ -89,6 +90,10 @@ export async function POST(req: Request) {
     const current = updated ?? { ...run, usage: { ...run.usage, ...nextUsage } };
     const trace = mergeLabTrace(current, step, action);
     await persistLabTrace(run.runId, trace.steps, trace.actions);
+
+    await markLabContactProgress(repo, run.emailHash, {
+      reportGenerated: true,
+    });
 
     await repo.addEvent({
       runId: run.runId,

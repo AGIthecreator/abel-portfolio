@@ -56,7 +56,7 @@ const FAQ_ITEMS = [
   {
     question: "¿Qué pasa si el proyecto necesita funcionalidades propias?",
     answer: [
-      "Se plantea como desarrollo a medida o como parte de un sistema mayor: lógica propia, bases de datos, áreas privadas o automatizaciones cuando hacen falta.",
+      "Se plantea como desarrollo a medida o como parte de un sistema mayor: lógica propia, bases de datos, un área privada sencilla para tus clientes o equipo, o automatizaciones cuando hacen falta.",
       "El detalle comercial está en precios; el alcance se cierra en el presupuesto.",
     ],
   },

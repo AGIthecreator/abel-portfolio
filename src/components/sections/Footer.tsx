@@ -3,6 +3,7 @@
 import { Fragment, type CSSProperties, type MouseEvent, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { handleSectionNavClick } from "@/lib/scroll-to-section";
 import { CONTACT_EMAIL, CONTACT_MAILTO } from "@/lib/contact/info";
 
@@ -26,6 +27,8 @@ const SERVICE_LINKS = [
   { href: "/desarrollo-web", label: "Desarrollo web" },
   { href: "/automatizacion-de-procesos", label: "Automatización" },
   { href: "/desarrollo-web-valladolid", label: "Valladolid" },
+  { href: "/precios", label: "Precios" },
+  { href: "/presupuesto", label: "Presupuesto" },
 ] as const;
 
 const LEGAL_LINKS = [
@@ -38,6 +41,9 @@ const navLinkClass =
   "whitespace-nowrap font-mono text-[11px] uppercase tracking-widest text-zinc-500 no-underline transition-colors duration-200 hover:text-zinc-200";
 
 export function Footer() {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+
   const scrollToTopCleanUrl = useCallback((e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -60,7 +66,7 @@ export function Footer() {
           <Link
             id="footer-brand-link"
             href="/"
-            onClick={scrollToTopCleanUrl}
+            onClick={isHome ? scrollToTopCleanUrl : undefined}
             className="outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070b13]"
             aria-label="Ir al inicio — AGItheCreator"
           >
@@ -94,7 +100,7 @@ export function Footer() {
                     ) : null}
                     {"homeSection" in item && item.homeSection ? (
                       <a
-                        href={item.href}
+                        href={`/${item.href}`}
                         className={navLinkClass}
                         onClick={(e) => handleSectionNavClick(e, item.href)}
                       >
