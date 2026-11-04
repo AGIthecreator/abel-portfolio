@@ -80,6 +80,16 @@ export type QuotePdfModel = {
   terms: readonly string[];
   packValueNote: string;
   orientativeNote: string;
+  /**
+   * Cierre de un presupuesto ya acordado: el ajuste no es una partida.
+   * Si no viene, el PDF de formulario mantiene sus etiquetas de pack.
+   */
+  priceClose?: {
+    partsValueEur: number;
+    adjustmentEur: number;
+    finalEur: number;
+    note: string;
+  };
 };
 
 function addDaysIso(iso: string, days: number): string {

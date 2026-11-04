@@ -2,9 +2,15 @@ export type FaqTextPart =
   | { kind: "text"; value: string }
   | { kind: "highlight"; value: string; accent: "bone" | "violet" };
 
+export type FaqLink = {
+  phrase: string;
+  href: string;
+};
+
 export type FaqItem = {
   question: string;
   answer: string;
+  links?: readonly FaqLink[];
 };
 
 export const FAQ_ITEMS: FaqItem[] = [
@@ -17,6 +23,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     question: "¿Solo trabajas en Valladolid?",
     answer:
       "Trabajo desde Valladolid, aunque puedo trabajar con cualquier proyecto donde haya una buena conexión y una buena idea.",
+    links: [{ phrase: "Valladolid", href: "/desarrollo-web-valladolid" }],
   },
   {
     question: "¿La web funciona bien en móvil?",
@@ -36,7 +43,8 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "¿También haces automatizaciones?",
     answer:
-      "Sí. Formularios, reservas, procesos y sistemas que reduzcan trabajo repetitivo.",
+      "Sí. Hago automatizaciones: formularios, reservas, procesos y sistemas que reduzcan trabajo repetitivo.",
+    links: [{ phrase: "automatizaciones", href: "/automatizacion-de-procesos" }],
   },
 ];
 

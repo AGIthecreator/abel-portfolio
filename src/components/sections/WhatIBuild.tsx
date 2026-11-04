@@ -395,6 +395,16 @@ export function WhatIBuild() {
               </Link>
               .
             </p>
+            <p>
+              Si estás en{" "}
+              <Link
+                href="/desarrollo-web-valladolid"
+                className="text-zinc-300 underline decoration-violet-400/30 underline-offset-[3px] transition-colors hover:text-zinc-100"
+              >
+                Valladolid
+              </Link>{" "}
+              y prefieres hablar en persona, puedes conocer cómo trabajamos desde aquí.
+            </p>
           </div>
 
           <p className="mx-auto mt-12 max-w-md text-[clamp(1rem,2.8vw,1.15rem)] leading-relaxed text-zinc-200">

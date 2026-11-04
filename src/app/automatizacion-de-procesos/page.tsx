@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SiteNavbar } from "@/components/SiteNavbar";
 import { Footer } from "@/components/sections/Footer";
 import { AutomatizacionProcesosContent } from "@/components/services/AutomatizacionProcesosContent";
+import { ORGANIZATION_ID } from "@/lib/seo/site";
 
 const faqEntities = [
   {
@@ -64,9 +65,7 @@ const jsonLd = {
       description:
         "Automatización de procesos: primero el proceso, después la herramienta. Entrada, decisión, acción y seguimiento.",
       provider: {
-        "@type": "ProfessionalService",
-        name: "AGI TheCreator",
-        url: "https://agithecreator.com",
+        "@id": ORGANIZATION_ID,
       },
       areaServed: {
         "@type": "Country",

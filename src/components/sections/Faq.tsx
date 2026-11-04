@@ -2,13 +2,15 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
-import { Fragment, useId, useState } from "react";
+import Link from "next/link";
+import { Fragment, useId, useState, type ReactNode } from "react";
 import { Stagger, StaggerChild } from "@/components/motion/Stagger";
 import {
   FAQ_EDITORIAL_BODY,
   FAQ_EDITORIAL_LEAD,
   FAQ_ITEMS,
   FAQ_TRUST_LINE,
+  type FaqLink,
   type FaqTextPart,
 } from "@/lib/data/faq";
 
@@ -104,14 +106,47 @@ function FaqIndicator({ isOpen }: { isOpen: boolean }) {
   );
 }
 
+const FAQ_LINK_CLASS =
+  "text-zinc-400 underline decoration-violet-400/30 underline-offset-[3px] transition-colors hover:text-zinc-200";
+
+function FaqAnswer({
+  answer,
+  links,
+}: {
+  answer: string;
+  links?: readonly FaqLink[];
+}) {
+  if (!links?.length) return answer;
+
+  const nodes: ReactNode[] = [];
+  let rest = answer;
+
+  for (const link of links) {
+    const index = rest.indexOf(link.phrase);
+    if (index === -1) continue;
+    if (index > 0) nodes.push(rest.slice(0, index));
+    nodes.push(
+      <Link key={link.href} href={link.href} className={FAQ_LINK_CLASS}>
+        {link.phrase}
+      </Link>,
+    );
+    rest = rest.slice(index + link.phrase.length);
+  }
+
+  if (rest) nodes.push(rest);
+  return nodes;
+}
+
 function FaqAccordionItem({
   question,
   answer,
+  links,
   isOpen,
   onToggle,
 }: {
   question: string;
   answer: string;
+  links?: readonly FaqLink[];
   isOpen: boolean;
   onToggle: () => void;
 }) {
@@ -150,7 +185,7 @@ function FaqAccordionItem({
             <span aria-hidden className="size-7 shrink-0" />
             <div className="rounded-lg border border-white/6 bg-white/2 px-3.5 py-3 sm:px-4 sm:py-3.5">
               <p className="text-[13px] leading-[1.65] text-zinc-500 sm:text-sm sm:leading-[1.7]">
-                {answer}
+                <FaqAnswer answer={answer} links={links} />
               </p>
             </div>
           </motion.div>
@@ -254,6 +289,7 @@ export function Faq() {
                     <FaqAccordionItem
                       question={item.question}
                       answer={item.answer}
+                      links={item.links}
                       isOpen={openIndex === index}
                       onToggle={() => handleToggle(index)}
                     />

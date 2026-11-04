@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abel González - Desarrollador Web y Sistemas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            color: #111827;
+            text-rendering: optimizeSpeed;
+            text-align: left;
+            margin: 0;
+        }
+
+        .cv-wrapper {
+            width: 210mm;
+            min-height: 297mm;
+            box-shadow: none;
+        }
+
+        .section-title {
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #4f46e5;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .skill-text {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 0.22rem;
+            color: #1f2937;
+            text-align: left;
+        }
+
+        .skill-track {
+            background: #e5e7eb;
+            height: 7px;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .skill-fill {
+            background: #6366f1;
+            height: 100%;
+            border-radius: 999px;
+        }
+
+        .project-link {
+            color: #4f46e5;
+            text-decoration: none;
+        }
+
+        .project-link:hover {
+            color: #4338ca;
+        }
+
+        .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            color: #c7d2fe;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .contact-link:hover {
+            color: #e0e7ff;
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 7mm;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                background: #fff;
+                text-rendering: optimizeSpeed;
+                text-align: left;
+                font-family: Arial, sans-serif !important;
+            }
+
+            .cv-wrapper {
+                max-width: 100%;
+                width: 100%;
+                min-height: 283mm;
+                margin: 0;
+                border: none;
+                border-radius: 0;
+                box-shadow: none !important;
+            }
+
+            .cv-wrapper,
+            .cv-wrapper * {
+                line-height: 1.22;
+                box-shadow: none;
+                text-shadow: none;
+                text-align: left;
+            }
+
+            header {
+                background: #0f172a !important;
+                background-image: none !important;
+            }
+
+            a {
+                text-decoration: none;
+            }
+        }
+    </style>
+</head>
+<body class="text-[16px]">
+    <article class="cv-wrapper mx-auto bg-white overflow-hidden flex flex-col">
+        <header class="bg-[#0f172a] text-white p-8 relative">
+            <div class="flex justify-between items-start">
+                <div class="flex items-center gap-5 max-w-[430px]">
+                    <div class="w-20 h-20 rounded-full border-2 border-indigo-400/30 overflow-hidden bg-slate-800 shrink-0">
+                        <img src="/FOTO%20CV.png"
+                             alt="Foto de Abel González"
+                             class="block min-w-full min-h-full"
+                             style="object-fit: cover !important; object-position: center -0.5cap !important; transform: scale(1.4); transform-origin: top center;">
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-extrabold tracking-tight">Abel González</h1>
+                        <p class="text-indigo-300 text-base font-semibold mt-1 leading-tight">Desarrollador Web y Sistemas<br>Full Stack y Automatización</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="absolute top-8 right-3 not-italic text-xs text-slate-300">
+                <div class="grid grid-cols-[150px_150px] gap-x-4 gap-y-2">
+                    <a href="mailto:contacto@agithecreator.com" class="contact-link">
+                        <i data-lucide="mail" class="w-4 h-4 text-indigo-300"></i> Email
+                    </a>
+                    <a href="https://github.com/agithecreator" target="_blank" rel="noopener noreferrer" class="contact-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0 text-indigo-300" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg> GitHub
+                    </a>
+                    <a href="https://linkedin.com/in/abel-gonzalez-iglesias" target="_blank" rel="noopener noreferrer" class="contact-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0 text-indigo-300" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg> LinkedIn
+                    </a>
+                    <a href="https://agithecreator.com" target="_blank" rel="noopener noreferrer" class="contact-link">
+                        <i data-lucide="globe" class="w-4 h-4 text-indigo-300"></i> Web
+                    </a>
+                </div>
+            </div>
+
+            <div class="absolute top-[106px] right-3 text-xs text-slate-300">
+                <div class="grid grid-cols-[150px_150px] gap-x-4 gap-y-1">
+                    <a href="tel:+34654936634" class="inline-flex items-center gap-1.5 whitespace-nowrap">
+                        <i data-lucide="phone" class="w-4 h-4 text-indigo-300"></i> 654 936 634
+                    </a>
+                    <p class="inline-flex items-center gap-1.5 whitespace-nowrap">
+                        <i data-lucide="building-2" class="w-4 h-4 text-indigo-300"></i> Valladolid / Híbrido
+                    </p>
+                </div>
+            </div>
+        </header>
+
+        <div class="cv-columns grid grid-cols-12 flex-1">
+            <aside class="col-span-4 bg-slate-50/60 border-r border-slate-200 p-4 space-y-3">
+                <section>
+                    <h2 class="section-title">Stack Técnico</h2>
+                    <div class="space-y-2">
+                        <div>
+                            <span class="skill-text">TypeScript / Node.js: Avanzado</span>
+                            <div class="skill-track" aria-hidden="true"><div class="skill-fill" aria-hidden="true" style="width:90%"></div></div>
+                        </div>
+                        <div>
+                            <span class="skill-text">React / Next.js / Tailwind: Alto</span>
+                            <div class="skill-track" aria-hidden="true"><div class="skill-fill" aria-hidden="true" style="width:75%"></div></div>
+                        </div>
+                        <div>
+                            <span class="skill-text">PostgreSQL / Supabase: Alto</span>
+                            <div class="skill-track" aria-hidden="true"><div class="skill-fill" aria-hidden="true" style="width:75%"></div></div>
+                        </div>
+                        <div>
+                            <span class="skill-text">APIs / Backend: Alto</span>
+                            <div class="skill-track" aria-hidden="true"><div class="skill-fill" aria-hidden="true" style="width:75%"></div></div>
+                        </div>
+                        <div>
+                            <span class="skill-text">Python / Scripts: Intermedio</span>
+                            <div class="skill-track" aria-hidden="true"><div class="skill-fill" aria-hidden="true" style="width:55%"></div></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2 class="section-title">Lenguajes Base</h2>
+                    <p class="text-[16px] text-slate-700 leading-tight">TypeScript, JavaScript (ES6+), Python, SQL, HTML5, CSS3.</p>
+                </section>
+
+                <section>
+                    <h2 class="section-title">Infraestructura y Cloud</h2>
+                    <p class="text-[16px] text-slate-700 leading-tight"><strong>Vercel</strong>, <strong>Cloudflare</strong>, <strong>Supabase</strong>, <strong>Resend</strong>.</p>
+                </section>
+
+                <section>
+                    <h2 class="section-title">Herramientas de IA</h2>
+                    <p class="text-[16px] text-slate-700 leading-tight">Cursor, Claude, ChatGPT.</p>
+                </section>
+
+                <section>
+                    <h2 class="section-title">Formación y Certificaciones</h2>
+                    <ul class="text-[16px] text-slate-700 space-y-1 leading-tight">
+                        <li>Lenguajes de Programación Web, <strong>Fundae (150h)</strong>.</li>
+                        <li>SGBD y Gestión de Bases de Datos, <strong>Fundae (150h)</strong>.</li>
+                        <li>Diseño Web y Multimedia, <strong>IET Valladolid (350h)</strong>.</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2 class="section-title">Idiomas</h2>
+                    <p class="text-[16px] text-slate-700 leading-tight">Español - <strong>Nativo</strong></p>
+                    <p class="text-[16px] text-slate-700 leading-tight">Inglés - <strong>Nivel B2</strong></p>
+                </section>
+
+                <section>
+                    <h2 class="section-title">Otros datos</h2>
+                    <p class="text-[16px] text-slate-700 leading-tight"><strong>Carné B / Vehículo propio</strong>.</p>
+                </section>
+            </aside>
+
+            <main class="col-span-8 p-4">
+                <section class="mb-3">
+                    <h2 class="section-title">Perfil</h2>
+                    <p class="text-[16px] text-slate-700 leading-normal">
+                        Desarrollador web y de sistemas centrado en herramientas digitales útiles para negocios. Trabajo en aplicaciones web, backend, APIs, bases de datos e integraciones, y combino desarrollo a medida con soluciones que ya existen cuando aportan.
+                    </p>
+                </section>
+
+                <section>
+                    <h2 class="section-title">Experiencia Profesional</h2>
+                    <article>
+                        <div class="mb-1">
+                            <h3 class="text-[1.12rem] font-bold text-slate-900 leading-tight">Desarrollador Web y Sistemas Freelance</h3>
+                            <p class="text-[13px] text-slate-500 mt-0.5">(Desde 2025)</p>
+                        </div>
+                        <p class="text-[16px] text-slate-500 leading-relaxed mb-2">Desarrollo de aplicaciones web, sistemas y herramientas digitales para negocios: frontend, backend, APIs, bases de datos, integraciones, automatización puntual y despliegue.</p>
+
+                        <div class="space-y-2.5">
+                            <section>
+                                <h3 class="font-semibold mb-1 leading-tight">
+                                    <a href="https://agithecreator.com" target="_blank" rel="noopener noreferrer" class="project-link text-indigo-600">AGI TheCreator - Desarrollo Web, Sistemas y Automatización</a>
+                                </h3>
+                                <ul class="text-[16px] text-slate-700 space-y-1 list-disc pl-5 leading-snug">
+                                    <li>Sitios, aplicaciones y sistemas para negocios, de la arquitectura y la interfaz al backend, los datos y el despliegue.</li>
+                                    <li>Next.js, React y TypeScript, con APIs, PostgreSQL / Supabase, formularios, correo, autenticación y lógica de negocio.</li>
+                                    <li>Laboratorio de Automatización: un proceso real, con decisiones, excepciones, persistencia y seguimiento.</li>
+                                    <li>Vercel, Cloudflare, Supabase y Resend, con validación en servidor, control de errores y medidas de seguridad.</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h3 class="font-semibold mb-1 leading-tight">
+                                    <a href="https://sonatagastronomica.com" target="_blank" rel="noopener noreferrer" class="project-link text-indigo-600">Sonata Gastronómica - Proyecto Web</a>
+                                </h3>
+                                <ul class="text-[16px] text-slate-700 space-y-1 list-disc pl-5 leading-snug">
+                                    <li>Diseño y desarrollo del sitio de un negocio real del sector gastronómico, adaptado a la identidad de la tienda física.</li>
+                                    <li>HTML, CSS y JavaScript, con scripts de Node: responsive, categorías, catálogo de productos y contenido editorial.</li>
+                                    <li>SEO técnico: sitemap, robots, canonical, Open Graph, Twitter Cards y datos estructurados.</li>
+                                    <li>Coste de infraestructura y servicios: de unos 180 € al año a unos 10 € al año.</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h3 class="font-semibold mb-1 leading-tight">
+                                    <a href="https://aguarrasestudio.com" target="_blank" rel="noopener noreferrer" class="project-link text-indigo-600">Aguarrás Estudio - E-commerce y Operaciones</a>
+                                </h3>
+                                <ul class="text-[16px] text-slate-700 space-y-1 list-disc pl-5 leading-snug">
+                                    <li>Migración de flujos críticos de Make a n8n. Parte del coste de herramientas externas pasó a una solución propia, con un ahorro anual del 97,8 %.</li>
+                                    <li>Backend operativo con Airtable y Notion, carrito y acceso por roles con TypeScript y Tailwind.</li>
+                                </ul>
+                            </section>
+                        </div>
+                    </article>
+                </section>
+            </main>
+        </div>
+    </article>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

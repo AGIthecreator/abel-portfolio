@@ -11,22 +11,34 @@ import {
 import { LabInvite } from "@/components/sections/LabInvite";
 import StripSystemStatus from "@/components/sections/Strips/StripSystemStatus";
 import StripExecution from "@/components/sections/Strips/StripExecution";
+import {
+  HOME_DESCRIPTION,
+  HOME_TITLE,
+  OG_IMAGE,
+  SITE_LOCALE,
+  SITE_NAME,
+  SITE_URL,
+  getHomeJsonLd,
+} from "@/lib/seo/site";
 
 export const metadata: Metadata = {
-  title: "AGI TheCreator | Páginas web y sistemas para negocios",
-  description:
-    "Creo páginas web y herramientas para negocios que quieren trabajar mejor, atender más rápido y dejar de perder tiempo con tareas que se repiten.",
+  title: HOME_TITLE,
+  description: HOME_DESCRIPTION,
   alternates: { canonical: "/" },
   openGraph: {
-    title: "AGI TheCreator | Webs y sistemas para negocios",
-    description:
-      "Desarrollo webs y sistemas que eliminan trabajo manual y ahorran tiempo a negocios.",
-    url: "https://agithecreator.com",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    locale: SITE_LOCALE,
+    type: "website",
+    images: [OG_IMAGE],
   },
   twitter: {
-    title: "AGI TheCreator | Páginas web y sistemas para negocios",
-    description:
-      "Webs y sistemas para negocios que quieren atender más rápido y dejar de repetir las mismas tareas.",
+    card: "summary_large_image",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    images: [OG_IMAGE.url],
   },
 };
 
@@ -76,6 +88,10 @@ export default function Page() {
       </main>
 
       <Footer />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(getHomeJsonLd()) }}
+      />
       </div>
   );
 }

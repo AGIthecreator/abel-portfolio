@@ -213,15 +213,26 @@ export function QuotePdfDocument({ model }: { model: QuotePdfModel }) {
         <Text style={styles.subtitle}>{model.product.summary}</Text>
 
         <View style={styles.metaRow}>
-          <View style={styles.metaBlock}>
-            <Text style={styles.metaLabel}>Cliente</Text>
-            <Text style={styles.metaValue}>{model.client.name}</Text>
-            {model.client.company ? (
-              <Text style={styles.metaValue}>{model.client.company}</Text>
-            ) : null}
-            <Text style={styles.metaValue}>{model.client.email}</Text>
-            <Text style={styles.metaValue}>{model.client.phone}</Text>
-          </View>
+          {model.client.name ||
+          model.client.company ||
+          model.client.email ||
+          model.client.phone ? (
+            <View style={styles.metaBlock}>
+              <Text style={styles.metaLabel}>Cliente</Text>
+              {model.client.name ? (
+                <Text style={styles.metaValue}>{model.client.name}</Text>
+              ) : null}
+              {model.client.company ? (
+                <Text style={styles.metaValue}>{model.client.company}</Text>
+              ) : null}
+              {model.client.email ? (
+                <Text style={styles.metaValue}>{model.client.email}</Text>
+              ) : null}
+              {model.client.phone ? (
+                <Text style={styles.metaValue}>{model.client.phone}</Text>
+              ) : null}
+            </View>
+          ) : null}
           <View style={styles.metaBlock}>
             <Text style={styles.metaLabel}>Proyecto</Text>
             <Text style={styles.metaValue}>{model.product.name}</Text>
@@ -236,42 +247,69 @@ export function QuotePdfDocument({ model }: { model: QuotePdfModel }) {
         </View>
 
         <SectionTitle>Resumen</SectionTitle>
-        <View style={styles.summaryBox}>
-          <View style={styles.summaryLine}>
-            <Text>Producto</Text>
-            <Text>{model.product.name}</Text>
-          </View>
-          {model.product.packPriceEur != null ? (
+        {model.priceClose ? (
+          <View style={styles.summaryBox}>
             <View style={styles.summaryLine}>
-              <Text>Precio del pack (sin IVA)</Text>
-              <Text>{formatEurPdf(model.product.packPriceEur)}</Text>
+              <Text>Valor de las partidas</Text>
+              <Text>{formatEurPdf(model.priceClose.partsValueEur)}</Text>
             </View>
-          ) : null}
-          <View style={styles.summaryLine}>
-            <Text>Extras (sin IVA)</Text>
-            <Text>{formatEurPdf(model.extrasTotalEur)}</Text>
+            <View style={styles.summaryLine}>
+              <Text>Ajuste del proyecto</Text>
+              <Text>-{formatEurPdf(model.priceClose.adjustmentEur)}</Text>
+            </View>
+            <View style={styles.summaryStrong}>
+              <Text style={styles.strongText}>Precio final del proyecto</Text>
+              <Text style={styles.strongText}>
+                {formatEurPdf(model.priceClose.finalEur)} + IVA
+              </Text>
+            </View>
+            <View style={[styles.summaryLine, { marginTop: 6 }]}>
+              <Text>IVA ({formatPercentPdf(model.totals.vatRate)})</Text>
+              <Text>{formatEurPdf(model.totals.vatEur)}</Text>
+            </View>
+            <View style={styles.summaryLine}>
+              <Text>Total (con IVA)</Text>
+              <Text>{formatEurPdf(model.totals.totalEur)}</Text>
+            </View>
           </View>
-          <View style={styles.summaryLine}>
-            <Text>Mantenimiento</Text>
-            <Text>
-              {model.maintenance.selected && model.maintenance.monthlyEur != null
-                ? `${formatEurPdf(model.maintenance.monthlyEur)}/mes + IVA`
-                : "No incluido ahora"}
-            </Text>
+        ) : (
+          <View style={styles.summaryBox}>
+            <View style={styles.summaryLine}>
+              <Text>Producto</Text>
+              <Text>{model.product.name}</Text>
+            </View>
+            {model.product.packPriceEur != null ? (
+              <View style={styles.summaryLine}>
+                <Text>Precio del pack (sin IVA)</Text>
+                <Text>{formatEurPdf(model.product.packPriceEur)}</Text>
+              </View>
+            ) : null}
+            <View style={styles.summaryLine}>
+              <Text>Extras (sin IVA)</Text>
+              <Text>{formatEurPdf(model.extrasTotalEur)}</Text>
+            </View>
+            <View style={styles.summaryLine}>
+              <Text>Mantenimiento</Text>
+              <Text>
+                {model.maintenance.selected && model.maintenance.monthlyEur != null
+                  ? `${formatEurPdf(model.maintenance.monthlyEur)}/mes + IVA`
+                  : "No incluido ahora"}
+              </Text>
+            </View>
+            <View style={styles.summaryLine}>
+              <Text>Subtotal (sin IVA)</Text>
+              <Text>{formatEurPdf(model.totals.subtotalEur)}</Text>
+            </View>
+            <View style={styles.summaryLine}>
+              <Text>IVA ({formatPercentPdf(model.totals.vatRate)})</Text>
+              <Text>{formatEurPdf(model.totals.vatEur)}</Text>
+            </View>
+            <View style={styles.summaryStrong}>
+              <Text style={styles.strongText}>Total (con IVA)</Text>
+              <Text style={styles.strongText}>{formatEurPdf(model.totals.totalEur)}</Text>
+            </View>
           </View>
-          <View style={styles.summaryLine}>
-            <Text>Subtotal (sin IVA)</Text>
-            <Text>{formatEurPdf(model.totals.subtotalEur)}</Text>
-          </View>
-          <View style={styles.summaryLine}>
-            <Text>IVA ({formatPercentPdf(model.totals.vatRate)})</Text>
-            <Text>{formatEurPdf(model.totals.vatEur)}</Text>
-          </View>
-          <View style={styles.summaryStrong}>
-            <Text style={styles.strongText}>Total (con IVA)</Text>
-            <Text style={styles.strongText}>{formatEurPdf(model.totals.totalEur)}</Text>
-          </View>
-        </View>
+        )}
         <Text style={styles.note}>{model.orientativeNote}</Text>
 
         {model.includedLines.length > 0 ? (
@@ -285,7 +323,9 @@ export function QuotePdfDocument({ model }: { model: QuotePdfModel }) {
                 priceEur={line.priceEur}
               />
             ))}
-            {model.bundleValueEur > 0 ? (
+            {model.priceClose ? (
+              <Text style={styles.note}>{model.priceClose.note}</Text>
+            ) : model.bundleValueEur > 0 ? (
               <Text style={styles.note}>
                 Valor de referencia de las partidas:{" "}
                 {formatEurPdf(model.bundleValueEur)}. {model.packValueNote}
@@ -308,6 +348,11 @@ export function QuotePdfDocument({ model }: { model: QuotePdfModel }) {
           </>
         ) : null}
 
+        {!model.priceClose &&
+        (model.bundleValueEur > 0 ||
+          model.extrasTotalEur > 0 ||
+          (model.packSavingsEur != null && model.packSavingsEur > 0)) ? (
+          <>
         <SectionTitle>Valor del proyecto</SectionTitle>
         <View style={styles.summaryBox}>
           {model.bundleValueEur > 0 ? (
@@ -358,6 +403,8 @@ export function QuotePdfDocument({ model }: { model: QuotePdfModel }) {
             <Text style={styles.strongText}>{formatEurPdf(model.totals.totalEur)}</Text>
           </View>
         </View>
+          </>
+        ) : null}
 
         <SectionTitle>Mantenimiento</SectionTitle>
         {model.maintenance.selected && model.maintenance.monthlyEur != null ? (
@@ -385,27 +432,46 @@ export function QuotePdfDocument({ model }: { model: QuotePdfModel }) {
           model.product.doesNotInclude.length > 0) && (
           <>
             <SectionTitle>Alcance</SectionTitle>
-            <View style={styles.twoCol}>
-              <View style={styles.col}>
-                <Text style={styles.metaLabel}>Suele incluir</Text>
-                {model.product.includes.map((item) => (
-                  <Text key={item} style={styles.listItem}>
-                    · {item}
-                  </Text>
-                ))}
-              </View>
-              <View style={styles.col}>
-                <Text style={styles.metaLabel}>No incluye</Text>
-                {model.product.doesNotInclude.map((item) => (
-                  <Text key={item} style={styles.listItem}>
-                    · {item}
-                  </Text>
-                ))}
-              </View>
+            <View
+              style={
+                model.product.includes.length > 0 &&
+                model.product.doesNotInclude.length > 0
+                  ? styles.twoCol
+                  : undefined
+              }
+            >
+              {model.product.includes.length > 0 ? (
+                <View style={styles.col}>
+                  <Text style={styles.metaLabel}>Suele incluir</Text>
+                  {model.product.includes.map((item) => (
+                    <Text key={item} style={styles.listItem}>
+                      · {item}
+                    </Text>
+                  ))}
+                </View>
+              ) : null}
+              {model.product.doesNotInclude.length > 0 ? (
+                <View
+                  style={model.product.includes.length > 0 ? styles.col : undefined}
+                >
+                  <Text style={styles.metaLabel}>No incluye</Text>
+                  {model.product.doesNotInclude.map((item) => (
+                    <Text key={item} style={styles.listItem}>
+                      · {item}
+                    </Text>
+                  ))}
+                </View>
+              ) : null}
             </View>
           </>
         )}
 
+        {model.context.business ||
+        model.context.goal ||
+        model.context.situation ||
+        model.context.blocker ||
+        model.context.timeline ? (
+          <>
         <SectionTitle>Contexto del proyecto</SectionTitle>
         <View style={styles.summaryBox}>
           <View style={styles.summaryLine}>
@@ -429,6 +495,8 @@ export function QuotePdfDocument({ model }: { model: QuotePdfModel }) {
             <Text>{model.context.timeline}</Text>
           </View>
         </View>
+          </>
+        ) : null}
 
         <SectionTitle>Condiciones</SectionTitle>
         {model.terms.map((term) => (

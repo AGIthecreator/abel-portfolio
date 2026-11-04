@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SiteNavbar } from "@/components/SiteNavbar";
 import { Footer } from "@/components/sections/Footer";
 import { DesarrolloWebContent } from "@/components/services/DesarrolloWebContent";
+import { ORGANIZATION_ID } from "@/lib/seo/site";
 
 const faqEntities = [
   {
@@ -56,9 +57,7 @@ const jsonLd = {
       description:
         "Cómo entiende AGI TheCreator el desarrollo web: claridad, confianza, siguiente paso y base técnica sólida.",
       provider: {
-        "@type": "ProfessionalService",
-        name: "AGI TheCreator",
-        url: "https://agithecreator.com",
+        "@id": ORGANIZATION_ID,
       },
       areaServed: {
         "@type": "Country",

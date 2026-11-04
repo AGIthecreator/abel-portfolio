@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SiteNavbar } from "@/components/SiteNavbar";
 import { Footer } from "@/components/sections/Footer";
 import { DesarrolloWebValladolidContent } from "@/components/services/DesarrolloWebValladolidContent";
+import { ORGANIZATION_ID } from "@/lib/seo/site";
 
 const faqEntities = [
   {
@@ -56,14 +57,7 @@ const jsonLd = {
       description:
         "Estudio independiente que trabaja desde Valladolid con clientes de toda España. Trato directo y mismo criterio en remoto o presencial.",
       provider: {
-        "@type": "ProfessionalService",
-        name: "AGI TheCreator",
-        url: "https://agithecreator.com",
-        address: {
-          "@type": "PostalAddress",
-          addressLocality: "Valladolid",
-          addressCountry: "ES",
-        },
+        "@id": ORGANIZATION_ID,
       },
       areaServed: [
         {

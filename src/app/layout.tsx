@@ -4,6 +4,14 @@ import { ContactChrome } from "@/components/contact/ContactChrome";
 import { CookieConsentBanner } from "@/components/cookies/CookieConsentBanner";
 import { CookieConsentProvider } from "@/components/cookies/CookieConsentContext";
 import { DeferredAnalytics } from "@/components/DeferredAnalytics";
+import {
+  HOME_DESCRIPTION,
+  HOME_TITLE,
+  OG_IMAGE,
+  SITE_LOCALE,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/seo/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,49 +28,19 @@ const geistMono = Geist_Mono({
   preload: false,
 });
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "ProfessionalService",
-  name: "AGI TheCreator",
-  url: "https://agithecreator.com",
-  email: "contacto@agithecreator.com",
-  description: "Webs y sistemas para negocios",
-  areaServed: {
-    "@type": "Country",
-    name: "España",
-  },
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: "Valladolid",
-    addressCountry: "ES",
-  },
-  founder: {
-    "@type": "Person",
-    name: "Abel",
-  },
-};
-
 export const metadata: Metadata = {
-  metadataBase: new URL("https://agithecreator.com"),
-  title: "AGI TheCreator | Páginas web y sistemas para negocios",
-  description:
-    "Creo páginas web y herramientas para negocios que quieren trabajar mejor, atender más rápido y dejar de perder tiempo con tareas que se repiten.",
+  metadataBase: new URL(SITE_URL),
+  title: HOME_TITLE,
+  description: HOME_DESCRIPTION,
   openGraph: {
-    siteName: "AGI TheCreator",
-    locale: "es_ES",
+    siteName: SITE_NAME,
+    locale: SITE_LOCALE,
     type: "website",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "AGI TheCreator",
-      },
-    ],
+    images: [OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
-    images: ["/og-image.png"],
+    images: [OG_IMAGE.url],
   },
   icons: {
     icon: [
@@ -99,10 +77,6 @@ export default function RootLayout({
           <CookieConsentBanner />
           <DeferredAnalytics />
         </CookieConsentProvider>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
       </body>
     </html>
   );
