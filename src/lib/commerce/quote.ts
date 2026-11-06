@@ -1,6 +1,7 @@
 import type { MaintenanceChoice } from "./maintenance";
 import type { ProductId } from "./products";
 import type { QuoteContact, QuoteDiagnostic } from "./diagnostic";
+import { roundEur } from "./rates";
 
 export type QuoteLineKind = "bundle" | "extra" | "maintenance" | "note";
 
@@ -62,6 +63,38 @@ export type QuoteSnapshot = {
   diagnostic?: QuoteDiagnostic | null;
   contact?: QuoteContact | null;
 };
+
+/** Importes que el cliente ha visto. No fijan el precio: el servidor los compara. */
+export type QuoteSeenTotals = {
+  subtotalEur: number;
+  vatEur: number;
+  totalEur: number;
+  maintenanceMonthlyEur: number | null;
+};
+
+export function seenTotalsFromResult(result: QuoteResult): QuoteSeenTotals {
+  return {
+    subtotalEur: result.subtotalEur,
+    vatEur: result.vatEur,
+    totalEur: result.totalEur,
+    maintenanceMonthlyEur: result.maintenanceMonthlyEur,
+  };
+}
+
+export function quoteTotalsMatch(seen: QuoteSeenTotals, result: QuoteResult): boolean {
+  const same = (left: number, right: number) => roundEur(left) === roundEur(right);
+  const maintenanceMatches =
+    seen.maintenanceMonthlyEur == null
+      ? result.maintenanceMonthlyEur == null
+      : result.maintenanceMonthlyEur != null &&
+        same(seen.maintenanceMonthlyEur, result.maintenanceMonthlyEur);
+  return (
+    same(seen.subtotalEur, result.subtotalEur) &&
+    same(seen.vatEur, result.vatEur) &&
+    same(seen.totalEur, result.totalEur) &&
+    maintenanceMatches
+  );
+}
 
 export function createQuoteId(): string {
   return `q_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;

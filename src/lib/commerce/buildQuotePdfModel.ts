@@ -1,4 +1,5 @@
 import { packValueNoteFor } from "./copy";
+import { roundEur } from "./rates";
 import { getBundleLineItems, getProduct } from "./products";
 import { calculateQuote } from "./rules";
 import { MAINTENANCE_OFFER } from "./maintenance";
@@ -135,7 +136,7 @@ export function buildQuotePdfModel(args: {
   const bundleValueEur = result.bundleValueEur;
   const packSavingsEur =
     packPriceEur != null && bundleValueEur > packPriceEur
-      ? Math.round((bundleValueEur - packPriceEur) * 100) / 100
+      ? roundEur(bundleValueEur - packPriceEur)
       : null;
 
   const maintenanceSelected = input.maintenance === "yes";

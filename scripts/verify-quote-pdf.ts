@@ -6,7 +6,8 @@ import { calculateQuote } from "../src/lib/commerce/rules";
 import { buildQuotePdfModel } from "../src/lib/commerce/buildQuotePdfModel";
 import { sumBundleValue } from "../src/lib/commerce/bundles";
 import { getProduct } from "../src/lib/commerce/products";
-import { PUBLIC_RATES } from "../src/lib/commerce/rates";
+import { formatEurCents, PUBLIC_RATES } from "../src/lib/commerce/rates";
+import { seenTotalsFromResult } from "../src/lib/commerce/quote";
 import { buildQuoteLeadEmailHtml } from "../src/lib/commerce/quoteEmail";
 import { validateAndBuildQuotePdfRequest } from "../src/lib/commerce/quoteSchema";
 import { renderQuotePdfBuffer } from "../src/lib/pdf/renderQuotePdf";
@@ -138,12 +139,9 @@ async function main() {
   assert(PUBLIC_RATES.maintenancePreviousEur === 99, "6c anterior publicado 99", failed, passed);
 
   // 7. IVA
-  assert(
-    Math.abs(pro.vatEur - Math.round(790 * 0.21 * 100) / 100) < 0.01,
-    "7 IVA 21%",
-    failed,
-    passed,
-  );
+  assert(pro.vatEur === 165.9, "7 IVA 165,90", failed, passed);
+  assert(pro.totalEur === 955.9, "7b total 955,90", failed, passed);
+  assert(formatEurCents(pro.totalEur).includes("955,90"), "7c formato a dos decimales", failed, passed);
 
   // 8. Descuento de pack
   const bundle = sumBundleValue("profesional");
@@ -174,6 +172,7 @@ async function main() {
   const manipulated = validateAndBuildQuotePdfRequest({
     quote: {
       input: proInput,
+      seen: seenTotalsFromResult(pro),
       result: { ...pro, subtotalEur: 1, totalEur: 1 },
     },
     diagnostic,
@@ -272,7 +271,17 @@ async function main() {
       maintenance: "later",
     }),
   });
-  assert(leadMail.includes("840"), "23 el correo interno usa el total recalculado", failed, passed);
+  assert(leadMail.includes("840,00") && leadMail.includes("176,40"), "23 el correo interno usa céntimos oficiales", failed, passed);
+
+  const drifted = validateAndBuildQuotePdfRequest({
+    quote: {
+      input: proInput,
+      seen: { subtotalEur: 1, vatEur: 0.21, totalEur: 1.21, maintenanceMonthlyEur: null },
+    },
+    diagnostic,
+    contact,
+  });
+  assert(!drifted.ok && drifted.status === 409 && drifted.quote?.totalEur === 955.9, "24 un importe distinto no autoriza el PDF", failed, passed);
 
   // Extra: entrada / a-medida / sistemas modelos
   for (const [label, input] of [

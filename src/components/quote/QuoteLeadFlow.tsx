@@ -17,10 +17,13 @@ import {
   labelGoal,
   labelSituation,
   labelTimeline,
+  formatEurCents,
   maintenanceChoiceLabel,
+  seenTotalsFromResult,
   type QuoteContact,
   type QuoteDiagnostic,
   type QuoteFlowPhase,
+  type QuoteResult,
   type QuoteSnapshot,
 } from "@/lib/commerce";
 import { saveQuoteFlow, saveQuoteSnapshot } from "@/lib/commerce/snapshot";
@@ -37,12 +40,7 @@ function phoneDigits(value: string | undefined): string {
 }
 
 function formatEur(value: number | null | undefined): string {
-  if (value == null || Number.isNaN(value)) return "-";
-  return new Intl.NumberFormat("es-ES", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(value);
+  return formatEurCents(value);
 }
 
 function OptionButton({
@@ -116,6 +114,7 @@ type QuoteLeadFlowProps = {
   >;
   onExitToSummary: () => void;
   onRestartConfigure: () => void;
+  onOfficialQuote: (result: QuoteResult) => void;
 };
 
 export function QuoteLeadFlow({
@@ -126,6 +125,7 @@ export function QuoteLeadFlow({
   initialPhase = "diagnostic",
   onExitToSummary,
   onRestartConfigure,
+  onOfficialQuote,
 }: QuoteLeadFlowProps) {
   const reduceMotion = useReducedMotion();
   const [phase, setPhase] = useState(initialPhase);
@@ -141,6 +141,7 @@ export function QuoteLeadFlow({
   });
   const [website, setWebsite] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [amountNotice, setAmountNotice] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [pdfLoading, setPdfLoading] = useState(false);
   const [pdfError, setPdfError] = useState("");
@@ -330,6 +331,7 @@ export function QuoteLeadFlow({
             extras: snapshot.input.extras,
             maintenance: snapshot.input.maintenance,
           },
+          seen: seenTotalsFromResult(snapshot.result),
         },
         diagnostic: diagnostic as QuoteDiagnostic,
         contact: {
@@ -349,18 +351,31 @@ export function QuoteLeadFlow({
         body: JSON.stringify(payload),
       });
 
+      let data: { pdfAttached?: boolean; error?: string; quote?: QuoteResult } = {};
+      try {
+        data = (await res.json()) as typeof data;
+      } catch {
+        data = {};
+      }
+
+      if (res.status === 409 && data.quote) {
+        onOfficialQuote(data.quote);
+        setAmountNotice(
+          data.error ??
+            "El importe que ves no coincide con el presupuesto oficial. Revísalo antes de enviarlo.",
+        );
+        setPhase("review");
+        return;
+      }
+
       if (!res.ok) {
         setPhase("error");
         return;
       }
 
-      let pdfAttached = false;
-      try {
-        const data = (await res.json()) as { pdfAttached?: boolean };
-        pdfAttached = Boolean(data.pdfAttached);
-      } catch {
-        pdfAttached = false;
-      }
+      if (data.quote) onOfficialQuote(data.quote);
+      setAmountNotice(null);
+      const pdfAttached = Boolean(data.pdfAttached);
       setPdfEmailed(pdfAttached);
 
       trackEvent("quote_submitted", {
@@ -404,6 +419,7 @@ export function QuoteLeadFlow({
               extras: snapshot.input.extras,
               maintenance: snapshot.input.maintenance,
             },
+            seen: seenTotalsFromResult(snapshot.result),
           },
           diagnostic: diagnostic as QuoteDiagnostic,
           contact: {
@@ -417,6 +433,15 @@ export function QuoteLeadFlow({
           timestamp: snapshot.timestamp || new Date().toISOString(),
         }),
       });
+      if (res.status === 409) {
+        const data = (await res.json()) as { error?: string; quote?: QuoteResult };
+        if (data.quote) onOfficialQuote(data.quote);
+        setPdfError(
+          data.error ??
+            "El PDF no se ha generado porque el importe no coincide. Revisa el presupuesto oficial.",
+        );
+        return;
+      }
       if (!res.ok) {
         setPdfError("No se ha podido descargar el presupuesto. Inténtalo de nuevo.");
         return;
@@ -463,6 +488,15 @@ export function QuoteLeadFlow({
             También te hemos enviado una copia del presupuesto orientativo por email.
           </p>
         ) : null}
+        <div className="mt-6 space-y-1.5 text-[14px] text-zinc-300">
+          <p>Subtotal: {formatEur(snapshot.result.subtotalEur)}</p>
+          <p>
+            IVA ({Math.round(snapshot.result.vatRate * 100)} %): {formatEur(snapshot.result.vatEur)}
+          </p>
+          <p className="font-serif text-[1.45rem] text-[#F3F1EB]">
+            Total: {formatEur(snapshot.result.totalEur)}
+          </p>
+        </div>
 
         <div className="mt-8 rounded-xl border border-white/10 bg-white/[0.03] p-5">
           <p className="font-serif text-[1.1rem] text-[#F3F1EB]">Presupuesto</p>
@@ -724,6 +758,11 @@ export function QuoteLeadFlow({
               <p className="mt-2 text-[14px] text-zinc-500">
                 Revisa que encaje. Luego lo mando y lo miramos juntos.
               </p>
+              {amountNotice ? (
+                <p className="mt-4 rounded-lg border border-violet-400/30 bg-violet-400/10 px-4 py-3 text-[13px] leading-relaxed text-violet-100">
+                  {amountNotice}
+                </p>
+              ) : null}
 
               <div className="mt-6 space-y-5 rounded-xl border border-white/10 bg-white/[0.03] p-5">
                 <div className="space-y-2">

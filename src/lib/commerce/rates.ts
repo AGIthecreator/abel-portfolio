@@ -19,6 +19,22 @@ export const PUBLIC_RATES = {
   maintenancePreviousEur: 99,
 } as const;
 
+/** Céntimo comercial: mitad hacia arriba, estable frente al error binario. */
+export function roundEur(value: number): number {
+  return Math.round((value + Number.EPSILON) * 100) / 100;
+}
+
+/** Importe de presupuesto, con dos decimales y el mismo criterio en toda la entrega. */
+export function formatEurCents(value: number | null | undefined): string {
+  if (value == null || Number.isNaN(value)) return "-";
+  return new Intl.NumberFormat("es-ES", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(roundEur(value));
+}
+
 /** Importe en euros con separador de miles español, sin decimales. */
 export function formatEurAmount(amount: number): string {
   const rounded = Math.round(amount);

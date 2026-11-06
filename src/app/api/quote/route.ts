@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     const validated = validateAndBuildQuoteSubmission(body);
     if (!validated.ok) {
       return NextResponse.json(
-        { error: validated.error },
+        { error: validated.error, quote: validated.quote ?? null },
         { status: validated.status },
       );
     }
@@ -109,6 +109,9 @@ export async function POST(req: Request) {
         subject: CLIENT_SUBJECT,
         html: buildQuoteClientConfirmationEmailHtml(cleanName, {
           pdfAttached,
+          subtotalEur: result.subtotalEur,
+          vatEur: result.vatEur,
+          totalEur: result.totalEur,
         }),
         ...(attachments ? { attachments } : {}),
       }),
@@ -132,14 +135,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       pdfAttached,
-      quote: {
-        productId: result.productId,
-        productName: result.productName,
-        subtotalEur: result.subtotalEur,
-        vatEur: result.vatEur,
-        totalEur: result.totalEur,
-        maintenanceMonthlyEur: result.maintenanceMonthlyEur,
-      },
+      quote: result,
     });
   } catch {
     return NextResponse.json({ error: "Error interno" }, { status: 500 });

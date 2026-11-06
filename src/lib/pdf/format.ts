@@ -1,12 +1,10 @@
+import { formatEurCents } from "@/lib/commerce/rates";
+
 /** Formato moneda y fechas para PDF (es-ES). */
 
 export function formatEurPdf(value: number | null | undefined): string {
   if (value == null || Number.isNaN(value)) return "Según proyecto";
-  return new Intl.NumberFormat("es-ES", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(value);
+  return formatEurCents(value);
 }
 
 export function formatDatePdf(iso: string): string {

@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     const validated = validateAndBuildQuotePdfRequest(body);
     if (!validated.ok) {
       return NextResponse.json(
-        { error: validated.error },
+        { error: validated.error, quote: validated.quote ?? null },
         { status: validated.status },
       );
     }

@@ -18,6 +18,7 @@ import {
   calculateQuote,
   clearQuoteSession,
   displayExtraPriceEur,
+  formatEurCents,
   getExtrasForProduct,
   type LineItem,
   getProduct,
@@ -41,12 +42,7 @@ const STEPS = [
 ] as const;
 
 function formatEur(value: number | null | undefined): string {
-  if (value == null || Number.isNaN(value)) return "-";
-  return new Intl.NumberFormat("es-ES", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(value);
+  return formatEurCents(value);
 }
 
 function extraPriceLabel(item: LineItem): string {
@@ -443,6 +439,9 @@ export function QuoteConfigurator() {
             initialContact={leadContact}
             onExitToSummary={exitLeadToSummary}
             onRestartConfigure={restartConfigure}
+            onOfficialQuote={(result) =>
+              setLeadSnapshot((current) => (current ? { ...current, result } : current))
+            }
           />
         </div>
       </div>

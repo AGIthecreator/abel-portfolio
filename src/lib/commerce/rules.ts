@@ -3,7 +3,7 @@ import { computeLineTotal, LINE_ITEMS } from "./lineItems";
 import { MAINTENANCE_OFFER, type MaintenanceChoice } from "./maintenance";
 import { getProduct, type ProductId } from "./products";
 import type { QuoteInput, QuoteLine, QuoteResult, QuoteWarning } from "./quote";
-import { formatEurAmount } from "./rates";
+import { formatEurAmount, roundEur } from "./rates";
 
 export const VAT_RATE = 0.21;
 
@@ -69,7 +69,7 @@ function applyEntradaProfesionalFloor(
   const shouldFloor = expandingCount >= 2 || expandingSum >= 250;
   if (!shouldFloor) return subtotalEur;
 
-  const bump = Math.round((profesionalFrom - subtotalEur) * 100) / 100;
+  const bump = roundEur(profesionalFrom - subtotalEur);
   if (bump <= 0) return subtotalEur;
 
   lines.push({
@@ -234,7 +234,7 @@ function applySistemasFloor(
   if (!hasModule) return { subtotalEur: 0, extrasTotalEur: 0 };
   if (subtotalEur >= floor) return { subtotalEur, extrasTotalEur };
 
-  const bump = Math.round((floor - subtotalEur) * 100) / 100;
+  const bump = roundEur(floor - subtotalEur);
   lines.push({
     id: "sistemas_floor",
     kind: "extra",
@@ -257,7 +257,7 @@ function applySistemasFloor(
 
   return {
     subtotalEur: floor,
-    extrasTotalEur: Math.round((extrasTotalEur + bump) * 100) / 100,
+    extrasTotalEur: roundEur(extrasTotalEur + bump),
   };
 }
 
@@ -299,7 +299,8 @@ export function calculateQuote(input: QuoteInput): QuoteResult {
     // No cobrar de nuevo nada que ya esté en el pack (cualquier unidad).
     if (product?.bundleLineIds.includes(id)) continue;
 
-    const total = computeLineTotal(item.priceEur, quantity, item.minEur);
+    const rawTotal = computeLineTotal(item.priceEur, quantity, item.minEur);
+    const total = typeof rawTotal === "number" ? roundEur(rawTotal) : rawTotal;
     if (typeof total === "number") extrasTotalEur += total;
     lines.push({
       id: `${item.id}:${quantity}`,
@@ -307,7 +308,7 @@ export function calculateQuote(input: QuoteInput): QuoteResult {
       name: item.priceIsFrom ? `${item.name} (desde)` : item.name,
       description: [item.description, item.scopeNote].filter(Boolean).join(" "),
       quantity,
-      unitPriceEur: item.priceEur,
+      unitPriceEur: item.priceEur == null ? null : roundEur(item.priceEur),
       lineTotalEur: total,
       includedInPack: false,
     });
@@ -342,8 +343,10 @@ export function calculateQuote(input: QuoteInput): QuoteResult {
     extrasTotalEur = floored.extrasTotalEur;
   }
 
-  const vatEur = Math.round(subtotalEur * VAT_RATE * 100) / 100;
-  const totalEur = Math.round((subtotalEur + vatEur) * 100) / 100;
+  subtotalEur = roundEur(subtotalEur);
+  extrasTotalEur = roundEur(extrasTotalEur);
+  const vatEur = roundEur(subtotalEur * VAT_RATE);
+  const totalEur = roundEur(subtotalEur + vatEur);
 
   const maintenance: MaintenanceChoice = input.maintenance;
   const maintenanceMonthlyEur =
@@ -362,7 +365,7 @@ export function calculateQuote(input: QuoteInput): QuoteResult {
   }
 
   if (product && product.bundleLineIds.length > 0) {
-    bundleValueEur = sumBundleValue(product.id);
+    bundleValueEur = roundEur(sumBundleValue(product.id));
   } else {
     bundleValueEur = 0;
   }

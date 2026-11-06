@@ -1,4 +1,5 @@
 import { escapeHtml, stripHeaderInjection } from "@/lib/contact/sanitize";
+import { formatEurCents } from "@/lib/commerce/rates";
 import type { QuoteResult } from "@/lib/commerce/quote";
 import type { QuoteContact, QuoteDiagnostic } from "@/lib/commerce/diagnostic";
 import {
@@ -8,15 +9,6 @@ import {
   labelSituation,
   labelTimeline,
 } from "@/lib/commerce/diagnostic";
-
-function formatEur(value: number | null | undefined): string {
-  if (value == null || Number.isNaN(value)) return "-";
-  return new Intl.NumberFormat("es-ES", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
 
 function row(label: string, value: string): string {
   return `<p style="margin:0 0 12px;font-size:14px;line-height:1.55;color:#222;">
@@ -35,10 +27,12 @@ export function buildQuoteLeadEmailHtml(args: {
   const phone = args.contact.phone.trim() || "-";
   const email = args.contact.email.trim();
   const product = args.result.productName ?? "Sin pack";
-  const total = `${formatEur(args.result.subtotalEur)} + IVA`;
+  const subtotal = formatEurCents(args.result.subtotalEur);
+  const vat = formatEurCents(args.result.vatEur);
+  const total = formatEurCents(args.result.totalEur);
   const maintenance =
     args.result.maintenanceMonthlyEur != null
-      ? `${formatEur(args.result.maintenanceMonthlyEur)}/mes`
+      ? `${formatEurCents(args.result.maintenanceMonthlyEur)}/mes`
       : "No seleccionado";
 
   return `
@@ -61,7 +55,9 @@ export function buildQuoteLeadEmailHtml(args: {
 
       <h3 style="margin:0 0 12px;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;color:#3a2d6b;">Proyecto</h3>
       ${row("Pack", product)}
-      ${row("Total orientativo", total)}
+      ${row("Subtotal", subtotal)}
+      ${row("IVA 21 %", vat)}
+      ${row("Total", total)}
       ${row("Mantenimiento", maintenance)}
 
       <div style="height:1px;background:rgba(0,0,0,0.08);margin:20px 0;"></div>
@@ -83,7 +79,12 @@ export function buildQuoteLeadEmailHtml(args: {
 
 export function buildQuoteClientConfirmationEmailHtml(
   name: string,
-  options?: { pdfAttached?: boolean },
+  options?: {
+    pdfAttached?: boolean;
+    subtotalEur?: number;
+    vatEur?: number;
+    totalEur?: number;
+  },
 ): string {
   const safeName = escapeHtml(stripHeaderInjection(name) || "");
   const greeting = safeName ? `Hola ${safeName},` : "Hola,";
@@ -92,6 +93,12 @@ export function buildQuoteClientConfirmationEmailHtml(
         Te adjunto el presupuesto orientativo en PDF para que puedas guardarlo o reenviarlo.
       </p>`
     : "";
+  const amountNote =
+    options?.totalEur != null && options.subtotalEur != null && options.vatEur != null
+      ? `<p style="margin:0 0 18px;">
+          El presupuesto orientativo queda en ${formatEurCents(options.totalEur)} (${formatEurCents(options.subtotalEur)} + IVA ${formatEurCents(options.vatEur)}).
+        </p>`
+      : "";
 
   return `
 <div style="margin:0;padding:32px 20px;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif;">
@@ -105,6 +112,7 @@ export function buildQuoteClientConfirmationEmailHtml(
       <p style="margin:0 0 18px;">
         He recibido la información y revisaré lo que necesitas antes de ponerme en contacto contigo.
       </p>
+      ${amountNote}
       ${pdfNote}
       <p style="margin:0 0 18px;">
         El importe que has configurado es orientativo y lo confirmaré contigo antes de empezar.

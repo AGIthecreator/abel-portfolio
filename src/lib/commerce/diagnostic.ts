@@ -1,4 +1,5 @@
 import type { ProductId } from "./products";
+import { formatEurCents } from "./rates";
 
 /** Clave de sessionStorage para el snapshot del presupuesto. */
 export const QUOTE_SNAPSHOT_KEY = "agi_quote_snapshot";
@@ -197,11 +198,7 @@ export function maintenanceChoiceLabel(
   monthlyEur: number | null,
 ): string {
   if (choice === "yes" && monthlyEur != null) {
-    return new Intl.NumberFormat("es-ES", {
-      style: "currency",
-      currency: "EUR",
-      maximumFractionDigits: 0,
-    }).format(monthlyEur) + "/mes";
+    return `${formatEurCents(monthlyEur)}/mes`;
   }
   if (choice === "yes") return "Sí";
   if (choice === "no") return "Ahora no";

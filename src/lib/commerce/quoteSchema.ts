@@ -11,7 +11,13 @@ import {
   type QuoteContact,
   type QuoteDiagnostic,
 } from "./diagnostic";
-import type { QuoteInput } from "./quote";
+import {
+  quoteTotalsMatch,
+  seenTotalsFromResult,
+  type QuoteInput,
+  type QuoteResult,
+  type QuoteSeenTotals,
+} from "./quote";
 
 /** Normaliza móvil ES: quita +34 / 0034 y deja 9 dígitos. */
 export function normalizeEsMobileDigits(value: string): string {
@@ -93,9 +99,18 @@ export const quoteContactSchema = z.object({
   }),
 });
 
+export const quoteSeenSchema = z.object({
+  subtotalEur: z.number().finite(),
+  vatEur: z.number().finite(),
+  totalEur: z.number().finite(),
+  maintenanceMonthlyEur: z.number().finite().nullable(),
+});
+
 export const quoteSubmitSchema = z.object({
   quote: z.object({
     input: quoteInputSchema,
+    /** Lo que el cliente ha visto. El servidor no lo usa como precio. */
+    seen: quoteSeenSchema,
   }),
   diagnostic: quoteDiagnosticSchema,
   contact: quoteContactSchema,
@@ -110,6 +125,7 @@ export const quoteSubmitSchema = z.object({
 export const quotePdfRequestSchema = z.object({
   quote: z.object({
     input: quoteInputSchema,
+    seen: quoteSeenSchema,
     /** Ignorado en servidor; solo se acepta para no romper clientes antiguos */
     result: z.unknown().optional(),
   }),
@@ -132,13 +148,26 @@ export type ValidQuoteSubmission = {
   timestamp: string;
 };
 
+const QUOTE_MISMATCH_ERROR =
+  "El importe que ves no coincide con el presupuesto oficial. Revísalo antes de enviarlo.";
+
+function rejectIfTotalsDiffer(
+  seen: QuoteSeenTotals,
+  result: QuoteResult,
+): { ok: false; error: string; status: number; quote: QuoteResult } | null {
+  if (quoteTotalsMatch(seen, result)) return null;
+  return { ok: false, error: QUOTE_MISMATCH_ERROR, status: 409, quote: result };
+}
+
 /**
  * Valida payload y recalcula el presupuesto en servidor.
  * No confía en totales enviados por el cliente.
  */
 export function validateAndBuildQuoteSubmission(
   body: unknown,
-): ValidQuoteSubmission | { ok: false; error: string; status: number } {
+):
+  | ValidQuoteSubmission
+  | { ok: false; error: string; status: number; quote?: QuoteResult } {
   const parsed = quoteSubmitSchema.safeParse(body);
   if (!parsed.success) {
     return { ok: false, error: "Datos inválidos", status: 400 };
@@ -177,6 +206,9 @@ export function validateAndBuildQuoteSubmission(
     return { ok: false, error: "Presupuesto incompleto", status: 400 };
   }
 
+  const mismatch = rejectIfTotalsDiffer(quote.seen, result);
+  if (mismatch) return mismatch;
+
   return {
     ok: true,
     honeypot: false,
@@ -202,7 +234,7 @@ export function validateAndBuildQuotePdfRequest(body: unknown):
       timestamp: string;
       quoteId: string;
     }
-  | { ok: false; error: string; status: number } {
+  | { ok: false; error: string; status: number; quote?: QuoteResult } {
   const parsed = quotePdfRequestSchema.safeParse(body);
   if (!parsed.success) {
     return { ok: false, error: "Datos inválidos", status: 400 };
@@ -227,6 +259,9 @@ export function validateAndBuildQuotePdfRequest(body: unknown):
   if (!result.productId || result.subtotalEur < 0) {
     return { ok: false, error: "Presupuesto incompleto", status: 400 };
   }
+
+  const mismatch = rejectIfTotalsDiffer(quote.seen, result);
+  if (mismatch) return mismatch;
 
   // Si el cliente envía un total manipulado en quote.result, se ignora.
   return {
@@ -266,8 +301,13 @@ export function runQuoteSchemaSelfChecks(): { passed: number; failed: string[] }
     consent: true,
   };
 
+  const quoteFor = (input: QuoteInput) => ({
+    input,
+    seen: seenTotalsFromResult(calculateQuote(input)),
+  });
+
   const valid = validateAndBuildQuoteSubmission({
-    quote: { input: baseInput },
+    quote: quoteFor(baseInput),
     diagnostic: baseDiagnostic,
     contact: baseContact,
   });
@@ -326,7 +366,7 @@ export function runQuoteSchemaSelfChecks(): { passed: number; failed: string[] }
   else failed.push("objetivo incompatible con producto");
 
   const otherOk = validateAndBuildQuoteSubmission({
-    quote: { input: baseInput },
+    quote: quoteFor(baseInput),
     diagnostic: {
       ...baseDiagnostic,
       businessType: "otro",
@@ -344,6 +384,25 @@ export function runQuoteSchemaSelfChecks(): { passed: number; failed: string[] }
   });
   if (!otherMissing.ok) passed += 1;
   else failed.push("otro sin texto");
+
+  const mismatched = validateAndBuildQuoteSubmission({
+    quote: {
+      input: baseInput,
+      seen: {
+        subtotalEur: 1,
+        vatEur: 0.21,
+        totalEur: 1.21,
+        maintenanceMonthlyEur: 59,
+      },
+    },
+    diagnostic: baseDiagnostic,
+    contact: baseContact,
+  });
+  if (!mismatched.ok && mismatched.status === 409 && mismatched.quote?.subtotalEur === 790) {
+    passed += 1;
+  } else {
+    failed.push("importe visto distinto al oficial");
+  }
 
   // Anti-trampa: Entrada + extras de ampliación no queda por debajo de Profesional
   const entradaAlone = calculateQuote({
