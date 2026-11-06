@@ -1,5 +1,6 @@
 import type { LineItem } from "./lineItems";
 import { LINE_ITEMS } from "./lineItems";
+import { PUBLIC_RATES, formatEurAmount, publicPriceLabel } from "./rates";
 
 export type ProductId =
   | "entrada"
@@ -7,23 +8,42 @@ export type ProductId =
   | "a-medida"
   | "sistemas";
 
+/** Detalle progresivo de /precios. No sustituye al alcance del presupuesto. */
+export type PublicDetail = {
+  includes: string[];
+  conditions: string[];
+};
+
 export type Product = {
   id: ProductId;
   name: string;
-  /** Precio público de pack (sin IVA). null = según proyecto */
+  /**
+   * Base que cobra calculateQuote (sin IVA).
+   * null cuando no hay pack cerrado: el total sale de los módulos.
+   */
   priceFromEur: number | null;
+  /** Importe de la oferta pública. En sistemas es el mínimo, no un pack. */
+  publicFromEur: number;
+  /**
+   * Tarifa pública anterior. Solo para mostrarla tachada en /precios.
+   * calculateQuote no la lee.
+   */
+  previousPublicEur?: number;
+  /** El importe público es un punto de partida, no un precio cerrado. */
+  priceIsFrom: boolean;
+  /** Suelo del presupuesto cuando no hay pack cerrado. */
+  quoteFloorEur?: number;
   priceLabel: string;
   summary: string;
   suitedFor: string;
   highlight?: boolean;
   includes: string[];
   doesNotInclude: string[];
+  publicDetail: PublicDetail;
   /** Partidas del pack (ids de LINE_ITEMS) */
   bundleLineIds: string[];
   /** Extras sugeridos en configurador */
   suggestedExtraIds: string[];
-  /** Precio orientativo solo interno (p. ej. sistemas) */
-  internalFromEur?: number;
   internalNotes?: string[];
 };
 
@@ -31,12 +51,15 @@ export const PRODUCTS: Product[] = [
   {
     id: "entrada",
     name: "Web de entrada",
-    priceFromEur: 510,
-    priceLabel: "Desde 510 € + IVA",
+    priceFromEur: PUBLIC_RATES.entrada.eur,
+    publicFromEur: PUBLIC_RATES.entrada.eur,
+    previousPublicEur: PUBLIC_RATES.entrada.previousEur,
+    priceIsFrom: false,
+    priceLabel: publicPriceLabel(PUBLIC_RATES.entrada.eur),
     summary:
-      "Para proyectos claros y acotados que necesitan una web profesional sin complicaciones.",
+      "Una presencia digital profesional para empezar con una base sólida.",
     suitedFor:
-      "Pensada para negocios pequeños, presencia sencilla y material ya preparado.",
+      "Para negocios con un alcance acotado y el material ya preparado.",
     includes: [
       "Diseño responsive y desarrollo",
       "Estructura web acotada",
@@ -57,6 +80,19 @@ export const PRODUCTS: Product[] = [
       "Gestión de Google Business Profile",
       "Gestión de redes sociales",
     ],
+    publicDetail: {
+      includes: [
+        "Diseño y desarrollo responsive",
+        "Estructura acotada, en torno a cuatro secciones",
+        "Formulario básico y publicación",
+        "SEO técnico mínimo y analítica básica",
+      ],
+      conditions: [
+        "El precio corresponde a ese alcance, con el material ya preparado.",
+        "Redacción extensa, reservas, catálogos y automatizaciones se presupuestan aparte.",
+        "Dominio y hosting se detallan con su coste cuando hagan falta.",
+      ],
+    },
     bundleLineIds: [
       "analysis_basic",
       "ui_entry",
@@ -84,12 +120,15 @@ export const PRODUCTS: Product[] = [
   {
     id: "profesional",
     name: "Web profesional",
-    priceFromEur: 1190,
-    priceLabel: "Desde 1.190 € + IVA",
+    priceFromEur: PUBLIC_RATES.profesional.eur,
+    publicFromEur: PUBLIC_RATES.profesional.eur,
+    previousPublicEur: PUBLIC_RATES.profesional.previousEur,
+    priceIsFrom: false,
+    priceLabel: publicPriceLabel(PUBLIC_RATES.profesional.eur),
     summary:
-      "La opción principal: una web pensada para tu negocio, no una plantilla con otro logo.",
+      "Una web completa para presentar tus servicios, transmitir confianza y captar clientes.",
     suitedFor:
-      "Pensada para negocios con recorrido comercial que necesitan claridad, conversión y criterio.",
+      "Para negocios que necesitan más criterio que una presencia básica.",
     highlight: true,
     includes: [
       "Análisis del negocio y arquitectura web",
@@ -111,6 +150,19 @@ export const PRODUCTS: Product[] = [
       "Fotografía profesional",
       "Branding de terceros sin presupuesto",
     ],
+    publicDetail: {
+      includes: [
+        "Análisis, arquitectura y dirección creativa",
+        "Diseño a medida y desarrollo orientado a conversión",
+        "SEO técnico acorde al alcance y analítica esencial",
+        "Publicación y configuración",
+      ],
+      conditions: [
+        "No incluye campañas SEO, redes sociales ni fotografía.",
+        "Reservas, catálogos, áreas privadas o integraciones se añaden y se presupuestan antes.",
+        "Dominio y hosting van aparte, con su coste real.",
+      ],
+    },
     bundleLineIds: [
       "analysis_full",
       "ia_architecture",
@@ -145,12 +197,15 @@ export const PRODUCTS: Product[] = [
   {
     id: "a-medida",
     name: "Proyecto a medida",
-    priceFromEur: 2490,
-    priceLabel: "Desde 2.490 € + IVA",
+    priceFromEur: PUBLIC_RATES.aMedida.eur,
+    publicFromEur: PUBLIC_RATES.aMedida.eur,
+    previousPublicEur: PUBLIC_RATES.aMedida.previousEur,
+    priceIsFrom: true,
+    priceLabel: publicPriceLabel(PUBLIC_RATES.aMedida.eur, true),
     summary:
-      "Cuando hace falta lógica, datos o integraciones más allá de una web profesional.",
+      "Una herramienta, funcionalidad o sistema desarrollado alrededor de las necesidades de tu negocio.",
     suitedFor:
-      "Proyectos con más lógica, alcance, integraciones o necesidades específicas. Punto de partida: los proyectos grandes se presupuestan individualmente.",
+      "Para cuando hace falta una lógica propia, no una web estándar.",
     includes: [
       "Análisis, arquitectura y dirección creativa",
       "Diseño UI a medida",
@@ -169,6 +224,18 @@ export const PRODUCTS: Product[] = [
       "SEO mensual ni gestión de redes",
       "Desarrollo ilimitado fuera de lo acordado",
     ],
+    publicDetail: {
+      includes: [
+        "Análisis, diseño y desarrollo con lógica personalizada",
+        "Formulario avanzado y una integración simple de partida",
+        "SEO técnico, analítica y publicación",
+      ],
+      conditions: [
+        `${formatEurAmount(PUBLIC_RATES.aMedida.eur)} es el punto de partida de este alcance, no el precio de cualquier desarrollo.`,
+        "Los proyectos más grandes se presupuestan por separado.",
+        "Reservas, áreas privadas, bases de datos o automatizaciones adicionales se acuerdan antes.",
+      ],
+    },
     bundleLineIds: [
       "analysis_full",
       "ia_architecture",
@@ -200,7 +267,7 @@ export const PRODUCTS: Product[] = [
       "migration_web",
     ],
     internalNotes: [
-      "2.490 € es punto de partida, no techo.",
+      `${formatEurAmount(PUBLIC_RATES.aMedida.eur)} es punto de partida, no techo.`,
       "No presentar como ERP ni app enterprise.",
     ],
   },
@@ -208,11 +275,14 @@ export const PRODUCTS: Product[] = [
     id: "sistemas",
     name: "Automatización y sistemas",
     priceFromEur: null,
-    priceLabel: "Según proyecto",
+    publicFromEur: PUBLIC_RATES.sistemasFromEur,
+    priceIsFrom: true,
+    quoteFloorEur: PUBLIC_RATES.sistemasFromEur,
+    priceLabel: publicPriceLabel(PUBLIC_RATES.sistemasFromEur, true),
     summary:
-      "Cuando la web sola no basta: procesos, reservas, bases de datos, APIs y automatizaciones.",
+      "Un proceso repetitivo convertido en un flujo que trabaja por sí mismo.",
     suitedFor:
-      "Negocios que pierden tiempo en tareas repetidas o necesitan herramientas a medida.",
+      "Para equipos que repiten un proceso y quieren dejar de hacerlo a mano.",
     includes: [
       "Diseño del proceso o flujo a automatizar",
       "Implementación con la herramienta adecuada (Make, n8n, código…)",
@@ -225,6 +295,18 @@ export const PRODUCTS: Product[] = [
       "Sustitución de herramientas críticas sin analizar antes el proceso",
       "Funcionalidades o desarrollos que no formen parte del alcance acordado",
     ],
+    publicDetail: {
+      includes: [
+        "Diseño del proceso que se va a automatizar",
+        "Implementación del flujo acordado",
+        "Conexiones necesarias y puesta en marcha",
+      ],
+      conditions: [
+        `El importe parte de ${formatEurAmount(PUBLIC_RATES.sistemasFromEur)} y depende de la complejidad, las integraciones y el alcance real.`,
+        "No es un precio cerrado para cualquier sistema.",
+        "Lo que quede fuera del flujo acordado se presupuesta antes de hacerlo.",
+      ],
+    },
     bundleLineIds: [],
     suggestedExtraIds: [
       "automation_flow",
@@ -238,10 +320,9 @@ export const PRODUCTS: Product[] = [
       "ai_feature",
       "project_consulting",
     ],
-    internalFromEur: 690,
     internalNotes: [
-      "Referencia interna: desde ~690 € para automatizaciones pequeñas.",
-      "No mostrar como tarifa pública ni como total sin módulos.",
+      "El mínimo público es el suelo de una automatización pequeña.",
+      "El importe sube con integraciones y alcance. No es el precio de cualquier sistema.",
     ],
   },
 ];

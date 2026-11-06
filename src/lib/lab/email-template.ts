@@ -25,57 +25,56 @@ interface RouteCopy {
 
 const ROUTE_COPY: Record<LabRouteId, RouteCopy> = {
   reserva: {
-    visitorSubject: "El proceso de reservas ya ha recibido tu solicitud",
+    visitorSubject: "Hemos recibido tu petición de hora",
     opening:
-      "Ha identificado que pides disponibilidad o una cita y ha abierto el proceso de reservas.",
+      "Pedías un hueco. Ya lo tenemos anotado y te escribimos para confirmártelo.",
     next: "Comprobar el hueco y confirmártelo, sin que la petición se quede en un chat.",
     business:
       "En un negocio real, esto es lo que deja de depender de que alguien esté mirando el WhatsApp para no perder una mesa o una cita.",
   },
   presupuesto: {
-    visitorSubject: "El proceso comercial ya ha registrado tu petición",
+    visitorSubject: "Hemos recibido tu petición de presupuesto",
     opening:
-      "Ha visto que preguntas por condiciones económicas y ha abierto el proceso de presupuesto.",
+      "Has preguntado por el precio. Ya está apuntado y te preparamos la respuesta.",
     next: "Preparar una propuesta con alcance y precio, con el caso ya ordenado para el equipo comercial.",
     business:
       "En un negocio real, esto es lo que evita que un pedido de precio se pierda entre mensajes y se conteste tarde o dos veces.",
   },
   urgente: {
-    visitorSubject: "Tu caso ha entrado por la ruta urgente",
+    visitorSubject: "Tu mensaje ha pasado por delante",
     opening:
-      "Ha encontrado señales de urgencia y ha adelantado tu mensaje: no entra en la cola normal.",
+      "Esto no puede esperar, así que lo hemos puesto el primero para que alguien lo vea ya.",
     next: "Avisar a quien está de guardia antes que al resto.",
     business:
       "En un negocio real, esto es lo que separa una cola normal de lo que no puede esperar.",
   },
   soporte: {
-    visitorSubject: "El proceso de soporte ya ha registrado tu incidencia",
+    visitorSubject: "Hemos recibido tu aviso",
     opening:
-      "Ha interpretado tu mensaje como un fallo o una incidencia y ha abierto el proceso de soporte.",
+      "Nos has contado que algo falla. Ya está anotado y lo miramos.",
     next: "Reproducir el fallo y darte un diagnóstico, con el caso ya clasificado.",
     business:
       "En un negocio real, esto es lo que evita que una incidencia viva solo en la memoria de quien pilló el mensaje.",
   },
   documentacion: {
-    visitorSubject: "El proceso documental ya ha registrado tu petición",
+    visitorSubject: "Hemos recibido tu documento",
     opening:
-      "Ha visto que tu mensaje trata de documentos o facturación y lo ha dirigido a administración.",
+      "Nos has enviado una factura o un papel. Ya está registrado.",
     next: "Localizar el documento y enviártelo, con la petición ya registrada.",
     business:
       "En un negocio real, esto es lo que impide que una factura o un contrato dependan de un mensaje que nadie llegó a registrar.",
   },
   integracion: {
-    visitorSubject: "El proceso técnico ya ha registrado tu consulta",
+    visitorSubject: "Hemos recibido tu consulta",
     opening:
-      "Ha detectado que hablas de conectar herramientas y ha abierto la ruta técnica.",
+      "Quieres conectar dos herramientas. Ya lo tenemos apartado para mirarlo con calma.",
     next: "Acotar qué sistemas hay que unir, separado ya de una consulta general.",
     business:
       "En un negocio real, esto es lo que evita tratar una integración como un mensaje más de la bandeja.",
   },
   general: {
-    visitorSubject: "El proceso ya ha recibido tu mensaje",
-    opening:
-      "No ha encontrado una señal lo bastante clara para especializar la ruta, así que lo ha dejado en la cola general. Mejor eso que clasificar mal.",
+    visitorSubject: "Hemos recibido tu mensaje",
+    opening: "Ya está guardado. Lo leemos y te respondemos.",
     next: "Leerlo con el contexto que el proceso ya ha reunido, no desde cero.",
     business:
       "En un negocio real, esto es lo que hace un sistema cuando no está seguro: no inventa, deja el caso preparado para alguien.",
@@ -90,6 +89,15 @@ export function buildLabInternalSubject(route: LabRoute, name: string): string {
 
 export function buildLabVisitorSubject(route: LabRoute): string {
   return ROUTE_COPY[route.id].visitorSubject;
+}
+
+/** Asunto y primera frase reales de la confirmación, para mostrarlos en pantalla. */
+export function labVisitorPreview(routeId: LabRouteId): {
+  subject: string;
+  opening: string;
+} {
+  const copy = ROUTE_COPY[routeId];
+  return { subject: copy.visitorSubject, opening: copy.opening };
 }
 
 interface LabInternalEmailArgs {

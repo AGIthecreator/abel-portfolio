@@ -504,12 +504,14 @@ export function CompletionScene({
   activation,
   flow,
   onRestart,
+  onBack,
   onCta,
 }: {
   stats: LabStats;
   activation: LabActivationState | null;
   flow: readonly LabBlockId[];
   onRestart: () => void;
+  onBack?: () => void;
   onCta: (target: string) => void;
 }) {
   const reduceMotion = useReducedMotion();
@@ -757,6 +759,15 @@ export function CompletionScene({
               >
                 <span className="relative z-10">Quiero automatizar algo →</span>
               </Link>
+              {onBack ? (
+                <button
+                  type="button"
+                  onClick={onBack}
+                  className="cursor-pointer font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-400 transition-colors hover:text-[#F3F1EB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400/70"
+                >
+                  Volver
+                </button>
+              ) : null}
               <button
                 type="button"
                 onClick={onRestart}

@@ -3,6 +3,7 @@ import { computeLineTotal, LINE_ITEMS } from "./lineItems";
 import { MAINTENANCE_OFFER, type MaintenanceChoice } from "./maintenance";
 import { getProduct, type ProductId } from "./products";
 import type { QuoteInput, QuoteLine, QuoteResult, QuoteWarning } from "./quote";
+import { formatEurAmount } from "./rates";
 
 export const VAT_RATE = 0.21;
 
@@ -142,11 +143,13 @@ function buildWarnings(
   if (productId === "sistemas") {
     const hasModule = Object.values(extras).some((q) => q > 0);
     if (!hasModule) {
+      const floor = getProduct("sistemas")?.quoteFloorEur;
       warnings.push({
         code: "sistemas_empty",
         severity: "info",
-        message:
-          "Selecciona al menos un flujo o módulo para obtener una orientación de precio.",
+        message: floor
+          ? `Selecciona al menos un módulo. La automatización parte de ${formatEurAmount(floor)} y depende del alcance.`
+          : "Selecciona al menos un módulo para obtener una orientación de precio.",
       });
     }
   }
@@ -178,6 +181,56 @@ function buildWarnings(
   }
 
   return warnings;
+}
+
+/**
+ * La automatización no tiene pack cerrado. Si hay módulos y la suma queda
+ * por debajo del mínimo público, el presupuesto sube hasta ese suelo.
+ * Por encima del suelo manda la complejidad real. Sin módulos, el total es 0.
+ */
+function applySistemasFloor(
+  input: QuoteInput,
+  subtotalEur: number,
+  extrasTotalEur: number,
+  lines: QuoteLine[],
+  warnings: QuoteWarning[],
+): { subtotalEur: number; extrasTotalEur: number } {
+  if (input.productId !== "sistemas") {
+    return { subtotalEur, extrasTotalEur };
+  }
+
+  const floor = getProduct("sistemas")?.quoteFloorEur;
+  if (floor == null) return { subtotalEur, extrasTotalEur };
+
+  const hasModule = Object.values(input.extras).some((quantity) => quantity > 0);
+  if (!hasModule) return { subtotalEur: 0, extrasTotalEur: 0 };
+  if (subtotalEur >= floor) return { subtotalEur, extrasTotalEur };
+
+  const bump = Math.round((floor - subtotalEur) * 100) / 100;
+  lines.push({
+    id: "sistemas_floor",
+    kind: "extra",
+    name: `Completar mínimo de ${formatEurAmount(floor)}`,
+    description:
+      "La automatización no baja de este punto de partida. Con más integraciones, condiciones o alcance, el importe sube.",
+    quantity: 1,
+    unitPriceEur: bump,
+    lineTotalEur: bump,
+    includedInPack: false,
+  });
+
+  if (!warnings.some((warning) => warning.code === "sistemas_floor")) {
+    warnings.push({
+      code: "sistemas_floor",
+      severity: "info",
+      message: `Este alcance se ajusta al mínimo de ${formatEurAmount(floor)}. Con más complejidad, el importe sube.`,
+    });
+  }
+
+  return {
+    subtotalEur: floor,
+    extrasTotalEur: Math.round((extrasTotalEur + bump) * 100) / 100,
+  };
 }
 
 export function calculateQuote(input: QuoteInput): QuoteResult {
@@ -235,7 +288,7 @@ export function calculateQuote(input: QuoteInput): QuoteResult {
 
   let subtotalEur = 0;
   if (product?.id === "sistemas") {
-    // Sin módulos: 0 (no filtrar internalFromEur al cliente).
+    // Sin pack cerrado: suma de módulos. El suelo público se aplica después.
     subtotalEur = extrasTotalEur;
   } else if (packPriceEur != null) {
     subtotalEur = packPriceEur + extrasTotalEur;
@@ -245,6 +298,17 @@ export function calculateQuote(input: QuoteInput): QuoteResult {
 
   const warnings = buildWarnings(input.productId, input.extras);
   subtotalEur = applyEntradaProfesionalFloor(input, subtotalEur, lines, warnings);
+  if (product?.id === "sistemas") {
+    const floored = applySistemasFloor(
+      input,
+      subtotalEur,
+      extrasTotalEur,
+      lines,
+      warnings,
+    );
+    subtotalEur = floored.subtotalEur;
+    extrasTotalEur = floored.extrasTotalEur;
+  }
 
   const vatEur = Math.round(subtotalEur * VAT_RATE * 100) / 100;
   const totalEur = Math.round((subtotalEur + vatEur) * 100) / 100;

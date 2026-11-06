@@ -5,6 +5,8 @@
 import { calculateQuote } from "../src/lib/commerce/rules";
 import { buildQuotePdfModel } from "../src/lib/commerce/buildQuotePdfModel";
 import { sumBundleValue } from "../src/lib/commerce/bundles";
+import { getProduct } from "../src/lib/commerce/products";
+import { PUBLIC_RATES } from "../src/lib/commerce/rates";
 import { validateAndBuildQuotePdfRequest } from "../src/lib/commerce/quoteSchema";
 import { renderQuotePdfBuffer } from "../src/lib/pdf/renderQuotePdf";
 import type { QuoteDiagnostic, QuoteContact } from "../src/lib/commerce/diagnostic";
@@ -42,7 +44,9 @@ async function main() {
     maintenance: "later",
   };
   const entrada = calculateQuote(entradaInput);
-  assert(entrada.subtotalEur === 510, "1 entrada base 510", failed, passed);
+  assert(entrada.subtotalEur === 390, "1 entrada base 390", failed, passed);
+  assert(entrada.subtotalEur !== PUBLIC_RATES.entrada.previousEur, "1b no usa tarifa anterior", failed, passed);
+  assert(PUBLIC_RATES.entrada.previousEur === 510, "1c anterior publicado 510", failed, passed);
 
   // 2. Web profesional
   const proInput: QuoteInput = {
@@ -51,7 +55,8 @@ async function main() {
     maintenance: "later",
   };
   const pro = calculateQuote(proInput);
-  assert(pro.subtotalEur === 1190, "2 profesional base 1190", failed, passed);
+  assert(pro.subtotalEur === 790, "2 profesional base 790", failed, passed);
+  assert(PUBLIC_RATES.profesional.previousEur === 1190, "2b anterior publicado 1190", failed, passed);
 
   // 3. Proyecto a medida
   const customInput: QuoteInput = {
@@ -60,13 +65,15 @@ async function main() {
     maintenance: "later",
   };
   const custom = calculateQuote(customInput);
-  assert(custom.subtotalEur === 2490, "3 a-medida base 2490", failed, passed);
+  assert(custom.subtotalEur === 1690, "3 a-medida base 1690", failed, passed);
   assert(
-    sumBundleValue("a-medida") > 2490,
+    sumBundleValue("a-medida") > 1690,
     "3b a-medida bundle > pack",
     failed,
     passed,
   );
+  assert(PUBLIC_RATES.aMedida.previousEur === 2490, "3c anterior publicado 2490", failed, passed);
+  assert(custom.packPriceEur === 1690, "3d pack a-medida 1690", failed, passed);
 
   // 4. Automatización
   const sysInput: QuoteInput = {
@@ -75,7 +82,22 @@ async function main() {
     maintenance: "later",
   };
   const sys = calculateQuote(sysInput);
-  assert(sys.productId === "sistemas" && sys.subtotalEur > 0, "4 sistemas con flujo", failed, passed);
+  assert(sys.productId === "sistemas" && sys.subtotalEur === 290, "4 sistemas un flujo = mínimo 290", failed, passed);
+  assert(sys.packPriceEur == null, "4a sistemas no es un pack cerrado", failed, passed);
+  assert(getProduct("sistemas")?.previousPublicEur == null, "4a2 sin precio anterior", failed, passed);
+
+  const sysBigger = calculateQuote({
+    productId: "sistemas",
+    extras: { automation_flow: 1, integration_simple: 1 },
+    maintenance: "later",
+  });
+  assert(sysBigger.subtotalEur === 340, "4a3 sistemas por encima del mínimo", failed, passed);
+  assert(
+    !sysBigger.lines.some((line) => line.id === "sistemas_floor"),
+    "4a4 sin suelo si ya supera 290",
+    failed,
+    passed,
+  );
 
   const sysEmpty = calculateQuote({
     productId: "sistemas",
@@ -98,7 +120,7 @@ async function main() {
     maintenance: "later",
   });
   assert(
-    withExtras.extrasTotalEur > 0 && withExtras.subtotalEur > 1190,
+    withExtras.extrasTotalEur > 0 && withExtras.subtotalEur === 790 + 320,
     "5 extras suman al subtotal",
     failed,
     passed,
@@ -110,11 +132,13 @@ async function main() {
     extras: {},
     maintenance: "yes",
   });
-  assert(withMaint.maintenanceMonthlyEur === 99, "6 mantenimiento 99", failed, passed);
+  assert(withMaint.maintenanceMonthlyEur === 59, "6 mantenimiento 59", failed, passed);
+  assert(withMaint.subtotalEur === 790, "6b mantenimiento no entra en el subtotal", failed, passed);
+  assert(PUBLIC_RATES.maintenancePreviousEur === 99, "6c anterior publicado 99", failed, passed);
 
   // 7. IVA
   assert(
-    Math.abs(pro.vatEur - Math.round(1190 * 0.21 * 100) / 100) < 0.01,
+    Math.abs(pro.vatEur - Math.round(790 * 0.21 * 100) / 100) < 0.01,
     "7 IVA 21%",
     failed,
     passed,
@@ -130,11 +154,17 @@ async function main() {
     diagnostic,
     contact,
   });
-  assert(bundle > 1190, "8a bundle > pack", failed, passed);
+  assert(bundle > 790, "8a bundle > pack", failed, passed);
   assert(
     modelPro.packSavingsEur != null &&
-      Math.abs(modelPro.packSavingsEur - (bundle - 1190)) < 0.01,
+      Math.abs(modelPro.packSavingsEur - (bundle - 790)) < 0.01,
     "8b ahorro pack en modelo PDF",
+    failed,
+    passed,
+  );
+  assert(
+    modelPro.packSavingsEur !== PUBLIC_RATES.profesional.previousEur - 790,
+    "8c el ahorro no usa la tarifa anterior como valor del pack",
     failed,
     passed,
   );
@@ -149,7 +179,7 @@ async function main() {
     contact,
   });
   assert(
-    manipulated.ok && manipulated.result.subtotalEur === 1190,
+    manipulated.ok && manipulated.result.subtotalEur === 790,
     "9 anti-manipulación total",
     failed,
     passed,

@@ -155,7 +155,7 @@ export function LabHeading({
   return (
     <Tag
       id={id}
-      className={`font-(family-name:--font-svc-display) text-[clamp(1.55rem,3.4vw,2.35rem)] leading-[1.15] font-medium text-zinc-50 ${className}`}
+      className={`font-(family-name:--font-svc-display) text-[clamp(1.55rem,3.4vw,2.35rem)] leading-[1.15] font-medium text-[#F3F1EB] ${className}`}
     >
       {children}
     </Tag>
@@ -171,7 +171,7 @@ export function LabPanel({
 }) {
   return (
     <div
-      className={`rounded-xl border border-white/8 bg-white/2 p-5 sm:p-6 ${className}`}
+      className={`rounded-xl border border-white/10 bg-[#101826] p-5 sm:p-6 ${className}`}
     >
       {children}
     </div>

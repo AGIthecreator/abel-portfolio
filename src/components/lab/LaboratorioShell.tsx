@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ServicePageRoot } from "@/components/services/ServicePagePrimitives";
 import { trackEvent } from "@/lib/analytics";
+import { inferLabCaseId, labCaseById, type LabCaseId } from "@/lib/lab/cases";
 import { labFetch, reportLabProgress } from "@/lib/lab/client";
 import {
   clearLabSession,
@@ -19,17 +20,35 @@ import {
 } from "@/lib/lab/session";
 import type { LabDecisionOption, LabSessionResponse } from "@/lib/lab/types";
 import { ActActivate } from "./ActActivate";
-import { ActBridge } from "./ActBridge";
 import { ActBuilder } from "./ActBuilder";
 import { ActDecisions } from "./ActDecisions";
 import { ActResult } from "./ActResult";
-import { DemoProgress } from "./DemoProgress";
-import { LabIntro } from "./LabIntro";
+import { CasePain, CasePicker, CaseTwist, CaseWalk } from "./CaseFlow";
+import { DemoProgress, type LabProgressStep } from "./DemoProgress";
+
+type LabScreen =
+  | "pick"
+  | "pain"
+  | "trial"
+  | "twist"
+  | "walk"
+  | "clinic"
+  | "builder"
+  | "finale";
+
+function progressOf(screen: LabScreen): LabProgressStep {
+  if (screen === "finale") return "cierre";
+  if (screen === "walk") return "recorrido";
+  if (screen === "pick" || screen === "pain") return "caso";
+  return "prueba";
+}
 
 export function LaboratorioShell() {
   const [state, setState] = useState<LabSessionState>(createLabSession);
   const [restorable, setRestorable] = useState(false);
-  const [bridge, setBridge] = useState<null | "1-2" | "2-3">(null);
+  const [screen, setScreen] = useState<LabScreen>("pick");
+  const [caseId, setCaseId] = useState<LabCaseId | null>(null);
+  const [boundCaseId, setBoundCaseId] = useState<LabCaseId | null>(null);
   const startTracked = useRef(false);
 
   useEffect(() => {
@@ -37,8 +56,6 @@ export function LaboratorioShell() {
     document.body.style.overflow = "";
   }, []);
 
-  // Rehidratar nunca ejecuta acciones: solo recupera lo que el visitante hizo.
-  // La intro se pinta ya; la API no bloquea el botón Empezar.
   useEffect(() => {
     let cancelled = false;
 
@@ -52,6 +69,13 @@ export function LaboratorioShell() {
       saveLabSession(next);
       setState(next);
       setRestorable(hasLabProgress(next));
+      const inferred = next.activation
+        ? inferLabCaseId(next.activation.input.message)
+        : null;
+      if (inferred) {
+        setCaseId(inferred);
+        setBoundCaseId(inferred);
+      }
     }
 
     void (async () => {
@@ -70,9 +94,14 @@ export function LaboratorioShell() {
           saveLabSession(merged);
           return merged;
         });
+        const inferred = inferLabCaseId(activation.input.message);
+        if (inferred) {
+          setCaseId(inferred);
+          setBoundCaseId(inferred);
+        }
         setRestorable(true);
       } catch {
-        /* sin red o sesión lenta: la intro ya está en pantalla */
+        /* sin red o sesión lenta: la elección de caso ya está en pantalla */
       }
     })();
 
@@ -95,7 +124,6 @@ export function LaboratorioShell() {
 
   const goToAct = useCallback(
     (act: LabAct) => {
-      setBridge(null);
       update((prev) => ({
         ...prev,
         act,
@@ -110,13 +138,22 @@ export function LaboratorioShell() {
     [update],
   );
 
-  const start = () => {
-    if (!startTracked.current) {
+  const openScreen = (next: LabScreen) => {
+    if (!startTracked.current && next !== "pick") {
       startTracked.current = true;
       trackEvent("demo_started");
     }
     setRestorable(false);
-    goToAct(1);
+    setScreen(next);
+    const act: LabAct =
+      next === "finale"
+        ? 4
+        : next === "walk" || next === "builder"
+          ? 3
+          : next === "pick" || next === "pain"
+            ? 1
+            : 2;
+    goToAct(act);
   };
 
   const restart = () => {
@@ -124,6 +161,9 @@ export function LaboratorioShell() {
     clearLabSession();
     startTracked.current = false;
     setRestorable(false);
+    setCaseId(null);
+    setBoundCaseId(null);
+    setScreen("pick");
     setState(createLabSession());
   };
 
@@ -133,24 +173,14 @@ export function LaboratorioShell() {
       trackEvent("demo_started", { resumed: true });
     }
     setRestorable(false);
-    const target: LabAct = state.visitedActs.includes(4)
-      ? 1
-      : state.builder.status === "executed"
-        ? 4
-        : state.builder.flow.length
-          ? 3
-          : Object.keys(state.decisions).length
-            ? 2
-            : 1;
-    goToAct(target);
+    if (state.visitedActs.includes(4)) openScreen("finale");
+    else if (state.activation) openScreen("trial");
+    else if (Object.keys(state.decisions).length > 0 && caseId) openScreen("twist");
+    else openScreen("pick");
   };
 
-  /**
-   * Una ejecución nueva cierra la anterior: su resumen pasa al histórico para
-   * que los contadores no se pierdan ni se cuenten dos veces cuando una acción
-   * posterior actualice la ejecución en curso.
-   */
   const handleActivated = (activation: LabActivationState) => {
+    setBoundCaseId(caseId);
     update((prev) => ({
       ...prev,
       activation,
@@ -160,7 +190,6 @@ export function LaboratorioShell() {
     }));
   };
 
-  /** Actualiza la ejecución en curso con lo que ha devuelto el servidor. */
   const handleActivationChange = (activation: LabActivationState) => {
     update((prev) => ({ ...prev, activation }));
   };
@@ -176,17 +205,53 @@ export function LaboratorioShell() {
     update((prev) => ({ ...prev, builder: { ...prev.builder, ...patch } }));
   };
 
+  const selected = caseId ? labCaseById(caseId) : null;
+  const trialActivation =
+    state.activation && boundCaseId === caseId ? state.activation : null;
   const stats = useMemo(() => computeLabStats(state), [state]);
+  const progress = progressOf(screen);
+  const visitedProgress: LabProgressStep[] = ["caso"];
+  if (
+    screen === "trial" ||
+    screen === "twist" ||
+    screen === "clinic" ||
+    screen === "builder" ||
+    screen === "finale" ||
+    state.activation
+  ) {
+    visitedProgress.push("prueba");
+  }
+  if (
+    screen === "walk" ||
+    screen === "builder" ||
+    screen === "finale" ||
+    state.visitedActs.includes(3)
+  ) {
+    visitedProgress.push("recorrido");
+  }
+  if (screen === "finale" || state.visitedActs.includes(4)) {
+    visitedProgress.push("cierre");
+  }
 
   return (
     <ServicePageRoot>
-      <div className="relative mx-auto w-full max-w-5xl px-5 pt-28 pb-20 sm:px-8 sm:pt-36 sm:pb-24 lg:px-10 lg:pt-32 lg:pb-32">
-        {state.act > 0 ? (
+      <div className="relative min-h-screen overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_8%_0%,rgba(90,72,168,0.34),transparent_55%),radial-gradient(ellipse_60%_50%_at_100%_12%,rgba(37,28,73,0.5),transparent_50%)]"
+        />
+        <div className="relative z-10 mx-auto w-full max-w-5xl px-5 pt-28 pb-20 sm:px-8 sm:pt-36 sm:pb-24 lg:px-10 lg:pt-32 lg:pb-32">
+        {screen !== "finale" ? (
           <div className="mb-9 flex flex-wrap items-center justify-between gap-4 border-b border-white/8 pb-4">
             <DemoProgress
-              current={state.act}
-              visited={state.visitedActs}
-              onNavigate={goToAct}
+              current={progress}
+              visited={visitedProgress}
+              onNavigate={(step) => {
+                if (step === "caso") openScreen("pick");
+                else if (step === "prueba" && (caseId || state.activation)) openScreen("trial");
+                else if (step === "recorrido" && caseId) openScreen("walk");
+                else if (step === "cierre") openScreen("finale");
+              }}
             />
             <button
               type="button"
@@ -198,87 +263,120 @@ export function LaboratorioShell() {
           </div>
         ) : null}
 
-        {state.act === 0 ? (
-          <LabIntro
-            onStart={start}
-            onResume={resume}
+        {screen === "pick" ? (
+          <CasePicker
+            selectedId={caseId}
             canResume={restorable}
+            onResume={resume}
+            onSelect={(id) => {
+              setCaseId(id);
+              openScreen("pain");
+            }}
           />
-        ) : (
-          <section>
-            {state.act === 1 && bridge !== "1-2" ? (
-              <ActActivate
-                activation={state.activation}
-                onActivated={handleActivated}
-                onActivationChange={handleActivationChange}
-                onContinue={() => setBridge("1-2")}
-              />
-            ) : null}
+        ) : null}
 
-            {bridge === "1-2" ? (
-              <ActBridge
-                lines={[
-                  "Ya has visto cómo entra y se clasifica una solicitud.",
-                  "Ahora decide qué ocurre cuando las circunstancias cambian.",
-                ]}
-                onDone={() => {
-                  setBridge(null);
-                  goToAct(2);
-                }}
-              />
-            ) : null}
+        {screen === "pain" && selected ? (
+          <CasePain
+            item={selected}
+            onBack={() => openScreen("pick")}
+            onContinue={() => openScreen("trial")}
+          />
+        ) : null}
 
-            {state.act === 2 && bridge !== "2-3" ? (
-              <ActDecisions
-                answers={state.decisions}
-                onAnswer={handleAnswer}
-                onContinue={() => {
-                  reportLabProgress({
-                    event: "experience",
-                    experience: "decisions",
-                  });
-                  setBridge("2-3");
-                }}
-              />
-            ) : null}
+        {screen === "trial" && selected ? (
+          <ActActivate
+            key={selected.id}
+            activation={trialActivation}
+            presetMessage={selected.message}
+            scene={{
+              title: selected.title,
+              pain: selected.pain,
+              inbound: selected.inbound,
+              manual: selected.manual,
+              flow: selected.flow,
+            }}
+            onActivated={handleActivated}
+            onActivationChange={handleActivationChange}
+            onBack={() => openScreen("pain")}
+            onContinue={() => openScreen("twist")}
+          />
+        ) : null}
 
-            {bridge === "2-3" ? (
-              <ActBridge
-                lines={[
-                  "Ya has visto que automatizar también significa gestionar excepciones.",
-                  "Ahora vas a construir un proceso.",
-                ]}
-                onDone={() => {
-                  setBridge(null);
-                  goToAct(3);
-                }}
-              />
-            ) : null}
+        {screen === "twist" && selected ? (
+          <CaseTwist
+            item={selected}
+            selectedId={state.decisions[selected.twist.id]}
+            onSelect={(option) => handleAnswer(selected.twist.id, option)}
+            onBack={() => openScreen("trial")}
+            onContinue={() => openScreen("walk")}
+            onOtherCase={() => openScreen("pick")}
+            onMore={() => openScreen("clinic")}
+            onBuild={() => openScreen("builder")}
+          />
+        ) : null}
 
-            {state.act === 3 ? (
-              <ActBuilder
-                builder={state.builder}
-                onBuilderChange={handleBuilderChange}
-                onContinue={() => {
-                  reportLabProgress({
-                    event: "experience",
-                    experience: "builder",
-                  });
-                  goToAct(4);
-                }}
-              />
-            ) : null}
+        {screen === "clinic" ? (
+          <ActDecisions
+            answers={state.decisions}
+            onAnswer={handleAnswer}
+            onBack={() => openScreen("twist")}
+            onContinue={() => {
+              reportLabProgress({
+                event: "experience",
+                experience: "decisions",
+              });
+              openScreen(selected ? "walk" : "finale");
+            }}
+          />
+        ) : null}
 
-            {state.act === 4 ? (
-              <ActResult
-                stats={stats}
-                activation={state.activation}
-                flow={state.builder.flow}
-                onRestart={restart}
-              />
-            ) : null}
-          </section>
-        )}
+        {screen === "walk" && selected ? (
+          <CaseWalk
+            item={selected}
+            activation={trialActivation}
+            chosen={
+              selected.twist.options.find(
+                (option) => option.id === state.decisions[selected.twist.id],
+              )?.consequence ?? null
+            }
+            onBack={() => openScreen("twist")}
+            onContinue={() => openScreen("finale")}
+          />
+        ) : null}
+
+        {screen === "builder" ? (
+          <div>
+            <button
+              type="button"
+              onClick={() => openScreen(selected ? "twist" : "pick")}
+              className="mb-4 cursor-pointer text-[13px] text-zinc-400 underline decoration-white/15 underline-offset-4 hover:text-zinc-200"
+            >
+              Volver
+            </button>
+            <ActBuilder
+              builder={state.builder}
+              onBuilderChange={handleBuilderChange}
+              onContinue={() => {
+                reportLabProgress({
+                  event: "experience",
+                  experience: "builder",
+                });
+                openScreen(selected ? "walk" : "finale");
+              }}
+            />
+          </div>
+        ) : null}
+
+        {screen === "finale" ? (
+          <ActResult
+            stats={stats}
+            activation={state.activation}
+            flow={state.builder.flow}
+            onRestart={restart}
+            onBack={() => openScreen(selected ? "walk" : "pick")}
+          />
+        ) : null}
+        </div>
       </div>
     </ServicePageRoot>
   );

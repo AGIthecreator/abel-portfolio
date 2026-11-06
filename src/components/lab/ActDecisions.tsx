@@ -26,7 +26,7 @@ function initialStage(answers: Record<string, string>): number {
   return Math.min(index, CLINIC_DECISIONS.length - 1);
 }
 
-function DecisionBlock({
+export function DecisionBlock({
   decision,
   selectedId,
   onSelect,
@@ -131,8 +131,8 @@ function DecisionBlock({
               onKeyDown={(event) => handleKeyDown(event, i)}
               className={`flex cursor-pointer items-start gap-3 rounded-lg border px-3.5 py-3 text-left transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400/70 ${
                 isSelected
-                  ? "border-violet-400/60 bg-violet-400/10 text-zinc-50"
-                  : "border-white/10 bg-white/2 text-zinc-300 hover:border-white/20 hover:bg-white/5"
+                  ? "border-violet-400/60 bg-violet-400/10 text-[#F3F1EB]"
+                  : "border-white/10 bg-[#0c121c] text-zinc-300 hover:border-white/20 hover:bg-[#121a28]"
               }`}
             >
               <span
@@ -203,12 +203,14 @@ interface ActDecisionsProps {
   answers: Record<string, string>;
   onAnswer: (decisionId: string, option: LabDecisionOption) => void;
   onContinue: () => void;
+  onBack?: () => void;
 }
 
 export function ActDecisions({
   answers,
   onAnswer,
   onContinue,
+  onBack,
 }: ActDecisionsProps) {
   const reduceMotion = useReducedMotion();
   const [stage, setStage] = useState(() => initialStage(answers));
@@ -269,6 +271,11 @@ export function ActDecisions({
         ) : null}
         {chainComplete ? (
           <LabButton onClick={onContinue}>Continuar</LabButton>
+        ) : null}
+        {onBack ? (
+          <LabButton variant="ghost" onClick={onBack}>
+            Volver
+          </LabButton>
         ) : null}
       </div>
     </div>

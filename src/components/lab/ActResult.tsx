@@ -14,11 +14,13 @@ export function ActResult({
   activation,
   flow,
   onRestart,
+  onBack,
 }: {
   stats: LabStats;
   activation: LabActivationState | null;
   flow: readonly LabBlockId[];
   onRestart: () => void;
+  onBack?: () => void;
 }) {
   const [mounted, setMounted] = useState(false);
 
@@ -80,6 +82,7 @@ export function ActResult({
         activation={activation}
         flow={flow}
         onRestart={onRestart}
+        onBack={onBack}
         onCta={ctaClick}
       />
     </div>,

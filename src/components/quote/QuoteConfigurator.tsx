@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { QuoteLeadFlow } from "@/components/quote/QuoteLeadFlow";
@@ -17,6 +18,7 @@ import {
   clearQuoteSession,
   displayExtraPriceEur,
   getExtrasForProduct,
+  getProduct,
   loadQuoteFlow,
   loadQuoteSnapshot,
   packValueNoteFor,
@@ -90,9 +92,9 @@ function QuoteSummaryPanel({
         </p>
       ) : result.productId === "sistemas" ? (
         <p className="mt-2 text-[13px] text-zinc-400">
-          {result.extrasTotalEur > 0
-            ? "Precio según módulos seleccionados"
-            : "Elige al menos un módulo para orientar el precio"}
+          {result.subtotalEur > 0
+            ? `Según los módulos elegidos. ${getProduct("sistemas")?.priceLabel ?? "El importe parte de un mínimo"}.`
+            : `Elige al menos un módulo. ${getProduct("sistemas")?.priceLabel ?? ""}`.trim()}
         </p>
       ) : null}
       {result.bundleValueEur > 0 && result.packPriceEur != null ? (
@@ -132,8 +134,15 @@ type LeadPhase = Extract<
   "diagnostic" | "contact" | "review" | "success" | "error"
 >;
 
+function isRequestedProduct(value: string | null): value is ProductId {
+  return PRODUCTS.some((product) => product.id === value);
+}
+
 export function QuoteConfigurator() {
   const reduceMotion = useReducedMotion();
+  const searchParams = useSearchParams();
+  const servicio = searchParams.get("servicio");
+  const mantenimiento = searchParams.get("mantenimiento");
   const [hydrated, setHydrated] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [productId, setProductId] = useState<ProductId | null>(null);
@@ -160,6 +169,25 @@ export function QuoteConfigurator() {
   const result = useMemo(() => calculateQuote(input), [input]);
 
   useEffect(() => {
+    const requested = isRequestedProduct(servicio) ? servicio : null;
+    const maintRequested = mantenimiento === "si";
+
+    if (requested) {
+      clearQuoteSession();
+      setLeadSnapshot(null);
+      setLeadPhase(null);
+      setLeadStep(0);
+      setLeadDiagnostic({});
+      setLeadContact({});
+      setProductId(requested);
+      setExtras({});
+      setMaintenance(maintRequested ? "yes" : "later");
+      setStepIndex(1);
+      setHydrated(true);
+      trackEvent("quote_product_selected", { product: requested, source: "precios" });
+      return;
+    }
+
     const snap = loadQuoteSnapshot();
     const flow = loadQuoteFlow();
     const leadPhases: LeadPhase[] = [
@@ -178,15 +206,17 @@ export function QuoteConfigurator() {
       setLeadContact(flow.contact);
       setProductId(snap.input.productId);
       setExtras(snap.input.extras);
-      setMaintenance(snap.input.maintenance);
+      setMaintenance(maintRequested ? "yes" : snap.input.maintenance);
       setStepIndex(STEPS.length - 1);
     } else if (snap?.input.productId && flow.phase === "configure") {
       setProductId(snap.input.productId);
       setExtras(snap.input.extras);
-      setMaintenance(snap.input.maintenance);
+      setMaintenance(maintRequested ? "yes" : snap.input.maintenance);
+    } else if (maintRequested) {
+      setMaintenance("yes");
     }
     setHydrated(true);
-  }, []);
+  }, [servicio, mantenimiento]);
 
   useEffect(() => {
     if (!started && hydrated) {

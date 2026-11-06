@@ -2,17 +2,27 @@ import type { Metadata } from "next";
 import { SiteNavbar } from "@/components/SiteNavbar";
 import { Pricing } from "@/components/sections/Pricing";
 import { Footer } from "@/components/sections/Footer";
-import { MAINTENANCE_OFFER, OFFER_TIERS } from "@/lib/data/offer";
+import { MAINTENANCE_OFFER, PRODUCTS, formatEurAmount, type Product } from "@/lib/commerce";
+
+function productById(id: Product["id"]): Product {
+  const product = PRODUCTS.find((item) => item.id === id);
+  if (!product) throw new Error(`Producto ausente: ${id}`);
+  return product;
+}
+
+const entrada = productById("entrada");
+const profesional = productById("profesional");
+const medida = productById("a-medida");
+const sistemas = productById("sistemas");
 
 export const metadata: Metadata = {
   title: "Precios: webs, proyectos a medida y mantenimiento | AGI TheCreator",
-  description:
-    "Web de entrada desde 510 €, web profesional desde 1.190 €, proyecto a medida desde 2.490 €, automatización según proyecto y mantenimiento desde 99 €/mes. Valladolid y toda España.",
+  description: `Web de entrada ${formatEurAmount(entrada.publicFromEur)}, web profesional ${formatEurAmount(profesional.publicFromEur)}, proyecto a medida desde ${formatEurAmount(medida.publicFromEur)}, automatización desde ${formatEurAmount(sistemas.publicFromEur)} y mantenimiento ${formatEurAmount(MAINTENANCE_OFFER.priceFromEur)}/mes. Precios sin IVA. Valladolid y toda España.`,
   alternates: { canonical: "/precios" },
   openGraph: {
     title: "Precios: webs y sistemas para negocios | AGI TheCreator",
     description:
-      "Web de entrada, web profesional, proyecto a medida y automatización. Mantenimiento desde 99 €/mes. Alcance claro, sin humo.",
+      `Web de entrada, web profesional, proyecto a medida y automatización. Mantenimiento ${formatEurAmount(MAINTENANCE_OFFER.priceFromEur)}/mes. Alcance claro, sin humo.`,
     url: "https://agithecreator.com/precios",
     siteName: "AGI TheCreator",
     locale: "es_ES",
@@ -40,25 +50,23 @@ const offerJsonLd = {
   "@type": "ItemList",
   name: "Servicios AGI TheCreator",
   itemListElement: [
-    ...OFFER_TIERS.map((tier, index) => ({
+    ...PRODUCTS.map((tier, index) => ({
       "@type": "ListItem",
       position: index + 1,
       item: {
         "@type": "Offer",
         name: tier.name,
-        description: tier.summary,
-        ...(tier.priceFromEur != null
-          ? {
-              price: String(tier.priceFromEur),
-              priceCurrency: "EUR",
-              priceSpecification: {
-                "@type": "UnitPriceSpecification",
-                price: String(tier.priceFromEur),
-                priceCurrency: "EUR",
-                valueAddedTaxIncluded: false,
-              },
-            }
-          : {}),
+        description: tier.priceIsFrom
+          ? `${tier.summary} ${tier.priceLabel}. El importe depende del alcance.`
+          : tier.summary,
+        price: String(tier.publicFromEur),
+        priceCurrency: "EUR",
+        priceSpecification: {
+          "@type": "UnitPriceSpecification",
+          price: String(tier.publicFromEur),
+          priceCurrency: "EUR",
+          valueAddedTaxIncluded: false,
+        },
         seller: {
           "@type": "ProfessionalService",
           name: "AGI TheCreator",
@@ -68,7 +76,7 @@ const offerJsonLd = {
     })),
     {
       "@type": "ListItem",
-      position: OFFER_TIERS.length + 1,
+      position: PRODUCTS.length + 1,
       item: {
         "@type": "Offer",
         name: MAINTENANCE_OFFER.name,

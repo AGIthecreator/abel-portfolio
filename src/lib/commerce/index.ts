@@ -3,6 +3,7 @@
  * UI (/precios, /presupuesto) y futuros PDF/diagnóstico consumen este módulo.
  */
 
+export * from "./rates";
 export * from "./lineItems";
 export * from "./products";
 export * from "./bundles";

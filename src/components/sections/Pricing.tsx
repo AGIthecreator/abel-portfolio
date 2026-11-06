@@ -1,34 +1,42 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { useId, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FadeIn } from "@/components/motion/FadeIn";
 import { trackEvent } from "@/lib/analytics";
 import {
   MAINTENANCE_OFFER,
-  OFFER_EXTRAS,
-  OFFER_GUARANTEE_NOTE,
-  OFFER_INFRA_NOTE,
-  OFFER_SCOPE_NOTE,
-  OFFER_TIERS,
-  type OfferTier,
-} from "@/lib/data/offer";
-import {
   PRICING_FAQ_GROUPS,
+  PRICING_TRANSPARENCY,
+  PRODUCTS,
   TEMPLATES_CONTEXT,
-} from "@/lib/commerce/copy";
+  formatEurAmount,
+  type Product,
+  type ProductId,
+} from "@/lib/commerce";
 
 const BONE = "#F3F1EB";
-const MANIFESTO_BAR_GRAY = "#5a5f6b";
-/** Panel abierto: mismo familia que el hueso, contraste suave */
-const TIER_PANEL = "#EDEBE6";
-const PLAN_NAME = "#2a2438";
-const INK = "#070b13";
 
-const FAQ_SURFACE =
-  "linear-gradient(180deg, #0c121c 0%, #131b2a 52%, #0c121c 100%)";
+const WEB_ORDER: ProductId[] = ["entrada", "profesional", "a-medida"];
+
+const QUOTE_LINKS: Record<ProductId, { href: string; cta: string }> = {
+  entrada: {
+    href: "/presupuesto?servicio=entrada",
+    cta: "Empezar con esta web",
+  },
+  profesional: {
+    href: "/presupuesto?servicio=profesional",
+    cta: "Preparar esta web",
+  },
+  "a-medida": {
+    href: "/presupuesto?servicio=a-medida",
+    cta: "Plantear el proyecto",
+  },
+  sistemas: {
+    href: "/presupuesto?servicio=sistemas",
+    cta: "Configurar un flujo",
+  },
+};
 
 const TEMPLATE_DEMOS = [
   {
@@ -57,581 +65,357 @@ const TEMPLATE_DEMOS = [
   },
 ] as const;
 
-/**
- * Franjas al patrón del home:
- * - hero: 63→45 (misma pendiente que el hero de precios)
- * - mirror: arranca en 45 (costura del hero) y sube a la derecha — como StrategicProfile
- * - continue: arranca donde terminó el mirror y baja a la izquierda — como WhatIBuild
- *
- * La pendiente es 18% de ancho por cada alto de hero. En pantallas estrechas
- * limitamos el recorrido para que no se salga y pinte la sección de morado.
- */
-function DiagonalStripes({
-  variant,
+function webProducts(): Product[] {
+  return WEB_ORDER.map((id) => PRODUCTS.find((product) => product.id === id)).filter(
+    (product): product is Product => Boolean(product),
+  );
+}
+
+function PriceBlock({
+  amount,
+  previous,
+  from,
+  perMonth,
+  featured,
+  align = "end",
+  compact = false,
 }: {
-  variant: "hero" | "mirror" | "continue";
+  amount: number;
+  previous?: number;
+  from?: boolean;
+  perMonth?: boolean;
+  featured?: boolean;
+  align?: "start" | "end";
+  compact?: boolean;
 }) {
-  const bandRef = useRef<HTMLDivElement | null>(null);
-  const [heroH, setHeroH] = useState(0);
-  const [bandH, setBandH] = useState(0);
-  const [mirrorH, setMirrorH] = useState(0);
-  const [continueH, setContinueH] = useState(0);
-
-  useLayoutEffect(() => {
-    const hero = document.querySelector(".pricing-hero");
-    if (!hero) return;
-    const measure = () => setHeroH((hero as HTMLElement).offsetHeight);
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(hero);
-    return () => ro.disconnect();
-  }, []);
-
-  useLayoutEffect(() => {
-    const el = bandRef.current;
-    if (!el) return;
-    const measure = () => setBandH(el.clientHeight);
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  // Encadenar con la banda anterior (mismo criterio que home Strategic → WhatIBuild).
-  useLayoutEffect(() => {
-    if (variant === "hero") return;
-
-    const measurePrev = () => {
-      const self = bandRef.current;
-      const all = Array.from(
-        document.querySelectorAll<HTMLElement>("[data-pricing-stripe]"),
-      );
-      const before = self
-        ? all.filter(
-            (el) =>
-              el !== self &&
-              !!(el.compareDocumentPosition(self) & Node.DOCUMENT_POSITION_FOLLOWING),
-          )
-        : all;
-
-      const prevMirror = [...before]
-        .reverse()
-        .find((el) => el.dataset.pricingStripe === "mirror");
-      const prevContinue = [...before]
-        .reverse()
-        .find((el) => el.dataset.pricingStripe === "continue");
-
-      setMirrorH(prevMirror?.offsetHeight ?? 0);
-      setContinueH(
-        variant === "mirror" ? prevContinue?.offsetHeight ?? 0 : 0,
-      );
-    };
-
-    measurePrev();
-    const ro = new ResizeObserver(measurePrev);
-    document
-      .querySelectorAll("[data-pricing-stripe]")
-      .forEach((el) => ro.observe(el));
-    const page = document.querySelector(".pricing-hero")?.parentElement;
-    if (page) ro.observe(page);
-    window.addEventListener("resize", measurePrev);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measurePrev);
-    };
-  }, [variant]);
-
-  const hHero = Math.max(heroH, 1);
-  const ratio = bandH > 0 ? bandH / hHero : 1;
-  const ratioMirror = mirrorH > 0 ? mirrorH / hHero : 1;
-  const ratioContinue = continueH > 0 ? continueH / hHero : 0;
-  // Tope de recorrido: evita % fuera de pantalla en secciones altas (móvil).
-  const run = Math.min(18 * ratio, 26);
-  const runMirror = Math.min(18 * ratioMirror, 26);
-  const runContinue = Math.min(18 * ratioContinue, 26);
-
-  const clamp = (n: number) => Math.max(10, Math.min(90, n));
-  const fmt = (n: number) => clamp(n).toFixed(2);
-
-  let g0: number;
-  let g1: number;
-  if (variant === "hero") {
-    g0 = 63;
-    g1 = 63 - run;
-  } else if (variant === "mirror") {
-    // Tras hero: 45. Tras continue: salida del continue (= entrada del mirror − recorrido continue).
-    g0 = continueH > 0 ? 45 + runMirror - runContinue : 45;
-    g1 = g0 + run;
-  } else {
-    // continue: sale del mirror (45 + recorrido mirror)
-    g0 = 45 + runMirror;
-    g1 = g0 - run;
-  }
-
-  const shift = 16; // gris → morado
-  const thin = 3; // ancho banda violeta clara
-  const p0 = g0 + shift;
-  const p1 = g1 + shift;
-  const v0a = g0 + shift;
-  const v0b = g0 + shift + thin;
-  const v1a = g1 + shift;
-  const v1b = g1 + shift + thin;
-
-  const gray = `polygon(${fmt(g0)}% 0, 100% 0, 100% 100%, ${fmt(g1)}% 100%)`;
-  const purple = `polygon(${fmt(p0)}% 0, 100% 0, 100% 100%, ${fmt(p1)}% 100%)`;
-  const violet = `polygon(${fmt(v0a)}% 0, ${fmt(v0b)}% 0, ${fmt(v1b)}% 100%, ${fmt(v1a)}% 100%)`;
-
+  const end = align === "end";
   return (
-    <div
-      ref={bandRef}
-      data-pricing-stripe={variant}
-      aria-hidden
-      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
-    >
-      <div className="absolute inset-0 bg-[#12151f]" style={{ clipPath: gray }} />
-      <div className="absolute inset-0 bg-[#251c49]" style={{ clipPath: purple }} />
-      <div className="absolute inset-0 bg-[#3a2d6b]/55" style={{ clipPath: violet }} />
-    </div>
-  );
-}
-
-function SectionGradient() {
-  return (
-    <>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{ background: FAQ_SURFACE }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-70"
-        style={{
-          background:
-            "radial-gradient(circle at 18% 18%, rgba(80, 50, 200, 0.05), transparent 40%), radial-gradient(circle at 82% 82%, rgba(0, 200, 255, 0.03), transparent 38%)",
-        }}
-      />
-    </>
-  );
-}
-
-function AccentBar({ variant = "bone" }: { variant?: "bone" | "violet" }) {
-  return (
-    <div
-      aria-hidden
-      className="mt-3 flex h-1.5 w-[min(80%,14rem)] max-w-full overflow-hidden sm:mt-3.5 sm:h-2"
-    >
-      <span
-        className={`h-full w-[80%] shrink-0 ${
-          variant === "violet" ? "bg-violet-400/80" : ""
+    <div className={end ? "text-left sm:text-right" : "text-left"}>
+      {previous != null ? (
+        <p className={`text-[13px] tabular-nums ${featured ? "text-[#070b13]/45" : "text-zinc-500"}`}>
+          <span className="sr-only">Precio anterior: </span>
+          <span className="line-through decoration-current/70">{formatEurAmount(previous)}</span>
+        </p>
+      ) : (
+        <p className="select-none text-[13px] text-transparent" aria-hidden>
+          —
+        </p>
+      )}
+      {from ? (
+        <p
+          className={`mt-1 font-mono text-[10px] uppercase tracking-[0.16em] ${
+            featured ? "text-[#070b13]/50" : "text-zinc-500"
+          }`}
+        >
+          Desde
+        </p>
+      ) : null}
+      <p className={`mt-1 flex flex-wrap items-baseline gap-x-2 ${end ? "sm:justify-end" : ""}`}>
+        <span className="sr-only">Precio actual: </span>
+        <span
+          className={`font-serif font-normal tabular-nums tracking-[-0.04em] ${
+            featured
+              ? "text-[clamp(3.4rem,6vw,5.4rem)] leading-none text-[#070b13]"
+              : compact
+                ? "text-[clamp(2rem,4vw,2.5rem)] leading-none text-[#F3F1EB]"
+                : "text-[clamp(2.6rem,5vw,3.6rem)] leading-none text-[#F3F1EB]"
+          }`}
+        >
+          {formatEurAmount(amount).replace(" €", "")}
+        </span>
+        <span
+          className={`font-serif text-[1.35rem] ${featured ? "text-[#070b13]" : "text-[#F3F1EB]"}`}
+        >
+          €{perMonth ? <span className="text-[0.95rem]">/mes</span> : null}
+        </span>
+      </p>
+      <p
+        className={`mt-1 font-mono text-[11px] uppercase tracking-[0.16em] ${
+          featured ? "text-[#070b13]/55" : "text-zinc-500"
         }`}
-        style={variant === "bone" ? { backgroundColor: MANIFESTO_BAR_GRAY } : undefined}
-      />
-      <span className="h-full w-[20%] shrink-0" style={{ backgroundColor: BONE }} />
+      >
+        + IVA
+      </p>
     </div>
   );
 }
 
-function FeatureMark({ dark = false }: { dark?: boolean }) {
-  return (
-    <span
-      className={`inline-flex shrink-0 items-center font-mono text-[13px] font-normal leading-none ${
-        dark ? "text-[#3a2d6b]" : "text-violet-300/70"
-      }`}
-      aria-hidden
-    >
-      &gt;
-    </span>
-  );
-}
-
-function TierChevron({ isOpen }: { isOpen: boolean }) {
-  return (
-    <span
-      aria-hidden
-      className={`mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md border font-mono text-[11px] leading-none transition-[transform,background-color,border-color,color] duration-300 ease-out ${
-        isOpen
-          ? "rotate-90 border-[#2a2438]/25 bg-[#2a2438] text-[#F3F1EB]"
-          : "rotate-0 border-[#070b13]/12 bg-[#070b13]/4 text-[#2a2438]/70 group-hover:border-[#070b13]/20"
-      }`}
-    >
-      &gt;
-    </span>
-  );
-}
-
-function DetailLists({
+function DetailGroups({
   includes,
-  excludes,
+  conditions,
+  featured,
 }: {
   includes: readonly string[];
-  excludes: readonly string[];
+  conditions: readonly string[];
+  featured?: boolean;
 }) {
+  const ink = featured ? "text-[#070b13]/80" : "text-zinc-400";
+  const label = featured ? "text-[#070b13]/45" : "text-zinc-500";
+  const rule = featured ? "border-[#070b13]/10" : "border-white/10";
+
   return (
-    <div className="pl-10">
-      <p
-        className="mb-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em]"
-        style={{ color: INK }}
-      >
-        Suele incluir
-      </p>
-      <ul className="flex flex-col gap-2">
-        {includes.map((feature) => (
-          <li
-            key={feature}
-            className="flex items-baseline gap-2 text-[13px] leading-relaxed"
-            style={{ color: INK }}
-          >
-            <FeatureMark dark />
-            <span className="opacity-80">{feature}</span>
-          </li>
-        ))}
-      </ul>
-
-      <div className="my-4 h-px w-full bg-[#070b13]/12" />
-
-      <p
-        className="mb-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em]"
-        style={{ color: INK }}
-      >
-        No incluye
-      </p>
-      <ul className="flex flex-col gap-2">
-        {excludes.map((feature) => (
-          <li
-            key={feature}
-            className="flex items-baseline gap-2 text-[13px] leading-relaxed"
-            style={{ color: INK }}
-          >
-            <span
-              className="inline-flex w-3 shrink-0 justify-center font-mono text-[12px] opacity-45"
-              aria-hidden
-            >
-              ·
-            </span>
-            <span className="opacity-70">{feature}</span>
-          </li>
-        ))}
-      </ul>
+    <div className={`mt-6 grid gap-6 border-t pt-5 sm:grid-cols-2 ${rule}`}>
+      <div>
+        <h4 className={`font-mono text-[10px] uppercase tracking-[0.16em] ${label}`}>
+          Qué incluye este alcance
+        </h4>
+        <ul className={`mt-3 space-y-2 text-[14px] leading-relaxed ${ink}`}>
+          {includes.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h4 className={`font-mono text-[10px] uppercase tracking-[0.16em] ${label}`}>
+          Condiciones
+        </h4>
+        <ul className={`mt-3 space-y-2 text-[14px] leading-relaxed ${ink}`}>
+          {conditions.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
 
-function OfferTierBlock({
-  tier,
-  isOpen,
+function IncludeToggle({
+  open,
   onToggle,
-  highlight,
+  controls,
+  featured,
 }: {
-  tier: OfferTier;
-  isOpen: boolean;
+  open: boolean;
   onToggle: () => void;
-  highlight?: boolean;
+  controls: string;
+  featured?: boolean;
 }) {
-  const reduceMotion = useReducedMotion();
-  const panelId = useId();
-
   return (
-    <article
-      className={`overflow-hidden rounded-xl border bg-[#F3F1EB] transition-[box-shadow,border-color] duration-300 ease-out ${
-        highlight
-          ? "border-violet-400/30 shadow-[0_8px_28px_-18px_rgba(42,36,56,0.4)] ring-1 ring-violet-400/15"
-          : "border-[#070b13]/10 shadow-[0_3px_14px_-12px_rgba(7,11,19,0.25)]"
-      } ${isOpen ? "shadow-[0_8px_28px_-16px_rgba(7,11,19,0.32)]" : "hover:border-[#070b13]/16"}`}
+    <button
+      type="button"
+      aria-expanded={open}
+      aria-controls={controls}
+      onClick={onToggle}
+      className={`mt-4 text-left text-[13px] underline decoration-transparent underline-offset-4 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40 ${
+        featured
+          ? "text-[#070b13]/60 hover:text-[#070b13] hover:decoration-[#070b13]/30"
+          : "text-zinc-500 hover:text-zinc-200 hover:decoration-white/30"
+      }`}
     >
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        aria-controls={panelId}
-        className="group flex w-full items-start gap-3 px-4 py-3.5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#F3F1EB] sm:gap-3.5 sm:px-5 sm:py-4"
-      >
-        <TierChevron isOpen={isOpen} />
-        <span className="min-w-0 flex-1">
-          <span className="flex flex-col gap-1.5 min-[400px]:flex-row min-[400px]:items-center min-[400px]:justify-between min-[400px]:gap-x-3">
-            <span className="flex flex-wrap items-center gap-2">
-              <span
-                className="text-[clamp(1.1rem,2.6vw,1.4rem)] font-semibold leading-tight tracking-[-0.02em]"
-                style={{ color: PLAN_NAME }}
-              >
-                {tier.name}
-              </span>
-              {highlight ? (
-                <span className="rounded-md bg-[#2a2438] px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#F3F1EB]">
-                  Principal
-                </span>
-              ) : null}
-            </span>
-            <span className="text-[13px] font-semibold tabular-nums text-[#2a2438] sm:shrink-0 sm:text-[14px]">
-              {tier.priceLabel}
-            </span>
-          </span>
-          <span className="mt-2 block text-[12.5px] leading-snug text-[#070b13]/70 sm:text-[13px]">
-            {tier.summary}
-          </span>
-          <span className="mt-1.5 block text-[11.5px] leading-snug text-[#070b13]/55 sm:text-[12px]">
-            {tier.suitedFor}
-          </span>
-        </span>
-      </button>
-
-      <AnimatePresence initial={false}>
-        {isOpen ? (
-          <motion.div
-            id={panelId}
-            role="region"
-            aria-label={`Detalle: ${tier.name}`}
-            initial={reduceMotion ? false : { height: 0, opacity: 0 }}
-            animate={reduceMotion ? undefined : { height: "auto", opacity: 1 }}
-            exit={reduceMotion ? undefined : { height: 0, opacity: 0 }}
-            transition={{ duration: 0.28, ease: "easeOut" }}
-            className="overflow-hidden"
-          >
-            <div
-              className="border-t border-[#070b13]/12 px-4 pb-4 pt-3.5 sm:px-5 sm:pb-5"
-              style={{ backgroundColor: TIER_PANEL }}
-            >
-              <DetailLists includes={tier.includes} excludes={tier.doesNotInclude} />
-            </div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
-    </article>
+      {open ? "Ocultar detalle" : "Ver qué incluye"}
+    </button>
   );
 }
 
-function MaintenanceCard({
-  isOpen,
+function WebOffer({
+  product,
+  index,
+  open,
   onToggle,
 }: {
-  isOpen: boolean;
+  product: Product;
+  index: number;
+  open: boolean;
   onToggle: () => void;
 }) {
-  const reduceMotion = useReducedMotion();
   const panelId = useId();
+  const featured = product.id === "profesional";
+  const link = QUOTE_LINKS[product.id];
+  const order = String(index + 1).padStart(2, "0");
+
+  const go = () => {
+    trackEvent("pricing_cta", {
+      location: "precios",
+      destination: "presupuesto",
+      product: product.id,
+    });
+  };
 
   return (
     <article
-      data-maint-card
-      className="overflow-hidden rounded-xl border border-[#070b13]/10 bg-[#F3F1EB] shadow-[0_3px_14px_-12px_rgba(7,11,19,0.25)]"
+      className={
+        featured
+          ? "relative bg-[#F3F1EB] px-5 py-10 text-[#070b13] shadow-[0_30px_70px_-42px_rgba(0,0,0,0.8)] sm:px-8 sm:py-12 lg:px-12 lg:py-14"
+          : "border-t border-white/10 px-1 py-9 sm:px-2 sm:py-11"
+      }
     >
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        aria-controls={panelId}
-        data-maint-header
-        className="group flex w-full items-start gap-3 px-4 py-3.5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#F3F1EB] sm:gap-3.5 sm:px-5 sm:py-4"
-      >
-        <TierChevron isOpen={isOpen} />
-        <span className="min-w-0 flex-1">
-          <span className="flex flex-col gap-1.5 min-[400px]:flex-row min-[400px]:items-center min-[400px]:justify-between min-[400px]:gap-x-3">
-            <span
-              className="text-[clamp(1.1rem,2.6vw,1.4rem)] font-semibold leading-tight tracking-[-0.02em]"
-              style={{ color: PLAN_NAME }}
-            >
-              {MAINTENANCE_OFFER.name}
-            </span>
-            <span className="text-[13px] font-semibold tabular-nums text-[#2a2438] sm:text-[14px]">
-              {MAINTENANCE_OFFER.priceLabel}
-            </span>
-          </span>
-          <span className="mt-2 block text-[12.5px] leading-snug text-[#070b13]/70 sm:text-[13px]">
-            {MAINTENANCE_OFFER.summary}
-          </span>
-          <span className="mt-1.5 block text-[11.5px] leading-snug text-[#070b13]/55 sm:text-[12px]">
-            Pulsa para ver qué suele incluir y qué queda fuera.
-          </span>
-        </span>
-      </button>
-
-      <AnimatePresence initial={false}>
-        {isOpen ? (
-          <motion.div
-            id={panelId}
-            role="region"
-            aria-label="Detalle del mantenimiento"
-            initial={reduceMotion ? false : { height: 0, opacity: 0 }}
-            animate={reduceMotion ? undefined : { height: "auto", opacity: 1 }}
-            exit={reduceMotion ? undefined : { height: 0, opacity: 0 }}
-            transition={{ duration: 0.28, ease: "easeOut" }}
-            className="overflow-hidden"
-          >
-            <div
-              className="border-t border-[#070b13]/12 px-4 pb-4 pt-3.5 sm:px-5 sm:pb-5"
-              style={{ backgroundColor: TIER_PANEL }}
-            >
-              <DetailLists
-                includes={MAINTENANCE_OFFER.includes}
-                excludes={MAINTENANCE_OFFER.doesNotInclude}
-              />
-            </div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
-    </article>
-  );
-}
-
-/** Réplica abierta solo para medir alto real (bordes incluidos). */
-function MaintenanceCardGhost() {
-  return (
-    <article className="overflow-hidden rounded-xl border border-[#070b13]/10 bg-[#F3F1EB]">
-      <div className="flex w-full items-start gap-3 px-4 py-3.5 sm:gap-3.5 sm:px-5 sm:py-4">
-        <TierChevron isOpen />
-        <span className="min-w-0 flex-1">
-          <span className="flex flex-col gap-1.5 min-[400px]:flex-row min-[400px]:items-center min-[400px]:justify-between min-[400px]:gap-x-3">
-            <span
-              className="text-[clamp(1.1rem,2.6vw,1.4rem)] font-semibold leading-tight tracking-[-0.02em]"
-              style={{ color: PLAN_NAME }}
-            >
-              {MAINTENANCE_OFFER.name}
-            </span>
-            <span className="text-[13px] font-semibold tabular-nums text-[#2a2438] sm:text-[14px]">
-              {MAINTENANCE_OFFER.priceLabel}
-            </span>
-          </span>
-          <span className="mt-2 block text-[12.5px] leading-snug text-[#070b13]/70 sm:text-[13px]">
-            {MAINTENANCE_OFFER.summary}
-          </span>
-          <span className="mt-1.5 block text-[11.5px] leading-snug text-[#070b13]/55 sm:text-[12px]">
-            Pulsa para ver qué suele incluir y qué queda fuera.
-          </span>
-        </span>
-      </div>
       <div
-        className="border-t border-[#070b13]/12 px-4 pb-4 pt-3.5 sm:px-5 sm:pb-5"
-        style={{ backgroundColor: TIER_PANEL }}
+        className={`grid items-start gap-8 lg:items-center ${
+          featured ? "lg:grid-cols-[minmax(0,1.2fr)_minmax(14rem,0.7fr)]" : "lg:grid-cols-[minmax(0,1fr)_16rem]"
+        }`}
       >
-        <DetailLists
-          includes={MAINTENANCE_OFFER.includes}
-          excludes={MAINTENANCE_OFFER.doesNotInclude}
+        <div className="min-w-0">
+          <p
+            className={`font-mono text-[11px] tracking-[0.18em] ${
+              featured ? "text-[#070b13]/45" : "text-zinc-500"
+            }`}
+          >
+            {order}
+          </p>
+          <h3
+            className={`mt-3 font-serif font-normal tracking-[-0.035em] ${
+              featured
+                ? "text-[clamp(2.1rem,4vw,3.15rem)] leading-[1.02] text-[#070b13]"
+                : "text-[clamp(1.7rem,3vw,2.25rem)] leading-[1.08] text-[#F3F1EB]"
+            }`}
+          >
+            {product.name}
+          </h3>
+          <p
+            className={`mt-4 max-w-[38ch] text-[16px] leading-relaxed ${
+              featured ? "text-[#070b13]/75" : "text-zinc-300"
+            }`}
+          >
+            {product.summary}
+          </p>
+          <p
+            className={`mt-3 max-w-[40ch] text-[14px] leading-relaxed ${
+              featured ? "text-[#070b13]/55" : "text-zinc-500"
+            }`}
+          >
+            {product.suitedFor}
+          </p>
+          <div className="mt-6 lg:hidden">
+            <PriceBlock
+              amount={product.publicFromEur}
+              previous={product.previousPublicEur}
+              from={product.priceIsFrom}
+              featured={featured}
+              align="start"
+            />
+            {product.priceIsFrom ? (
+              <p className={`mt-3 text-[13px] leading-relaxed ${featured ? "text-[#070b13]/50" : "text-zinc-500"}`}>
+                Punto de partida de este alcance.
+              </p>
+            ) : null}
+          </div>
+          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+            <Link
+              href={link.href}
+              onClick={go}
+              className={`inline-flex min-h-11 items-center justify-center rounded-md px-5 text-[14px] font-medium tracking-[-0.01em] focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40 ${
+                featured
+                  ? "bg-[#070b13] text-[#F3F1EB] hover:bg-[#141a27]"
+                  : "bg-[#F3F1EB] text-[#070b13] hover:bg-white"
+              }`}
+            >
+              {link.cta}
+            </Link>
+            <IncludeToggle
+              open={open}
+              onToggle={onToggle}
+              controls={panelId}
+              featured={featured}
+            />
+          </div>
+        </div>
+        <div className="hidden lg:block">
+          <PriceBlock
+            amount={product.publicFromEur}
+            previous={product.previousPublicEur}
+            from={product.priceIsFrom}
+            featured={featured}
+          />
+          {product.priceIsFrom ? (
+            <p
+              className={`mt-3 text-[13px] leading-relaxed sm:text-right ${
+                featured ? "text-[#070b13]/50" : "text-zinc-500"
+              }`}
+            >
+              Punto de partida de este alcance.
+            </p>
+          ) : null}
+        </div>
+      </div>
+      <div id={panelId} role="region" aria-label={`Qué incluye ${product.name}`} hidden={!open}>
+        {open ? (
+          <DetailGroups
+            includes={product.publicDetail.includes}
+            conditions={product.publicDetail.conditions}
+            featured={featured}
+          />
+        ) : null}
+      </div>
+    </article>
+  );
+}
+
+function ComplementOffer({
+  kicker,
+  name,
+  summary,
+  audience,
+  amount,
+  previous,
+  from,
+  perMonth,
+  note,
+  href,
+  cta,
+  includes,
+  conditions,
+  open,
+  onToggle,
+  productId,
+}: {
+  kicker: string;
+  name: string;
+  summary: string;
+  audience: string;
+  amount: number;
+  previous?: number;
+  from?: boolean;
+  perMonth?: boolean;
+  note?: string;
+  href: string;
+  cta: string;
+  includes: readonly string[];
+  conditions: readonly string[];
+  open: boolean;
+  onToggle: () => void;
+  productId: string;
+}) {
+  const panelId = useId();
+
+  return (
+    <article className="px-1 py-8 sm:px-4">
+      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">{kicker}</p>
+      <h3 className="mt-3 font-serif text-[1.65rem] font-normal tracking-[-0.03em] text-[#F3F1EB]">
+        {name}
+      </h3>
+      <p className="mt-3 max-w-[36ch] text-[15px] leading-relaxed text-zinc-300">{summary}</p>
+      <p className="mt-2 max-w-[36ch] text-[13px] leading-relaxed text-zinc-500">{audience}</p>
+      <div className="mt-6">
+        <PriceBlock
+          amount={amount}
+          previous={previous}
+          from={from}
+          perMonth={perMonth}
+          compact
+          align="start"
         />
       </div>
-    </article>
-  );
-}
-
-/**
- * Desplegable de mantenimiento.
- * En desktop (lg+) reserva el alto de la tarjeta abierta para no mover las franjas.
- * En móvil el alto es natural: crece al abrir el acordeón.
- */
-function MaintenanceSection() {
-  const slotRef = useRef<HTMLDivElement | null>(null);
-  const ghostRef = useRef<HTMLDivElement | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [cardSlotMinH, setCardSlotMinH] = useState<number | undefined>(undefined);
-  const [reserveSlotHeight, setReserveSlotHeight] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const sync = () => setReserveSlotHeight(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
-
-  const measureSlot = useCallback(() => {
-    if (!reserveSlotHeight) return;
-    const ghost = ghostRef.current;
-    if (!ghost) return;
-    const next = Math.ceil(ghost.getBoundingClientRect().height) + 2;
-    setCardSlotMinH((prev) => (prev != null && Math.abs(prev - next) < 1 ? prev : next));
-  }, [reserveSlotHeight]);
-
-  useLayoutEffect(() => {
-    if (!reserveSlotHeight) {
-      setCardSlotMinH(undefined);
-      return;
-    }
-    measureSlot();
-    const ghost = ghostRef.current;
-    if (!ghost) return;
-    const ro = new ResizeObserver(() => measureSlot());
-    ro.observe(ghost);
-    window.addEventListener("resize", measureSlot);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measureSlot);
-    };
-  }, [measureSlot, reserveSlotHeight]);
-
-  useLayoutEffect(() => {
-    if (!reserveSlotHeight || !isOpen) return;
-    const calibrate = () => {
-      const card = slotRef.current?.querySelector(
-        "[data-maint-card]",
-      ) as HTMLElement | null;
-      if (!card) return;
-      const h = Math.ceil(card.getBoundingClientRect().height) + 2;
-      setCardSlotMinH((prev) => Math.max(prev ?? 0, h));
-    };
-    calibrate();
-    const t = window.setTimeout(calibrate, 320);
-    return () => window.clearTimeout(t);
-  }, [isOpen, reserveSlotHeight]);
-
-  return (
-    <section
-      className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
-      aria-labelledby="pricing-maintenance-heading"
-    >
-      <DiagonalStripes variant="mirror" />
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
-        <FadeIn>
-          <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_1.15fr] lg:gap-10 xl:gap-12">
-            <div className="self-start">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-300/75">
-                Después de publicar
-              </p>
-              <h2
-                id="pricing-maintenance-heading"
-                className="mt-3 font-serif text-[clamp(1.3rem,2.8vw,1.65rem)] font-normal leading-[1.14] tracking-[-0.03em] text-[#F3F1EB]"
-              >
-                {MAINTENANCE_OFFER.name}
-              </h2>
-              <AccentBar variant="violet" />
-              <p className="mt-5 max-w-[42ch] text-[15px] leading-[1.75] text-zinc-300 sm:text-base">
-                {MAINTENANCE_OFFER.summary}
-              </p>
-              <p className="mt-4 font-serif text-[clamp(1.2rem,2.4vw,1.45rem)] text-[#F3F1EB]">
-                {MAINTENANCE_OFFER.priceLabel}
-              </p>
-              <p className="mt-2 max-w-[42ch] text-[13px] leading-relaxed text-zinc-500 sm:text-[14px]">
-                {MAINTENANCE_OFFER.priceNote}
-              </p>
-              <p className="mt-4 max-w-[42ch] text-[13px] leading-relaxed text-zinc-500 sm:text-[14px]">
-                {MAINTENANCE_OFFER.scopeClarification}
-              </p>
-            </div>
-            <div
-              ref={slotRef}
-              className="relative min-h-0 min-w-0 self-start overflow-hidden"
-              style={
-                reserveSlotHeight && cardSlotMinH != null
-                  ? { height: cardSlotMinH }
-                  : undefined
-              }
-            >
-              <MaintenanceCard
-                isOpen={isOpen}
-                onToggle={() => setIsOpen((v) => !v)}
-              />
-              {reserveSlotHeight ? (
-                <div
-                  ref={ghostRef}
-                  className="pointer-events-none invisible absolute left-0 top-0 -z-10 w-full"
-                  aria-hidden
-                >
-                  <MaintenanceCardGhost />
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </FadeIn>
+      {note ? <p className="mt-3 max-w-[36ch] text-[13px] leading-relaxed text-zinc-500">{note}</p> : null}
+      <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
+        <Link
+          href={href}
+          onClick={() =>
+            trackEvent("pricing_cta", {
+              location: "precios",
+              destination: "presupuesto",
+              product: productId,
+            })
+          }
+          className="inline-flex min-h-11 items-center justify-center rounded-md border border-white/15 px-5 text-[14px] text-[#F3F1EB] transition-colors hover:border-white/30 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40"
+        >
+          {cta}
+        </Link>
+        <IncludeToggle open={open} onToggle={onToggle} controls={panelId} />
       </div>
-    </section>
+      <div id={panelId} role="region" aria-label={`Qué incluye ${name}`} hidden={!open}>
+        {open ? <DetailGroups includes={includes} conditions={conditions} /> : null}
+      </div>
+    </article>
   );
 }
 
@@ -651,36 +435,19 @@ function TemplateDemoCard({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#131b2a]"
+      className="group flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40"
     >
-      <div className="relative aspect-16/10 overflow-hidden border border-white/8 bg-[#070b13] shadow-[0_14px_36px_-26px_rgba(0,0,0,0.85)] transition-[border-color,box-shadow] duration-400 ease-out group-hover:border-violet-400/20">
+      <div className="relative aspect-16/10 overflow-hidden border border-white/10 bg-[#070b13]">
         <Image
           src={image}
           alt={`Vista previa de referencia: ${name}`}
           fill
           sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 25vw"
-          className="object-cover object-top saturate-[0.94] transition-[filter] duration-500 ease-out group-hover:saturate-100"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#0c121c] via-[#0c121c]/25 to-transparent"
+          className="object-cover object-top"
         />
       </div>
-
-      <div className="mt-3.5 flex flex-1 flex-col gap-2 border-t border-white/6 pt-3.5 sm:mt-4 sm:pt-4">
-        <h3 className="font-serif text-[1.05rem] font-normal leading-snug tracking-[-0.02em] text-[#F3F1EB] sm:text-[1.12rem]">
-          {name}
-        </h3>
-        <p className="flex-1 text-[12px] leading-[1.65] text-zinc-500 sm:text-[13px] sm:leading-[1.7]">
-          {description}
-        </p>
-        <span className="inline-flex items-center gap-2 pt-0.5 font-mono text-[11px] leading-none text-violet-200/55 transition-colors duration-200 group-hover:text-violet-200/90 sm:text-[12px]">
-          <span aria-hidden className="text-zinc-600 transition-colors group-hover:text-violet-300/75">
-            &gt;
-          </span>
-          Ver referencia
-        </span>
-      </div>
+      <h3 className="mt-3 font-serif text-[1.05rem] font-normal text-[#F3F1EB]">{name}</h3>
+      <p className="mt-1 text-[13px] leading-relaxed text-zinc-500">{description}</p>
     </a>
   );
 }
@@ -696,368 +463,230 @@ function FaqItem({
   isOpen: boolean;
   onToggle: () => void;
 }) {
-  const reduceMotion = useReducedMotion();
   const panelId = useId();
 
   return (
     <article className="border-b border-white/10">
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        aria-controls={panelId}
-        className="group flex w-full items-center gap-3 py-3 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/15 sm:py-3.5"
-      >
-        <span
-          aria-hidden
-          className={`flex size-6 shrink-0 items-center justify-center rounded-sm border border-white/10 font-mono text-[10px] text-zinc-500 transition-transform sm:size-7 ${
-            isOpen ? "rotate-90" : ""
-          }`}
+      <h3>
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={isOpen}
+          aria-controls={panelId}
+          className="flex w-full items-center justify-between gap-4 py-3.5 text-left text-[15px] text-zinc-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20"
         >
-          &gt;
-        </span>
-        <span className="text-[13.5px] font-medium text-zinc-100 sm:text-[15px]">{question}</span>
-      </button>
-      <AnimatePresence initial={false}>
-        {isOpen ? (
-          <motion.div
-            id={panelId}
-            role="region"
-            aria-label={`Respuesta: ${question}`}
-            initial={reduceMotion ? false : { height: 0, opacity: 0 }}
-            animate={reduceMotion ? undefined : { height: "auto", opacity: 1 }}
-            exit={reduceMotion ? undefined : { height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
-            className="overflow-hidden"
-          >
-            <p className="max-w-[62ch] pb-3.5 pl-9 text-[13px] leading-[1.7] text-zinc-400 sm:pb-4 sm:pl-10 sm:text-[14px] sm:leading-[1.75]">
-              {answer}
-            </p>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+          <span>{question}</span>
+          <span aria-hidden className="font-mono text-[12px] text-zinc-500">
+            {isOpen ? "–" : "+"}
+          </span>
+        </button>
+      </h3>
+      {isOpen ? (
+        <p id={panelId} className="max-w-[62ch] pb-4 text-[14px] leading-relaxed text-zinc-400">
+          {answer}
+        </p>
+      ) : null}
     </article>
   );
 }
 
-const ctaButtonClass =
-  "inline-flex min-h-12 w-full max-w-xs items-center justify-center rounded-md border border-[#F3F1EB]/15 bg-[#F3F1EB] px-8 py-3.5 text-[14px] font-semibold tracking-[-0.01em] text-[#070b13] shadow-[0_12px_40px_-18px_rgba(243,241,235,0.35)] transition-[background-color,transform,box-shadow,border-color] duration-300 hover:border-white/25 hover:bg-white hover:-translate-y-px hover:shadow-[0_16px_44px_-16px_rgba(243,241,235,0.45)] focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070b13] sm:max-w-sm sm:px-10 sm:text-[15px]";
-
-/** CTA final: más presencia, misma familia visual. */
-const ctaButtonPremiumClass =
-  "group relative inline-flex min-h-14 w-full max-w-md items-center justify-center overflow-hidden rounded-md border border-violet-300/25 bg-[#F3F1EB] px-12 py-5 text-[15px] font-semibold tracking-[-0.015em] text-[#070b13] shadow-[0_20px_60px_-22px_rgba(243,241,235,0.5),0_0_0_1px_rgba(243,241,235,0.08)] transition-[background-color,transform,box-shadow,border-color] duration-300 hover:border-violet-300/40 hover:bg-white hover:-translate-y-1 hover:shadow-[0_28px_70px_-20px_rgba(243,241,235,0.55),0_0_40px_-12px_rgba(139,92,246,0.2)] focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070b13] sm:min-h-16 sm:px-14 sm:text-[17px]";
-
-
 export function Pricing() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<string | null>(null);
+  const webs = webProducts();
+  const sistemas = PRODUCTS.find((product) => product.id === "sistemas");
 
-  const handleToggle = (index: number) => {
-    setOpenIndex((current) => {
-      const next = current === index ? null : index;
-      if (next != null) {
-        const tier = OFFER_TIERS[next];
-        if (tier) trackEvent("pricing_product_view", { product: tier.id });
-      }
+  const toggle = (id: string) => {
+    setOpenId((current) => {
+      const next = current === id ? null : id;
+      if (next) trackEvent("pricing_product_view", { product: id });
       return next;
     });
   };
 
-  const handlePrimaryCta = useCallback(() => {
-    trackEvent("pricing_cta", { location: "precios", destination: "presupuesto" });
-  }, []);
-
   return (
-    <div className="relative min-h-screen overflow-x-clip bg-[#070b13] text-zinc-300">
-      {/* 1. Hero: franja completa (sección corta) */}
-      <section
-        className="pricing-hero relative z-10 overflow-x-clip bg-[#070b13] px-5 pb-7 pt-[6.75rem] sm:px-6 sm:pb-10 sm:pt-28 lg:overflow-y-hidden lg:px-10 lg:pb-10 lg:pt-28"
-        aria-labelledby="pricing-hero-heading"
-      >
-        <DiagonalStripes variant="hero" />
+    <div className="bg-[#070b13] text-zinc-300">
+      <header className="mx-auto w-full max-w-6xl px-5 pb-6 pt-28 sm:px-8 sm:pt-32 lg:px-10 lg:pt-36">
+        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+          Tarifas de lanzamiento
+        </p>
+        <h1 className="mt-5 max-w-[16ch] font-serif text-[clamp(2.5rem,6.4vw,4.7rem)] font-normal leading-[0.98] tracking-[-0.045em] text-[#F3F1EB]">
+          Una buena solución empieza por un precio claro.
+        </h1>
+        <p className="mt-6 max-w-[36ch] text-[17px] leading-relaxed text-zinc-400">
+          Elige por dónde empezar. Definimos el alcance contigo antes de construir.
+        </p>
+      </header>
 
-        <FadeIn className="relative z-10 mx-auto w-full max-w-6xl">
-          <h1
-            id="pricing-hero-heading"
-            className="text-center font-serif text-[clamp(1.75rem,5.2vw,3.85rem)] font-normal leading-[1.08] tracking-[-0.038em] text-[#f2f0ec]"
+      <section aria-labelledby="pricing-webs-heading" className="mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-10">
+        <h2 id="pricing-webs-heading" className="sr-only">
+          Servicios web
+        </h2>
+        <div className="mt-10 sm:mt-14">
+          {webs.map((product, index) => (
+            <WebOffer
+              key={product.id}
+              product={product}
+              index={index}
+              open={openId === product.id}
+              onToggle={() => toggle(product.id)}
+            />
+          ))}
+        </div>
+      </section>
+
+      <section
+        aria-labelledby="pricing-complements-heading"
+        className="mx-auto mt-16 w-full max-w-6xl border-t border-white/10 px-5 py-12 sm:px-8 lg:px-10"
+      >
+        <h2
+          id="pricing-complements-heading"
+          className="font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-500"
+        >
+          Complementos
+        </h2>
+        <div className="mt-2 grid gap-6 md:grid-cols-2 md:gap-0 md:divide-x md:divide-white/10">
+          {sistemas ? (
+            <ComplementOffer
+              kicker="Automatización"
+              name={sistemas.name}
+              summary={sistemas.summary}
+              audience={sistemas.suitedFor}
+              amount={sistemas.publicFromEur}
+              from={sistemas.priceIsFrom}
+              note="El importe sube con las integraciones y el alcance."
+              href={QUOTE_LINKS.sistemas.href}
+              cta={QUOTE_LINKS.sistemas.cta}
+              includes={sistemas.publicDetail.includes}
+              conditions={sistemas.publicDetail.conditions}
+              open={openId === sistemas.id}
+              onToggle={() => toggle(sistemas.id)}
+              productId={sistemas.id}
+            />
+          ) : null}
+          <ComplementOffer
+            kicker="Después de publicar"
+            name={MAINTENANCE_OFFER.name}
+            summary={MAINTENANCE_OFFER.summary}
+            audience={MAINTENANCE_OFFER.audience}
+            amount={MAINTENANCE_OFFER.priceFromEur}
+            previous={MAINTENANCE_OFFER.previousPublicEur}
+            perMonth
+            note="Cuidado técnico. El desarrollo nuevo va aparte."
+            href="/presupuesto?mantenimiento=si"
+            cta="Incluir mantenimiento"
+            includes={MAINTENANCE_OFFER.includes}
+            conditions={[
+              MAINTENANCE_OFFER.scopeClarification,
+              MAINTENANCE_OFFER.priceNote,
+            ]}
+            open={openId === "mantenimiento"}
+            onToggle={() => toggle("mantenimiento")}
+            productId="mantenimiento"
+          />
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-6xl px-5 pb-16 sm:px-8 lg:px-10" aria-labelledby="pricing-clarity-heading">
+        <h2 id="pricing-clarity-heading" className="sr-only">
+          Cómo se cierra el precio
+        </h2>
+        <p className="max-w-[58ch] text-[15px] leading-[1.75] text-zinc-500">{PRICING_TRANSPARENCY}</p>
+        <p className="mt-5 text-[14px] text-zinc-500">
+          Más contexto en{" "}
+          <Link href="/desarrollo-web" className="text-zinc-300 underline decoration-white/20 underline-offset-4 hover:text-[#F3F1EB]">
+            desarrollo web
+          </Link>
+          {" y "}
+          <Link
+            href="/automatizacion-de-procesos"
+            className="text-zinc-300 underline decoration-white/20 underline-offset-4 hover:text-[#F3F1EB]"
           >
-            <span className="block">Webs y sistemas{" "}</span>
-            <span className="mt-1 block text-zinc-400">con alcance claro.</span>
-          </h1>
-
-          {/*
-            Móvil/tablet: texto izquierda + pavo derecha, CTA debajo.
-            Desktop: misma estructura con anclaje editorial.
-          */}
-          <div className="mx-auto mt-5 w-full max-w-184 sm:mt-6 lg:mt-3 lg:max-w-216 lg:-translate-y-8">
-            <div className="mx-auto grid w-fit max-w-full grid-cols-[minmax(0,1fr)_auto] items-end gap-x-2 sm:gap-x-5 lg:gap-x-10">
-              <div className="min-w-0 self-center text-left sm:self-end lg:-translate-y-2 xl:-translate-y-3">
-                <p
-                  className="max-w-[18ch] text-[clamp(0.95rem,2.8vw,1.35rem)] font-medium leading-[1.35] tracking-[-0.02em] text-zinc-200 sm:max-w-[36ch] lg:max-w-[44ch] lg:leading-[1.32]"
-                  role="doc-subtitle"
-                >
-                  Desde una web sencilla hasta automatizaciones que quitan trabajo repetido.
-                </p>
-
-                <p className="mt-3 hidden max-w-[48ch] text-[15px] leading-[1.8] text-zinc-400 sm:mt-4 sm:block sm:text-base sm:leading-[1.85]">
-                  Trabajo desde Valladolid con negocios de toda España. Los precios son
-                  orientativos: el presupuesto se cierra cuando el alcance está claro.
-                </p>
-
-                <p className="mt-2.5 max-w-[18ch] text-[12.5px] italic leading-relaxed text-zinc-500 sm:mt-4 sm:max-w-[48ch] sm:text-[15px]">
-                  Sin humo. Sin “todo incluido” eterno.
-                </p>
-              </div>
-
-              <div className="flex w-fit shrink-0 items-end justify-end self-end">
-                <Image
-                  src="/logos/mascot-pricing.webp"
-                  alt=""
-                  width={640}
-                  height={560}
-                  quality={85}
-                  priority
-                  sizes="(max-width: 639px) 160px, (max-width: 1023px) 200px, 448px"
-                  className="pricing-hero-mascot h-auto w-[9.3rem] max-w-full object-contain object-bottom sm:w-[12.5rem] lg:w-92 lg:translate-y-4"
-                />
-              </div>
-
-              <div className="col-span-2 mt-6 flex justify-center sm:mt-8 lg:mt-12">
-                <Link
-                  href="/presupuesto"
-                  onClick={handlePrimaryCta}
-                  className={ctaButtonClass}
-                >
-                  Configurar mi proyecto
-                </Link>
-              </div>
-            </div>
-          </div>
-        </FadeIn>
+            automatización
+          </Link>
+          .
+        </p>
       </section>
 
-      {/* 2. Oferta: gradiente, sin franja; copy sticky */}
-      <section
-        className="relative z-10 -mt-px"
-        aria-labelledby="pricing-offer-heading"
-      >
-        <SectionGradient />
-
-        <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-10">
-          <div className="relative py-10 sm:py-14 lg:py-16">
-            <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[40fr_60fr] lg:gap-x-10 xl:gap-x-12">
-              <FadeIn className="order-2 min-w-0 lg:order-1">
-                <div className="pricing-offer-copy lg:sticky lg:top-28 lg:self-start">
-                  <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-300/75">
-                    Qué puedes contratar
-                  </p>
-                  <h2
-                    id="pricing-offer-heading"
-                    className="mt-3 font-serif text-[clamp(1.3rem,2.8vw,1.65rem)] font-normal leading-[1.14] tracking-[-0.03em] text-[#F3F1EB]"
-                  >
-                    Elige el alcance que encaja con lo que necesitas ahora.
-                  </h2>
-                  <div className="mt-5 space-y-3.5 text-[15px] leading-[1.75] text-zinc-300 sm:text-base sm:leading-[1.8]">
-                    <p>
-                      Entrada para proyectos acotados. Profesional como opción principal. A
-                      medida cuando hace falta más lógica. Automatización cuando el proceso
-                      debería moverse solo.
-                    </p>
-                    <p className="text-zinc-400">
-                      Si crece el trabajo, crece el presupuesto, y se habla antes de hacerlo.
-                    </p>
-                    <p className="text-[14px] leading-[1.7] text-zinc-500">
-                      Más detalle del servicio:{" "}
-                      <Link
-                        href="/desarrollo-web"
-                        className="text-zinc-300 underline decoration-violet-400/30 underline-offset-[3px] transition-colors hover:text-zinc-100"
-                      >
-                        desarrollo web
-                      </Link>
-                      {" · "}
-                      <Link
-                        href="/automatizacion-de-procesos"
-                        className="text-zinc-300 underline decoration-violet-400/30 underline-offset-[3px] transition-colors hover:text-zinc-100"
-                      >
-                        automatización
-                      </Link>
-                      .
-                    </p>
-                  </div>
-                </div>
-              </FadeIn>
-
-              <FadeIn delay={0.05} className="order-1 min-w-0 lg:order-2">
-                <div className="flex flex-col gap-2.5 sm:gap-3">
-                  {OFFER_TIERS.map((tier, index) => (
-                    <OfferTierBlock
-                      key={tier.id}
-                      tier={tier}
-                      highlight={Boolean(tier.highlight)}
-                      isOpen={openIndex === index}
-                      onToggle={() => handleToggle(index)}
-                    />
-                  ))}
-                </div>
-              </FadeIn>
-            </div>
+      <section className="border-t border-white/10" aria-labelledby="pricing-templates-heading">
+        <div className="mx-auto w-full max-w-6xl px-5 py-14 sm:px-8 lg:px-10">
+          <h2
+            id="pricing-templates-heading"
+            className="font-serif text-[clamp(1.4rem,2.5vw,1.8rem)] font-normal tracking-[-0.03em] text-[#F3F1EB]"
+          >
+            Referencias visuales
+          </h2>
+          <p className="mt-3 max-w-[46ch] text-[14px] leading-relaxed text-zinc-500">{TEMPLATES_CONTEXT}</p>
+          <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {TEMPLATE_DEMOS.map((demo) => (
+              <TemplateDemoCard key={demo.name} {...demo} />
+            ))}
           </div>
         </div>
       </section>
 
-      <MaintenanceSection />
-
-      {/* 4. Alcance: gradiente */}
-      <section
-        className="relative z-10 -mt-px"
-        aria-labelledby="pricing-scope-heading"
-      >
-        <SectionGradient />
-        <div className="relative mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
-          <FadeIn>
-            <h2
-              id="pricing-scope-heading"
-              className="font-serif text-[clamp(1.2rem,2.6vw,1.5rem)] font-normal leading-[1.14] tracking-[-0.03em] text-[#F3F1EB]"
-            >
-              Alcance, extras e infraestructura
-            </h2>
-            <AccentBar />
-            <p className="mt-5 max-w-[58ch] text-[15px] leading-[1.75] text-zinc-400 sm:text-base">
-              {OFFER_SCOPE_NOTE}
-            </p>
-            <div className="mt-3.5 grid grid-cols-1 gap-3.5 sm:grid-cols-2 sm:gap-6 lg:gap-8">
-              <p className="text-[14px] leading-[1.7] text-zinc-500 sm:text-[15px]">
-                {OFFER_INFRA_NOTE}
-              </p>
-              <p className="text-[14px] leading-[1.7] text-zinc-500 sm:text-[15px]">
-                {OFFER_GUARANTEE_NOTE}
-              </p>
-            </div>
-
-            <ul className="mt-7 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-              {OFFER_EXTRAS.map((extra) => (
-                <li
-                  key={extra.label}
-                  className="border-l border-violet-400/25 pl-3 text-[13px] leading-snug text-zinc-400 sm:text-[14px]"
-                >
-                  {extra.label}
-                </li>
-              ))}
-            </ul>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* 5. Referencias + plantillas: una sola sección, franja completa */}
-      <section
-        className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
-        aria-labelledby="pricing-templates-heading"
-      >
-        <DiagonalStripes variant="continue" />
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
-          <FadeIn>
-            <div className="w-fit max-w-full">
-              <h2
-                id="pricing-templates-heading"
-                className="font-serif text-[clamp(1.2rem,2.6vw,1.5rem)] font-normal leading-[1.14] tracking-[-0.03em] text-[#F3F1EB]"
-              >
-                Referencias visuales por tipo de negocio
-              </h2>
-              <AccentBar variant="violet" />
-            </div>
-            <p className="mt-5 max-w-[40rem] text-[15px] leading-[1.75] text-zinc-400 sm:text-base">
-              {TEMPLATES_CONTEXT}
-            </p>
-          </FadeIn>
-
-          <FadeIn delay={0.04} className="mt-9 sm:mt-11">
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-9 lg:grid-cols-4 lg:gap-x-4">
-              {TEMPLATE_DEMOS.map((demo) => (
-                <TemplateDemoCard key={demo.name} {...demo} />
-              ))}
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* 6. FAQ: corte del patrón de franjas (fondo limpio) */}
-      <section
-        className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
-        aria-labelledby="pricing-faq-heading"
-      >
-        <div className="relative z-10 mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
-          <FadeIn>
-            <h2
-              id="pricing-faq-heading"
-              className="font-serif text-[clamp(1.3rem,2.8vw,1.65rem)] font-normal tracking-[-0.03em] text-[#F3F1EB]"
-            >
-              Preguntas frecuentes
-            </h2>
-            <AccentBar />
-
-            <div className="mt-8 space-y-8">
-              {PRICING_FAQ_GROUPS.map((group) => (
-                <div key={group.id}>
-                  <h3 className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-300/65">
-                    {group.title}
-                  </h3>
-                  <div className="border-t border-white/10">
-                    {group.items.map((item) => {
-                      const key = `${group.id}:${item.q}`;
-                      return (
-                        <FaqItem
-                          key={key}
-                          question={item.q}
-                          answer={item.a}
-                          isOpen={openFaq === key}
-                          onToggle={() =>
-                            setOpenFaq((cur) => (cur === key ? null : key))
-                          }
-                        />
-                      );
-                    })}
-                  </div>
+      <section className="border-t border-white/10" aria-labelledby="pricing-faq-heading">
+        <div className="mx-auto w-full max-w-3xl px-5 py-14 sm:px-8">
+          <h2
+            id="pricing-faq-heading"
+            className="font-serif text-[clamp(1.4rem,2.5vw,1.8rem)] font-normal tracking-[-0.03em] text-[#F3F1EB]"
+          >
+            Preguntas frecuentes
+          </h2>
+          <div className="mt-8 space-y-8">
+            {PRICING_FAQ_GROUPS.map((group) => (
+              <div key={group.id}>
+                <h3 className="mb-1 font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+                  {group.title}
+                </h3>
+                <div className="border-t border-white/10">
+                  {group.items.map((item) => {
+                    const key = `${group.id}:${item.q}`;
+                    return (
+                      <FaqItem
+                        key={key}
+                        question={item.q}
+                        answer={item.a}
+                        isOpen={openFaq === key}
+                        onToggle={() => setOpenFaq((current) => (current === key ? null : key))}
+                      />
+                    );
+                  })}
                 </div>
-              ))}
-            </div>
-          </FadeIn>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* 7. CTA: reengancha espejo tras el corte del FAQ */}
-      <section
-        className="relative z-10 -mt-px overflow-hidden bg-[#070b13]"
-        aria-labelledby="pricing-cta-heading"
-      >
-        <DiagonalStripes variant="mirror" />
-        <FadeIn className="relative z-10 mx-auto w-full max-w-2xl px-4 py-14 text-center sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+      <section className="border-t border-white/10" aria-labelledby="pricing-cta-heading">
+        <div className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8 lg:px-10">
           <h2
             id="pricing-cta-heading"
-            className="font-serif text-[clamp(1.5rem,3.8vw,2.1rem)] font-normal leading-[1.12] tracking-[-0.03em] text-[#F3F1EB]"
+            className="max-w-[16ch] font-serif text-[clamp(1.8rem,4vw,2.6rem)] font-normal leading-[1.08] tracking-[-0.03em] text-[#F3F1EB]"
           >
-            Configura lo que necesita tu negocio
+            Si aún no tienes claro el alcance, lo vemos juntos.
           </h2>
-          <p className="mx-auto mt-5 max-w-[44ch] text-[15px] leading-[1.75] text-zinc-400 sm:text-base">
-            Elige el tipo de proyecto, añade lo que haga falta y verás un total orientativo
-            antes de hablar del detalle.
-          </p>
-          <div className="mt-10 flex justify-center sm:mt-11">
+          <div className="mt-8">
             <Link
               href="/presupuesto"
-              onClick={handlePrimaryCta}
-              className={ctaButtonPremiumClass}
+              onClick={() =>
+                trackEvent("pricing_cta", {
+                  location: "precios",
+                  destination: "presupuesto",
+                  product: "none",
+                })
+              }
+              className="inline-flex min-h-12 items-center justify-center rounded-md px-6 text-[15px] font-medium text-[#070b13] focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40"
+              style={{ backgroundColor: BONE }}
             >
-              <span className="relative z-10">Ver qué encaja con mi negocio</span>
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/35 via-transparent to-transparent opacity-70 transition-opacity duration-300 group-hover:opacity-100"
-              />
+              Preparar un presupuesto
             </Link>
           </div>
-          <p className="mx-auto mt-5 text-xs text-zinc-600 sm:text-sm">
-            Los precios del configurador son orientativos hasta confirmar el alcance.
+          <p className="mt-4 max-w-[42ch] text-[13px] leading-relaxed text-zinc-600">
+            El configurador da una orientación. El presupuesto definitivo llega antes de contratar.
           </p>
-        </FadeIn>
+        </div>
       </section>
     </div>
   );

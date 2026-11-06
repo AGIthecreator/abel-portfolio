@@ -1,6 +1,11 @@
+import { PUBLIC_RATES, formatEurAmount } from "./rates";
+
 export const COMMERCE_CURRENCY = "EUR" as const;
 export const COMMERCE_TAX_NOTE = "+ IVA" as const;
 export const OFFER_GUARANTEE_MONTHS = 2;
+
+export const PRICING_TRANSPARENCY =
+  "Cada servicio tiene un alcance definido. Antes de empezar concretamos qué necesita el proyecto y recibes el presupuesto definitivo antes de contratar. Cualquier ampliación se acuerda y se presupuesta antes de hacerse. Dominio, hosting y otros servicios externos se detallan cuando correspondan.";
 
 export const OFFER_SCOPE_NOTE =
   "El proyecto incluye lo acordado en el presupuesto. Si aparecen necesidades nuevas, las vemos y se presupuesta el trabajo adicional antes de hacerlo.";
@@ -82,7 +87,7 @@ export const PRICING_FAQ_GROUPS = [
       },
       {
         q: "¿Cómo se calcula un Proyecto a medida?",
-        a: "Parte desde 2.490 € + IVA y se ajusta al alcance real: lógica, integraciones, datos y funcionalidades. Los proyectos grandes se presupuestan individualmente.",
+        a: `Parte desde ${formatEurAmount(PUBLIC_RATES.aMedida.eur)} + IVA y se ajusta al alcance real: lógica, integraciones, datos y funcionalidades. Los proyectos grandes se presupuestan individualmente.`,
       },
       {
         q: "¿Puedo contratar una automatización sin hacer una web?",

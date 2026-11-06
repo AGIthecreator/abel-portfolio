@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SiteNavbar } from "@/components/SiteNavbar";
 import { Footer } from "@/components/sections/Footer";
 import { AutomatizacionProcesosContent } from "@/components/services/AutomatizacionProcesosContent";
+import { formatEurAmount, PUBLIC_RATES } from "@/lib/commerce/rates";
 import { ORGANIZATION_ID } from "@/lib/seo/site";
 
 const faqEntities = [
@@ -99,7 +100,7 @@ const jsonLd = {
 export const metadata: Metadata = {
   title: "Automatización de procesos para negocios | AGI TheCreator",
   description:
-    "Primero el proceso, después la herramienta. Menos tareas repetidas: formularios, reservas, avisos e integraciones. Según proyecto.",
+    `Primero el proceso, después la herramienta. Menos tareas repetidas: formularios, reservas, avisos e integraciones. Desde ${formatEurAmount(PUBLIC_RATES.sistemasFromEur)} + IVA.`,
   alternates: { canonical: "/automatizacion-de-procesos" },
   openGraph: {
     title: "Automatización de procesos para negocios | AGI TheCreator",
@@ -122,7 +123,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Automatización de procesos | AGI TheCreator",
     description:
-      "Menos tareas repetidas. Más tiempo para el negocio. Según proyecto.",
+      `Menos tareas repetidas. Más tiempo para el negocio. Desde ${formatEurAmount(PUBLIC_RATES.sistemasFromEur)} + IVA.`,
     images: ["/og-image.png"],
   },
 };

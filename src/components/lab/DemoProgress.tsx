@@ -1,12 +1,12 @@
 "use client";
 
-import type { LabAct } from "@/lib/lab/session";
+export type LabProgressStep = "caso" | "prueba" | "recorrido" | "cierre";
 
-const ACTS: readonly { act: LabAct; label: string }[] = [
-  { act: 1, label: "Lo ves" },
-  { act: 2, label: "Lo decides" },
-  { act: 3, label: "Lo construyes" },
-  { act: 4, label: "Lo has entendido" },
+const STEPS: readonly { id: LabProgressStep; label: string }[] = [
+  { id: "caso", label: "Tu caso" },
+  { id: "prueba", label: "La prueba" },
+  { id: "recorrido", label: "El recorrido" },
+  { id: "cierre", label: "El cierre" },
 ];
 
 export function DemoProgress({
@@ -14,25 +14,24 @@ export function DemoProgress({
   visited,
   onNavigate,
 }: {
-  current: LabAct;
-  visited: readonly LabAct[];
-  onNavigate: (act: LabAct) => void;
+  current: LabProgressStep;
+  visited: readonly LabProgressStep[];
+  onNavigate: (step: LabProgressStep) => void;
 }) {
   return (
     <nav
       aria-label="Progreso de la demo"
       className="flex flex-wrap items-center gap-x-1 gap-y-2"
     >
-      {ACTS.map(({ act, label }, index) => {
-        const isCurrent = act === current;
-        const isVisited = visited.includes(act);
-        const reachable = isVisited || isCurrent;
+      {STEPS.map(({ id, label }, index) => {
+        const isCurrent = id === current;
+        const reachable = visited.includes(id) || isCurrent;
 
         return (
-          <span key={act} className="flex items-center">
+          <span key={id} className="flex items-center">
             <button
               type="button"
-              onClick={() => reachable && onNavigate(act)}
+              onClick={() => reachable && onNavigate(id)}
               disabled={!reachable}
               aria-current={isCurrent ? "step" : undefined}
               className={`cursor-pointer rounded-md px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400/70 disabled:cursor-default ${
@@ -40,13 +39,13 @@ export function DemoProgress({
                   ? "text-violet-200"
                   : reachable
                     ? "text-zinc-300 hover:text-zinc-50"
-                    : "text-zinc-500"
+                    : "text-zinc-400"
               }`}
             >
-              <span className="mr-1.5">{String(act).padStart(2, "0")}</span>
+              <span className="mr-1.5">{String(index + 1).padStart(2, "0")}</span>
               {label}
             </button>
-            {index < ACTS.length - 1 ? (
+            {index < STEPS.length - 1 ? (
               <span aria-hidden className="text-zinc-600">
                 ·
               </span>

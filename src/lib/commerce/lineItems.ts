@@ -3,6 +3,8 @@
  * Uso: configurador, PDF futuro. No listar todos en /precios.
  */
 
+import { PUBLIC_RATES } from "./rates";
+
 export type LineItemUnit =
   | "proyecto"
   | "seccion"
@@ -455,7 +457,7 @@ export const LINE_ITEMS: Record<string, LineItem> = {
     id: "maint_base",
     name: "Mantenimiento",
     description: "Cuidado técnico recurrente. No es desarrollo ilimitado.",
-    priceEur: 99,
+    priceEur: PUBLIC_RATES.maintenanceMonthlyEur,
     unit: "mes",
     category: "maintenance",
   },

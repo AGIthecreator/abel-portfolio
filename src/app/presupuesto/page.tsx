@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { SiteNavbar } from "@/components/SiteNavbar";
 import { Footer } from "@/components/sections/Footer";
 import { QuoteConfigurator } from "@/components/quote/QuoteConfigurator";
@@ -42,7 +43,9 @@ export default function PresupuestoPage() {
     <>
       <SiteNavbar />
       <main>
-        <QuoteConfigurator />
+        <Suspense fallback={<div className="min-h-screen bg-[#070b13]" />}>
+          <QuoteConfigurator />
+        </Suspense>
       </main>
       <Footer />
     </>

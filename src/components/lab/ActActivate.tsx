@@ -26,11 +26,14 @@ import {
   LabHeading,
   LabPanel,
 } from "./LabUi";
+import { describeLabSend, type LabFlowStep } from "@/lib/lab/cases";
+import { GuidedProof } from "./CaseFlow";
+import { LabFlow } from "./LabFlow";
 import { ProcessTimeline } from "./ProcessTimeline";
 import { useManagedTimers } from "./useManagedTimers";
 
 const FIELD_CLASS =
-  "w-full rounded-lg border border-white/12 bg-[#0c121c] px-3.5 py-2.5 text-[14px] text-zinc-100 placeholder:text-zinc-500 transition-colors duration-200 focus:border-violet-400/45 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400/60";
+  "w-full rounded-xl border border-white/10 bg-[#101826] px-4 py-3 text-[15px] text-[#F3F1EB] placeholder:text-zinc-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-[border-color,box-shadow] duration-200 focus:border-violet-300/40 focus:ring-2 focus:ring-violet-400/15 focus-visible:outline-none";
 
 const LABEL_CLASS =
   "mb-1.5 block font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-400";
@@ -97,28 +100,43 @@ type PendingAction = "status" | "pdf" | "followup" | "cancel" | "reschedule";
 
 interface ActActivateProps {
   activation: LabActivationState | null;
+  presetMessage?: string;
+  scene?: {
+    title: string;
+    pain: string;
+    inbound: string;
+    manual: readonly [string, string, string];
+    flow: readonly [LabFlowStep, LabFlowStep, LabFlowStep, LabFlowStep];
+  };
   onActivated: (activation: LabActivationState) => void;
   onActivationChange: (activation: LabActivationState) => void;
   onContinue: () => void;
+  onBack?: () => void;
 }
 
 export function ActActivate({
   activation,
+  presetMessage = "",
+  scene,
   onActivated,
   onActivationChange,
   onContinue,
+  onBack,
 }: ActActivateProps) {
   const reduceMotion = useReducedMotion();
   const [name, setName] = useState(activation?.input.name ?? "");
   const [email, setEmail] = useState(activation?.input.email ?? "");
-  const [message, setMessage] = useState(activation?.input.message ?? "");
+  const [message, setMessage] = useState(
+    activation?.input.message ?? presetMessage,
+  );
   const [website, setWebsite] = useState("");
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [pending, setPending] = useState<PendingAction | null>(null);
-  const [revealed, setRevealed] = useState(0);
+  const [revealed, setRevealed] = useState(() => activation?.steps.length ?? 0);
+  const animatedRun = useRef<string | null>(activation?.runId ?? null);
   const { schedule, clear, isMounted } = useManagedTimers();
 
   const revealSteps = useCallback(
@@ -220,8 +238,9 @@ export function ActActivate({
         });
       }
 
-      onActivated(next);
+      animatedRun.current = next.runId;
       revealSteps(data.steps);
+      onActivated(next);
     } catch {
       if (isMounted()) setSubmitError("No se ha podido conectar. Inténtalo de nuevo.");
     } finally {
@@ -229,16 +248,15 @@ export function ActActivate({
     }
   };
 
-  // Al volver desde sessionStorage los pasos se muestran ya completos.
-  const restoredRunId = useRef<string | null>(null);
+  // Una ejecución recién enviada se revela en orden. Una recuperada, de golpe.
   useEffect(() => {
-    if (activation && restoredRunId.current !== activation.runId) {
-      restoredRunId.current = activation.runId;
-      setRevealed(activation.steps.length);
-      setName(activation.input.name);
-      setEmail(activation.input.email);
-      setMessage(activation.input.message);
-    }
+    if (!activation) return;
+    setName(activation.input.name);
+    setEmail(activation.input.email);
+    if (animatedRun.current === activation.runId) return;
+    animatedRun.current = activation.runId;
+    setMessage(activation.input.message);
+    setRevealed(activation.steps.length);
   }, [activation]);
 
   /** Añade el paso y la acción que devuelve el servidor, sin inventar nada. */
@@ -450,15 +468,19 @@ export function ActActivate({
     trackEvent("classify_sample_applied");
   };
 
+  const flowActive = loading ? 1 : activation && describeLabSend(activation).sent ? 3 : 0;
+
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-12">
+    <div>
+      {scene ? <LabFlow className="mb-8" steps={scene.flow} active={flowActive} /> : null}
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-12">
       <div>
-        <LabEyebrow>01 · Lo ves</LabEyebrow>
+        <LabEyebrow>La prueba</LabEyebrow>
         <LabHeading className="mt-3">
-          Manda una solicitud y mira qué hace el sistema
+          {scene ? scene.title : "Manda una solicitud y mira qué ocurre"}
         </LabHeading>
-        <p className="mt-3 max-w-md text-[13.5px] leading-relaxed text-zinc-400">
-          El contenido del mensaje cambia lo que el sistema decide.
+        <p className="mt-3 max-w-md text-[15px] leading-relaxed text-zinc-300">
+          {scene ? scene.pain : "El mensaje cambia lo que el sistema decide."}
         </p>
 
         <form
@@ -546,46 +568,58 @@ export function ActActivate({
               disabled={loading}
             >
               {loading
-                ? "Ejecutando…"
+                ? "Enviando…"
                 : activation
-                  ? "Volver a activar"
-                  : "Activar proceso"}
+                  ? "Enviar otra vez"
+                  : "Enviar"}
             </LabButton>
-            {activation ? (
+            {activation && revealed >= activation.steps.length ? (
               <LabButton onClick={onContinue}>Continuar</LabButton>
+            ) : null}
+            {onBack ? (
+              <LabButton variant="ghost" onClick={onBack}>
+                Volver
+              </LabButton>
             ) : null}
           </div>
 
           <p className="text-[11.5px] leading-relaxed text-zinc-400">
-            El nombre y el email sirven para ejecutar esta demo: aviso,
-            confirmación, informe o seguimiento si lo pides. No es
-            consentimiento de marketing.{" "}
+            El correo solo se usa para esta confirmación.{" "}
             <a
               href="/privacy"
               className="text-zinc-300 underline decoration-white/15 underline-offset-2 hover:text-zinc-200"
             >
               Privacidad
             </a>
-            . La demo tiene un límite de ejecuciones reales.
+            .
           </p>
         </form>
       </div>
 
       <div className="min-w-0">
-        <LabPanel>
-          {visibleSteps.length === 0 ? (
-            <div className="flex min-h-64 flex-col justify-center gap-2 text-center">
-              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
-                En espera
-              </p>
-              <p className="text-[13.5px] leading-relaxed text-zinc-300">
-                El proceso no hace nada hasta que alguien lo activa.
-              </p>
-            </div>
-          ) : (
-            <ProcessTimeline steps={visibleSteps} live />
-          )}
-        </LabPanel>
+        {scene ? (
+          <GuidedProof
+            inbound={scene.inbound}
+            manual={scene.manual}
+            activation={activation}
+            loading={loading}
+          />
+        ) : (
+          <LabPanel>
+            {visibleSteps.length === 0 ? (
+              <div className="flex min-h-64 flex-col justify-center gap-2 text-center">
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+                  En espera
+                </p>
+                <p className="text-[13.5px] leading-relaxed text-zinc-300">
+                  El correo sale cuando pulses Enviar.
+                </p>
+              </div>
+            ) : (
+              <ProcessTimeline steps={visibleSteps} live />
+            )}
+          </LabPanel>
+        )}
 
         <AnimatePresence>
           {activation ? (
@@ -595,6 +629,7 @@ export function ActActivate({
               transition={{ duration: 0.32, ease: "easeOut" }}
               className="mt-4 flex flex-col gap-4"
             >
+              {presetMessage ? null : (
               <LabPanel>
                 <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-violet-300/90">
                   Qué ha entendido el sistema
@@ -639,7 +674,9 @@ export function ActActivate({
                   </p>
                 )}
               </LabPanel>
+              )}
 
+              {presetMessage ? null : (
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
                   Prueba otro mensaje
@@ -661,7 +698,9 @@ export function ActActivate({
                   ))}
                 </div>
               </div>
+              )}
 
+              {scene ? null : (
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
                   Qué acaba de ocurrir
@@ -679,6 +718,7 @@ export function ActActivate({
                   </div>
                 ) : null}
               </div>
+              )}
 
               {activation.duplicate ? (
                 <LabPanel className="border-amber-300/20 bg-amber-400/5">
@@ -696,10 +736,12 @@ export function ActActivate({
               activation.capabilities.pdf ||
               activation.capabilities.followup ? (
                 <LabPanel>
-                  <p className="text-[13.5px] leading-relaxed text-zinc-200">
-                    El proceso ya ha actuado. Si quieres, puedes seguirlo.
-                  </p>
-                  <div className="mt-3 flex flex-wrap gap-2.5">
+                  {scene ? null : (
+                    <p className="text-[13.5px] leading-relaxed text-zinc-200">
+                      El proceso ya ha actuado. Si quieres, puedes seguirlo.
+                    </p>
+                  )}
+                  <div className={`${scene ? "" : "mt-3 "}flex flex-wrap gap-2.5`}>
                     {activation.capabilities.emailStatus ? (
                       <LabButton
                         variant="secondary"
@@ -765,7 +807,7 @@ export function ActActivate({
                 </LabPanel>
               ) : null}
 
-              <details className="rounded-xl border border-white/8 bg-white/2 p-5 sm:p-6">
+              <details className="rounded-xl border border-white/10 bg-[#101826] p-5 sm:p-6">
                 <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-400 transition-colors hover:text-zinc-200">
                   Si quieres verlo por dentro
                 </summary>
@@ -846,6 +888,7 @@ export function ActActivate({
             </motion.div>
           ) : null}
         </AnimatePresence>
+      </div>
       </div>
     </div>
   );
