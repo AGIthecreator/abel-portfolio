@@ -9,6 +9,7 @@ import { QuoteLeadFlow } from "@/components/quote/QuoteLeadFlow";
 import { trackEvent, trackEventOnce } from "@/lib/analytics";
 import {
   EMPTY_FLOW_STATE,
+  EXTRA_GROUPS,
   LINE_ITEMS,
   MAINTENANCE_OFFER,
   PRODUCTS,
@@ -18,6 +19,7 @@ import {
   clearQuoteSession,
   displayExtraPriceEur,
   getExtrasForProduct,
+  type LineItem,
   getProduct,
   loadQuoteFlow,
   loadQuoteSnapshot,
@@ -45,6 +47,66 @@ function formatEur(value: number | null | undefined): string {
     currency: "EUR",
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+function extraPriceLabel(item: LineItem): string {
+  const amount = formatEur(displayExtraPriceEur(item));
+  if (item.priceIsFrom) return `desde ${amount}`;
+  if (item.unit === "flujo") return `+${amount}/flujo`;
+  if (item.unit === "mes") return `+${amount}/mes`;
+  return `+${amount}`;
+}
+
+function ExtraOption({
+  item,
+  selected,
+  onToggle,
+}: {
+  item: LineItem;
+  selected: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <li>
+      <button
+        type="button"
+        aria-pressed={selected}
+        onClick={onToggle}
+        className={`flex w-full items-start justify-between gap-4 rounded-lg border px-3.5 py-2.5 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40 ${
+          selected
+            ? "border-violet-400/40 bg-[#F3F1EB] text-[#070b13]"
+            : "border-white/10 bg-white/[0.03] text-zinc-300 hover:border-white/18"
+        }`}
+      >
+        <span className="min-w-0">
+          <span className="block text-[14px] font-medium">{item.name}</span>
+          <span
+            className={`mt-1 block text-[12px] leading-snug ${
+              selected ? "text-[#070b13]/60" : "text-zinc-500"
+            }`}
+          >
+            {item.description}
+          </span>
+          {item.scopeNote ? (
+            <span
+              className={`mt-1 block text-[11.5px] leading-snug ${
+                selected ? "text-[#070b13]/45" : "text-zinc-600"
+              }`}
+            >
+              {item.scopeNote}
+            </span>
+          ) : null}
+        </span>
+        <span
+          className={`shrink-0 pt-0.5 text-[13px] font-semibold tabular-nums ${
+            selected ? "text-[#2a2438]" : "text-zinc-300"
+          }`}
+        >
+          {extraPriceLabel(item)}
+        </span>
+      </button>
+    </li>
+  );
 }
 
 function ChipButton({
@@ -154,6 +216,7 @@ export function QuoteConfigurator() {
   const [leadStep, setLeadStep] = useState(0);
   const [leadDiagnostic, setLeadDiagnostic] = useState({});
   const [leadContact, setLeadContact] = useState({});
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
   const step = STEPS[stepIndex];
 
@@ -491,60 +554,67 @@ export function QuoteConfigurator() {
                     <p className="mt-2 max-w-[52ch] text-[14px] text-zinc-500">
                       Añade solo lo que necesites. Puedes quitar opciones en cualquier momento.
                     </p>
-                    <ul className="mt-5 flex flex-col gap-2.5">
-                      {extraIds.map((id) => {
-                        const item = LINE_ITEMS[id];
-                        if (!item || item.priceEur == null) return null;
-                        const selected = (extras[id] ?? 0) > 0;
-                        const displayPrice = displayExtraPriceEur(item);
-                        const usesMin =
-                          item.minEur != null &&
-                          displayPrice != null &&
-                          item.priceEur * 1 < item.minEur;
-                        return (
-                          <li key={id}>
-                            <button
-                              type="button"
-                              onClick={() => toggleExtra(id)}
-                              className={`flex w-full items-start justify-between gap-4 rounded-xl border px-4 py-3.5 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40 ${
-                                selected
-                                  ? "border-violet-400/40 bg-[#F3F1EB] text-[#070b13]"
-                                  : "border-white/10 bg-white/[0.03] text-zinc-300 hover:border-white/18"
-                              }`}
-                            >
-                              <span>
-                                <span className="block text-[14px] font-medium">{item.name}</span>
-                                <span
-                                  className={`mt-1 block text-[12px] leading-snug ${
-                                    selected ? "text-[#070b13]/55" : "text-zinc-500"
-                                  }`}
+                    <div className="mt-5 flex flex-col gap-3">
+                      {(() => {
+                        const grouped = new Set<string>();
+                        const blocks: { id: string; title: string; ids: string[] }[] = EXTRA_GROUPS.map(
+                          (group) => {
+                            const ids = group.ids.filter((id) => extraIds.includes(id) && LINE_ITEMS[id]);
+                            ids.forEach((id) => grouped.add(id));
+                            return { id: group.id, title: group.title, ids: [...ids] };
+                          },
+                        ).filter((group) => group.ids.length > 0);
+                        const rest = extraIds.filter((id) => !grouped.has(id) && LINE_ITEMS[id]);
+                        if (rest.length > 0) {
+                          blocks.push({ id: "otras", title: "Otras opciones", ids: rest });
+                        }
+                        return blocks.map((group) => {
+                          const open = openGroups[group.id] !== false;
+                          const selectedCount = group.ids.filter((id) => (extras[id] ?? 0) > 0).length;
+                          return (
+                            <section key={group.id} className="rounded-xl border border-white/10">
+                              <h3>
+                                <button
+                                  type="button"
+                                  aria-expanded={open}
+                                  onClick={() =>
+                                    setOpenGroups((current) => ({
+                                      ...current,
+                                      [group.id]: current[group.id] === false,
+                                    }))
+                                  }
+                                  className="flex w-full items-center justify-between gap-3 px-3.5 py-2.5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40"
                                 >
-                                  {item.description}
-                                </span>
-                              </span>
-                              <span
-                                className={`shrink-0 text-[13px] font-semibold tabular-nums ${
-                                  selected ? "text-[#2a2438]" : "text-zinc-400"
-                                }`}
-                              >
-                                +{formatEur(displayPrice)}
-                                {usesMin
-                                  ? " mín."
-                                  : item.unit === "flujo"
-                                    ? "/flujo"
-                                    : item.unit === "seccion"
-                                      ? "/sección"
-                                      : item.unit === "mes"
-                                        ? "/mes"
-                                        : item.unit === "elemento"
-                                          ? "/lote"
-                                          : ""}
-                              </span>
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
+                                  <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-300/75">
+                                    {group.title}
+                                  </span>
+                                  <span className="font-mono text-[11px] text-zinc-500">
+                                    {selectedCount > 0 ? `${selectedCount} · ` : ""}
+                                    {open ? "–" : "+"}
+                                  </span>
+                                </button>
+                              </h3>
+                              {open ? (
+                                <ul className="flex flex-col gap-2 border-t border-white/8 px-2.5 py-2.5">
+                                  {group.ids.map((id) => {
+                                    const item = LINE_ITEMS[id];
+                                    if (!item || item.priceEur == null) return null;
+                                    return (
+                                      <ExtraOption
+                                        key={id}
+                                        item={item}
+                                        selected={(extras[id] ?? 0) > 0}
+                                        onToggle={() => toggleExtra(id)}
+                                      />
+                                    );
+                                  })}
+                                </ul>
+                              ) : null}
+                            </section>
+                          );
+                        });
+                      })()}
+                    </div>
                     {result.warnings.map((w) => (
                       <p
                         key={w.code}

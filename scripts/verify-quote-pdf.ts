@@ -7,6 +7,7 @@ import { buildQuotePdfModel } from "../src/lib/commerce/buildQuotePdfModel";
 import { sumBundleValue } from "../src/lib/commerce/bundles";
 import { getProduct } from "../src/lib/commerce/products";
 import { PUBLIC_RATES } from "../src/lib/commerce/rates";
+import { buildQuoteLeadEmailHtml } from "../src/lib/commerce/quoteEmail";
 import { validateAndBuildQuotePdfRequest } from "../src/lib/commerce/quoteSchema";
 import { renderQuotePdfBuffer } from "../src/lib/pdf/renderQuotePdf";
 import type { QuoteDiagnostic, QuoteContact } from "../src/lib/commerce/diagnostic";
@@ -88,10 +89,10 @@ async function main() {
 
   const sysBigger = calculateQuote({
     productId: "sistemas",
-    extras: { automation_flow: 1, integration_simple: 1 },
+    extras: { automation_flow: 1, integration_complex: 1 },
     maintenance: "later",
   });
-  assert(sysBigger.subtotalEur === 340, "4a3 sistemas por encima del mínimo", failed, passed);
+  assert(sysBigger.subtotalEur === 530, "4a3 sistemas por encima del mínimo", failed, passed);
   assert(
     !sysBigger.lines.some((line) => line.id === "sistemas_floor"),
     "4a4 sin suelo si ya supera 290",
@@ -120,7 +121,7 @@ async function main() {
     maintenance: "later",
   });
   assert(
-    withExtras.extrasTotalEur > 0 && withExtras.subtotalEur === 790 + 320,
+    withExtras.extrasTotalEur > 0 && withExtras.subtotalEur === 790 + 240,
     "5 extras suman al subtotal",
     failed,
     passed,
@@ -196,6 +197,82 @@ async function main() {
   // 11. Generación PDF real
   const pdf = await renderQuotePdfBuffer(modelPro);
   assert(pdf.length > 1000 && pdf.subarray(0, 4).toString() === "%PDF", "11 PDF bytes", failed, passed);
+
+  const vat = (net: number) => Math.round(net * 0.21 * 100) / 100;
+  const proCase = (extras: QuoteInput["extras"], net: number, label: string) => {
+    const result = calculateQuote({ productId: "profesional", extras, maintenance: "later" });
+    assert(result.subtotalEur === net, `${label} subtotal ${net}`, failed, passed);
+    assert(Math.abs(result.totalEur - (net + vat(net))) < 0.01, `${label} total con IVA`, failed, passed);
+    assert(result.vatEur === vat(net) || Math.abs(result.vatEur - vat(net)) < 0.01, `${label} IVA`, failed, passed);
+  };
+  proCase({}, 790, "12 profesional sin extras");
+  proCase({ section_extra: 1 }, 840, "13 sección adicional");
+  proCase({ page_extra: 1 }, 870, "14 página adicional");
+  proCase({ booking: 1 }, 1030, "15 reservas");
+  proCase({ copy_pack: 1 }, 1040, "16 copy");
+  proCase({ automation_addon: 1 }, 940, "17 automatización adicional");
+
+  const removed = calculateQuote({
+    productId: "profesional",
+    extras: { section_extra: 0, page_extra: 1 },
+    maintenance: "later",
+  });
+  assert(removed.subtotalEur === 870, "18 desmarcar sección deja solo la página", failed, passed);
+
+  const privateArea = calculateQuote({
+    productId: "profesional",
+    extras: { private_area: 1 },
+    maintenance: "later",
+  });
+  const privateLine = privateArea.lines.find((line) => line.id.startsWith("private_area"));
+  assert(privateArea.subtotalEur === 790 + 390, "19 área privada suma el mínimo", failed, passed);
+  assert(privateLine?.name.includes("(desde)") === true, "19b área privada no es precio cerrado", failed, passed);
+  assert((privateLine?.description ?? "").includes("permisos"), "19c el alcance de área privada viaja al presupuesto", failed, passed);
+
+  const addonAsFlow = calculateQuote({
+    productId: "profesional",
+    extras: { automation_flow: 1 },
+    maintenance: "later",
+  });
+  assert(addonAsFlow.subtotalEur === 940, "20 un flujo en web usa 150, no la tarifa independiente", failed, passed);
+  assert(
+    addonAsFlow.lines.some((line) => line.id.startsWith("automation_addon")),
+    "20b el flujo de web no se llama como el servicio independiente",
+    failed,
+    passed,
+  );
+
+  const sysAddonIgnored = calculateQuote({
+    productId: "sistemas",
+    extras: { automation_addon: 1 },
+    maintenance: "later",
+  });
+  assert(sysAddonIgnored.subtotalEur === 0, "21 el extra de web no calcula la automatización independiente", failed, passed);
+
+  const proPdf = buildQuotePdfModel({
+    quoteId: "q_test_section",
+    timestamp: new Date().toISOString(),
+    input: { productId: "profesional", extras: { section_extra: 1 }, maintenance: "later" },
+    result: calculateQuote({ productId: "profesional", extras: { section_extra: 1 }, maintenance: "later" }),
+    diagnostic,
+    contact,
+  });
+  assert(
+    proPdf.extras.some((line) => line.name === "Sección adicional" && line.priceEur === 50),
+    "22 PDF refleja la sección a 50",
+    failed,
+    passed,
+  );
+  const leadMail = buildQuoteLeadEmailHtml({
+    contact,
+    diagnostic,
+    result: calculateQuote({
+      productId: "profesional",
+      extras: { section_extra: 1 },
+      maintenance: "later",
+    }),
+  });
+  assert(leadMail.includes("840"), "23 el correo interno usa el total recalculado", failed, passed);
 
   // Extra: entrada / a-medida / sistemas modelos
   for (const [label, input] of [

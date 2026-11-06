@@ -30,6 +30,7 @@ const ENTRADA_SCOPE_EXTRAS = new Set([
   "content_research",
   "migration_web",
   "section_extra",
+  "page_extra",
   "ui_system",
   "seo_tech_extended",
   "project_consulting",
@@ -184,6 +185,33 @@ function buildWarnings(
 }
 
 /**
+ * La automatización adicional de una web (150 €) y el módulo del servicio
+ * independiente (suelo 290 €) no se usan para calcularse entre sí.
+ */
+function normalizeQuoteExtras(
+  productId: ProductId | null,
+  extras: Record<string, number>,
+): Record<string, number> {
+  const next: Record<string, number> = {};
+  for (const [id, quantity] of Object.entries(extras)) {
+    if (!quantity || quantity <= 0) continue;
+    next[id] = quantity;
+  }
+
+  if (productId === "sistemas") {
+    delete next.automation_addon;
+    return next;
+  }
+
+  const flow = next.automation_flow ?? 0;
+  if (flow > 0) {
+    next.automation_addon = (next.automation_addon ?? 0) + flow;
+    delete next.automation_flow;
+  }
+  return next;
+}
+
+/**
  * La automatización no tiene pack cerrado. Si hay módulos y la suma queda
  * por debajo del mínimo público, el presupuesto sube hasta ese suelo.
  * Por encima del suelo manda la complejidad real. Sin módulos, el total es 0.
@@ -234,7 +262,11 @@ function applySistemasFloor(
 }
 
 export function calculateQuote(input: QuoteInput): QuoteResult {
-  const product = input.productId ? getProduct(input.productId) : undefined;
+  const pricedInput: QuoteInput = {
+    ...input,
+    extras: normalizeQuoteExtras(input.productId, input.extras),
+  };
+  const product = pricedInput.productId ? getProduct(pricedInput.productId) : undefined;
   const lines: QuoteLine[] = [];
   let bundleValueEur = 0;
   let extrasTotalEur = 0;
@@ -260,7 +292,7 @@ export function calculateQuote(input: QuoteInput): QuoteResult {
     bundleValueEur = 0;
   }
 
-  for (const [id, quantity] of Object.entries(input.extras)) {
+  for (const [id, quantity] of Object.entries(pricedInput.extras)) {
     if (!quantity || quantity <= 0) continue;
     const item = LINE_ITEMS[id];
     if (!item) continue;
@@ -272,8 +304,8 @@ export function calculateQuote(input: QuoteInput): QuoteResult {
     lines.push({
       id: `${item.id}:${quantity}`,
       kind: "extra",
-      name: item.name,
-      description: item.description,
+      name: item.priceIsFrom ? `${item.name} (desde)` : item.name,
+      description: [item.description, item.scopeNote].filter(Boolean).join(" "),
       quantity,
       unitPriceEur: item.priceEur,
       lineTotalEur: total,
@@ -296,11 +328,11 @@ export function calculateQuote(input: QuoteInput): QuoteResult {
     subtotalEur = extrasTotalEur;
   }
 
-  const warnings = buildWarnings(input.productId, input.extras);
-  subtotalEur = applyEntradaProfesionalFloor(input, subtotalEur, lines, warnings);
+  const warnings = buildWarnings(pricedInput.productId, pricedInput.extras);
+  subtotalEur = applyEntradaProfesionalFloor(pricedInput, subtotalEur, lines, warnings);
   if (product?.id === "sistemas") {
     const floored = applySistemasFloor(
-      input,
+      pricedInput,
       subtotalEur,
       extrasTotalEur,
       lines,

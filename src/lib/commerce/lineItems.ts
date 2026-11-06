@@ -36,6 +36,10 @@ export type LineItem = {
   category: LineItemCategory;
   /** Mínimo facturable cuando aplica (ej. carga masiva) */
   minEur?: number;
+  /** El importe es un punto de partida, no un precio cerrado. */
+  priceIsFrom?: boolean;
+  /** Límite breve del alcance. Se muestra junto al extra y viaja al presupuesto. */
+  scopeNote?: string;
   /** Visible como extra seleccionable en configurador */
   selectableExtra?: boolean;
   /** Notas internas */
@@ -95,8 +99,8 @@ export const LINE_ITEMS: Record<string, LineItem> = {
   creative_extended: {
     id: "creative_extended",
     name: "Dirección creativa ampliada",
-    description: "Propuestas adicionales de estructura, enfoque y presentación.",
-    priceEur: 180,
+    description: "Trabajo adicional sobre enfoque visual, estructura y presentación.",
+    priceEur: 120,
     unit: "proyecto",
     category: "discovery",
     selectableExtra: true,
@@ -104,8 +108,8 @@ export const LINE_ITEMS: Record<string, LineItem> = {
   project_consulting: {
     id: "project_consulting",
     name: "Consultoría de proyecto",
-    description: "Sesión de criterio sobre estructura, prioridades y enfoque comercial.",
-    priceEur: 120,
+    description: "Sesión de 60 minutos para definir prioridades, estructura y enfoque.",
+    priceEur: 60,
     unit: "sesion",
     category: "discovery",
     selectableExtra: true,
@@ -138,9 +142,18 @@ export const LINE_ITEMS: Record<string, LineItem> = {
   section_extra: {
     id: "section_extra",
     name: "Sección adicional",
-    description: "Página o sección extra fuera del alcance base del pack.",
-    priceEur: 90,
+    description: "Un bloque nuevo dentro de una página existente.",
+    priceEur: 50,
     unit: "seccion",
+    category: "design",
+    selectableExtra: true,
+  },
+  page_extra: {
+    id: "page_extra",
+    name: "Página adicional",
+    description: "Una página completa con su propia estructura.",
+    priceEur: 80,
+    unit: "ud",
     category: "design",
     selectableExtra: true,
   },
@@ -189,8 +202,8 @@ export const LINE_ITEMS: Record<string, LineItem> = {
   form_advanced: {
     id: "form_advanced",
     name: "Formulario avanzado",
-    description: "Formulario con lógica, validaciones o flujos más elaborados.",
-    priceEur: 140,
+    description: "Formulario con lógica, validaciones o pasos personalizados.",
+    priceEur: 100,
     unit: "ud",
     category: "development",
     selectableExtra: true,
@@ -206,8 +219,8 @@ export const LINE_ITEMS: Record<string, LineItem> = {
   whatsapp_advanced: {
     id: "whatsapp_advanced",
     name: "WhatsApp avanzado",
-    description: "WhatsApp con flujo o notificación asociada.",
-    priceEur: 90,
+    description: "Integración de WhatsApp con una acción o notificación asociada.",
+    priceEur: 60,
     unit: "ud",
     category: "development",
     selectableExtra: true,
@@ -215,8 +228,10 @@ export const LINE_ITEMS: Record<string, LineItem> = {
   booking: {
     id: "booking",
     name: "Sistema de reservas",
-    description: "Módulo de reservas adaptado al negocio.",
-    priceEur: 320,
+    description: "Sistema sencillo para gestionar reservas o solicitudes de cita.",
+    scopeNote:
+      "No incluye una plataforma propia de citas, pagos complejos ni calendarios con reglas avanzadas.",
+    priceEur: 240,
     unit: "ud",
     category: "development",
     selectableExtra: true,
@@ -224,9 +239,8 @@ export const LINE_ITEMS: Record<string, LineItem> = {
   catalog_light: {
     id: "catalog_light",
     name: "Catálogo ligero",
-    description:
-      "Listado o catálogo acotado de lo que ofrece tu negocio (referencia: hasta ~10 ítems).",
-    priceEur: 180,
+    description: "Catálogo visual acotado de hasta aproximadamente 10 elementos.",
+    priceEur: 120,
     unit: "ud",
     category: "development",
     selectableExtra: true,
@@ -245,8 +259,11 @@ export const LINE_ITEMS: Record<string, LineItem> = {
   private_area: {
     id: "private_area",
     name: "Área privada básica",
-    description: "Acceso restringido en tu web, para clientes o equipo.",
-    priceEur: 480,
+    description: "Acceso restringido para clientes o equipo, con funcionalidades básicas.",
+    scopeNote:
+      "390 € es el punto de partida. El coste definitivo depende de permisos, usuarios, datos y funciones.",
+    priceEur: 390,
+    priceIsFrom: true,
     unit: "ud",
     category: "development",
     selectableExtra: true,
@@ -254,8 +271,8 @@ export const LINE_ITEMS: Record<string, LineItem> = {
   integration_simple: {
     id: "integration_simple",
     name: "Integración externa simple",
-    description: "Conexión con una herramienta externa de alcance limitado.",
-    priceEur: 160,
+    description: "Conexión con una herramienta o servicio externo.",
+    priceEur: 110,
     unit: "ud",
     category: "development",
     selectableExtra: true,
@@ -281,8 +298,8 @@ export const LINE_ITEMS: Record<string, LineItem> = {
   database: {
     id: "database",
     name: "Base de datos / Airtable",
-    description: "Setup de base de datos o Airtable para el proyecto.",
-    priceEur: 220,
+    description: "Configuración de una base de datos sencilla adaptada al proyecto.",
+    priceEur: 160,
     unit: "ud",
     category: "development",
     selectableExtra: true,
@@ -292,6 +309,18 @@ export const LINE_ITEMS: Record<string, LineItem> = {
     name: "Automatización Make / n8n",
     description: "Un flujo de automatización con herramienta adecuada al caso.",
     priceEur: 180,
+    unit: "flujo",
+    category: "development",
+    selectableExtra: true,
+    notes: "Módulo del servicio independiente. El presupuesto no baja de 290 €.",
+  },
+  automation_addon: {
+    id: "automation_addon",
+    name: "Automatización adicional",
+    description: "Un flujo sencillo conectado a la web mediante la herramienta adecuada.",
+    scopeNote:
+      "Aplica dentro de una web en desarrollo. La automatización como servicio independiente parte de 290 €.",
+    priceEur: 150,
     unit: "flujo",
     category: "development",
     selectableExtra: true,
@@ -333,8 +362,8 @@ export const LINE_ITEMS: Record<string, LineItem> = {
   seo_tech_extended: {
     id: "seo_tech_extended",
     name: "SEO técnico ampliado",
-    description: "Ampliación técnica SEO dentro del proyecto (no estrategia mensual).",
-    priceEur: 120,
+    description: "Mejoras técnicas SEO adicionales dentro del proyecto.",
+    priceEur: 90,
     unit: "proyecto",
     category: "seo_tech",
     selectableExtra: true,
@@ -401,8 +430,9 @@ export const LINE_ITEMS: Record<string, LineItem> = {
   copy_pack: {
     id: "copy_pack",
     name: "Pack copy hasta 5 páginas",
-    description: "Redacción de textos para hasta aproximadamente 5 páginas.",
-    priceEur: 350,
+    description:
+      "Redacción de textos para hasta cinco páginas de longitud normal, con una ronda de revisión.",
+    priceEur: 250,
     unit: "proyecto",
     category: "content",
     selectableExtra: true,
@@ -418,9 +448,11 @@ export const LINE_ITEMS: Record<string, LineItem> = {
   },
   migration_web: {
     id: "migration_web",
-    name: "Migración web",
-    description: "Migración desde una web existente.",
-    priceEur: 220,
+    name: "Migración web sencilla",
+    description: "Traslado de una web existente con estructura y contenido acotados.",
+    scopeNote:
+      "No incluye grandes volúmenes de URLs, redirecciones extensas ni cambios complejos de dominio.",
+    priceEur: 160,
     unit: "proyecto",
     category: "migration",
     selectableExtra: true,
@@ -470,3 +502,42 @@ export function getLineItem(id: string): LineItem | undefined {
 export function listSelectableExtras(): LineItem[] {
   return Object.values(LINE_ITEMS).filter((item) => item.selectableExtra);
 }
+
+/** Agrupación del configurador. Los ids que no encajan se muestran al final. */
+export const EXTRA_GROUPS = [
+  {
+    id: "contenido",
+    title: "Contenido y páginas",
+    ids: ["section_extra", "page_extra", "copy_pack", "copy_page", "creative_extended"],
+  },
+  {
+    id: "funciones",
+    title: "Funciones de la web",
+    ids: ["form_advanced", "booking", "catalog_light", "catalog_bulk", "private_area"],
+  },
+  {
+    id: "integraciones",
+    title: "Integraciones y datos",
+    ids: [
+      "integration_simple",
+      "whatsapp_advanced",
+      "database",
+      "automation_addon",
+      "automation_flow",
+      "integration_complex",
+      "webhook",
+      "bot_basic",
+      "ai_feature",
+    ],
+  },
+  {
+    id: "optimizacion",
+    title: "Optimización",
+    ids: ["seo_tech_extended", "migration_web", "migration_domain"],
+  },
+  {
+    id: "asesoramiento",
+    title: "Asesoramiento",
+    ids: ["project_consulting"],
+  },
+] as const;

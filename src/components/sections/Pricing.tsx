@@ -1,13 +1,18 @@
 "use client";
 
-import { useId, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useId, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { FadeIn } from "@/components/motion/FadeIn";
 import { trackEvent } from "@/lib/analytics";
 import {
   MAINTENANCE_OFFER,
+  OFFER_EXTRAS_LABELS,
+  OFFER_GUARANTEE_NOTE,
+  OFFER_INFRA_NOTE,
+  OFFER_SCOPE_NOTE,
   PRICING_FAQ_GROUPS,
-  PRICING_TRANSPARENCY,
   PRODUCTS,
   TEMPLATES_CONTEXT,
   formatEurAmount,
@@ -16,6 +21,9 @@ import {
 } from "@/lib/commerce";
 
 const BONE = "#F3F1EB";
+const MANIFESTO_BAR_GRAY = "#5a5f6b";
+const SECTION_SURFACE =
+  "linear-gradient(180deg, #0c121c 0%, #131b2a 52%, #0c121c 100%)";
 
 const WEB_ORDER: ProductId[] = ["entrada", "profesional", "a-medida"];
 
@@ -65,6 +73,148 @@ const TEMPLATE_DEMOS = [
   },
 ] as const;
 
+const ctaButtonClass =
+  "inline-flex min-h-12 w-full max-w-xs items-center justify-center rounded-md border border-[#F3F1EB]/15 bg-[#F3F1EB] px-8 py-3.5 text-[14px] font-semibold tracking-[-0.01em] text-[#070b13] shadow-[0_12px_40px_-18px_rgba(243,241,235,0.35)] transition-[background-color,transform,box-shadow,border-color] duration-300 hover:border-white/25 hover:bg-white hover:-translate-y-px hover:shadow-[0_16px_44px_-16px_rgba(243,241,235,0.45)] focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070b13] sm:max-w-sm sm:px-10 sm:text-[15px]";
+
+const ctaButtonPremiumClass =
+  "group relative inline-flex min-h-14 w-full max-w-md items-center justify-center overflow-hidden rounded-md border border-violet-300/25 bg-[#F3F1EB] px-12 py-5 text-[15px] font-semibold tracking-[-0.015em] text-[#070b13] shadow-[0_20px_60px_-22px_rgba(243,241,235,0.5),0_0_0_1px_rgba(243,241,235,0.08)] transition-[background-color,transform,box-shadow,border-color] duration-300 hover:border-violet-300/40 hover:bg-white hover:-translate-y-1 hover:shadow-[0_28px_70px_-20px_rgba(243,241,235,0.55),0_0_40px_-12px_rgba(139,92,246,0.2)] focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070b13] sm:min-h-16 sm:px-14 sm:text-[17px]";
+
+/**
+ * Franjas del resto del sitio: gris #12151f, morado #251c49 y violeta #3a2d6b.
+ */
+function DiagonalStripes({
+  variant,
+}: {
+  variant: "hero" | "mirror" | "continue";
+}) {
+  const bandRef = useRef<HTMLDivElement | null>(null);
+  const [heroH, setHeroH] = useState(0);
+  const [bandH, setBandH] = useState(0);
+  const [mirrorH, setMirrorH] = useState(0);
+  const [continueH, setContinueH] = useState(0);
+
+  useLayoutEffect(() => {
+    const hero = document.querySelector(".pricing-hero");
+    if (!hero) return;
+    const measure = () => setHeroH((hero as HTMLElement).offsetHeight);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(hero);
+    return () => ro.disconnect();
+  }, []);
+
+  useLayoutEffect(() => {
+    const el = bandRef.current;
+    if (!el) return;
+    const measure = () => setBandH(el.clientHeight);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  useLayoutEffect(() => {
+    if (variant === "hero") return;
+
+    const measurePrev = () => {
+      const self = bandRef.current;
+      const all = Array.from(document.querySelectorAll<HTMLElement>("[data-pricing-stripe]"));
+      const before = self
+        ? all.filter(
+            (el) =>
+              el !== self &&
+              !!(el.compareDocumentPosition(self) & Node.DOCUMENT_POSITION_FOLLOWING),
+          )
+        : all;
+      const prevMirror = [...before].reverse().find((el) => el.dataset.pricingStripe === "mirror");
+      const prevContinue = [...before].reverse().find((el) => el.dataset.pricingStripe === "continue");
+      setMirrorH(prevMirror?.offsetHeight ?? 0);
+      setContinueH(variant === "mirror" ? (prevContinue?.offsetHeight ?? 0) : 0);
+    };
+
+    measurePrev();
+    const ro = new ResizeObserver(measurePrev);
+    document.querySelectorAll("[data-pricing-stripe]").forEach((el) => ro.observe(el));
+    const page = document.querySelector(".pricing-hero")?.parentElement;
+    if (page) ro.observe(page);
+    window.addEventListener("resize", measurePrev);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measurePrev);
+    };
+  }, [variant]);
+
+  const hHero = Math.max(heroH, 1);
+  const ratio = bandH > 0 ? bandH / hHero : 1;
+  const ratioMirror = mirrorH > 0 ? mirrorH / hHero : 1;
+  const ratioContinue = continueH > 0 ? continueH / hHero : 0;
+  const run = Math.min(18 * ratio, 26);
+  const runMirror = Math.min(18 * ratioMirror, 26);
+  const runContinue = Math.min(18 * ratioContinue, 26);
+  const clamp = (n: number) => Math.max(10, Math.min(90, n));
+  const fmt = (n: number) => clamp(n).toFixed(2);
+
+  let g0: number;
+  let g1: number;
+  if (variant === "hero") {
+    g0 = 63;
+    g1 = 63 - run;
+  } else if (variant === "mirror") {
+    g0 = continueH > 0 ? 45 + runMirror - runContinue : 45;
+    g1 = g0 + run;
+  } else {
+    g0 = 45 + runMirror;
+    g1 = g0 - run;
+  }
+
+  const shift = 16;
+  const thin = 3;
+  const gray = `polygon(${fmt(g0)}% 0, 100% 0, 100% 100%, ${fmt(g1)}% 100%)`;
+  const purple = `polygon(${fmt(g0 + shift)}% 0, 100% 0, 100% 100%, ${fmt(g1 + shift)}% 100%)`;
+  const violet = `polygon(${fmt(g0 + shift)}% 0, ${fmt(g0 + shift + thin)}% 0, ${fmt(g1 + shift + thin)}% 100%, ${fmt(g1 + shift)}% 100%)`;
+
+  return (
+    <div
+      ref={bandRef}
+      data-pricing-stripe={variant}
+      aria-hidden
+      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+    >
+      <div className="absolute inset-0 bg-[#12151f]" style={{ clipPath: gray }} />
+      <div className="absolute inset-0 bg-[#251c49]" style={{ clipPath: purple }} />
+      <div className="absolute inset-0 bg-[#3a2d6b]/55" style={{ clipPath: violet }} />
+    </div>
+  );
+}
+
+function SectionGradient() {
+  return (
+    <>
+      <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: SECTION_SURFACE }} />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-70"
+        style={{
+          background:
+            "radial-gradient(circle at 18% 18%, rgba(80, 50, 200, 0.08), transparent 42%), radial-gradient(circle at 82% 80%, rgba(0, 200, 255, 0.04), transparent 38%)",
+        }}
+      />
+    </>
+  );
+}
+
+function AccentBar({ variant = "bone" }: { variant?: "bone" | "violet" }) {
+  return (
+    <div aria-hidden className="mt-3 flex h-1.5 w-[min(80%,14rem)] max-w-full overflow-hidden sm:mt-3.5 sm:h-2">
+      <span
+        className={`h-full w-[80%] shrink-0 ${variant === "violet" ? "bg-violet-400/80" : ""}`}
+        style={variant === "bone" ? { backgroundColor: MANIFESTO_BAR_GRAY } : undefined}
+      />
+      <span className="h-full w-[20%] shrink-0" style={{ backgroundColor: BONE }} />
+    </div>
+  );
+}
+
 function webProducts(): Product[] {
   return WEB_ORDER.map((id) => PRODUCTS.find((product) => product.id === id)).filter(
     (product): product is Product => Boolean(product),
@@ -92,9 +242,9 @@ function PriceBlock({
   return (
     <div className={end ? "text-left sm:text-right" : "text-left"}>
       {previous != null ? (
-        <p className={`text-[13px] tabular-nums ${featured ? "text-[#070b13]/45" : "text-zinc-500"}`}>
+        <p className={`text-[13px] font-medium tabular-nums ${featured ? "text-red-600" : "text-red-400"}`}>
           <span className="sr-only">Precio anterior: </span>
-          <span className="line-through decoration-current/70">{formatEurAmount(previous)}</span>
+          <span className="line-through decoration-current">{formatEurAmount(previous)}</span>
         </p>
       ) : (
         <p className="select-none text-[13px] text-transparent" aria-hidden>
@@ -209,19 +359,16 @@ function IncludeToggle({
 
 function WebOffer({
   product,
-  index,
   open,
   onToggle,
 }: {
   product: Product;
-  index: number;
   open: boolean;
   onToggle: () => void;
 }) {
   const panelId = useId();
   const featured = product.id === "profesional";
   const link = QUOTE_LINKS[product.id];
-  const order = String(index + 1).padStart(2, "0");
 
   const go = () => {
     trackEvent("pricing_cta", {
@@ -235,25 +382,22 @@ function WebOffer({
     <article
       className={
         featured
-          ? "relative bg-[#F3F1EB] px-5 py-10 text-[#070b13] shadow-[0_30px_70px_-42px_rgba(0,0,0,0.8)] sm:px-8 sm:py-12 lg:px-12 lg:py-14"
-          : "border-t border-white/10 px-1 py-9 sm:px-2 sm:py-11"
+          ? "relative overflow-hidden rounded-2xl bg-[#F3F1EB] px-5 py-10 text-[#070b13] shadow-[0_24px_60px_-28px_rgba(42,36,56,0.65)] ring-1 ring-violet-400/30 sm:px-8 sm:py-12 lg:px-12 lg:py-14"
+          : "relative overflow-hidden rounded-2xl border border-violet-400/20 bg-[#101624]/80 px-5 py-8 shadow-[0_18px_40px_-32px_rgba(80,50,200,0.45)] sm:px-7 sm:py-9"
       }
     >
+      <span
+        aria-hidden
+        className={`absolute inset-y-0 left-0 w-1 ${featured ? "bg-[#3a2d6b]" : "bg-violet-400/70"}`}
+      />
       <div
         className={`grid items-start gap-8 lg:items-center ${
           featured ? "lg:grid-cols-[minmax(0,1.2fr)_minmax(14rem,0.7fr)]" : "lg:grid-cols-[minmax(0,1fr)_16rem]"
         }`}
       >
         <div className="min-w-0">
-          <p
-            className={`font-mono text-[11px] tracking-[0.18em] ${
-              featured ? "text-[#070b13]/45" : "text-zinc-500"
-            }`}
-          >
-            {order}
-          </p>
           <h3
-            className={`mt-3 font-serif font-normal tracking-[-0.035em] ${
+            className={`font-serif font-normal tracking-[-0.035em] ${
               featured
                 ? "text-[clamp(2.1rem,4vw,3.15rem)] leading-[1.02] text-[#070b13]"
                 : "text-[clamp(1.7rem,3vw,2.25rem)] leading-[1.08] text-[#F3F1EB]"
@@ -293,10 +437,10 @@ function WebOffer({
             <Link
               href={link.href}
               onClick={go}
-              className={`inline-flex min-h-11 items-center justify-center rounded-md px-5 text-[14px] font-medium tracking-[-0.01em] focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40 ${
+              className={`inline-flex min-h-11 items-center justify-center rounded-md px-5 text-[14px] font-semibold tracking-[-0.01em] focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40 ${
                 featured
-                  ? "bg-[#070b13] text-[#F3F1EB] hover:bg-[#141a27]"
-                  : "bg-[#F3F1EB] text-[#070b13] hover:bg-white"
+                  ? "bg-[#2a2438] text-[#F3F1EB] shadow-[0_12px_32px_-18px_rgba(42,36,56,0.7)] hover:bg-[#141a27]"
+                  : "border border-[#F3F1EB]/15 bg-[#F3F1EB] text-[#070b13] shadow-[0_12px_40px_-18px_rgba(243,241,235,0.35)] hover:bg-white"
               }`}
             >
               {link.cta}
@@ -378,8 +522,9 @@ function ComplementOffer({
   const panelId = useId();
 
   return (
-    <article className="px-1 py-8 sm:px-4">
-      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">{kicker}</p>
+    <article className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#101624]/55 px-5 py-8 sm:px-6">
+      <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-violet-300/50 to-transparent" />
+      <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-300/75">{kicker}</p>
       <h3 className="mt-3 font-serif text-[1.65rem] font-normal tracking-[-0.03em] text-[#F3F1EB]">
         {name}
       </h3>
@@ -406,7 +551,7 @@ function ComplementOffer({
               product: productId,
             })
           }
-          className="inline-flex min-h-11 items-center justify-center rounded-md border border-white/15 px-5 text-[14px] text-[#F3F1EB] transition-colors hover:border-white/30 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40"
+          className="inline-flex min-h-11 items-center justify-center rounded-md border border-violet-300/25 bg-[#F3F1EB] px-5 text-[14px] font-semibold text-[#070b13] shadow-[0_12px_40px_-18px_rgba(243,241,235,0.28)] transition-colors hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40"
         >
           {cta}
         </Link>
@@ -435,19 +580,33 @@ function TemplateDemoCard({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40"
+      className="group flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#131b2a]"
     >
-      <div className="relative aspect-16/10 overflow-hidden border border-white/10 bg-[#070b13]">
+      <div className="relative aspect-16/10 overflow-hidden border border-white/8 bg-[#070b13] shadow-[0_14px_36px_-26px_rgba(0,0,0,0.85)] transition-[border-color,box-shadow] duration-400 ease-out group-hover:border-violet-400/20">
         <Image
           src={image}
           alt={`Vista previa de referencia: ${name}`}
           fill
           sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 25vw"
-          className="object-cover object-top"
+          className="object-cover object-top saturate-[0.94] transition-[filter] duration-500 ease-out group-hover:saturate-100"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#0c121c] via-[#0c121c]/25 to-transparent"
         />
       </div>
-      <h3 className="mt-3 font-serif text-[1.05rem] font-normal text-[#F3F1EB]">{name}</h3>
-      <p className="mt-1 text-[13px] leading-relaxed text-zinc-500">{description}</p>
+      <div className="mt-3.5 border-t border-white/6 pt-3.5">
+        <h3 className="font-serif text-[1.05rem] font-normal leading-snug tracking-[-0.02em] text-[#F3F1EB] sm:text-[1.12rem]">
+          {name}
+        </h3>
+        <p className="mt-2 text-[12px] leading-[1.65] text-zinc-500 sm:text-[13px]">{description}</p>
+        <span className="mt-2 inline-flex items-center gap-2 font-mono text-[11px] text-violet-200/55 transition-colors group-hover:text-violet-200/90">
+          <span aria-hidden className="text-zinc-600 group-hover:text-violet-300/75">
+            &gt;
+          </span>
+          Ver referencia
+        </span>
+      </div>
     </a>
   );
 }
@@ -463,29 +622,46 @@ function FaqItem({
   isOpen: boolean;
   onToggle: () => void;
 }) {
+  const reduceMotion = useReducedMotion();
   const panelId = useId();
 
   return (
     <article className="border-b border-white/10">
-      <h3>
-        <button
-          type="button"
-          onClick={onToggle}
-          aria-expanded={isOpen}
-          aria-controls={panelId}
-          className="flex w-full items-center justify-between gap-4 py-3.5 text-left text-[15px] text-zinc-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20"
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        aria-controls={panelId}
+        className="group flex w-full items-center gap-3 py-3 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/15 sm:py-3.5"
+      >
+        <span
+          aria-hidden
+          className={`flex size-6 shrink-0 items-center justify-center rounded-sm border border-white/10 font-mono text-[10px] text-zinc-500 transition-transform sm:size-7 ${
+            isOpen ? "rotate-90" : ""
+          }`}
         >
-          <span>{question}</span>
-          <span aria-hidden className="font-mono text-[12px] text-zinc-500">
-            {isOpen ? "–" : "+"}
-          </span>
-        </button>
-      </h3>
-      {isOpen ? (
-        <p id={panelId} className="max-w-[62ch] pb-4 text-[14px] leading-relaxed text-zinc-400">
-          {answer}
-        </p>
-      ) : null}
+          &gt;
+        </span>
+        <span className="text-[13.5px] font-medium text-zinc-100 sm:text-[15px]">{question}</span>
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen ? (
+          <motion.div
+            id={panelId}
+            role="region"
+            aria-label={`Respuesta: ${question}`}
+            initial={reduceMotion ? false : { height: 0, opacity: 0 }}
+            animate={reduceMotion ? undefined : { height: "auto", opacity: 1 }}
+            exit={reduceMotion ? undefined : { height: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="overflow-hidden"
+          >
+            <p className="max-w-[62ch] pb-3.5 pl-9 text-[13px] leading-[1.7] text-zinc-400 sm:pb-4 sm:pl-10 sm:text-[14px] sm:leading-[1.75]">
+              {answer}
+            </p>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </article>
   );
 }
@@ -505,47 +681,99 @@ export function Pricing() {
   };
 
   return (
-    <div className="bg-[#070b13] text-zinc-300">
-      <header className="mx-auto w-full max-w-6xl px-5 pb-6 pt-28 sm:px-8 sm:pt-32 lg:px-10 lg:pt-36">
-        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-500">
-          Tarifas de lanzamiento
-        </p>
-        <h1 className="mt-5 max-w-[16ch] font-serif text-[clamp(2.5rem,6.4vw,4.7rem)] font-normal leading-[0.98] tracking-[-0.045em] text-[#F3F1EB]">
-          Una buena solución empieza por un precio claro.
-        </h1>
-        <p className="mt-6 max-w-[36ch] text-[17px] leading-relaxed text-zinc-400">
-          Elige por dónde empezar. Definimos el alcance contigo antes de construir.
-        </p>
-      </header>
+    <div className="relative min-h-screen overflow-x-clip bg-[#070b13] text-zinc-300">
+      <section
+        className="pricing-hero relative z-10 overflow-x-clip bg-[#070b13] px-5 pb-7 pt-[6.75rem] sm:px-6 sm:pb-10 sm:pt-28 lg:overflow-y-hidden lg:px-10 lg:pb-10 lg:pt-28"
+        aria-labelledby="pricing-hero-heading"
+      >
+        <DiagonalStripes variant="hero" />
+        <div aria-hidden className="pricing-hero-grain pointer-events-none absolute inset-0 z-1 opacity-[0.045]" />
+        <FadeIn className="relative z-10 mx-auto w-full max-w-6xl">
+          <h1
+            id="pricing-hero-heading"
+            className="text-center font-serif text-[clamp(1.75rem,5.2vw,3.85rem)] font-normal leading-[1.08] tracking-[-0.038em] text-[#f2f0ec]"
+          >
+            <span className="block">Webs y sistemas </span>
+            <span className="mt-1 block text-zinc-400">con alcance claro.</span>
+          </h1>
+          <div className="mx-auto mt-5 w-full max-w-184 sm:mt-6 lg:mt-3 lg:max-w-216 lg:-translate-y-8">
+            <div className="mx-auto grid w-fit max-w-full grid-cols-[minmax(0,1fr)_auto] items-end gap-x-2 sm:gap-x-5 lg:gap-x-10">
+              <div className="min-w-0 self-center text-left sm:self-end lg:-translate-y-2 xl:-translate-y-3">
+                <p
+                  className="max-w-[18ch] text-[clamp(0.95rem,2.8vw,1.35rem)] font-medium leading-[1.35] tracking-[-0.02em] text-zinc-200 sm:max-w-[36ch] lg:max-w-[44ch] lg:leading-[1.32]"
+                  role="doc-subtitle"
+                >
+                  Desde una web sencilla hasta automatizaciones que quitan trabajo repetido.
+                </p>
+                <p className="mt-3 hidden max-w-[48ch] text-[15px] leading-[1.8] text-zinc-400 sm:mt-4 sm:block sm:text-base sm:leading-[1.85]">
+                  Trabajo desde Valladolid con negocios de toda España. Los precios son orientativos: el presupuesto se cierra cuando el alcance está claro.
+                </p>
+                <p className="mt-2.5 max-w-[18ch] text-[12.5px] italic leading-relaxed text-zinc-500 sm:mt-4 sm:max-w-[48ch] sm:text-[15px]">
+                  Sin humo. Sin “todo incluido” eterno.
+                </p>
+              </div>
+              <div className="flex w-fit shrink-0 items-end justify-end self-end">
+                <Image
+                  src="/logos/mascot-pricing.webp"
+                  alt=""
+                  width={640}
+                  height={560}
+                  quality={85}
+                  priority
+                  sizes="(max-width: 639px) 160px, (max-width: 1023px) 200px, 448px"
+                  className="pricing-hero-mascot h-auto w-[9.3rem] max-w-full object-contain object-bottom sm:w-[12.5rem] lg:w-92 lg:translate-y-4"
+                />
+              </div>
+              <div className="col-span-2 mt-6 flex justify-center sm:mt-8 lg:mt-12">
+                <Link
+                  href="/presupuesto"
+                  onClick={() =>
+                    trackEvent("pricing_cta", {
+                      location: "precios",
+                      destination: "presupuesto",
+                      product: "none",
+                    })
+                  }
+                  className={ctaButtonClass}
+                >
+                  Configurar mi proyecto
+                </Link>
+              </div>
+            </div>
+          </div>
+        </FadeIn>
+      </section>
 
-      <section aria-labelledby="pricing-webs-heading" className="mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-10">
+      <section aria-labelledby="pricing-webs-heading" className="relative z-10 -mt-px">
+        <SectionGradient />
+        <div className="relative mx-auto w-full max-w-6xl px-5 py-12 sm:px-8 sm:py-16 lg:px-10">
         <h2 id="pricing-webs-heading" className="sr-only">
           Servicios web
         </h2>
-        <div className="mt-10 sm:mt-14">
-          {webs.map((product, index) => (
+        <div className="flex flex-col gap-4 sm:gap-5">
+          {webs.map((product) => (
             <WebOffer
               key={product.id}
               product={product}
-              index={index}
               open={openId === product.id}
               onToggle={() => toggle(product.id)}
             />
           ))}
         </div>
-      </section>
+        </div>
 
       <section
         aria-labelledby="pricing-complements-heading"
-        className="mx-auto mt-16 w-full max-w-6xl border-t border-white/10 px-5 py-12 sm:px-8 lg:px-10"
+        className="relative mx-auto mt-8 w-full max-w-6xl px-5 py-12 sm:px-8 lg:px-10"
       >
         <h2
           id="pricing-complements-heading"
-          className="font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-500"
+          className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-300/75"
         >
           Complementos
         </h2>
-        <div className="mt-2 grid gap-6 md:grid-cols-2 md:gap-0 md:divide-x md:divide-white/10">
+        <AccentBar />
+        <div className="mt-6 grid gap-4 md:grid-cols-2 md:gap-5">
           {sistemas ? (
             <ComplementOffer
               kicker="Automatización"
@@ -587,36 +815,65 @@ export function Pricing() {
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-6xl px-5 pb-16 sm:px-8 lg:px-10" aria-labelledby="pricing-clarity-heading">
-        <h2 id="pricing-clarity-heading" className="sr-only">
-          Cómo se cierra el precio
-        </h2>
-        <p className="max-w-[58ch] text-[15px] leading-[1.75] text-zinc-500">{PRICING_TRANSPARENCY}</p>
-        <p className="mt-5 text-[14px] text-zinc-500">
-          Más contexto en{" "}
-          <Link href="/desarrollo-web" className="text-zinc-300 underline decoration-white/20 underline-offset-4 hover:text-[#F3F1EB]">
-            desarrollo web
-          </Link>
-          {" y "}
-          <Link
-            href="/automatizacion-de-procesos"
-            className="text-zinc-300 underline decoration-white/20 underline-offset-4 hover:text-[#F3F1EB]"
-          >
-            automatización
-          </Link>
-          .
-        </p>
       </section>
 
-      <section className="border-t border-white/10" aria-labelledby="pricing-templates-heading">
-        <div className="mx-auto w-full max-w-6xl px-5 py-14 sm:px-8 lg:px-10">
+      <section className="relative z-10 -mt-px" aria-labelledby="pricing-scope-heading">
+        <SectionGradient />
+        <div className="relative mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
+          <FadeIn>
+            <h2
+              id="pricing-scope-heading"
+              className="font-serif text-[clamp(1.2rem,2.6vw,1.5rem)] font-normal leading-[1.14] tracking-[-0.03em] text-[#F3F1EB]"
+            >
+              Alcance, extras e infraestructura
+            </h2>
+            <AccentBar />
+            <p className="mt-5 max-w-[58ch] text-[15px] leading-[1.75] text-zinc-400 sm:text-base">
+              {OFFER_SCOPE_NOTE}
+            </p>
+            <div className="mt-3.5 grid grid-cols-1 gap-3.5 sm:grid-cols-2 sm:gap-6 lg:gap-8">
+              <p className="text-[14px] leading-[1.7] text-zinc-500 sm:text-[15px]">{OFFER_INFRA_NOTE}</p>
+              <p className="text-[14px] leading-[1.7] text-zinc-500 sm:text-[15px]">{OFFER_GUARANTEE_NOTE}</p>
+            </div>
+            <ul className="mt-7 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+              {OFFER_EXTRAS_LABELS.map((label) => (
+                <li
+                  key={label}
+                  className="border-l border-violet-400/25 pl-3 text-[13px] leading-snug text-zinc-400 sm:text-[14px]"
+                >
+                  {label}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 text-[14px] text-zinc-500">
+              Más contexto en{" "}
+              <Link href="/desarrollo-web" className="text-zinc-300 underline decoration-violet-400/30 underline-offset-[3px] transition-colors hover:text-zinc-100">
+                desarrollo web
+              </Link>
+              {" y "}
+              <Link
+                href="/automatizacion-de-procesos"
+                className="text-zinc-300 underline decoration-violet-400/30 underline-offset-[3px] transition-colors hover:text-zinc-100"
+              >
+                automatización
+              </Link>
+              .
+            </p>
+          </FadeIn>
+        </div>
+      </section>
+
+      <section className="relative z-10 -mt-px overflow-hidden bg-[#070b13]" aria-labelledby="pricing-templates-heading">
+        <DiagonalStripes variant="continue" />
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-5 py-14 sm:px-8 lg:px-10">
           <h2
             id="pricing-templates-heading"
-            className="font-serif text-[clamp(1.4rem,2.5vw,1.8rem)] font-normal tracking-[-0.03em] text-[#F3F1EB]"
+            className="font-serif text-[clamp(1.2rem,2.6vw,1.5rem)] font-normal leading-[1.14] tracking-[-0.03em] text-[#F3F1EB]"
           >
             Referencias visuales
           </h2>
-          <p className="mt-3 max-w-[46ch] text-[14px] leading-relaxed text-zinc-500">{TEMPLATES_CONTEXT}</p>
+          <AccentBar variant="violet" />
+          <p className="mt-5 max-w-[40rem] text-[15px] leading-[1.75] text-zinc-400">{TEMPLATES_CONTEXT}</p>
           <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {TEMPLATE_DEMOS.map((demo) => (
               <TemplateDemoCard key={demo.name} {...demo} />
@@ -625,18 +882,20 @@ export function Pricing() {
         </div>
       </section>
 
-      <section className="border-t border-white/10" aria-labelledby="pricing-faq-heading">
-        <div className="mx-auto w-full max-w-3xl px-5 py-14 sm:px-8">
+      <section className="relative z-10 -mt-px overflow-hidden bg-[#070b13]" aria-labelledby="pricing-faq-heading">
+        <div className="relative z-10 mx-auto w-full max-w-3xl px-5 py-14 sm:px-8 lg:py-16">
+          <FadeIn>
           <h2
             id="pricing-faq-heading"
-            className="font-serif text-[clamp(1.4rem,2.5vw,1.8rem)] font-normal tracking-[-0.03em] text-[#F3F1EB]"
+            className="font-serif text-[clamp(1.3rem,2.8vw,1.65rem)] font-normal tracking-[-0.03em] text-[#F3F1EB]"
           >
             Preguntas frecuentes
           </h2>
+          <AccentBar />
           <div className="mt-8 space-y-8">
             {PRICING_FAQ_GROUPS.map((group) => (
               <div key={group.id}>
-                <h3 className="mb-1 font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+                <h3 className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-300/65">
                   {group.title}
                 </h3>
                 <div className="border-t border-white/10">
@@ -656,18 +915,23 @@ export function Pricing() {
               </div>
             ))}
           </div>
+          </FadeIn>
         </div>
       </section>
 
-      <section className="border-t border-white/10" aria-labelledby="pricing-cta-heading">
-        <div className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8 lg:px-10">
+      <section className="relative z-10 -mt-px overflow-hidden bg-[#070b13]" aria-labelledby="pricing-cta-heading">
+        <DiagonalStripes variant="mirror" />
+        <FadeIn className="relative z-10 mx-auto w-full max-w-2xl px-5 py-16 text-center sm:px-8 lg:py-20">
           <h2
             id="pricing-cta-heading"
-            className="max-w-[16ch] font-serif text-[clamp(1.8rem,4vw,2.6rem)] font-normal leading-[1.08] tracking-[-0.03em] text-[#F3F1EB]"
+            className="font-serif text-[clamp(1.5rem,3.8vw,2.1rem)] font-normal leading-[1.12] tracking-[-0.03em] text-[#F3F1EB]"
           >
-            Si aún no tienes claro el alcance, lo vemos juntos.
+            Configura lo que necesita tu negocio
           </h2>
-          <div className="mt-8">
+          <p className="mx-auto mt-5 max-w-[44ch] text-[15px] leading-[1.75] text-zinc-400 sm:text-base">
+            Elige el tipo de proyecto, añade lo que haga falta y verás un total orientativo antes de hablar del detalle.
+          </p>
+          <div className="mt-10 flex justify-center sm:mt-11">
             <Link
               href="/presupuesto"
               onClick={() =>
@@ -677,16 +941,19 @@ export function Pricing() {
                   product: "none",
                 })
               }
-              className="inline-flex min-h-12 items-center justify-center rounded-md px-6 text-[15px] font-medium text-[#070b13] focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40"
-              style={{ backgroundColor: BONE }}
+              className={ctaButtonPremiumClass}
             >
-              Preparar un presupuesto
+              <span className="relative z-10">Ver qué encaja con mi negocio</span>
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/35 via-transparent to-transparent opacity-70 transition-opacity duration-300 group-hover:opacity-100"
+              />
             </Link>
           </div>
-          <p className="mt-4 max-w-[42ch] text-[13px] leading-relaxed text-zinc-600">
-            El configurador da una orientación. El presupuesto definitivo llega antes de contratar.
+          <p className="mx-auto mt-5 text-xs text-zinc-600 sm:text-sm">
+            Los precios del configurador son orientativos hasta confirmar el alcance.
           </p>
-        </div>
+        </FadeIn>
       </section>
     </div>
   );
