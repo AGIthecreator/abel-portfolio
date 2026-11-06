@@ -68,10 +68,10 @@ const jsonLd = {
       provider: {
         "@id": ORGANIZATION_ID,
       },
-      areaServed: {
-        "@type": "Country",
-        name: "España",
-      },
+      areaServed: [
+        { "@type": "Country", name: "España" },
+        { "@type": "City", name: "Valladolid" },
+      ],
     },
     {
       "@type": "BreadcrumbList",
@@ -100,7 +100,7 @@ const jsonLd = {
 export const metadata: Metadata = {
   title: "Automatización de procesos para negocios | AGI TheCreator",
   description:
-    `Primero el proceso, después la herramienta. Menos tareas repetidas: formularios, reservas, avisos e integraciones. Desde ${formatEurAmount(PUBLIC_RATES.sistemasFromEur)} + IVA.`,
+    `Automatización de procesos para negocios de toda España, desde Valladolid. Formularios, reservas, avisos e integraciones. Desde ${formatEurAmount(PUBLIC_RATES.sistemasFromEur)} + IVA.`,
   alternates: { canonical: "/automatizacion-de-procesos" },
   openGraph: {
     title: "Automatización de procesos para negocios | AGI TheCreator",

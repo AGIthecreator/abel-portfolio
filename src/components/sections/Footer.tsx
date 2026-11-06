@@ -26,7 +26,6 @@ const NAV_LINKS = [
 const SERVICE_LINKS = [
   { href: "/desarrollo-web", label: "Desarrollo web" },
   { href: "/automatizacion-de-procesos", label: "Automatización" },
-  { href: "/desarrollo-web-valladolid", label: "Valladolid" },
   { href: "/precios", label: "Precios" },
   { href: "/presupuesto", label: "Presupuesto" },
 ] as const;

@@ -8,11 +8,11 @@ export const SITE_URL = "https://agithecreator.com" as const;
 export const SITE_NAME = "AGI TheCreator" as const;
 export const SITE_LOCALE = "es_ES" as const;
 
-/** Title y description públicos de la portada. No cambiar el copy en esta fase. */
+/** Title y description públicos de la portada. El alcance es España; Valladolid es la base. */
 export const HOME_TITLE =
-  "AGI TheCreator | Páginas web y sistemas para negocios" as const;
+  "Páginas web y automatización para negocios en España | AGI TheCreator" as const;
 export const HOME_DESCRIPTION =
-  "Creo páginas web y herramientas para negocios que quieren trabajar mejor, atender más rápido y dejar de perder tiempo con tareas que se repiten." as const;
+  "Desarrollo páginas web, diseño web y automatizaciones para negocios de toda España. Estudio en Valladolid y trato directo con quien construye el proyecto." as const;
 
 export const OG_IMAGE_PATH = "/og-image.png" as const;
 export const OG_IMAGE_WIDTH = 1200;
@@ -40,8 +40,9 @@ function organizationTelephone(): string | undefined {
 }
 
 /**
- * Grafo único de la portada: WebSite + Organization.
- * Un solo nodo de marca. Valladolid es área de servicio, no domicilio comercial.
+ * Grafo único de la portada: WebSite + estudio.
+ * Valladolid es la ciudad de servicio. No hay calle pública, así que la
+ * dirección solo lleva localidad y país.
  * Los servicios concretos viven en sus páginas como Service.provider → @id.
  */
 export function getHomeJsonLd() {
@@ -56,10 +57,11 @@ export function getHomeJsonLd() {
         name: SITE_NAME,
         url: SITE_URL,
         inLanguage: "es-ES",
+        description: HOME_DESCRIPTION,
         publisher: { "@id": ORGANIZATION_ID },
       },
       {
-        "@type": "Organization",
+        "@type": ["Organization", "ProfessionalService"],
         "@id": ORGANIZATION_ID,
         name: SITE_NAME,
         url: SITE_URL,
@@ -71,13 +73,58 @@ export function getHomeJsonLd() {
           url: BRAND_LOGO_ABSOLUTE,
         },
         image: OG_IMAGE_ABSOLUTE,
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Valladolid",
+          addressRegion: "Castilla y León",
+          addressCountry: "ES",
+        },
         areaServed: [
-          { "@type": "City", name: "Valladolid" },
           { "@type": "Country", name: "España" },
+          { "@type": "AdministrativeArea", name: "Castilla y León" },
+          { "@type": "City", name: "Valladolid" },
         ],
+        knowsAbout: [
+          "Desarrollo web",
+          "Diseño web",
+          "Páginas web para negocios",
+          "Automatización de procesos",
+          "Sistemas a medida",
+        ],
+        hasOfferCatalog: {
+          "@type": "OfferCatalog",
+          name: "Servicios para negocios",
+          itemListElement: [
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Service",
+                name: "Desarrollo web en Valladolid",
+                url: `${SITE_URL}/desarrollo-web-valladolid`,
+              },
+            },
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Service",
+                name: "Desarrollo web para negocios",
+                url: `${SITE_URL}/desarrollo-web`,
+              },
+            },
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Service",
+                name: "Automatización de procesos",
+                url: `${SITE_URL}/automatizacion-de-procesos`,
+              },
+            },
+          ],
+        },
         founder: {
           "@type": "Person",
           name: OPERATOR.firstName,
+          jobTitle: "Desarrollador web",
         },
       },
     ],

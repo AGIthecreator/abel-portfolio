@@ -257,7 +257,11 @@ export function DesarrolloWebContent() {
               cuando quieras orientarte.
             </p>
             <p className="text-zinc-300">
-              También puedes escribir desde{" "}
+              Si el proyecto es en Valladolid, el contexto local está en{" "}
+              <TextLink href="/desarrollo-web-valladolid">
+                desarrollo web en Valladolid
+              </TextLink>
+              . También puedes escribir desde{" "}
               <Link
                 href="/contacto"
                 className="text-zinc-100 underline decoration-violet-400/35 underline-offset-[3px]"

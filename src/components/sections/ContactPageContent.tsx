@@ -436,7 +436,7 @@ export function ContactPageContent() {
             </h2>
             <p className="mt-4 font-(family-name:--font-contact-display) text-[clamp(1.45rem,3.2vw,1.9rem)] font-medium leading-[1.2] tracking-[-0.025em] text-[#F3F1EB]">
               Un estudio independiente
-              <span className="block text-zinc-400">de Valladolid.</span>
+              <span className="block text-zinc-400">en Valladolid, para toda España.</span>
             </p>
 
             <div className="mt-10 space-y-12">

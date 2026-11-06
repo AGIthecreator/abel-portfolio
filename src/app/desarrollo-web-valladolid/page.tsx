@@ -34,7 +34,7 @@ const faqEntities = [
     name: "¿Cuánto cuesta una web en Valladolid?",
     acceptedAnswer: {
       "@type": "Answer",
-      text: "Lo mismo que en el resto de España. No hay tarifa local distinta. Las referencias públicas están en precios.",
+      text: "Lo mismo que en el resto de España. Una página web en Valladolid no tiene tarifa local distinta. Las referencias públicas están en precios.",
     },
   },
   {
@@ -52,10 +52,11 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "Service",
-      name: "Desarrollo web desde Valladolid",
+      name: "Desarrollo web en Valladolid",
+      serviceType: "Desarrollo web",
       url: "https://agithecreator.com/desarrollo-web-valladolid",
       description:
-        "Estudio independiente que trabaja desde Valladolid con clientes de toda España. Trato directo y mismo criterio en remoto o presencial.",
+        "Páginas web, diseño web y automatización para negocios en Valladolid. Estudio independiente: trato directo, en persona cuando aporta y en remoto con clientes de toda España.",
       provider: {
         "@id": ORGANIZATION_ID,
       },
@@ -82,7 +83,7 @@ const jsonLd = {
         {
           "@type": "ListItem",
           position: 2,
-          name: "Desarrollo web desde Valladolid",
+          name: "Desarrollo web en Valladolid",
           item: "https://agithecreator.com/desarrollo-web-valladolid",
         },
       ],
@@ -95,14 +96,14 @@ const jsonLd = {
 };
 
 export const metadata: Metadata = {
-  title: "Desarrollo web desde Valladolid | AGI TheCreator",
+  title: "Desarrollo web en Valladolid | AGI TheCreator",
   description:
-    "Estudio independiente desde Valladolid. Trato directo con quien desarrolla el proyecto. Presencial cuando aporta; remoto con clientes de toda España.",
+    "Páginas web, diseño web y automatización para negocios en Valladolid. Trato directo con quien desarrolla. En persona cuando aporta y en remoto para toda España.",
   alternates: { canonical: "/desarrollo-web-valladolid" },
   openGraph: {
-    title: "Desarrollo web desde Valladolid | AGI TheCreator",
+    title: "Desarrollo web en Valladolid | AGI TheCreator",
     description:
-      "Trabajo desde Valladolid con clientes de toda España. Trato directo, sin tarifa local inventada.",
+      "Páginas web y automatización para negocios de Valladolid y de toda España. Sin tarifa local distinta.",
     url: "https://agithecreator.com/desarrollo-web-valladolid",
     siteName: "AGI TheCreator",
     locale: "es_ES",
@@ -112,15 +113,15 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "AGI TheCreator: desarrollo web desde Valladolid",
+        alt: "AGI TheCreator: desarrollo web en Valladolid",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Desarrollo web desde Valladolid | AGI TheCreator",
+    title: "Desarrollo web en Valladolid | AGI TheCreator",
     description:
-      "Estudio independiente. Trato directo. Aquí o a distancia.",
+      "Páginas web, diseño y automatización. Trato directo, aquí o a distancia.",
     images: ["/og-image.png"],
   },
 };

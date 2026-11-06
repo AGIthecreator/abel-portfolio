@@ -10,8 +10,19 @@ const jsonLd = {
   url: "https://agithecreator.com/contacto",
   about: {
     "@type": "ProfessionalService",
+    "@id": "https://agithecreator.com/#organization",
     name: "AGI TheCreator",
     url: "https://agithecreator.com",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Valladolid",
+      addressRegion: "Castilla y León",
+      addressCountry: "ES",
+    },
+    areaServed: [
+      { "@type": "City", name: "Valladolid" },
+      { "@type": "Country", name: "España" },
+    ],
   },
   mentions: [
     {
@@ -36,7 +47,7 @@ const jsonLd = {
 export const metadata: Metadata = {
   title: "Contacto | AGI TheCreator",
   description:
-    "Escribe a Abel en AGI TheCreator. Email, WhatsApp y un mensaje breve. Estudio independiente en Valladolid. Si quieres plantear un proyecto, puedes empezar por el diagnóstico.",
+    "Escribe a Abel en AGI TheCreator. Email, WhatsApp y un mensaje breve. Estudio en Valladolid para negocios de toda España. Si quieres plantear un proyecto, puedes empezar por el diagnóstico.",
   alternates: { canonical: "/contacto" },
   openGraph: {
     title: "Contacto | AGI TheCreator",

@@ -22,8 +22,13 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "¿Solo trabajas en Valladolid?",
     answer:
-      "Trabajo desde Valladolid, aunque puedo trabajar con cualquier proyecto donde haya una buena conexión y una buena idea.",
-    links: [{ phrase: "Valladolid", href: "/desarrollo-web-valladolid" }],
+      "No. Trabajo con negocios de toda España. La base está en Valladolid, y el detalle de desarrollo web en Valladolid está en su página cuando el proyecto es de aquí.",
+    links: [
+      {
+        phrase: "desarrollo web en Valladolid",
+        href: "/desarrollo-web-valladolid",
+      },
+    ],
   },
   {
     question: "¿La web funciona bien en móvil?",

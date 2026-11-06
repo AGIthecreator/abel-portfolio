@@ -924,9 +924,12 @@ export function Hero() {
       <div className="relative z-10 mx-auto flex w-full max-w-[1320px] min-h-0 items-center px-4 py-3 sm:px-8 sm:py-5 lg:max-h-[78vh] lg:px-10 lg:py-6">
         <div className="hero-layout-grid grid w-full min-w-0 items-center gap-5 max-lg:gap-5 lg:grid-cols-[46%_54%] lg:gap-9 xl:gap-11">
           <div className="hero-copy-enter relative z-20 flex max-w-[min(100%,540px)] flex-col gap-3.5 sm:gap-4 lg:gap-4.5">
-            <p className="font-(family-name:--font-hero-ui) inline-flex w-fit border border-white/11 bg-white/3 px-2.5 py-1 text-[7.5px] font-semibold uppercase tracking-[0.16em] text-neutral-500 sm:text-[8px]">
-              Diseño web y automatización para negocios en Valladolid
-            </p>
+            <Link
+              href="/desarrollo-web"
+              className="font-(family-name:--font-hero-ui) inline-flex w-fit border border-white/11 bg-white/3 px-2.5 py-1 text-[7.5px] font-semibold uppercase tracking-[0.16em] text-neutral-500 no-underline transition-colors hover:border-white/20 hover:text-neutral-300 sm:text-[8px]"
+            >
+              Desde Valladolid, para negocios de toda España
+            </Link>
 
             <h1 className="m-0 font-(family-name:--font-hero-display) text-[clamp(1.75rem,5.2vw,3.05rem)] font-medium leading-[1.05] tracking-[-0.015em] text-neutral-50">
               <span className="block">

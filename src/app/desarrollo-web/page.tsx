@@ -59,10 +59,10 @@ const jsonLd = {
       provider: {
         "@id": ORGANIZATION_ID,
       },
-      areaServed: {
-        "@type": "Country",
-        name: "España",
-      },
+      areaServed: [
+        { "@type": "Country", name: "España" },
+        { "@type": "City", name: "Valladolid" },
+      ],
     },
     {
       "@type": "BreadcrumbList",
@@ -91,7 +91,7 @@ const jsonLd = {
 export const metadata: Metadata = {
   title: "Desarrollo web para negocios | AGI TheCreator",
   description:
-    "Cómo entendemos el desarrollo web: claridad, confianza y un siguiente paso sencillo. Criterio, base técnica y evolución hacia sistemas cuando hace falta.",
+    "Desarrollo de páginas web para negocios: claridad, confianza y un siguiente paso. Diseño, base técnica y sistemas cuando hacen falta. Desde Valladolid para toda España.",
   alternates: { canonical: "/desarrollo-web" },
   openGraph: {
     title: "Desarrollo web para negocios | AGI TheCreator",

@@ -14,20 +14,20 @@ import {
 
 const PROJECT_TYPES = [
   {
-    label: "Webs profesionales",
+    label: "Páginas web para negocios",
     href: "/desarrollo-web",
   },
   {
-    label: "Rediseños",
+    label: "Diseño y rediseño web",
     href: "/desarrollo-web",
   },
   {
-    label: "Proyectos a medida",
-    href: "/desarrollo-web",
-  },
-  {
-    label: "Automatizaciones y sistemas",
+    label: "Automatización de procesos",
     href: "/automatizacion-de-procesos",
+  },
+  {
+    label: "Precios públicos",
+    href: "/precios",
   },
 ] as const;
 
@@ -53,7 +53,7 @@ const FAQ_ITEMS = [
   {
     question: "¿Cuánto cuesta una web en Valladolid?",
     answer: [
-      "Lo mismo que en el resto de España. No hay tarifa local distinta. Las referencias públicas están en precios.",
+      "Lo mismo que en el resto de España. Una página web en Valladolid no tiene tarifa local distinta. Las referencias públicas están en precios.",
     ],
   },
   {
@@ -80,16 +80,20 @@ export function DesarrolloWebValladolidContent() {
       <ServiceHero
         eyebrow="Valladolid · España"
         headingId="dwv-hero-heading"
-        title="Desarrollo web desde Valladolid"
-        titleAccent="Proyectos digitales para negocios de aquí y de toda España."
+        title="Desarrollo web en Valladolid"
+        titleAccent="Páginas web y automatización para negocios de aquí y de toda España."
         lead={
           <p>
-            AGI TheCreator es un estudio independiente. Puedes trabajar
-            directamente con quien diseña y desarrolla el proyecto.
+            Hago páginas web, diseño web y automatizaciones para negocios de
+            Valladolid. Trabajas directamente con quien diseña y desarrolla el
+            proyecto.
           </p>
         }
         leadExtra={
-          <p>Si estás fuera, el mismo proceso funciona en remoto.</p>
+          <p>
+            Si el negocio está aquí, podemos verlo en persona. Si está en otra
+            ciudad, el mismo proceso va en remoto.
+          </p>
         }
         image={{
           src: "/ValladolidHero.webp",
@@ -145,11 +149,11 @@ export function DesarrolloWebValladolidContent() {
       <ServiceSection
         id="dwv-projects-heading"
         eyebrow="Proyectos"
-        title="Qué tipo de proyectos"
+        title="Qué hago en Valladolid"
         lead={
           <p>
-            Sin repetir la lista de servicios. Si quieres el detalle de cada uno, las
-            páginas específicas están a un clic.
+            Páginas web, diseño web y automatización de procesos. El detalle de
+            cada uno está en su página.
           </p>
         }
         surface

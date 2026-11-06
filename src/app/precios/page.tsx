@@ -16,11 +16,11 @@ const medida = productById("a-medida");
 const sistemas = productById("sistemas");
 
 export const metadata: Metadata = {
-  title: "Precios: webs, proyectos a medida y mantenimiento | AGI TheCreator",
+  title: "Precios de webs y automatización | AGI TheCreator",
   description: `Web de entrada ${formatEurAmount(entrada.publicFromEur)}, web profesional ${formatEurAmount(profesional.publicFromEur)}, proyecto a medida desde ${formatEurAmount(medida.publicFromEur)}, automatización desde ${formatEurAmount(sistemas.publicFromEur)} y mantenimiento ${formatEurAmount(MAINTENANCE_OFFER.priceFromEur)}/mes. Precios sin IVA. Valladolid y toda España.`,
   alternates: { canonical: "/precios" },
   openGraph: {
-    title: "Precios: webs y sistemas para negocios | AGI TheCreator",
+    title: "Precios de webs y automatización | AGI TheCreator",
     description:
       `Web de entrada, web profesional, proyecto a medida y automatización. Mantenimiento ${formatEurAmount(MAINTENANCE_OFFER.priceFromEur)}/mes. Alcance claro, sin humo.`,
     url: "https://agithecreator.com/precios",
