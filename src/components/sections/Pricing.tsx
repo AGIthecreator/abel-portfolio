@@ -746,11 +746,15 @@ export function Pricing() {
 
       <section aria-labelledby="pricing-webs-heading" className="relative z-10 -mt-px">
         <SectionGradient />
-        <div className="relative mx-auto w-full max-w-6xl px-5 py-12 sm:px-8 sm:py-16 lg:px-10">
-        <h2 id="pricing-webs-heading" className="sr-only">
-          Servicios web
+        <div className="relative mx-auto w-full max-w-6xl px-5 pt-12 pb-2 sm:px-8 sm:pt-16 sm:pb-3 lg:px-10">
+        <h2
+          id="pricing-webs-heading"
+          className="font-serif text-[clamp(1.2rem,2.6vw,1.5rem)] font-normal leading-[1.14] tracking-[-0.03em] text-[#F3F1EB]"
+        >
+          Páginas web
         </h2>
-        <div className="flex flex-col gap-4 sm:gap-5">
+        <AccentBar variant="violet" />
+        <div className="mt-6 flex flex-col gap-4 sm:mt-8 sm:gap-5">
           {webs.map((product) => (
             <WebOffer
               key={product.id}
@@ -764,15 +768,15 @@ export function Pricing() {
 
       <section
         aria-labelledby="pricing-complements-heading"
-        className="relative mx-auto mt-8 w-full max-w-6xl px-5 py-12 sm:px-8 lg:px-10"
+        className="relative mx-auto w-full max-w-6xl px-5 pt-6 pb-12 sm:px-8 sm:pt-8 lg:px-10"
       >
         <h2
           id="pricing-complements-heading"
-          className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-300/75"
+          className="font-serif text-[clamp(1.2rem,2.6vw,1.5rem)] font-normal leading-[1.14] tracking-[-0.03em] text-[#F3F1EB]"
         >
           Complementos
         </h2>
-        <AccentBar />
+        <AccentBar variant="violet" />
         <div className="mt-6 grid gap-4 md:grid-cols-2 md:gap-5">
           {sistemas ? (
             <ComplementOffer
@@ -815,6 +819,25 @@ export function Pricing() {
         </div>
       </section>
 
+      </section>
+
+      <section className="relative z-10 -mt-px overflow-hidden bg-[#070b13]" aria-labelledby="pricing-templates-heading">
+        <DiagonalStripes variant="continue" />
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-5 py-14 sm:px-8 lg:px-10">
+          <h2
+            id="pricing-templates-heading"
+            className="font-serif text-[clamp(1.2rem,2.6vw,1.5rem)] font-normal leading-[1.14] tracking-[-0.03em] text-[#F3F1EB]"
+          >
+            Referencias visuales
+          </h2>
+          <AccentBar variant="violet" />
+          <p className="mt-5 max-w-[40rem] text-[15px] leading-[1.75] text-zinc-400">{TEMPLATES_CONTEXT}</p>
+          <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {TEMPLATE_DEMOS.map((demo) => (
+              <TemplateDemoCard key={demo.name} {...demo} />
+            ))}
+          </div>
+        </div>
       </section>
 
       <section className="relative z-10 -mt-px" aria-labelledby="pricing-scope-heading">
@@ -860,25 +883,6 @@ export function Pricing() {
               .
             </p>
           </FadeIn>
-        </div>
-      </section>
-
-      <section className="relative z-10 -mt-px overflow-hidden bg-[#070b13]" aria-labelledby="pricing-templates-heading">
-        <DiagonalStripes variant="continue" />
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-5 py-14 sm:px-8 lg:px-10">
-          <h2
-            id="pricing-templates-heading"
-            className="font-serif text-[clamp(1.2rem,2.6vw,1.5rem)] font-normal leading-[1.14] tracking-[-0.03em] text-[#F3F1EB]"
-          >
-            Referencias visuales
-          </h2>
-          <AccentBar variant="violet" />
-          <p className="mt-5 max-w-[40rem] text-[15px] leading-[1.75] text-zinc-400">{TEMPLATES_CONTEXT}</p>
-          <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {TEMPLATE_DEMOS.map((demo) => (
-              <TemplateDemoCard key={demo.name} {...demo} />
-            ))}
-          </div>
         </div>
       </section>
 
