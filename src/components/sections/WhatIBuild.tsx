@@ -61,14 +61,14 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 function IdentityCut() {
   return (
-    <div className="relative h-14" aria-hidden>
+    <div className="relative h-10" aria-hidden>
       <div
         className="absolute inset-0 bg-[#251c49]"
-        style={{ clipPath: "polygon(36% 0, 100% 0, 100% 100%, 58% 100%)" }}
+        style={{ clipPath: "polygon(28% 0, 100% 0, 100% 100%, 48% 100%)" }}
       />
       <div
         className="absolute inset-0 bg-[#3a2d6b]"
-        style={{ clipPath: "polygon(68% 0, 100% 0, 100% 100%, 84% 100%)" }}
+        style={{ clipPath: "polygon(62% 0, 100% 0, 100% 100%, 78% 100%)" }}
       />
     </div>
   );
@@ -204,33 +204,37 @@ export function WhatIBuild() {
       <DotPattern />
 
       <div className="relative z-10 mx-auto w-full max-w-5xl px-5 sm:px-6 lg:px-8">
-        <FadeIn>
-          <SectionLabel>{OPERATOR.fullName}</SectionLabel>
-          <h2
-            id="entregables-heading"
-            className="mt-4 max-w-[18ch] font-serif text-[clamp(1.85rem,4.6vw,3.15rem)] font-normal leading-[1.08] tracking-[-0.03em] text-[#F3F1EB]"
-          >
-            Detrás de AGI hay quien analiza, diseña y desarrolla.
-          </h2>
-          <p className="mt-5 max-w-[48ch] text-[15px] leading-[1.75] text-zinc-400 sm:text-base">
-            Soy {OPERATOR.fullName}, fundador y desarrollador de AGI TheCreator.
-            El estudio sigue siendo la marca. El trabajo lo hago yo, en directo,
-            con negocios de toda España.
-          </p>
+        <FadeIn className="grid items-end gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-7">
+          <div>
+            <SectionLabel>{OPERATOR.fullName}</SectionLabel>
+            <h2
+              id="entregables-heading"
+              className="mt-4 max-w-[18ch] font-serif text-[clamp(1.85rem,4.6vw,3.15rem)] font-normal leading-[1.08] tracking-[-0.03em] text-[#F3F1EB]"
+            >
+              Detrás de AGI hay quien analiza, diseña y desarrolla.
+            </h2>
+            <p className="mt-5 max-w-[48ch] text-[15px] leading-[1.75] text-zinc-400 sm:text-base">
+              Soy {OPERATOR.fullName}, fundador y desarrollador de AGI TheCreator.
+              El estudio sigue siendo la marca. El trabajo lo hago yo, en directo,
+              con negocios de toda España.
+            </p>
+          </div>
           {/* Retrato: sustituir este bloque por una fotografía real de Abel cuando exista. */}
-          <div className="relative mt-10 max-w-xl overflow-hidden border border-white/10 bg-[#12151f]">
-            <div className="flex flex-col gap-5 px-6 py-7 sm:flex-row sm:items-center sm:gap-8 sm:px-8">
+          <div className="relative w-full overflow-hidden border border-white/10 bg-[#12151f]">
+            <div className="flex items-center gap-4 px-5 py-5 sm:gap-5 sm:px-6">
               <Image
                 src="/logos/NavbarAGI.webp"
                 alt="AGI TheCreator"
                 width={167}
                 height={56}
-                className="h-14 w-auto"
+                className="h-14 w-auto shrink-0"
               />
-              <div className="sm:border-l sm:border-white/10 sm:pl-8">
-                <p className="text-[15px] font-medium text-[#F3F1EB]">{OPERATOR.fullName}</p>
-                <p className="mt-1 text-[13px] text-zinc-400">Fundador y desarrollador</p>
-                <p className="mt-3 text-[13px] leading-relaxed text-zinc-400">{CONTACT_LOCATION}</p>
+              <div className="min-w-0 border-l border-white/10 pl-4 sm:pl-5">
+                <p className="text-[14px] font-medium leading-snug text-[#F3F1EB]">
+                  {OPERATOR.fullName}
+                </p>
+                <p className="mt-1 text-[12px] text-zinc-400">Fundador y desarrollador</p>
+                <p className="mt-2.5 text-[12px] leading-relaxed text-zinc-400">{CONTACT_LOCATION}</p>
               </div>
             </div>
             <IdentityCut />
@@ -304,43 +308,47 @@ export function WhatIBuild() {
 
         <div className="mt-16">
           <SectionLabel>Colaboración</SectionLabel>
-          <p className="mt-3 max-w-[62ch] text-[15px] leading-[1.75] text-zinc-400">
-            Cuando un proyecto pide diseño gráfico, colaboro con Aitor Martínez
-            Rollán, de{" "}
-            <a
-              href={COLLABORATORS[0].href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-zinc-200 underline decoration-violet-400/35 underline-offset-[3px] hover:text-white"
-            >
-              {COLLABORATORS[0].studio}
-            </a>
-            . Entra en ese encargo. No es cofundador de AGI ni forma parte de un
-            equipo fijo.
-          </p>
-          <div className="relative mt-6 max-w-xl overflow-hidden border border-white/10 bg-[#12151f]">
-            <div className="flex flex-col gap-5 px-6 py-7 sm:flex-row sm:items-center sm:gap-8 sm:px-8">
+          <div className="mt-6 grid items-end gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-7">
+            <p className="max-w-[48ch] text-[15px] leading-[1.75] text-zinc-400">
+              Cuando un proyecto pide diseño gráfico, colaboro con Aitor Martínez
+              Rollán, de{" "}
               <a
                 href={COLLABORATORS[0].href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="shrink-0 outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-violet-400/50"
+                className="text-zinc-200 underline decoration-violet-400/35 underline-offset-[3px] hover:text-white"
               >
-                <Image
-                  src="/logos/rollan-studio.png"
-                  alt={`${COLLABORATORS[0].studio} — web de Aitor Martínez Rollán`}
-                  width={839}
-                  height={395}
-                  className="h-14 w-auto brightness-[2.4] contrast-[1.05]"
-                />
+                {COLLABORATORS[0].studio}
               </a>
-              <div className="sm:border-l sm:border-white/10 sm:pl-8">
-                <p className="text-[15px] font-medium text-[#F3F1EB]">Aitor Martínez Rollán</p>
-                <p className="mt-1 text-[13px] text-zinc-400">{COLLABORATORS[0].role}</p>
-                <p className="mt-3 text-[13px] leading-relaxed text-zinc-400">{COLLABORATORS[0].studio}</p>
+              . Entra en ese encargo. No es cofundador de AGI ni forma parte de un
+              equipo fijo.
+            </p>
+            <div className="relative w-full overflow-hidden border border-white/10 bg-[#12151f]">
+              <div className="flex items-center gap-4 px-5 py-5 sm:gap-5 sm:px-6">
+                <a
+                  href={COLLABORATORS[0].href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="shrink-0 outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-violet-400/50"
+                >
+                  <Image
+                    src="/logos/rollan-studio.png"
+                    alt={`${COLLABORATORS[0].studio} — web de Aitor Martínez Rollán`}
+                    width={839}
+                    height={395}
+                    className="h-12 w-auto brightness-[2.4] contrast-[1.05]"
+                  />
+                </a>
+                <div className="min-w-0 border-l border-white/10 pl-4 sm:pl-5">
+                  <p className="text-[14px] font-medium leading-snug text-[#F3F1EB]">
+                    Aitor Martínez Rollán
+                  </p>
+                  <p className="mt-1 text-[12px] text-zinc-400">{COLLABORATORS[0].role}</p>
+                  <p className="mt-2.5 text-[12px] leading-relaxed text-zinc-400">{COLLABORATORS[0].studio}</p>
+                </div>
               </div>
+              <IdentityCut />
             </div>
-            <IdentityCut />
           </div>
         </div>
 
