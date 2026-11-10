@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useId, useState, type ReactNode } from "react";
@@ -20,9 +21,6 @@ const SECTION_SURFACE =
 const FAQ_BONE = "#F3F1EB";
 /** Casi negro para que la barra contraste con el fondo de la sección. */
 const FAQ_BAR_DARK = "#06080d";
-
-/** Columna fija del indicador — evita que el texto se mueva al abrir/cerrar. */
-const FAQ_ROW_GRID = "grid w-full grid-cols-[1.75rem_minmax(0,1fr)] gap-x-2.5 sm:gap-x-3";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 12 },
@@ -93,21 +91,8 @@ function FaqHeadlineMascot({ className }: { className?: string }) {
   );
 }
 
-function FaqIndicator({ isOpen }: { isOpen: boolean }) {
-  return (
-    <span
-      aria-hidden
-      className={`flex size-7 items-center justify-center rounded-sm border border-white/10 bg-transparent font-mono text-[10px] leading-none text-zinc-500 shadow-none transition-[transform,background-color,opacity,box-shadow] duration-300 ease-out group-hover:bg-white/4 group-hover:shadow-[0_3px_12px_-8px_rgba(0,0,0,0.5)] ${
-        isOpen ? "rotate-90 opacity-100" : "rotate-0 opacity-75"
-      }`}
-    >
-      &gt;
-    </span>
-  );
-}
-
 const FAQ_LINK_CLASS =
-  "text-zinc-400 underline decoration-violet-400/30 underline-offset-[3px] transition-colors hover:text-zinc-200";
+  "text-zinc-200 underline decoration-violet-400/35 underline-offset-[3px] transition-colors hover:text-white";
 
 function FaqAnswer({
   answer,
@@ -160,11 +145,24 @@ function FaqAccordionItem({
         onClick={onToggle}
         aria-expanded={isOpen}
         aria-controls={panelId}
-        className={`group ${FAQ_ROW_GRID} items-center py-3.5 text-left transition-opacity duration-200 hover:opacity-[0.9] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/15 focus-visible:ring-offset-2 focus-visible:ring-offset-[#131b2a] sm:py-4`}
+        className="group flex w-full items-start gap-3 py-3.5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/30 sm:gap-4 sm:py-4"
       >
-        <FaqIndicator isOpen={isOpen} />
-        <span className="text-[13px] font-medium leading-snug tracking-[-0.01em] text-zinc-100 sm:text-sm">
+        <h3
+          className={`min-w-0 flex-1 text-[15px] font-semibold leading-snug tracking-[-0.01em] transition-colors duration-300 sm:text-base ${
+            isOpen
+              ? "text-violet-300"
+              : "text-violet-400 group-hover:text-violet-300"
+          }`}
+        >
           {question}
+        </h3>
+        <span
+          aria-hidden
+          className={`mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border border-white/12 text-violet-300/80 transition-[transform,background-color,border-color] duration-300 ease-out group-hover:border-violet-400/40 group-hover:bg-white/5 sm:size-8 ${
+            isOpen ? "rotate-180" : "rotate-0"
+          }`}
+        >
+          <ChevronDown className="size-3.5 sm:size-4" strokeWidth={2} />
         </span>
       </button>
 
@@ -180,14 +178,11 @@ function FaqAccordionItem({
             }
             exit={reduceMotion ? undefined : { height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className={`${FAQ_ROW_GRID} overflow-hidden pb-3 sm:pb-4`}
+            className="overflow-hidden"
           >
-            <span aria-hidden className="size-7 shrink-0" />
-            <div className="rounded-lg border border-white/6 bg-white/2 px-3.5 py-3 sm:px-4 sm:py-3.5">
-              <p className="text-[13px] leading-[1.65] text-zinc-500 sm:text-sm sm:leading-[1.7]">
-                <FaqAnswer answer={answer} links={links} />
-              </p>
-            </div>
+            <p className="max-w-[42ch] pb-3.5 pr-10 text-[14px] leading-[1.7] text-zinc-400 sm:pb-4 sm:text-[15px] sm:leading-[1.75]">
+              <FaqAnswer answer={answer} links={links} />
+            </p>
           </motion.div>
         ) : null}
       </AnimatePresence>

@@ -27,8 +27,8 @@ const jsonLd = {
   mentions: [
     {
       "@type": "Person",
-      name: "Abel",
-      jobTitle: "Desarrollador web",
+      name: "Abel González Iglesias",
+      jobTitle: "Fundador y desarrollador",
     },
     {
       "@type": "Person",

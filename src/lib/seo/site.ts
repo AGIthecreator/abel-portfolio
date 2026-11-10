@@ -123,8 +123,8 @@ export function getHomeJsonLd() {
         },
         founder: {
           "@type": "Person",
-          name: OPERATOR.firstName,
-          jobTitle: "Desarrollador web",
+          name: OPERATOR.fullName,
+          jobTitle: "Fundador y desarrollador",
         },
       },
     ],

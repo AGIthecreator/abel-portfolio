@@ -1,49 +1,40 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { FadeIn } from "@/components/motion/FadeIn";
+import { COLLABORATORS, CONTACT_LOCATION, OPERATOR } from "@/lib/contact/info";
 
 const SECTION_BG = "#070b13";
-/** Hueso cálido — coherente con el resto de la web */
-const BONE = "#F3F1EB";
-/** Negro casi absoluto — banda del statement */
-const NEAR_BLACK = "#030305";
 
-/** Izquierda: lo que todos prometen (vacío, intercambiable). */
-const PROMISES = [
-  "Soluciones a medida",
-  "Transformación digital",
-  "Compromiso con la excelencia",
-  "Optimización de procesos",
-  "Presencia digital potente",
-  "Ecosistema digital",
-  "Metodologías ágiles",
-  "Valor añadido",
-  "Tecnología de última generación",
-  "Sinergias digitales",
-] as const;
-
-/** Derecha: lo que de verdad mueve un negocio. */
-const REALITY = [
-  "Que aparezcas cuando te buscan.",
-  "Que no se vayan a la competencia por esperar una respuesta.",
-  "Que reservar sea más fácil que llamar.",
-  "Que los clientes encuentren la información sin preguntarla.",
-  "Que no acabes gestionando el negocio por WhatsApp.",
-  "Que tu web trabaje incluso cuando tú no estás.",
-  "Que tu negocio parezca tan profesional como realmente es.",
-] as const;
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.32, 1] as const },
+const AREAS = [
+  {
+    title: "Webs y presencia digital",
+    body: "Una web que explique qué haces, transmita confianza y deje un siguiente paso. También rediseño o mejoro la que ya tienes.",
+    href: "/desarrollo-web",
+    label: "Ver desarrollo web",
   },
-};
+  {
+    title: "Automatizaciones e integraciones",
+    body: "Formularios, reservas, avisos y conexiones entre herramientas, cuando el proceso se repite y se puede describir.",
+    href: "/automatizacion-de-procesos",
+    label: "Ver automatización",
+  },
+  {
+    title: "Sistemas y herramientas a medida",
+    body: "Lógica propia y datos internos cuando una web o una herramienta genérica se quedan cortas.",
+    href: "/desarrollo-web",
+    label: "Ver cómo lo planteo",
+  },
+] as const;
+
+const CRITERIA = [
+  "Empiezo por lo que se atasca en el negocio, no por la herramienta de moda.",
+  "Si una web clara resuelve el problema, no vendo una automatización.",
+  "Si un flujo sencillo basta, no propongo un sistema propio ni inteligencia artificial.",
+  "El mantenimiento entra cuando el proyecto lo necesita, no como un extra automático.",
+] as const;
 
 function DotPattern() {
   return (
@@ -60,41 +51,26 @@ function DotPattern() {
   );
 }
 
-/** Check fino. `muted` lo deja apagado (columna izquierda). */
-function Check({ muted = false }: { muted?: boolean }) {
+function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <svg
-      className={`mt-[3px] h-3.5 w-3.5 shrink-0 ${
-        muted ? "text-zinc-600" : "text-violet-300/90"
-      }`}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={muted ? 1.5 : 2}
-      aria-hidden
-    >
-      <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-300/80">
+      {children}
+    </p>
   );
 }
 
-function Eyebrow({
-  children,
-  muted = false,
-}: {
-  children: React.ReactNode;
-  muted?: boolean;
-}) {
+function IdentityCut() {
   return (
-    <p
-      className={`mb-6 text-[11px] font-medium uppercase leading-none sm:mb-7 ${
-        muted
-          ? "tracking-[0.28em] text-zinc-600"
-          : "tracking-[0.26em] text-violet-300/90"
-      }`}
-    >
-      {children}
-    </p>
+    <div className="relative h-14" aria-hidden>
+      <div
+        className="absolute inset-0 bg-[#251c49]"
+        style={{ clipPath: "polygon(36% 0, 100% 0, 100% 100%, 58% 100%)" }}
+      />
+      <div
+        className="absolute inset-0 bg-[#3a2d6b]"
+        style={{ clipPath: "polygon(68% 0, 100% 0, 100% 100%, 84% 100%)" }}
+      />
+    </div>
   );
 }
 
@@ -174,7 +150,7 @@ export function WhatIBuild() {
       id="entregables"
       className="relative scroll-mt-24 w-full overflow-x-clip overflow-y-visible pt-16 pb-20 sm:pt-20 sm:pb-28"
       style={{ backgroundColor: SECTION_BG }}
-      aria-label="¿Por qué hacerlo conmigo?"
+      aria-labelledby="entregables-heading"
     >
       {/* Fondo diagonal (desktop) — CONTINÚA la diagonal de StrategicProfile.
           Arranca EXACTAMENTE en las X donde aquélla termina (mismas anchuras de panel)
@@ -227,190 +203,165 @@ export function WhatIBuild() {
 
       <DotPattern />
 
-      {/* Filtro "tinta desgastada" suave — solo en la lista de promesas corporativas */}
-      <svg className="pointer-events-none absolute h-0 w-0" aria-hidden focusable="false">
-        <filter id="worn-ink-soft" x="-8%" y="-8%" width="116%" height="116%">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.65"
-            numOctaves={1}
-            seed={6}
-            result="rough"
-          />
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="rough"
-            scale={0.35}
-            xChannelSelector="R"
-            yChannelSelector="G"
-          />
-        </filter>
-      </svg>
-
       <div className="relative z-10 mx-auto w-full max-w-5xl px-5 sm:px-6 lg:px-8">
-        {/* CABECERA */}
-        <FadeIn className="mx-auto max-w-2xl text-center">
-          <h2 className="text-balance text-[clamp(1.7rem,5.2vw,2.9rem)] font-bold leading-[1.08] tracking-tight text-zinc-50">
-            <span className="text-violet-300">¿Por qué</span> hacerlo conmigo?
+        <FadeIn>
+          <SectionLabel>{OPERATOR.fullName}</SectionLabel>
+          <h2
+            id="entregables-heading"
+            className="mt-4 max-w-[18ch] font-serif text-[clamp(1.85rem,4.6vw,3.15rem)] font-normal leading-[1.08] tracking-[-0.03em] text-[#F3F1EB]"
+          >
+            Detrás de AGI hay quien analiza, diseña y desarrolla.
           </h2>
-          <p className="mx-auto mt-5 max-w-[24ch] text-balance font-serif text-[clamp(1.05rem,3vw,1.45rem)] font-normal leading-snug text-zinc-300 sm:max-w-none">
-            Porque ya hay <span className="text-zinc-500">demasiadas webs</span>{" "}
-            diciendo exactamente lo mismo.
+          <p className="mt-5 max-w-[48ch] text-[15px] leading-[1.75] text-zinc-400 sm:text-base">
+            Soy {OPERATOR.fullName}, fundador y desarrollador de AGI TheCreator.
+            El estudio sigue siendo la marca. El trabajo lo hago yo, en directo,
+            con negocios de toda España.
           </p>
-          <div
-            className="mx-auto mt-8 h-px w-[clamp(120px,38%,300px)]"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent, rgba(167,139,250,0.5) 50%, transparent)",
-            }}
-            aria-hidden
-          />
+          {/* Retrato: sustituir este bloque por una fotografía real de Abel cuando exista. */}
+          <div className="relative mt-10 max-w-xl overflow-hidden border border-white/10 bg-[#12151f]">
+            <div className="flex flex-col gap-5 px-6 py-7 sm:flex-row sm:items-center sm:gap-8 sm:px-8">
+              <Image
+                src="/logos/NavbarAGI.webp"
+                alt="AGI TheCreator"
+                width={167}
+                height={56}
+                className="h-14 w-auto"
+              />
+              <div className="sm:border-l sm:border-white/10 sm:pl-8">
+                <p className="text-[15px] font-medium text-[#F3F1EB]">{OPERATOR.fullName}</p>
+                <p className="mt-1 text-[13px] text-zinc-400">Fundador y desarrollador</p>
+                <p className="mt-3 text-[13px] leading-relaxed text-zinc-400">{CONTACT_LOCATION}</p>
+              </div>
+            </div>
+            <IdentityCut />
+          </div>
         </FadeIn>
 
-        {/* COMPARATIVA — línea vertical fina al centro, mucho aire */}
-        <motion.div
-          className="relative mt-14 grid grid-cols-1 gap-y-12 sm:mt-20 sm:grid-cols-2 sm:gap-x-12 lg:gap-x-20"
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.15 }}
-          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 } } }}
-        >
-          {/* Línea vertical central (solo desktop) */}
-          <div
-            className="pointer-events-none absolute inset-y-1 left-1/2 hidden w-px -translate-x-1/2 sm:block"
-            style={{
-              background:
-                "linear-gradient(180deg, transparent, rgba(255,255,255,0.14) 12%, rgba(255,255,255,0.14) 88%, transparent)",
-            }}
-            aria-hidden
-          />
-
-          {/* IZQUIERDA — lo que suelen prometer (apagado) */}
-          <motion.div variants={fadeUp} className="sm:pr-2 lg:pr-6">
-            <Eyebrow muted>Lo que suelen prometer</Eyebrow>
-            <ul className="space-y-3.5">
-              {PROMISES.map((item) => (
-                <li key={item} className="flex items-start gap-3">
-                  <Check muted />
-                  <span
-                    className="text-[15px] leading-relaxed text-zinc-500 sm:text-base"
-                    style={{ filter: "url(#worn-ink-soft)" }}
-                  >
-                    {item}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-7 max-w-[34ch] text-[13.5px] italic leading-relaxed text-zinc-600">
-              Si has visitado varias webs antes de llegar aquí, probablemente ya
-              has leído la mitad de esta lista unas cuantas veces.
+        <div className="mt-16 grid gap-10 border-t border-white/10 pt-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+          <div>
+            <SectionLabel>Quién soy y cómo trabajo</SectionLabel>
+            <h3 className="mt-3 font-serif text-[clamp(1.35rem,2.4vw,1.75rem)] font-normal tracking-[-0.02em] text-[#F3F1EB]">
+              Primero el problema. Después la herramienta.
+            </h3>
+          </div>
+          <div className="space-y-4 text-[15px] leading-[1.75] text-zinc-400">
+            <p>
+              Desarrollo webs, rediseños, automatizaciones, integraciones y
+              sistemas a medida. Hablo contigo, cierro el alcance y escribo el
+              código. No hay un equipo detrás del nombre.
             </p>
-          </motion.div>
-
-          {/* DERECHA — lo que realmente importa (hueso, más presencia) */}
-          <motion.div variants={fadeUp} className="sm:pl-2 lg:pl-6">
-            <Eyebrow>Lo que realmente importa</Eyebrow>
-            <ul className="space-y-4">
-              {REALITY.map((item, i) => {
-                const highlight = i === REALITY.length - 1;
-                return (
-                  <li
-                    key={item}
-                    className={`flex items-start gap-3 ${highlight ? "mt-1.5" : ""}`}
-                  >
-                    <Check />
-                    <span
-                      className={`font-medium leading-relaxed ${
-                        highlight
-                          ? "text-[19px] font-semibold sm:text-[23px]"
-                          : "text-[15.5px] sm:text-[17px]"
-                      }`}
-                      style={{ color: BONE }}
-                    >
-                      {item}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </motion.div>
-        </motion.div>
-
-        {/* STATEMENT EDITORIAL — banda negra casi absoluta a todo el ancho de la PÁGINA */}
-        <div className="relative left-1/2 mt-24 w-screen max-w-none -translate-x-1/2 sm:mt-32">
-          <div className="py-5 sm:py-12" style={{ backgroundColor: NEAR_BLACK }}>
-            <FadeIn className="mx-auto max-w-3xl px-5 text-center sm:px-6">
-              <div className="relative inline-block px-7 py-6 sm:px-10">
-                {/* Esquinas blancas discretas */}
-                <span aria-hidden className="pointer-events-none absolute left-0 top-0 h-4 w-4 border-l border-t border-white/25" />
-                <span aria-hidden className="pointer-events-none absolute right-0 top-0 h-4 w-4 border-r border-t border-white/25" />
-                <span aria-hidden className="pointer-events-none absolute bottom-0 left-0 h-4 w-4 border-b border-l border-white/25" />
-                <span aria-hidden className="pointer-events-none absolute bottom-0 right-0 h-4 w-4 border-b border-r border-white/25" />
-                <p className="font-serif text-[clamp(1.45rem,4.6vw,2.5rem)] font-normal leading-[1.22] tracking-[-0.02em] text-balance">
-                  <span className="block text-zinc-100">
-                    No puedo prometer multiplicar todas tus ventas por diez.
-                  </span>
-                  <span className="mt-7 block text-zinc-500">
-                    Tampoco hacerte millonario antes del viernes.
-                  </span>
-                  <span className="mt-7 block" style={{ color: BONE }}>
-                    Lo que sí puedo hacer es que dentro de unos meses te
-                    preguntes{" "}
-                    <span className="text-violet-300">
-                      por qué no lo hiciste antes
-                    </span>
-                  </span>
-                </p>
-              </div>
-            </FadeIn>
+            <p>
+              Prefiero entender qué se atasca antes de elegir una tecnología.
+              Si el problema se resuelve con una página clara, me quedo ahí.
+              La automatización y la inteligencia artificial entran cuando el
+              proceso lo pide, no para adornar la propuesta.
+            </p>
           </div>
         </div>
 
-        {/* CIERRE — calmado, sin presión */}
-        <FadeIn className="mx-auto mt-24 max-w-xl text-center sm:mt-32">
-          <div className="space-y-8">
-            <p className="text-[clamp(1.1rem,3.4vw,1.5rem)] leading-snug tracking-[-0.01em]">
-              <span className="text-zinc-100">¿Te he convencido?</span>{" "}
-              <span className="text-zinc-500">Perfecto.</span>
-            </p>
-            <p className="text-[clamp(1.1rem,3.4vw,1.5rem)] leading-snug tracking-[-0.01em]">
-              <span className="text-zinc-100">¿No te he convencido?</span>{" "}
-              <span className="text-zinc-500">También lo entiendo.</span>
-            </p>
-          </div>
+        <div className="mt-16">
+          <SectionLabel>Qué puedo construir</SectionLabel>
+          <ul className="mt-6 grid gap-4 md:grid-cols-3">
+            {AREAS.map((area) => (
+              <li key={area.title} className="border border-white/10 bg-[#12151f] p-5">
+                <h3 className="font-serif text-[1.2rem] font-normal tracking-[-0.02em] text-[#F3F1EB]">
+                  {area.title}
+                </h3>
+                <p className="mt-3 text-[14px] leading-[1.7] text-zinc-400">{area.body}</p>
+                <Link
+                  href={area.href}
+                  className="mt-5 inline-flex text-[13px] text-zinc-200 underline decoration-violet-400/35 underline-offset-[3px] transition-colors hover:text-white"
+                >
+                  {area.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-          <div className="mx-auto mt-12 max-w-md space-y-5 text-[15px] leading-[1.75] text-zinc-400 sm:text-base">
-            <p>
-              Al final una web no se compra porque alguien escriba cuatro frases
-              bonitas.
-            </p>
-            <p>Se compra cuando ves claro que puede ayudarte.</p>
-            <p>
-              Si quieres ver cómo construyo una web, empieza por{" "}
-              <Link
-                href="/desarrollo-web"
-                className="text-zinc-300 underline decoration-violet-400/30 underline-offset-[3px] transition-colors hover:text-zinc-100"
-              >
-                desarrollo web
+        <div className="mt-16 grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16">
+          <div>
+            <SectionLabel>Cómo entiendo un proyecto</SectionLabel>
+            <h3 className="mt-3 font-serif text-[clamp(1.35rem,2.4vw,1.75rem)] font-normal tracking-[-0.02em] text-[#F3F1EB]">
+              No instalo una solución genérica y ya.
+            </h3>
+            <p className="mt-4 text-[15px] leading-[1.75] text-zinc-400">
+              El recorrido de un encargo, con sus fases, está en{" "}
+              <Link href="/como-trabajamos" className="text-zinc-200 underline decoration-violet-400/35 underline-offset-[3px] hover:text-white">
+                cómo trabajamos
               </Link>
-              .
-            </p>
-            <p>
-              Si estás en{" "}
-              <Link
-                href="/desarrollo-web-valladolid"
-                className="text-zinc-300 underline decoration-violet-400/30 underline-offset-[3px] transition-colors hover:text-zinc-100"
-              >
-                Valladolid
-              </Link>{" "}
-              y prefieres hablar en persona, puedes conocer cómo trabajamos desde aquí.
+              . Aquí está el criterio con el que decido.
             </p>
           </div>
+          <ul className="space-y-3">
+            {CRITERIA.map((item) => (
+              <li key={item} className="border-l border-violet-400/40 pl-4 text-[14px] leading-[1.7] text-zinc-300">
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
 
-          <p className="mx-auto mt-12 max-w-md text-[clamp(1rem,2.8vw,1.15rem)] leading-relaxed text-zinc-200">
-            Si has llegado hasta aquí, probablemente también seas de los que
-            leen los términos y condiciones.
+        <div className="mt-16">
+          <SectionLabel>Colaboración</SectionLabel>
+          <p className="mt-3 max-w-[62ch] text-[15px] leading-[1.75] text-zinc-400">
+            Cuando un proyecto pide diseño gráfico, colaboro con Aitor Martínez
+            Rollán, de{" "}
+            <a
+              href={COLLABORATORS[0].href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-200 underline decoration-violet-400/35 underline-offset-[3px] hover:text-white"
+            >
+              {COLLABORATORS[0].studio}
+            </a>
+            . Entra en ese encargo. No es cofundador de AGI ni forma parte de un
+            equipo fijo.
           </p>
+          <div className="relative mt-6 max-w-xl overflow-hidden border border-white/10 bg-[#12151f]">
+            <div className="flex flex-col gap-5 px-6 py-7 sm:flex-row sm:items-center sm:gap-8 sm:px-8">
+              <a
+                href={COLLABORATORS[0].href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-violet-400/50"
+              >
+                <Image
+                  src="/logos/rollan-studio.png"
+                  alt={`${COLLABORATORS[0].studio} — web de Aitor Martínez Rollán`}
+                  width={839}
+                  height={395}
+                  className="h-14 w-auto brightness-[2.4] contrast-[1.05]"
+                />
+              </a>
+              <div className="sm:border-l sm:border-white/10 sm:pl-8">
+                <p className="text-[15px] font-medium text-[#F3F1EB]">Aitor Martínez Rollán</p>
+                <p className="mt-1 text-[13px] text-zinc-400">{COLLABORATORS[0].role}</p>
+                <p className="mt-3 text-[13px] leading-relaxed text-zinc-400">{COLLABORATORS[0].studio}</p>
+              </div>
+            </div>
+            <IdentityCut />
+          </div>
+        </div>
+
+        <FadeIn className="mt-16 border-t border-white/10 pt-10">
+          <p className="max-w-[46ch] font-serif text-[clamp(1.35rem,2.6vw,1.8rem)] font-normal leading-[1.2] tracking-[-0.02em] text-[#F3F1EB]">
+            Si encaja, el siguiente paso es concreto.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-[14px]">
+            <Link href="/como-trabajamos" className="text-zinc-200 underline decoration-violet-400/35 underline-offset-[3px] hover:text-white">
+              Cómo trabajamos
+            </Link>
+            <Link href="/desarrollo-web" className="text-zinc-200 underline decoration-violet-400/35 underline-offset-[3px] hover:text-white">
+              Desarrollo web
+            </Link>
+            <Link href="/automatizacion-de-procesos" className="text-zinc-200 underline decoration-violet-400/35 underline-offset-[3px] hover:text-white">
+              Automatización
+            </Link>
+            <Link href="/presupuesto" className="text-zinc-200 underline decoration-violet-400/35 underline-offset-[3px] hover:text-white">
+              Preparar presupuesto
+            </Link>
+          </div>
         </FadeIn>
       </div>
     </section>

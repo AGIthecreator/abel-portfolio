@@ -257,7 +257,11 @@ export function DesarrolloWebContent() {
               cuando quieras orientarte.
             </p>
             <p className="text-zinc-300">
-              Si el proyecto es en Valladolid, el contexto local está en{" "}
+              Si dudas entre rehacer la web o tocar solo una parte, está en{" "}
+              <TextLink href="/recursos/articulos/rediseno-o-mejora">
+                rediseñar o mejorar la actual
+              </TextLink>
+              . Si el proyecto es en Valladolid, el contexto local está en{" "}
               <TextLink href="/desarrollo-web-valladolid">
                 desarrollo web en Valladolid
               </TextLink>

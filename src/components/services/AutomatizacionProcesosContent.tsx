@@ -357,7 +357,11 @@ export function AutomatizacionProcesosContent() {
               Cuéntame qué quieres automatizar y vemos si merece la pena y cómo.
             </p>
             <p className="text-zinc-300">
-              Trabajo desde Valladolid con negocios de toda España. El contexto
+              Antes de automatizar, conviene ver{" "}
+              <TextLink href="/recursos/articulos/que-tareas-automatizar">
+                qué tareas merecen la pena
+              </TextLink>
+              . Trabajo desde Valladolid con negocios de toda España. El contexto
               local está en{" "}
               <TextLink href="/desarrollo-web-valladolid">
                 desarrollo web en Valladolid

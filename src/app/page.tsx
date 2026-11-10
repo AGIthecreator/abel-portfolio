@@ -8,6 +8,7 @@ import {
   DeferredStrategicProfile,
   DeferredWhatIBuild,
 } from "@/components/sections/DeferredSections";
+import { HomeResources } from "@/components/sections/HomeResources";
 import { LabInvite } from "@/components/sections/LabInvite";
 import StripSystemStatus from "@/components/sections/Strips/StripSystemStatus";
 import StripExecution from "@/components/sections/Strips/StripExecution";
@@ -83,6 +84,8 @@ export default function Page() {
 
       {/* Mesa de evidencias — entrega de resultados */}
       <DeferredWhatIBuild />
+
+      <HomeResources />
 
       <DeferredFaq />
       </main>

@@ -7,6 +7,7 @@ export const CONTACT_LOCATION = "Valladolid · España" as const;
 /** Abel opera AGI TheCreator. Misma ficha visual que colaboradores. */
 export const OPERATOR = {
   firstName: "Abel",
+  fullName: "Abel González Iglesias",
   role: "Desarrollo",
   note: "Webs, automatizaciones y sistemas a medida para negocios de toda España.",
   toolsIntro:

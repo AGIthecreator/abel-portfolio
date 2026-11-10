@@ -20,6 +20,7 @@ const NAV_LINKS = [
   { href: "#entregables", label: "Por qué yo", homeSection: true },
   { href: "/como-trabajamos", label: "Cómo trabajamos" },
   { href: "/laboratorio", label: "Laboratorio" },
+  { href: "/recursos", label: "Recursos" },
   { href: "/contacto", label: "Contacto" },
 ] as const;
 
@@ -28,6 +29,7 @@ const SERVICE_LINKS = [
   { href: "/automatizacion-de-procesos", label: "Automatización" },
   { href: "/precios", label: "Precios" },
   { href: "/presupuesto", label: "Presupuesto" },
+  { href: "/herramientas/calculadora-tiempo", label: "Calculadora de tiempo" },
 ] as const;
 
 const LEGAL_LINKS = [

@@ -11,6 +11,7 @@ import { trackEvent } from "@/lib/analytics";
 const NAV = [
   { href: "#entregables", label: "Por qué yo", section: true },
   { href: "/como-trabajamos", label: "Cómo trabajamos", section: false },
+  { href: "/recursos", label: "Recursos", section: false },
   { href: "/precios", label: "Precios", section: false },
   { href: "/contacto", label: "Contacto", section: false },
 ] as const;
