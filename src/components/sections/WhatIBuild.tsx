@@ -308,7 +308,7 @@ export function WhatIBuild() {
 
         <div className="mt-16">
           <SectionLabel>Colaboración</SectionLabel>
-          <div className="mt-6 grid items-end gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-7">
+          <div className="mt-6 grid items-center gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-7">
             <p className="max-w-[48ch] text-[15px] leading-[1.75] text-zinc-400">
               Cuando un proyecto pide diseño gráfico, colaboro con Aitor Martínez
               Rollán, de{" "}
@@ -320,8 +320,7 @@ export function WhatIBuild() {
               >
                 {COLLABORATORS[0].studio}
               </a>
-              . Entra en ese encargo. No es cofundador de AGI ni forma parte de un
-              equipo fijo.
+              . Entra en ese encargo.
             </p>
             <div className="relative w-full overflow-hidden border border-white/10 bg-[#12151f]">
               <div className="flex items-center gap-4 px-5 py-5 sm:gap-5 sm:px-6">
