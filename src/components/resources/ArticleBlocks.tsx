@@ -2,10 +2,18 @@ import Link from "next/link";
 import type { ArticleBlock, InlinePart } from "@/lib/content/articles";
 
 function Parts({ parts }: { parts: InlinePart[] }) {
-  return parts.map((part, index) =>
-    typeof part === "string" ? (
-      <span key={index}>{part}</span>
-    ) : (
+  return parts.map((part, index) => {
+    if (typeof part === "string") {
+      return <span key={index}>{part}</span>;
+    }
+    if ("accent" in part) {
+      return (
+        <span key={index} className="text-violet-300">
+          {part.accent}
+        </span>
+      );
+    }
+    return (
       <Link
         key={index}
         href={part.href}
@@ -13,8 +21,8 @@ function Parts({ parts }: { parts: InlinePart[] }) {
       >
         {part.label}
       </Link>
-    ),
-  );
+    );
+  });
 }
 
 /** El mismo corte del duotono del sitio: gris, morado y violeta en todo el título. */

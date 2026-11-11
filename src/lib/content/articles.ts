@@ -17,7 +17,10 @@ export const RESOURCE_CATEGORIES = [
 
 export type ResourceCategoryId = (typeof RESOURCE_CATEGORIES)[number]["id"];
 
-export type InlinePart = string | { href: string; label: string };
+export type InlinePart =
+  | string
+  | { href: string; label: string }
+  | { accent: string };
 
 export type ArticleBlock =
   | { type: "p"; parts: InlinePart[] }
@@ -39,7 +42,9 @@ export type Article = {
 const AUTHOR = `${OPERATOR.fullName}, AGI TheCreator`;
 
 function textOf(part: InlinePart): string {
-  return typeof part === "string" ? part : part.label;
+  if (typeof part === "string") return part;
+  if ("accent" in part) return part.accent;
+  return part.label;
 }
 
 export function articlePlainText(article: Article): string {
@@ -315,7 +320,9 @@ export const ARTICLES: readonly Article[] = [
       {
         type: "p",
         parts: [
-          "Si el objetivo es que te encuentren, entiendan qué haces y den un paso —escribir, llamar o reservar—, una web bien planteada basta. No necesita un área privada ni una base de datos propia.",
+          "Si el objetivo es que te encuentren, entiendan qué haces y den un paso ",
+          { accent: "-escribir, llamar o reservar-" },
+          ", una web bien planteada basta. No necesita un área privada ni una base de datos propia.",
         ],
       },
       {
@@ -366,7 +373,9 @@ export const ARTICLES: readonly Article[] = [
       {
         type: "p",
         parts: [
-          "También compensa cuando el coste de adaptar una herramienta —en tiempo, en límites o en trabajo manual— ya es mayor que construir la pieza que falta. No antes.",
+          "También compensa cuando el coste de adaptar una herramienta ",
+          { accent: "-en tiempo, en límites o en trabajo manual-" },
+          " ya es mayor que construir la pieza que falta. No antes.",
         ],
       },
       {
